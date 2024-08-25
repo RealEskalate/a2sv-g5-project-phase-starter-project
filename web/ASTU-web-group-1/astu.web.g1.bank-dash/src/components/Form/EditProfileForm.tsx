@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { UpdatedUser } from "@/types/user.types";
 import { useAppDispatch, useAppSelector } from "@/hooks/hoooks";
 import { Loader } from "lucide-react";
+import { toastError, toastSuccess } from "../Toastify/Toastify";
 
 const editProfileSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -88,11 +89,15 @@ const EditProfileForm = () => {
   const [updateUser, { isLoading }] = useUpdateUserMutation();
 
   const onSubmit = (data: UpdatedUser) => {
-    updateUser(data).then((res: any) => {
-      dispatch(setProfile(res?.data?.data));
-      alert("Profile updated successfully");
-      refetch();
-    });
+    updateUser(data)
+      .then((res: any) => {
+        dispatch(setProfile(res?.data?.data));
+        toastSuccess("Profile updated successfully");
+        refetch();
+      })
+      .catch((err) => {
+        toastError("Something went wrong");
+      });
   };
 
   return (

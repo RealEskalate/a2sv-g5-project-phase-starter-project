@@ -9,7 +9,7 @@ const Toastify = () => {
 export default Toastify;
 
 export const toastError = (message: string) =>
-  toast.error(message, { theme: "colored" });
+  toast.error(message, { theme: "light" });
 
 export const toastSuccess = (message: string) =>
-  toast.success(message, { theme: "colored" });
+  toast.success(message, { theme: "light" });

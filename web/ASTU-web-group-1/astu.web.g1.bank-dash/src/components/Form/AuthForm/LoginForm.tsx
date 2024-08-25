@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import InputGroup from "../InputGroup";
 
 import { useForm } from "react-hook-form";
@@ -9,6 +9,7 @@ import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toastError, toastSuccess } from "@/components/Toastify/Toastify";
+import { Loader } from "lucide-react";
 
 const LoginFormSchema = z.object({
   username: z
@@ -25,6 +26,7 @@ const LoginFormSchema = z.object({
 type FormData = z.infer<typeof LoginFormSchema>;
 
 const LoginForm = () => {
+  const [isLoading, setLoading] = useState(false);
   const session = useSession();
   const router = useRouter();
 
@@ -41,7 +43,8 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (data: FormData) => {
-    console.log("data is", data);
+    // console.log("data is", data);
+    setLoading(true);
     try {
       const result = await signIn("credentials", {
         redirect: false,
@@ -50,11 +53,13 @@ const LoginForm = () => {
       });
       // console.log('result from signIn', result);
       if (!result?.ok) {
+        setLoading(false);
         toastError("invalid credentials");
         // throw new Error("invalid credentials");
       }
 
       if (result?.ok) {
+        setLoading(false);
         toastSuccess("Login Successful");
         // console.log('redirecting to ', result?.url);
         const parsedUrl = new URL(result?.url || "/");
@@ -98,14 +103,16 @@ const LoginForm = () => {
 
       <button
         type="submit"
-        className="bg-[#1814f3] text-white px-10 py-3 font-Lato font-bold rounded-lg w-full mt-4"
+        className="bg-[#1814f3] text-white text-center px-10 py-3 font-Lato font-bold rounded-lg w-full mt-4"
       >
-        Login
+        {isLoading ? <Loader className="animate-spin" /> : "Login"}
       </button>
       <div className="w-full mt-5">
         {`Already have an account?`}
         <Link href="/api/auth/signup">
-          <span className="text-indigo-800 font-[700] ml-1">SignUp</span>
+          <span className="text-indigo-800 font-[700] ml-1">
+            SingUp
+          </span>
         </Link>
       </div>
     </form>

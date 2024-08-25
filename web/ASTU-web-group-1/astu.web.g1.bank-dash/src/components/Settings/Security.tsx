@@ -5,6 +5,12 @@ import ToggleInput from "../Form/ToggleInput";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toastError, toastSuccess } from "../Toastify/Toastify";
+import { useState } from "react";
+import { Loader } from "lucide-react";
+import { useAppDispatch } from "@/hooks/hoooks";
+
+import { useChangePassowordMutation } from "@/lib/redux/api/profileAPI";
 
 const securitySchema = z
   .object({
@@ -30,6 +36,8 @@ const Titles = ({ title }: { title: string }) => {
 };
 
 const Security = () => {
+  const dispatch = useAppDispatch();
+
   const {
     register,
     handleSubmit,
@@ -39,18 +47,26 @@ const Security = () => {
     mode: "onTouched",
   });
 
-  const onSubmit = (data: FormData) => {
-    const response = fetch(
-      `https://astu-bank-dashboard.onrender.com/auth/change_password`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    console.log(response);
+  const [changePassword, { isLoading, isSuccess, isError }] =
+    useChangePassowordMutation();
+
+  const onSubmit = async (data: FormData) => {
+    console.log("chenge password data", data);
+    const res = await changePassword({
+      password: data.password,
+      newPassword: data.newPassword,
+    });
+
+    console.log("res for change password", res)
+
+    if (res?.data?.success) {
+      toastSuccess("Password changed successfully");
+    }
+
+    if (!res?.data?.success) {
+
+      toastError(res?.data?.message || "Failed to change password");
+    }
   };
 
   return (
@@ -106,7 +122,7 @@ const Security = () => {
             type="submit"
             className="bg-[#1814f3] text-white px-10 py-2 rounded-lg w-full md:w-auto mt-4"
           >
-            Save
+            {isLoading ? <Loader className="animate-spin" /> : "Save"}
           </button>
         </div>
       </form>

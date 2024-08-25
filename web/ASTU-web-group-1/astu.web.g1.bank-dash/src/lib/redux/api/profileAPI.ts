@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "./baseQuery";
-import { UpdatedUser, UserPreferenceType, UserResponseType } from "@/types/user.types";
+import { ChangePasswordResponse, UpdatedUser, UserPreferenceType, UserResponseType } from "@/types/user.types";
 
 export const profileAPI = createApi({
   reducerPath: "profileAPI",
@@ -25,7 +25,15 @@ export const profileAPI = createApi({
         body,
       }),
     }),
+
+    changePassoword: builder.mutation<ChangePasswordResponse, { password: string; newPassword: string }>({
+      query: ({ password, newPassword }) => ({
+        url: `/auth/change_password`,
+        method: "POST",
+        body: { password, newPassword },
+      }),
+    }),
   }),
 });
 
-export const { useGetProfileQuery, useUpdateUserMutation, useUpdatePreferenceMutation } = profileAPI;
+export const { useGetProfileQuery, useUpdateUserMutation, useUpdatePreferenceMutation, useChangePassowordMutation } = profileAPI;

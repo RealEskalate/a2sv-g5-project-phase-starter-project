@@ -1,13 +1,16 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/failure.dart';
+import '../entities/chat_entity.dart';
+import '../repositories/chat_repository.dart';
 
 class InitiateChatUsecase {
-  final String _userId;
+  final ChatRepository _chatRepository;
 
-  InitiateChatUsecase({required String userId}) : _userId = userId;
+  InitiateChatUsecase({required ChatRepository chatRepository})
+      : _chatRepository = chatRepository;
 
-  Future<Either<Failure, String>> initiateChat(String userId) {
-    throw UnimplementedError();
+  Future<Either<Failure, ChatEntity>> initiateChat(String userId) {
+    return _chatRepository.initiateChat(userId);
   }
 }

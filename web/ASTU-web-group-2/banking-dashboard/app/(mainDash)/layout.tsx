@@ -57,10 +57,7 @@ const Layout = ({
         router.push("/login");
       }
     };
-    if (session) {
-      console.log(isTokenExpired(session.user.accessToken));
-    }
-    console.log("session && isTokenExpired(session.user.accessToken)",session && isTokenExpired(session.user.accessToken))
+
     // if (session && isTokenExpired(session.user.accessToken)) {
       // fetchUserData();
     // }

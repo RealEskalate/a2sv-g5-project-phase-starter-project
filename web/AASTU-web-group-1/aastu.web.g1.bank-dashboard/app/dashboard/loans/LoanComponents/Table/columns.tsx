@@ -7,7 +7,6 @@ import { Loading } from "@/app/dashboard/_components/Loading";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -53,8 +52,7 @@ export function TableDemo() {
         return (
           <PaginationItem key={page} onClick={() => handlePageChange(page)} className={`${ isDarkMode ? "bg-gray-600 text-gray-50" : " bg-gray-200"} rounded-lg mx-1`} >
             <PaginationLink {...(page === currentPage ? { isActive: true } : {})} className={`${page === currentPage ? (
-              isDarkMode ? "text-gray-900" : "bg-slate-700 text-white"
-            ):("") }`}>
+              isDarkMode ? "text-gray-900" : "bg-slate-700 text-white"):("") }`}>
             {page}
             </PaginationLink>
           </PaginationItem>

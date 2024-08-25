@@ -1,5 +1,5 @@
 'use client'
-import React from "react";
+import React,{useState, useEffect} from "react";
 import Card from "./investment_components/Card";
 import { investmentTypes } from "@/constants";
 import Investment from "./investment_components/Investment";
@@ -10,7 +10,7 @@ import { useUser } from "@/contexts/UserContext";
 
 const Investments = () => {
   const { isDarkMode } = useUser();
-
+  const [cardData, setCardData] = useState();
   return (
     <div className={`flex flex-col justify-center ${ isDarkMode ? "bg-gray-700" : "bg-[#F5F7FA]"} px-3`}>
       <div className="flex flex-col md:flex-row gap-3 md:gap-10 justify-center pt-4 w-full">
@@ -18,14 +18,14 @@ const Investments = () => {
           <Card {...item} key={item.name} />
         ))}
       </div>
-      <div className="flex flex-col md:flex-row md:gap-40 gap-10 my-4 w-full justify-center">
-        <div className="w-[90%] md:w-[35%] mx-auto md:mx-0">
+      <div className="flex flex-col md:flex-row flex-wrap md:gap-30 gap-10 my-4 w-full justify-center">
+        <div className="w-[90%] md:w-[650px] mx-10 md:mx-0">
           <h1 className={`my-3 font-[600] text-[16px] md:text-[22px] text-nowrap ${isDarkMode ? "text-gray-200" : "text-[#333B69]"}`}>
             Yearly Total Investment
           </h1>
           <LineChartComp />
         </div>
-        <div className="w-[90%] md:w-[35%] mx-auto md:mx-0">
+        <div className="w-[90%] md:w-[650px] mx-auto md:mx-0">
           <h1 className={`my-3 font-[600] text-[16px] md:text-[22px] ${isDarkMode ? "text-gray-200" : "text-[#333B69]"}`}>
             Monthly Revenue
           </h1>

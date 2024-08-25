@@ -7,7 +7,7 @@ export default function Card(props: any) {
 
   return (
     <div
-      className={`flex px-2 pl-5 h-[90px] md:h-[100px] w-[90%] md:w-[400px] rounded-3xl mx-auto md:mx-0 ${
+      className={`flex px-2 pl-5 h-[90px] w-[90%] md:w-[400px] rounded-2xl mx-auto md:mx-0 ${
         isDarkMode ? "bg-gray-800" : "bg-white"
       }`}
     >

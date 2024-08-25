@@ -45,6 +45,8 @@ export default function Chart2() {
               data={chartData}
               margin={{
                 top: 18,
+                left: -20,
+                bottom: -5
               }}
             >
               <CartesianGrid

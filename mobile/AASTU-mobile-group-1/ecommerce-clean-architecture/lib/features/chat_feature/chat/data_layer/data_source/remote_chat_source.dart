@@ -47,10 +47,26 @@ class RemoteChatSource extends RemoteAbstract {
     }
   }
 
-  @override
-  Future<Either<Failure, void>> deleteMessage(String chatId) {
-    // Implement deleteMessage functionality as needed
-    throw UnimplementedError();
+ @override
+  Future<Either<Failure, void>> deleteMessage(String chatId,String token) async {
+    try {
+      final response = await client.delete(
+        Uri.parse("${Urls.deleteChat}/$chatId"),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json', 
+        },
+      );
+
+      if (response.statusCode == 201) {
+        print("delete ");
+        return Right(null);
+      } else {
+        return Left(ServerFailure('Failed to delete message'));
+      }
+    } catch (e) {
+      return Left(ServerFailure('Server error occurred'));
+    }
   }
 
   @override

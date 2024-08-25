@@ -11,7 +11,7 @@ abstract class RemoteAbstract {
 
   void sendMessage(String chatId, String content, String type);
   Stream<MessageModel> getMessages(String chatId,String token);
-  Future<Either<Failure,void>> deleteMessage(String chatId);
+  Future<Either<Failure,void>> deleteMessage(String chatId,String token);
   Future<Either<Failure,String>> chatRoom(String token,String receiverId);
   Stream<Either<Failure,List<ChatModel>>> getChatHistory(String token);
 

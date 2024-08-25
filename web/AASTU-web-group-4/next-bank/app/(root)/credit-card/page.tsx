@@ -63,15 +63,13 @@ const CreditCard = () => {
               </span>
             ))
           ) : token ? (
-            <div className="w-screen bg-white py-16 rounded-xl flex flex-col justify-center dark:bg-dark dark:border-[1px] dark:border-gray-700">
-              <TbFileSad
-                className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
-                strokeWidth={1}
-              />
-              <span className="mx-auto my-auto md:text-xl text-sm text-[#993d4b] font-bold mb-5">
-                {error ? error : "There are no cards for now!"}
-              </span>
-            </div>
+            <div className="flex flex-col items-center justify-center h-full text-red-500">
+                  <TbFileSad
+                    className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
+                    strokeWidth={1}
+                  />
+                  <div>Error fetching the recent transactions</div>
+                </div>
           ) : (
             <MyCardsLoad count={3}/>
           )}
@@ -91,15 +89,13 @@ const CreditCard = () => {
             <CardListLoad />
           ) : token ? (
             error ? (
-              <div className="pr-6 py-32 bg-white w-full flex flex-col justify-center align-middle rounded-xl scrollbar-none dark:bg-dark dark:border-[1px] dark:border-gray-700 ">
-                <TbFileSad
+              <div className="flex flex-col items-center justify-center h-full text-red-500">
+                  <TbFileSad
                     className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
                     strokeWidth={1}
                   />
-                <span className="mx-auto my-auto md:text-xl text-sm text-[#993d4b] font-bold">
-                  {error}
-                </span>
-              </div>
+                  <div>Error fetching the recent transactions</div>
+                </div>
             ) : (
               <CardList card_list={cards} />
             )

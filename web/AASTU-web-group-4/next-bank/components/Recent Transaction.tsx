@@ -59,7 +59,7 @@ const RecentTransaction = () => {
   if (status === "error") {
     return (
       <div className="flex flex-col items-center justify-center h-full text-red-500">
-        <TbFileSad  
+        <TbFileSad
           className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
           strokeWidth={1}
         />

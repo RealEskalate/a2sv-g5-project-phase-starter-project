@@ -84,11 +84,11 @@ export const fetchUserDetails = async (username: string) => {
 export const randomInvestmentData = async () => {
   try {
     const response = await fetch(
-      `https://web-team-g4.onrender.com/user/random-investment-data`,
+      `https://web-team-g4.onrender.com/user/random-investment-data?years=5&months=8`,
       {
         method: "GET",
         headers: {
-          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
         },
       }
     );

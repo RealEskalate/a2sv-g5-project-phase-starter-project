@@ -74,7 +74,7 @@ const Expense = () => {
                   >
                     <td className="py-3">
                       <RecentTransactionDescription
-                        amount={datax.amount}
+                        amount={datax.type}
                         description={datax.description}
                       />
                     </td>
@@ -88,11 +88,11 @@ const Expense = () => {
                     <td className="hidden lg:table-cell py-3">{datax.date}</td>
                     <td
                       className={`py-3 ${
-                        datax.amount < 0 ? "text-candyPink" : "text-mintGreen"
+                        datax.type !== 'deposite' ? "text-candyPink" : "text-mintGreen"
                       }`}
                     >
-                      {datax.amount < 0
-                        ? "-$" + -(datax.amount)
+                      {datax.type !== 'deposit'
+                        ? "-$" + (datax.amount)
                         : "+$" + datax.amount}
                     </td>
                     <td className="hidden lg:table-cell py-3 w-24 md:w-32">

@@ -174,8 +174,8 @@ class RemoteProductDataSourceImp implements RemoteProductDataSource {
           List<ProductModel> finalResult = <ProductModel>[];
           Map<String, dynamic> jsonModel = json.decode(result.body);
 
-          for (Map<String, dynamic> jsonModel in jsonModel['data']) {
-            finalResult.add(ProductModel.fromJson(jsonModel));
+          for (Map<String, dynamic> model in jsonModel['data']) {
+            finalResult.add(ProductModel.fromJson(model));
           }
 
           return finalResult;

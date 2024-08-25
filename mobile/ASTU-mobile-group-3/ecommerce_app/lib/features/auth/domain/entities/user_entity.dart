@@ -1,33 +1,20 @@
 import 'package:equatable/equatable.dart';
 
 class UserEntity extends Equatable {
-  final String id;
   final String name;
   final String email;
+  final String password;
+  final String id;
+  final int v;
 
   const UserEntity({
-    required this.id,
     required this.name,
     required this.email,
+    required this.password,
+    required this.id,
+    required this.v,
   });
 
-  // Method to convert UserEntity to JSON
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'name': name,
-      'email': email,
-    };
-  }
-
-  factory UserEntity.fromJson(Map<String, dynamic> json) {
-    return UserEntity(
-      id: json['_id'],
-      name: json['name'],
-      email: json['email'],
-    );
-  }
-
   @override
-  List<Object?> get props => [id, name, email];
+  List<Object?> get props => [name, password, email, id, v];
 }

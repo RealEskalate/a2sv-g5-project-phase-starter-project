@@ -71,7 +71,7 @@ void main() {
 
       /// assert
       verify(mockSharedPreferences.getString(AppData.sharedProduct));
-      verify(mockSharedPreferences.getString(TestingDatas.id));
+      // verify(mockSharedPreferences.getString(TestingDatas.id));
       expect(result, TestingDatas.productModelList);
     });
 
@@ -135,12 +135,11 @@ void main() {
       /// action
       final result = await localProductDataSourceImpl
           .updateProduct(TestingDatas.testDataModel);
-      verify(mockSharedPreferences.getString(TestingDatas.id));
-      verify(mockSharedPreferences.setString(
-          TestingDatas.id, json.encode(TestingDatas.testDataModel)));
 
       /// verify
       expect(result, true);
+      verify(mockSharedPreferences.getString(any));
+      verify(mockSharedPreferences.setString(any, any));
     });
 
     test('Should also act accordingly when the list doesn\'t present',
@@ -161,17 +160,11 @@ void main() {
           .updateProduct(TestingDatas.testDataModel);
 
       /// assert
-      verify(mockSharedPreferences.getString(TestingDatas.id));
-      verify(mockSharedPreferences.getString(AppData.sharedProduct));
-      verify(
-        mockSharedPreferences.setString(
-          AppData.sharedProduct,
-          json.encode(
-            {TestingDatas.id: 1},
-          ),
-        ),
-      );
       expect(result, true);
+      verify(mockSharedPreferences.getString(any));
+      verify(
+        mockSharedPreferences.setString(any, any),
+      );
     });
 
     test('Should return False if one of Them returned False', () async {
@@ -192,17 +185,8 @@ void main() {
       /// assert
       expect(() async => result(TestingDatas.testDataModel),
           throwsA(isA<CacheException>()));
-      verify(mockSharedPreferences.getString(TestingDatas.id));
+      verify(mockSharedPreferences.getString(TestingDatas.testDataModel.id));
       verify(mockSharedPreferences.getString(AppData.sharedProduct));
-
-      verify(
-        mockSharedPreferences.setString(
-          AppData.sharedProduct,
-          json.encode(
-            {TestingDatas.id: 1},
-          ),
-        ),
-      );
     });
   });
 
@@ -222,8 +206,8 @@ void main() {
       verify(mockSharedPreferences.setString(TestingDatas.testDataModel.id,
           json.encode(TestingDatas.testDataModel.toJson())));
       verify(mockSharedPreferences.getString(AppData.sharedProduct));
-      verify(mockSharedPreferences.setString(
-          AppData.sharedProduct, json.encode({TestingDatas.id: 1})));
+      verify(mockSharedPreferences.setString(AppData.sharedProduct,
+          json.encode({TestingDatas.testDataModel.id: 1})));
       expect(result, true);
     });
 

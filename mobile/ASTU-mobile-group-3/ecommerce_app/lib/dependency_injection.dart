@@ -1,4 +1,3 @@
-import 'package:dartz/dartz.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -15,7 +14,6 @@ import 'features/auth/domain/usecases/log_out_usecase.dart';
 import 'features/auth/domain/usecases/sign_up_usecase.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/cubit/user_input_validation_cubit.dart';
-import 'features/chat/data/data_resources/socket_io_sesrvice.dart';
 import 'features/product/data/data_resources/local_product_data_source.dart';
 import 'features/product/data/data_resources/remote_product_data_source.dart';
 import 'features/product/data/repositories/product_repository_impl.dart';
@@ -34,10 +32,6 @@ Future<void> init() async {
   //! External Instances
 
   locator.registerLazySingleton(() => http.Client());
-
-  final socket = io;
-  locator.registerLazySingleton<SocketIOService>(
-      () => SocketIOServiceImpl(socket: locator()));
 
   //! Core instances
   locator.registerLazySingleton(() => InputDataValidator());

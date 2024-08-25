@@ -51,7 +51,7 @@ void main() {
 
     //debugDumpApp();
     when(mockGetAllProductUseCase.execute()).thenAnswer((_) async {
-      return const Right(TestingDatas.productEntityList);
+      return Right(TestingDatas.productEntityList);
     });
     debugPrint(productBloc.state.toString());
     await widgetTester.pump();

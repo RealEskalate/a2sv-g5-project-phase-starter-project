@@ -1,17 +1,16 @@
 import 'package:ecommerce_app/core/validator/validator.dart';
 import 'package:ecommerce_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:ecommerce_app/features/auth/presentation/bloc/cubit/user_input_validation_cubit.dart';
-import 'package:ecommerce_app/features/auth/presentation/page/login_page.dart';
-import 'package:ecommerce_app/features/auth/presentation/page/signup_page.dart';
 import 'package:ecommerce_app/features/product/presentation/bloc/cubit/input_validation_cubit.dart';
 import 'package:ecommerce_app/features/product/presentation/bloc/product_bloc.dart';
 import 'package:ecommerce_app/features/product/presentation/bloc/product_states.dart';
+import 'package:ecommerce_app/features/product/presentation/pages/update_product_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import 'init_files.dart';
+import '../../../auth/presentation/page/init_files.dart';
 
 void main() {
   late MockAuthBloc mockAuthBloc;
@@ -51,36 +50,19 @@ void main() {
     when(() => mockInputValidator.state).thenReturn(InputValidationInitial());
     when(() => mockProductBloc.state).thenReturn(InitialState());
   });
-  group('Log in page testing', () {
-    testWidgets('Should find the button in log in page', (tester) async {
-      await tester.pumpWidget(pageTester(LoginPage()));
+  testWidgets('update product page ...', (tester) async {
+    await tester.pumpWidget(pageTester(UpdateProductPage()));
 
-      final button = find.byKey(const Key('SIGN IN'));
-      final emailInput = find.byKey(const Key(InputDataValidator.email));
-      final passwordInput = find.byKey(const Key(InputDataValidator.password));
-      expect(emailInput, findsOneWidget);
-      expect(passwordInput, findsOneWidget);
-      expect(button, findsOneWidget);
-    });
-  });
+    final name = find.byKey(const Key(InputDataValidator.name));
 
-  group('Sign up page', () {
-    testWidgets('Should find necessary widgets on sign in page',
-        (tester) async {
-      await tester.pumpWidget(pageTester(SignUpPage()));
-
-      final name = find.byKey(const Key(InputDataValidator.name));
-      final email = find.byKey(const Key(InputDataValidator.email));
-      final password = find.byKey(const Key(InputDataValidator.password));
-      final confPass = find.byKey(const Key(InputDataValidator.confirmPass));
-
-      final checkBox = find.byKey(const Key(InputDataValidator.checkBox));
-
-      expect(name, findsOneWidget);
-      expect(email, findsOneWidget);
-      expect(password, findsOneWidget);
-      expect(confPass, findsOneWidget);
-      expect(checkBox, findsOneWidget);
-    });
+    final catagory = find.byKey(const Key(InputDataValidator.catagory));
+    final price = find.byKey(const Key(InputDataValidator.price));
+    final desc = find.byKey(const Key('Description'));
+    final button = find.byType(FilledButton);
+    expect(name, findsOneWidget);
+    expect(catagory, findsNothing);
+    expect(price, findsOneWidget);
+    expect(desc, findsOneWidget);
+    expect(button, findsOneWidget);
   });
 }

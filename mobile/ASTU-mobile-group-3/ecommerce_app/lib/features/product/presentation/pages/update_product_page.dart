@@ -5,6 +5,7 @@ import '../bloc/cubit/input_validation_cubit.dart';
 import '../bloc/product_bloc.dart';
 import '../bloc/product_events.dart';
 import '../bloc/product_states.dart';
+import '../widgets/loading_dialog.dart';
 import '../widgets/product_widgets.dart';
 
 // ignore: must_be_immutable
@@ -31,6 +32,7 @@ class UpdateProductPage extends StatelessWidget with AppBars {
             ),
           );
         }
+
         Navigator.pop(context);
       }),
       body: SafeArea(
@@ -43,7 +45,9 @@ class UpdateProductPage extends StatelessWidget with AppBars {
                       .add(GetSingleProductEvents(id: id!));
                 }
                 Navigator.pop(context);
+                Navigator.pop(context);
               } else if (state is ErrorState) {
+                Navigator.pop(context);
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text(state.message)));
               } else if (state is LoadedSingleProductState) {
@@ -94,6 +98,11 @@ class UpdateProductPage extends StatelessWidget with AppBars {
                                 if (state is InputValidatedState) {
                                   if (state.isValidForUpdate()) {
                                     if (id != null) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return const LoadingDialog();
+                                          });
                                       BlocProvider.of<ProductBloc>(context).add(
                                         UpdateProductEvent(
                                           id: id!,

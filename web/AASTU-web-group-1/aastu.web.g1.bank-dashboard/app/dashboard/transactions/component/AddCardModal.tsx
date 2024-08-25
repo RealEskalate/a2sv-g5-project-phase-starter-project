@@ -1,54 +1,63 @@
-'use client'
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { useUser } from "@/contexts/UserContext";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { cardSchema } from "@/schema";
-import { postCards } from "@/lib/api";
-import { toast } from "sonner";
+import { FieldErrors, SubmitHandler, useForm } from "react-hook-form";
+import { AddCard } from "./utils";
+import { toast } from "@/components/ui/use-toast";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
 }
+export interface FormValues {
+    cardType:string;
+    cardHolder:string;
+    passcode:string;
+    expiryDate:string;
+}
 
-type FormData = z.infer<typeof cardSchema>;
+
+
 export const AddCardModal = ({ isOpen, onClose }: Props) => {
-    const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { isDarkMode } = useUser();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(cardSchema),
+  const {register,handleSubmit,formState} =useForm<FormValues>({defaultValues:{cardHolder:""} 
   });
-
-  if (!isOpen) return null;
-
-  const onSubmit = async (data: FormData) => {
+  const {errors} = formState;
+  
+  const onSubmit:SubmitHandler<FormValues> = async (data) => {
     setIsSubmitting(true);
-    try {
-      const updatedForm = { ...data, balance: 300 };
-      console.log(updatedForm);
-
-      await postCards(updatedForm);
-      toast("Card was submitted successfully");
-    } catch (error) {
-      console.error("Failed to submit form:", error);
-      toast("Card submission failed");
-    }
-  };
-
+    try{
+      const success = await AddCard(data)
+      if(success){
+        toast({
+          title:"Success",
+          description:"Card Added Successfully",
+          variant:"success"});
+          onClose();}
+          else{
+            toast({
+              title:"Error",
+              description:"Failed to add card",
+              variant:"destructive"
+            });
+          }
+        }catch(error){
+            console.error("Error submitting form:",error);
+            toast({
+              title:"Error",
+              description:"An unexpected error occurred.",
+              variant:"destructive"
+            });
+          }
+          finally{setIsSubmitting(false);}}
+  if (!isOpen) return null;
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center ${
-        isDarkMode
-          ? "bg-black bg-opacity-5 backdrop-blur-md"
-          : "bg-black bg-opacity-50"
+      className={`fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm ${
+        isDarkMode ? "bg-black bg-opacity-5 " : "bg-black bg-opacity-50"
       }`}
     >
       <div
@@ -59,62 +68,69 @@ export const AddCardModal = ({ isOpen, onClose }: Props) => {
         }`}
       >
         <button
+          type="button"
+          className={`absolute top-3 right-3 p-2 rounded-full ${
+            isDarkMode
+              ? "text-gray-300 hover:text-white bg-gray-700 hover:bg-gray-600"
+              : "text-gray-400 hover:text-gray-600 bg-gray-200 hover:bg-gray-300"
+          }`}
           onClick={onClose}
-          className={`absolute top-4 right-4 text-gray-600 ${
-            !isDarkMode ? "hover:text-gray-900" : "hover:text-white"
-          } `}
         >
           <IoClose size={24} />
         </button>
 
-        <div className="text-center">
-          <h2 className="text-2xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-indigo-500">
-            Add New Card
-          </h2>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-indigo-500">
+              Add New Card
+            </h2>
+          </div>
           <div className="md:grid md:grid-cols-2 gap-4">
             <div className="flex flex-col my-4">
               <label
-                className={`${
-                  isDarkMode ? "text-gray-300" : "text-[#515B6F]"
-                } font-semibold`}
+                htmlFor="cardType"
+                className={`block text-md font-medium  ${
+                  isDarkMode ? "text-gray-300" : "text-gray-700"
+                }`}
               >
                 Card Type
               </label>
               <input
                 type="text"
-                placeholder="Classic"
-                className={`inputField mb-2 rounded-xl py-2 px-2 border ${
-                  isDarkMode ? "border-gray-600" : "border-gray-300"
+                placeholder="Visa"
+                className={`mt-1 p-3 border block w-full rounded-lg shadow-sm sm:text-sm ${
+                  isDarkMode
+                    ? "bg-gray-800 border-gray-700 focus:border-blue-500 focus:ring-blue-500 text-gray-300"
+                    : "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 }`}
-                {...register("cardType")}
+                {...register("cardType", { required: "cardType is required" })}
               />
               {errors.cardType && (
-                <p className="text-red-500 text-center mt-2">
+                <span className="text-red-600 mt-2 text-xs">
                   {errors.cardType?.message}
-                </p>
+                </span>
               )}
             </div>
             <div className="flex flex-col my-4">
               <label
-                className={`${
-                  isDarkMode ? "text-gray-300" : "text-[#515B6F]"
-                } font-semibold`}
+                className={`block text-md font-medium  ${
+                  isDarkMode ? "text-gray-300" : "text-gray-700"
+                }`}
               >
                 Name On Card
               </label>
               <input
                 type="text"
                 placeholder="John Doe"
-                className={`inputField mb-2 rounded-xl py-2 px-2 border ${
-                  isDarkMode ? "border-gray-600" : "border-gray-300"
+                {...register("cardHolder", { required: "name is required" })}
+                className={`mt-1 p-3 border block w-full rounded-lg shadow-sm sm:text-sm ${
+                  isDarkMode
+                    ? "bg-gray-800 border-gray-700 focus:border-blue-500 focus:ring-blue-500 text-gray-300"
+                    : "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 }`}
-                {...register("cardHolder")}
               />
               {errors.cardHolder && (
-                <p className="text-red-500 text-center mt-2">
+                <p className="text-red-600 mt-2 text-xs">
                   {errors.cardHolder?.message}
                 </p>
               )}
@@ -123,51 +139,58 @@ export const AddCardModal = ({ isOpen, onClose }: Props) => {
           <div className="md:grid md:grid-cols-2 gap-4">
             <div className="flex flex-col my-4">
               <label
-                className={`${
-                  isDarkMode ? "text-gray-300" : "text-[#515B6F]"
-                } font-semibold`}
+                className={`block text-md font-medium  ${
+                  isDarkMode ? "text-gray-300" : "text-gray-700"
+                }`}
               >
-                Card Number
+                Passcode
               </label>
               <input
-                type="text"
-                placeholder="**** **** **** ****"
-                className={`inputField mb-2 rounded-xl py-2 px-2 border ${
-                  isDarkMode ? "border-gray-600" : "border-gray-300"
+                type="number"
+                placeholder="**** ****"
+                className={`mt-1 p-3 border block w-full rounded-lg shadow-sm sm:text-sm ${
+                  isDarkMode
+                    ? "bg-gray-800 border-gray-700 focus:border-blue-500 focus:ring-blue-500 text-gray-300"
+                    : "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 }`}
-                {...register("passcode")}
+                {...register("passcode", { required: "passcode is required" })}
               />
               {errors.passcode && (
-                <p className="text-red-500 text-center mt-2">
+                <p className="text-red-600 mt-2 text-xs">
                   {errors.passcode?.message}
                 </p>
               )}
             </div>
             <div className="flex flex-col my-4">
               <label
-                className={`${
-                  isDarkMode ? "text-gray-300" : "text-[#515B6F]"
-                } font-semibold`}
+                className={`block text-md font-medium  ${
+                  isDarkMode ? "text-gray-300" : "text-gray-700"
+                }`}
               >
                 Expiration Date
               </label>
               <input
                 type="date"
-                className={`inputField mb-2 rounded-xl py-2 px-2 border ${
-                  isDarkMode ? "border-gray-600" : "border-gray-300"
+                className={`mt-1 p-3 border block w-full rounded-lg shadow-sm sm:text-sm ${
+                  isDarkMode
+                    ? "bg-gray-800 border-gray-700 focus:border-blue-500 focus:ring-blue-500 text-gray-300"
+                    : "bg-white border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                 }`}
-                {...register("expiryDate")}
+                {...register("expiryDate", {
+                  required: "expiryDate is required",
+                })}
               />
               {errors.expiryDate && (
-                <p className="text-red-500 text-center mt-2">
+                <span className="text-red-600 mt-2 text-xs">
                   {errors.expiryDate?.message}
-                </p>
+                </span>
               )}
             </div>
           </div>
           <button
             type="submit"
-            className={`bg-[#1814F3] sm:w-[100%] text-white p-2 sm:rounded-full w-full md:rounded-md  ${
+            disabled={isSubmitting}
+            className={`w-full py-3 px-4 rounded-lg shadow-lg font-semibold text-white focus:outline-none focus:ring-2 transition-all duration-300 ${
               isSubmitting
                 ? "bg-gradient-to-r from-blue-300 to-teal-300 cursor-not-allowed"
                 : "bg-gradient-to-r from-sky-500 to-indigo-500 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300"
@@ -180,3 +203,7 @@ export const AddCardModal = ({ isOpen, onClose }: Props) => {
     </div>
   );
 };
+
+
+export default AddCardModal;
+

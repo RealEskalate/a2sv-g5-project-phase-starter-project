@@ -11,7 +11,7 @@ import { Profile } from "./Profile";
 import { ModalTrans } from "./ModalTrans";
 import { PiTelegramLogoLight } from "react-icons/pi";
 
-// Shimmer component for skeleton loading effect
+
 const Shimmer = () => {
   return (
     <div className="animate-pulse h-20 w-20 bg-gray-200 rounded-full"></div>
@@ -61,7 +61,7 @@ export const QuickTransfer = ({
   return (
     <div className="space-y-5">
       <div className="font-inter text-[16px] font-semibold">
-        <h4>Quick Transfer</h4>
+        <h4 className="lg:text-[22px] md:text-lg text-base">Quick Transfer</h4>
       </div>
       <div
         className={`
@@ -114,7 +114,11 @@ export const QuickTransfer = ({
             : quickTransfer.map((account) => (
                 <Profile
                   key={account.id}
-                  image="/images/avatar2.svg"
+                  image={` ${
+                    account.profilePicture.startsWith("https")
+                      ? account.profilePicture
+                      : "/images/avatar2.svg"
+                  }`}
                   name={account.name}
                   job="Director"
                   isSelected={selectedProfile?.id === account.id}
@@ -125,7 +129,7 @@ export const QuickTransfer = ({
 
         <div className="flex space-x-10 h-[40px] items-center">
           <button
-            className={`
+            className={` ${loading || quickTransfer.length === 0 ?"hidden":""}
               ${
                 isDarkMode
                   ? "bg-[#3B6EE2] hover:bg-[#2A56B8]"
@@ -142,7 +146,6 @@ export const QuickTransfer = ({
               transition-all duration-300 ease-in-out
             `}
             onClick={handleModalToggle}
-        
           >
             <p>Transfer</p>
             <PiTelegramLogoLight />

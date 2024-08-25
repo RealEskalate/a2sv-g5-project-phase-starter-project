@@ -1,3 +1,5 @@
+import { useUser } from "@/contexts/UserContext";
+
 // Shimmer component for skeleton loading effect
 export const RecentTransactionShimmer = () => {
   return (
@@ -15,14 +17,13 @@ export const RecentTransactionShimmer = () => {
 
 
 export const CreditCardShimmer = () => {
+  const {isDarkMode} = useUser();
   return (
     <div className="animate-pulse flex flex-col items-center   mb-2  shadow-lg rounded-3xl">
-      {/* Simulate card with rounded corners, gradient, and shadow */}
-      <div className="bg-white h-56 w-80 rounded-2xl p-4 flex flex-col justify-between ">
-        {/* Simulate chip */}
+      <div className={`${isDarkMode ? "bg-gray-900" :"bg-white"} h-56 w-80 rounded-2xl p-4 flex flex-col justify-between shadow-lg `}>
         <div className="bg-gray-300 h-6 w-10 rounded-sm mb-2"></div>
 
-        {/* Simulate card number */}
+        
         <div className="space-y-2">
           <div className="h-4 bg-gray-300 rounded w-full"></div>
           <div className="h-4 bg-gray-300 rounded w-full"></div>

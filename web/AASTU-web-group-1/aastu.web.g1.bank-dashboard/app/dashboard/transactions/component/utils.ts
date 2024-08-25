@@ -1,3 +1,6 @@
+import { getSession } from "next-auth/react";
+import { FormValues } from "./AddCardModal";
+
 export function formatDateString(dateString: string) {
   const date = new Date(dateString);
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -59,3 +62,34 @@ export function maskCardNumber(cardNumber: string) {
   return `${firstFour} ${maskedSection.trim()} ${lastFour}`;
 }
  
+
+export async function AddCard(data:FormValues){
+   try {
+
+                 const session = await getSession();
+                 const accessToken = session?.user.accessToken;
+                 const res = await fetch(
+                   `${process.env.NEXT_PUBLIC_BASE_URL}/cards`,
+                   {
+                     method: "POST",
+                     headers: {
+                       Authorization: `Bearer ${accessToken}`,
+                       "Content-Type": "application/json",
+                     },
+                     body: JSON.stringify({
+                       balance: 300,
+                       cardHolder: data.cardHolder,
+                       expiryDate: data.expiryDate,
+                       passcode: data.passcode,
+                       cardType: data.cardType,
+                     }),
+                   }
+                 );if (!res.ok) {
+                   throw new Error("Failed to get data");} return true;
+} catch (error) {
+                 console.error("Failed to submit form:", error);
+               }
+                 
+          
+
+}

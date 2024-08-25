@@ -15,14 +15,18 @@
     "@mui/material": "^5.16.7",
     "@reduxjs/toolkit": "^2.2.7",
     "@types/react-redux": "^7.1.33",
+    "bankdash": "file:",
     "chartjs-plugin-datalabels": "^2.2.0",
     "next": "14.2.5",
+    "next-auth": "^4.24.7",
     "react": "^18",
     "react-dom": "^18",
+    "react-hook-form": "^7.52.2",
     "react-redux": "^9.1.2",
     "redux": "^5.0.1"
   },
   "devDependencies": {
+    "@hookform/devtools": "^4.3.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

@@ -4,7 +4,7 @@ import { configureStore } from '@reduxjs/toolkit'
 
 export const store = configureStore({
   reducer: {
-    [bankApi.reducerPath]: bankApi.reducer
+    [bankApi.reducerPath]: bankApi.reducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware()

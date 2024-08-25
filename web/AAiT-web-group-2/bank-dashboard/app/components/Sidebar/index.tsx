@@ -15,6 +15,8 @@ import Services from "../../../public/iconVII.png";
 import Pereferences from "../../../public/iconVIII.png";
 import Settings from "../../../public/iconVIIII.png";
 import { PiSignOut } from "react-icons/pi";
+import { useGetCurrentUserQuery } from "@/lib/redux/api/bankApi";
+import { signOut } from "next-auth/react";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -26,14 +28,13 @@ const menuGroups = [
     name: "MENU",
     menuItems: [
       { icon: Home.src, label: "Dashboard", route: "/dashboard" },
-      { icon: Transaction.src, label: "Calendar", route: "/calendar" },
-      { icon: User.src, label: "Profile", route: "/profile" },
-      { icon: Dollars.src, label: "Forms", route: "/forms" },
-      { icon: CreditCard.src, label: "Tables", route: "/tables" },
-      { icon: LocalAtm.src, label: "Settings", route: "/settings" },
-      { icon: Services.src, label: "UI Elements", route: "#" },
-      { icon: Pereferences.src, label: "Authentication", route: "#" },
-      { icon: Settings.src, label: "Settings", route: "#" },
+      { icon: Transaction.src, label: "Transactions", route: "/transactions" },
+      { icon: User.src, label: "Accounts", route: "/account" },
+      { icon: Dollars.src, label: "Investments", route: "/investments" },
+      { icon: CreditCard.src, label: "Credit Cards", route: "/credit-cards" },
+      { icon: LocalAtm.src, label: "Loans", route: "/loans" },
+      { icon: Services.src, label: "Services", route: "/services" },
+      { icon: Settings.src, label: "Setting", route: "/settings" },
      
     ],
   },
@@ -41,12 +42,11 @@ const menuGroups = [
 
 const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const pathname = usePathname();
-  // const [pageName, setPageName] = useLocalStorage("selectedMenu", "dashboard");
   const [pageName, setPageName] = useState("dashboard")
 
   return (
       <aside
-        className={`pt-6 border-r-2 border-[#E6EFF5]  left-0 min-w-52 md:w-64 sm:top-0 z-9999 flex h-full flex-col overflow-y-hidden bg-white duration-300 ease-linear  sm:translate-x-0 ${
+        className={`pt-6 border-r-2 border-[#E6EFF5]  left-0 min-w-52 md:w-64 sm:top-0 z-10 flex h-full flex-col overflow-y-hidden bg-white duration-300 ease-linear  sm:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -101,7 +101,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen, setSidebarOpen }) => {
             ))}
             <div className="flex items-center font-medium text-lg gap-2.5 px-4 text-gray-500">
             <PiSignOut />
-            <Link href={"/api/auth/signout"}>Sign out</Link>
+            <button onClick={() => signOut()}>Sign out</button>
             </div>
           </nav>
         </div>

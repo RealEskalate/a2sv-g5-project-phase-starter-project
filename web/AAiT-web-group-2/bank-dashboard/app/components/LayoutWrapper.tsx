@@ -4,16 +4,16 @@ import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { useGetCurrentUserQuery } from "@/lib/redux/api/bankApi";
 
 const LayoutWrapper = ({children}: {children: React.ReactNode}) => {
+    const session = useSession();
     const [isSidebarOpen, setIsSidebarOpen] = useState(true)
     const handleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen)
 
     }
     const path = usePathname()
-    const session = useSession()
     const router = useRouter()
 
     if(path.includes("auth")){
@@ -32,10 +32,11 @@ const LayoutWrapper = ({children}: {children: React.ReactNode}) => {
         </div>
       )
     }
+    
 
   return (
     <div className="flex ">
-        <div className={`h-full z-50  min-w-52 md:min-w-64 absolute sm:static sm:block bg-white  ${isSidebarOpen ? "block" : "hidden"} `}>
+        <div className={`h-full z-10  min-w-52 md:min-w-64 absolute sm:static sm:block bg-white  ${isSidebarOpen ? "block" : "hidden"} `}>
         <Sidebar setSidebarOpen={handleSidebar} sidebarOpen={isSidebarOpen} />
 
       </div>

@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// DeleteUnverifiedUsers deletes unverified users that are older than the specified lifespan
 func DeleteUnverifiedUsers(users *mongo.Collection, lifespan time.Duration) func() {
 	return func() {
 		filter := bson.D{

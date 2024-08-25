@@ -142,6 +142,9 @@ root
 |   +---ai
 |   |       ai_service.go
 |   |
+|   +---cron
+|   |       delete_unverified.go
+|   |
 |   +---cryptography
 |   |       hashing_service.go
 |   |
@@ -233,6 +236,8 @@ root
 > Infrastructure: Implements external dependencies and services that support the application functionality.
 
 - `ai/ai_service.go` Contains the implementation of AI services used in the application. This includes functions for utilizing the LLM to read and modify completed blogs, generate content for a provided title, and get relevant, trending content ideas for a particular field of study.
+
+- `cron/delete_unverified.go` Contains the implementation of a cron job that is responsible for deleting unverified user accounts that have existed for longer than a specified lifespan. The purpose of this cron job is to ensure that the system remains clean and only active and verified user accounts are retained.
 
 - `cryptography/hashing_service.go` Contains functions for hashing strings and comparing and validating previously hashed strings with against their plaintext candidates.
 
@@ -354,3 +359,7 @@ The output of the commands above are not human-readable. To generate a `.html` f
 ```bash
 go tool cover -html="cover.out" -o coverage.html
 ```
+
+## Cron Jobs
+The system includes a cron job that runs periodically while the system is up. This cron job is defined in the `infrastructure/cron` directory. Currently, there is only one function scheduled to run at specified intervals.
+- `infrastructure/cron/delete_unverified.go` deletes the unverified accounts that have existed for longer than the provided `lifespan` parameter. By default, this function is set to run every hour. The exact schedule, along with other options, can be updated in the `delivery/main.go` file which initializes the cron job instance.

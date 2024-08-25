@@ -21,16 +21,16 @@ void main() {
   const String chatId = '66c767d7944d8f950440bd9e';
 
   const UserEntity userEntity1 = UserEntity(
-      id: '66c72bd1fc1a63830d084348',
-      name: 'string',
-      email: 'm@gmail.com',
-      accessToken: 'accessToken');
+    id: '66c72bd1fc1a63830d084348',
+    name: 'string',
+    email: 'm@gmail.com',
+  );
 
   const UserEntity userEntity2 = UserEntity(
-      id: '66bde36e9bbe07fc39034cdd',
-      name: 'Mr. User',
-      email: 'user@gmail.com',
-      accessToken: 'accessToken');
+    id: '66bde36e9bbe07fc39034cdd',
+    name: 'Mr. User',
+    email: 'user@gmail.com',
+  );
 
   const ChatEntity chatEntity =
       ChatEntity(chatId: chatId, user1: userEntity1, user2: userEntity2);

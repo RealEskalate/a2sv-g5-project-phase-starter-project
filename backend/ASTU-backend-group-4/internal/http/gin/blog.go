@@ -13,6 +13,8 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+var validationErr validator.ValidationErrors
+
 type BlogController struct {
 	blogUseCase blogDomain.BlogUseCase
 }
@@ -26,15 +28,19 @@ func NewBlogController(blogUseCase blogDomain.BlogUseCase) *BlogController {
 func (bc *BlogController) CreateBlog(c *gin.Context) {
 	var blog blogDomain.CreateBlogRequest
 	if err := c.ShouldBindJSON(&blog); err != nil {
+		if err.Error() == "EOF" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON body"})
+			return
+		}
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	userID := c.Value("userID").(string)
+	userID := c.Value("user_id").(string)
 	createdBlog, err := bc.blogUseCase.CreateBlog(c.Request.Context(), userID, blog)
 
 	if err != nil {
-		if (errors.As(err, validator.ValidationErrors{})) {
+		if errors.As(err, &validationErr) {
 			c.AbortWithStatusJSON(http.StatusBadRequest, infrastructure.ReturnErrorResponse(err))
 		} else if errors.Is(err, auth.ErrNoUserWithId) {
 			c.AbortWithStatusJSON(http.StatusNotFound, err)
@@ -55,12 +61,12 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 		return
 	}
 
-	userID := c.Value("userID").(string)
+	userID := c.Value("user_id").(string)
 	blogID := c.Param("id")
 	updatedBlog, err := bc.blogUseCase.UpdateBlog(c.Request.Context(), blogID, userID, blog)
 
 	if err != nil {
-		if (errors.As(err, validator.ValidationErrors{})) {
+		if errors.As(err, &validationErr) {
 			c.AbortWithStatusJSON(http.StatusBadRequest, infrastructure.ReturnErrorResponse(err))
 		} else if errors.Is(err, auth.ErrNoUserWithId) {
 			c.AbortWithStatusJSON(http.StatusNotFound, err)
@@ -80,7 +86,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 
 func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	blogID := c.Param("id")
-	userID := c.Value("userID").(string)
+	userID := c.Value("user_id").(string)
 
 	err := bc.blogUseCase.DeleteBlog(c.Request.Context(), userID, blogID)
 	if err != nil {
@@ -175,7 +181,7 @@ func (bc *BlogController) GetCommentsByBlogID(c *gin.Context) {
 }
 
 func (bc *BlogController) CreateComment(c *gin.Context) {
-	userID := c.Value("userID").(string)
+	userID := c.Value("user_id").(string)
 	blogID := c.Param("id")
 
 	var comment blogDomain.CreateCommentRequest
@@ -186,7 +192,7 @@ func (bc *BlogController) CreateComment(c *gin.Context) {
 
 	err := bc.blogUseCase.CreateComment(c.Request.Context(), userID, blogID, comment)
 	if err != nil {
-		if errors.As(err, validator.ValidationErrors{}) {
+		if errors.As(err, &validationErr) {
 			c.AbortWithStatusJSON(http.StatusBadRequest, infrastructure.ReturnErrorResponse(err))
 		} else if errors.Is(err, auth.ErrNoUserWithId) {
 			c.AbortWithStatusJSON(http.StatusNotFound, err)
@@ -204,7 +210,7 @@ func (bc *BlogController) CreateComment(c *gin.Context) {
 
 func (bc *BlogController) DeleteComment(c *gin.Context) {
 	commentID := c.Param("comment_id")
-	userID := c.Value("userID").(string)
+	userID := c.Value("user_id").(string)
 
 	err := bc.blogUseCase.DeleteComment(c.Request.Context(), commentID, userID)
 	if err != nil {
@@ -223,7 +229,7 @@ func (bc *BlogController) DeleteComment(c *gin.Context) {
 }
 
 func (bc *BlogController) LikeBlog(c *gin.Context) {
-	userID := c.Value("userID").(string)
+	userID := c.Value("user_id").(string)
 	blogID := c.Param("id")
 
 	err := bc.blogUseCase.LikeBlog(c.Request.Context(), userID, blogID)
@@ -243,7 +249,7 @@ func (bc *BlogController) LikeBlog(c *gin.Context) {
 }
 
 func (bc *BlogController) DislikeBlog(c *gin.Context) {
-	userID := c.Value("userID").(string)
+	userID := c.Value("user_id").(string)
 	blogID := c.Param("id")
 
 	err := bc.blogUseCase.DislikeBlog(c.Request.Context(), userID, blogID)
@@ -263,7 +269,7 @@ func (bc *BlogController) DislikeBlog(c *gin.Context) {
 }
 
 func (bc *BlogController) UnLikeBlog(c *gin.Context) {
-	userID := c.Value("userID").(string)
+	userID := c.Value("user_id").(string)
 	blogID := c.Param("id")
 
 	err := bc.blogUseCase.UnLikeBlog(c.Request.Context(), userID, blogID)
@@ -277,7 +283,7 @@ func (bc *BlogController) UnLikeBlog(c *gin.Context) {
 }
 
 func (bc *BlogController) UnDislikeBlog(c *gin.Context) {
-	userID := c.Value("userID").(string)
+	userID := c.Value("user_id").(string)
 	blogID := c.Param("id")
 
 	err := bc.blogUseCase.UnDislikeBlog(c.Request.Context(), userID, blogID)

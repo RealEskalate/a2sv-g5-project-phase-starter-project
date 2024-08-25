@@ -63,29 +63,37 @@ class SignUp extends StatelessWidget {
       listener: (context, state) {
         // TODO: implement listener
         print(state);
-        if (state is RegisterLoadingState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Registering User"),
-            ),
-          );
-        } else if (state is RegisterErrorState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-            ),
-          );
-        } else if (state is UserRegisteredState) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("User Registered"),
-            ),
-          );
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SignIn()),
-          );
-        }
+            if (state is RegisterLoadingState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Registering User"),
+                ),
+                );
+                
+              
+            } else if (state is RegisterErrorState) {
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                  
+                ),
+              );
+            } else if (state is UserRegisteredState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("User Registered"),
+                  backgroundColor: Colors.green,
+                  
+                ),
+                
+              );
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SignIn()),
+                );
+            }
       },
       builder: (context, state) {
         return Scaffold(

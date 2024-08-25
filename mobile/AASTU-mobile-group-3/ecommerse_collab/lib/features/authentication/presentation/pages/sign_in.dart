@@ -45,9 +45,9 @@ class _SignInState extends State<SignIn> {
   void _submitForm(BuildContext context) {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<UserBloc>().add(LogInEvent(
-        email: emailController.text,
-        password: passwordController.text,
-      ));
+            email: emailController.text,
+            password: passwordController.text,
+          ));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -95,52 +95,91 @@ class _SignInState extends State<SignIn> {
       },
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: Colors.white,
-          body: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Logo(width: 144, height: 40, fontSize: 30),
-                const BigTitle(text: "Sign into your account"),
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      CustomTextField(
-                        name: "Email",
-                        controller: emailController,
-                        hintText: "ex: jon.smith@email.com",
-                        validator: validateEmail,
-                        ispassword: false,
+            backgroundColor: Colors.white,
+            body: SingleChildScrollView(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 100,
+                    ),
+                    const Logo(width: 144, height: 50, fontSize: 48),
+                    const BigTitle(text: "Sign into your account"),
+                    SingleChildScrollView(
+                      // child: Column(
+                      //   children: [
+                      //     CustomTextField(
+                      //       validator: validateEmail,
+                      //         name: "Email",
+                      //         controller: emailController,
+                      //         hintText: "ex: jon.smith@email.com"),
+                      //     CustomTextField(
+                      //       validator: (value) {
+                      //       },
+                      //         name: "Password",
+                      //         controller: passwordController,
+                      //         hintText: "********"),
+                      //     CustomButton(
+
+                      //       name: 'SIGN IN',
+                      //       controllers: [emailController, passwordController],
+                      //       login: true,
+                      //     ),
+                      //     const SizedBox(height: 40),
+                      //     const LinkedText(
+                      //         description: "Don’t have an account?",
+                      //         linkedText: " SIGN UP",
+                      //         navigateTo: SignUp()),
+                      //   ],
+                      // ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Logo(width: 144, height: 40, fontSize: 30),
+                          const BigTitle(text: "Sign into your account"),
+                          Form(
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                CustomTextField(
+                                  name: "Email",
+                                  controller: emailController,
+                                  hintText: "ex: jon.smith@email.com",
+                                  validator: validateEmail,
+                                  ispassword: false,
+                                ),
+                                CustomTextField(
+                                  name: "Password",
+                                  controller: passwordController,
+                                  hintText: "********",
+                                  validator: validatePassword,
+                                  ispassword: true,
+                                ),
+                                CustomButton(
+                                  name: 'SIGN IN',
+                                  controllers: [
+                                    emailController,
+                                    passwordController
+                                  ],
+                                  login: true,
+                                  onPressed: () {
+                                    _submitForm(context);
+                                  },
+                                ),
+                                const SizedBox(height: 40),
+                                LinkedText(
+                                  description: "Don’t have an account?",
+                                  linkedText: " SIGN UP",
+                                  navigateTo: SignUp(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      CustomTextField(
-                        name: "Password",
-                        controller: passwordController,
-                        hintText: "********",
-                        validator: validatePassword,
-                        ispassword: true,
-                      ),
-                      CustomButton(
-                        name: 'SIGN IN',
-                        controllers: [emailController, passwordController],
-                        login: true,
-                        onPressed: () {
-                             _submitForm(context);
-                        },
-                      ),
-                      const SizedBox(height: 40),
-                      LinkedText(
-                        description: "Don’t have an account?",
-                        linkedText: " SIGN UP",
-                        navigateTo: SignUp(),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+                    ),
+                  ]),
+            ));
       },
     );
   }

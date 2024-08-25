@@ -9,7 +9,7 @@ class GetAllChatsUseCase {
 
   GetAllChatsUseCase(this._chatRepository);
 
-  Future<Either<Failure,List<ChatEntity>>> execute( String userId) {
-    return _chatRepository.getAllChats(userId);
+  Future<Either<Failure,List<ChatEntity>>> execute() {
+    return _chatRepository.getAllChats();
   }
 }

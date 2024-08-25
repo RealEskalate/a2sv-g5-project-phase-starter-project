@@ -162,6 +162,7 @@ func (cont *BlogController) HandleBlogLikeOrDislike(ctx *gin.Context) {
 
 func (cont *BlogController) HandleCommentOnBlog(ctx *gin.Context) {
 	var newComment domain.Comment
+
 	err := ctx.ShouldBindJSON(&newComment)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, err)
@@ -173,7 +174,7 @@ func (cont *BlogController) HandleCommentOnBlog(ctx *gin.Context) {
 		return
 	}
 	newComment.AuthorId = claims.ID
-	err = cont.usecase.AddComment(newComment)
+	err = cont.usecase.AddComment(ctx.Param("blogId"), newComment)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -248,7 +249,7 @@ func (cont *BlogController) HandleReplyOnComment(ctx *gin.Context) {
 		return
 	}
 	newReply.AuthorId = claims.ID
-	err = cont.usecase.ReplyToComment(newReply)
+	err = cont.usecase.ReplyToComment(ctx.Param("blogId"), ctx.Param("commentId"), newReply)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {

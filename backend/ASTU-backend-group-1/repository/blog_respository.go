@@ -14,12 +14,18 @@ import (
 )
 
 type MongoBlogRepository struct {
-	collection mongoifc.Collection
+	client  mongoifc.Client
+	BlogCollection    mongoifc.Collection
+	CommentCollection mongoifc.Collection
+	ReplyCollection   mongoifc.Collection
 }
 
-func NewBlogRepository(collection mongoifc.Collection) domain.BlogRepository {
+func NewBlogRepository(client mongoifc.Client,Blog mongoifc.Collection, Comment mongoifc.Collection, Reply mongoifc.Collection) domain.BlogRepository {
 	return &MongoBlogRepository{
-		collection: collection,
+		client: client,
+		BlogCollection:    Blog,
+		CommentCollection: Comment,
+		ReplyCollection:   Reply,
 	}
 }
 
@@ -34,7 +40,7 @@ func CreateBlogQuery(b domain.Blog) bson.M {
 	if b.BlogId != "" {
 		id, err := IsValidObjectID(b.BlogId)
 		if err == nil {
-			query["_id"] = id
+			query["blog_id"] = id
 		}
 	}
 	if b.AuthorId != "" {
@@ -59,7 +65,7 @@ func (r *MongoBlogRepository) CreateBlog(b domain.Blog) (domain.Blog, error) {
 
 	create := CreateBlogQuery(b)
 
-	_, err := r.collection.InsertOne(context.Background(), create)
+	_, err := r.BlogCollection.InsertOne(context.Background(), create)
 	if err != nil {
 		return domain.Blog{}, err
 	}
@@ -67,7 +73,6 @@ func (r *MongoBlogRepository) CreateBlog(b domain.Blog) (domain.Blog, error) {
 }
 
 func (r *MongoBlogRepository) FindPopularBlog() ([]domain.Blog, error) {
-	
 
 	pipeline := mongo.Pipeline{
 		{
@@ -88,7 +93,7 @@ func (r *MongoBlogRepository) FindPopularBlog() ([]domain.Blog, error) {
 		},
 	}
 
-	cursor, err := r.collection.Aggregate(context.TODO(), pipeline)
+	cursor, err := r.BlogCollection.Aggregate(context.TODO(), pipeline)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +121,7 @@ func BuildBlogQueryAndOptions(filterOption domain.BlogFilterOption) (bson.M, *op
 	if filterOption.Filter.BlogId != "" {
 		id, err := IsValidObjectID(filterOption.Filter.BlogId)
 		if err == nil {
-			filter["_id"] = id
+			filter["blog_id"] = id
 		}
 	}
 
@@ -152,7 +157,7 @@ func BuildBlogQueryAndOptions(filterOption domain.BlogFilterOption) (bson.M, *op
 func (r *MongoBlogRepository) GetBlog(opts domain.BlogFilterOption) ([]domain.Blog, error) {
 	filter, filteroptions := BuildBlogQueryAndOptions(opts)
 
-	cursor, err := r.collection.Find(context.Background(), filter, filteroptions)
+	cursor, err := r.BlogCollection.Find(context.Background(), filter, filteroptions)
 	if err != nil {
 		return nil, err
 	}
@@ -194,7 +199,7 @@ func UpdateBlogQuery(b domain.Blog) bson.M {
 
 		update["tags"] = b.Tags
 	}
-	if len(b.Views) > 0 {
+	if b.Views > 0 {
 
 		update["views"] = b.Views
 	}
@@ -202,7 +207,7 @@ func UpdateBlogQuery(b domain.Blog) bson.M {
 
 		update["likes"] = b.Likes
 	}
-	if len(b.Comments) > 0 {
+	if b.Comments > 0 {
 
 		update["comments"] = b.Comments
 	}
@@ -218,10 +223,10 @@ func (r *MongoBlogRepository) UpdateBlog(strBlogId string, updateData domain.Blo
 	if err != nil {
 		return domain.Blog{}, err
 	}
-	filter := bson.M{"_id": blogId}
+	filter := bson.M{"blog_id": blogId}
 	update := bson.M{"$set": UpdateBlogQuery(updateData)}
 
-	result, err := r.collection.UpdateOne(context.Background(), filter, update)
+	result, err := r.BlogCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil || result.MatchedCount == 0 {
 		return domain.Blog{}, errors.New("Failed to update blog with ID" + strBlogId + ":" + err.Error())
 	}
@@ -235,16 +240,16 @@ func (r *MongoBlogRepository) DeleteBlog(blogId, authorId string) error {
 		return err
 	}
 
-	filter := bson.M{"_id": id}
+	filter := bson.M{"blog_id": id}
 	var blog domain.Blog
-	err = r.collection.FindOne(context.Background(), filter).Decode(&blog)
+	err = r.BlogCollection.FindOne(context.Background(), filter).Decode(&blog)
 	if err != nil {
 		return err
 	}
 	if blog.AuthorId != authorId {
 		return errors.New("unauthorized to delete this blog")
 	}
-	result, err := r.collection.DeleteOne(context.Background(), filter)
+	result, err := r.BlogCollection.DeleteOne(context.Background(), filter)
 	if err != nil || result.DeletedCount == 0 {
 		return errors.New("Failed to delete blog with ID" + blogId + ":" + err.Error())
 	}
@@ -261,30 +266,30 @@ func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int)
 		return "", err
 	}
 
-	filter := bson.M{"_id": id}
+	filter := bson.M{"blog_id": id}
 	var update bson.M
 	var responseMessage string
 
 	if like == 1 {
-		likeFinder := bson.M{"_id": id, "likes": uid}
+		likeFinder := bson.M{"blog_id": id, "likes": uid}
 		likeResult := bson.M{}
-		err := r.collection.FindOne(context.TODO(), likeFinder).Decode(&likeResult)
+		err := r.BlogCollection.FindOne(context.TODO(), likeFinder).Decode(&likeResult)
 		if err == nil {
 			update = bson.M{
 				"$pull": bson.M{
 					"likes": uid,
 				},
-				"$addToSet": bson.M{
-					"view": uid,
+				"$inc": bson.M{
+					"view": 1,
 				},
 			}
 			responseMessage = "Removed your like"
 		} else {
-			dislikeFinder := bson.M{"_id": id, "dislikes": uid}
+			dislikeFinder := bson.M{"blog_id": id, "dislikes": uid}
 			dislikeResult := bson.M{}
-			err = r.collection.FindOne(context.TODO(), dislikeFinder).Decode(&dislikeResult)
+			err = r.BlogCollection.FindOne(context.TODO(), dislikeFinder).Decode(&dislikeResult)
 			if err == nil {
-				_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
+				_, err = r.BlogCollection.UpdateOne(context.TODO(), filter, bson.M{
 					"$pull": bson.M{
 						"dislikes": uid,
 					},
@@ -296,31 +301,33 @@ func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int)
 			update = bson.M{
 				"$addToSet": bson.M{
 					"likes": uid,
-					"view":  uid,
+				},
+				"$inc": bson.M{
+					"view": 1,
 				},
 			}
 			responseMessage = "Added your like"
 		}
 	} else if like == -1 {
-		dislikeFinder := bson.M{"_id": id, "dislikes": uid}
+		dislikeFinder := bson.M{"blog_id": id, "dislikes": uid}
 		dislikeResult := bson.M{}
-		err := r.collection.FindOne(context.TODO(), dislikeFinder).Decode(&dislikeResult)
+		err := r.BlogCollection.FindOne(context.TODO(), dislikeFinder).Decode(&dislikeResult)
 		if err == nil {
 			update = bson.M{
 				"$pull": bson.M{
 					"dislikes": uid,
 				},
-				"$addToSet": bson.M{
-					"view": uid,
+				"$inc": bson.M{
+					"view": 1,
 				},
 			}
 			responseMessage = "Removed your dislike"
 		} else {
-			likeFinder := bson.M{"_id": id, "likes": uid}
+			likeFinder := bson.M{"blog_id": id, "likes": uid}
 			likeResult := bson.M{}
-			err = r.collection.FindOne(context.TODO(), likeFinder).Decode(&likeResult)
+			err = r.BlogCollection.FindOne(context.TODO(), likeFinder).Decode(&likeResult)
 			if err == nil {
-				_, err = r.collection.UpdateOne(context.TODO(), filter, bson.M{
+				_, err = r.BlogCollection.UpdateOne(context.TODO(), filter, bson.M{
 					"$pull": bson.M{
 						"likes": uid,
 					},
@@ -332,32 +339,34 @@ func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int)
 			update = bson.M{
 				"$addToSet": bson.M{
 					"dislikes": uid,
-					"view":     uid,
+				},
+				"$inc": bson.M{
+					"view": 1,
 				},
 			}
 			responseMessage = "Added your dislike"
 		}
 	} else {
-		viewFinder := bson.M{"_id": id, "views": uid}
+		viewFinder := bson.M{"blog_id": id, "views": uid}
 		viewResult := bson.M{}
-		err := r.collection.FindOne(context.TODO(), viewFinder).Decode(&viewResult)
+		err := r.BlogCollection.FindOne(context.TODO(), viewFinder).Decode(&viewResult)
 		if err == nil {
 			responseMessage = "already viewed this blog"
 		} else {
 			update = bson.M{
-				"$addToSet": bson.M{
-					"view": uid,
-				},
+			
+			"$inc": bson.M{
+				"view": 1,
+			},
 			}
 			responseMessage = "Added view"
 		}
-		_, err = r.collection.UpdateOne(context.Background(), filter, update)
+		_, err = r.BlogCollection.UpdateOne(context.Background(), filter, update)
 		if err != nil {
 			return "", err
 		}
 	}
 	return responseMessage, nil
-
 
 }
 func (r *MongoBlogRepository) GetBlogById(blogId string) (domain.Blog, error) {
@@ -365,9 +374,9 @@ func (r *MongoBlogRepository) GetBlogById(blogId string) (domain.Blog, error) {
 	if err != nil {
 		return domain.Blog{}, err
 	}
-	filter := bson.M{"_id": bid}
+	filter := bson.M{"blog_id": bid}
 	var result domain.Blog
-	err = r.collection.FindOne(context.Background(), filter).Decode(&result)
+	err = r.BlogCollection.FindOne(context.Background(), filter).Decode(&result)
 	if err != nil {
 		return domain.Blog{}, err
 	}

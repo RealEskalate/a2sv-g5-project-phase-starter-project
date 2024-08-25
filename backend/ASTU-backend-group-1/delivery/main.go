@@ -30,15 +30,17 @@ import (
 // @BasePath /
 // @schemes http
 func main() {
-	clientOptions := options.Client().ApplyURI("mongodb://hundera:55969362@localhost:27017/")
+	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017/")
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		panic(err)
 	}
-	blogCollections := client.Database("BlogAPI").Collection("Blogs")
-	userCollections := client.Database("BlogAPI").Collection("Users")
-	_ = client.Database("BlogAPI").Collection("Tokens")
-	blogRepo := repository.NewBlogRepository(mongoifc.WrapCollection(blogCollections))
+	blogCollections := client.Database("Starter_Blog_Api").Collection("Blogs")
+	userCollections := client.Database("Starter_Blog_Api").Collection("Users")
+	commentCollections := client.Database("Starter_Blog_Api").Collection("Comments")
+	replyCollections := client.Database("Starter_Blog_Api").Collection("Replies")
+	// _ = client.Database("BlogAPI").Collection("Tokens")
+	blogRepo := repository.NewBlogRepository(mongoifc.WrapClient(client),mongoifc.WrapCollection(blogCollections), mongoifc.WrapCollection(commentCollections), mongoifc.WrapCollection(replyCollections))
 	blogUsecase := usecase.NewBlogUsecase(blogRepo)
 	blogController := controllers.NewBlogController(*blogUsecase)
 	authController := infrastructure.NewAuthController(blogRepo)

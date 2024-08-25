@@ -13,6 +13,8 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { useGetInvestmentItemsQuery } from "@/lib/redux/slices/investmentSlice";
+import GraphSkeletons from "../AllSkeletons/chartSkeleton/graphSkeletons";
 
 ChartJS.register(
   CategoryScale,
@@ -25,11 +27,31 @@ ChartJS.register(
 
 const MonthlyRevenue = () => {
   // Define the chart data with type annotations
+  const { data: rawdata, isLoading } = useGetInvestmentItemsQuery({
+    years: 10,
+    months: 5,
+  });
+
+  if (isLoading) {
+    return <GraphSkeletons />;
+  }
+  const Labels: string[] = [];
+  const values: number[] = [];
+
+  const Datavalues = rawdata?.data?.yearlyTotalInvestment;
+
+  Datavalues?.forEach((element) => {
+    Labels.push(element.time);
+    values.push(element.value);
+  });
+  Labels.reverse();
+  values.reverse();
+
   const data: ChartData<"line"> = {
-    labels: ["2016", "2017", "2018", "2019", "2020", "2021"],
+    labels: Labels,
     datasets: [
       {
-        data: [6, 65, 69, 80, 81, 79],
+        data: values,
         borderColor: "#16DBCC",
         borderWidth: 2,
         tension: 0.2,

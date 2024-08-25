@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 
 import '../../../../../core/constants/constants.dart';
 import '../../../../../core/error/exception.dart';
-import '../../../../../core/error/failure.dart';
 import '../../model/chat_model.dart';
 import '../../model/message_model.dart';
 import 'remote_data_source.dart';
@@ -39,7 +38,7 @@ class RemoteDataSourceImpl extends RemoteDataSource{
       
   }
 
-  @override
+@override
   Future<List<ChatModel>> getAllChats() async{
     try{
       final response = await client.get(Uri.parse(Urls.baseChat),
@@ -48,10 +47,12 @@ class RemoteDataSourceImpl extends RemoteDataSource{
         'Content-Type': 'application/json',
       },);
 
-      if(response.statusCode==200){
+      if(response.statusCode == 200){
         final result = json.decode(response.body)['data'];
-        final List<ChatModel>  answer= [];
-        answer.addAll(result.map((json) => ChatModel.fromJson(json)).toList());
+        final List<ChatModel>  answer = [];
+        result.forEach((json) {
+         answer.add(ChatModel.fromJson(json));});
+
         return answer;
       }
       else{
@@ -65,7 +66,7 @@ class RemoteDataSourceImpl extends RemoteDataSource{
   @override
   Future<ChatModel> getChatById(String chatId)async  {
     try{
-    final response = await client.post(Uri.parse(Urls.getChatById(chatId)),
+          final response = await http.get(Uri.parse(Urls.getChatById(chatId)),
     headers: {
         'Authorization': 'Bearer $accessToken',
         'Content-Type': 'application/json',
@@ -82,6 +83,7 @@ class RemoteDataSourceImpl extends RemoteDataSource{
       throw Exception(e.toString());
     }
   }
+
   @override
   Future<ChatModel> initiateChat(String recieverId) async {
     try{
@@ -104,18 +106,20 @@ class RemoteDataSourceImpl extends RemoteDataSource{
     }
   }
 
-    @override
-  Future<List<MessageModel>> getChatMessages(String chatId) async{
+
+Future<List<MessageModel>> getChatMessages(String chatId) async{
     try{
-     final response = await client.delete(Uri.parse(Urls.getChatById(chatId)),
+     final response = await client.get(Uri.parse(Urls.getChatMessages(chatId)),
        headers: {
         'Authorization': 'Bearer $accessToken',
         'Content-Type': 'application/json',
       },);
       if(response.statusCode==200){
         final result = json.decode(response.body)['data'];
-        final List<MessageModel>  answer= [];
-        answer.addAll(result.map((json) => MessageModel.fromJson(json)).toList());
+        
+        final List<MessageModel>  answer = [];
+          result.forEach((json) {
+         answer.add(MessageModel.fromJson(json));});
         return answer;
       }
       else{

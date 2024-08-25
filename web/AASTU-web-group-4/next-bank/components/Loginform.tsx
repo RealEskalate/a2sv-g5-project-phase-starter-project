@@ -121,7 +121,7 @@ const LoginForm: React.FC = () => {
         <div className="flex items-center justify-center">
         <button
         type="submit"
-        className={`${colors.blue} text-white px-4 py-2 mt-4 w-full rounded-3xl text-xl`}
+        className={` text-white px-4 py-2 mt-4 w-full rounded-3xl text-xl hover:bg-indigo-600 ${isLoading ? 'bg-indigo-500 cursor-not-allowed hover:bg-indigo-500' : 'bg-indigo-700' }`}
         >
         {isLoading ? (
 

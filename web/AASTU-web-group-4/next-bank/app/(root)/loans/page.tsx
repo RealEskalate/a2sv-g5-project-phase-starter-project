@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+
 import {
   Carousel,
   CarouselItem,
@@ -12,6 +14,12 @@ import { getMyLoans, getLoanDetailData } from "@/services/activeloan";
 import CustomLoans from "@/public/icons/CustomLoans";
 import { TbFileSad } from "react-icons/tb";
 import { colors } from "@/constants";
+import { UserData } from "@/types";
+import { currentuser } from "@/services/userupdate";
+import { createTransaction } from "@/services/transactionfetch";
+import { access } from "fs";
+import { message } from "antd";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 interface LoanCard {
   icon: (props: any) => JSX.Element;
   title: string;
@@ -63,6 +71,68 @@ const LoansPage: React.FC = () => {
     };
     fetchLoans();
   }, []);
+  const [messageApi, contextHolder] = message.useMessage();
+  const success = (amount: string, username: string) => {
+    messageApi.open({
+      type: "success",
+      content: `Successfully transferred ${amount} to ${username}`,
+      duration: 4,
+    });
+  };
+  const errormessage = () => {
+    messageApi.open({
+      type: "error",
+      content: "Transaction was not successful",
+      duration: 4,
+    } as any);
+  };
+
+  const lowbalance = () => {
+    messageApi.open({
+      type: "error",
+      content: "Insufficient funds",
+      duration: 4,
+    } as any);
+  };
+
+  const accessToken = Cookies.get("accessToken") || "";
+  const selectedUser = "soll";
+  const [isLoading, setIsLoading] = useState(false);
+  const[selectedIndex , setselecteIndex] = useState(-1)
+  const onSubmit = async (amount: string ,index:any) => {
+    setselecteIndex(index)
+    setIsLoading(true);
+    const transactionData = {
+      type: "transfer",
+      description: `Transfer to [${selectedUser}]`,
+      amount: amount,
+      receiverUserName: selectedUser,
+    };
+    console.log("transactionData:", transactionData);
+
+    try {
+      const res = await createTransaction(transactionData, accessToken);
+      if (res.success && parseInt(transactionData.amount) < accountBalance) {
+        success(transactionData.amount, transactionData.receiverUserName);
+        setLoans(loans.filter(( _ , i) => i !== index));
+      } else if (parseInt(transactionData.amount) > accountBalance) {
+        lowbalance();
+        console.error(
+          "Insufficient funds , typeof(accountBalance):",
+          accountBalance,
+          transactionData.amount
+        );
+      } else {
+        errormessage();
+        console.error("Failed to create transaction", res);
+      }
+    } catch (error) {
+      errormessage();
+      console.error("Error creating transaction:", error);
+    }
+    setIsLoading(false);
+    setselecteIndex(-1)
+  };
 
   useEffect(() => {
     const fetchLoanCard = async () => {
@@ -100,6 +170,22 @@ const LoansPage: React.FC = () => {
     fetchLoanCard();
   }, []);
 
+  const [accountBalance, setAccountBalance] = useState(0);
+  const [info, setinfo] = useState<UserData>();
+  const [visible, setvisible] = useState(false);
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const data = await currentuser();
+        setinfo(data.data || []);
+        setAccountBalance(data.data.accountBalance);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    fetch();
+  }, []);
+
   const totalLoanMoney = loans.reduce(
     (total, loan: any) => total + parseInt(loan.loanAmount),
     0
@@ -116,6 +202,8 @@ const LoansPage: React.FC = () => {
   return (
     <div className="flex lg:ml-64 lg:max-w-[100%] px-6 dark:text-blue-500 bg-gray-100 dark:bg-dark ">
       {/* Mobile and Tablet View */}
+
+      {contextHolder}
       <div className="w-[100%] block lg:hidden">
         {loanCardsLoading ? (
           <div className="flex w-[100%] py-6  justify-center gap-5">
@@ -146,8 +234,8 @@ const LoansPage: React.FC = () => {
         ) : loanCardsError ? (
           <div className="flex flex-col items-center justify-center text-center space-y-4">
             <TbFileSad
-          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
-        />
+              className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+            />
             <div className="text-red-500 text-lg">{loanCardsError}</div>
           </div>
         ) : (
@@ -206,8 +294,8 @@ const LoansPage: React.FC = () => {
           ) : loansError ? (
             <div className="w-[100%] flex justify-center items-center flex-col p-4">
               <TbFileSad
-          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
-        />
+                className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+              />
               <div className="text-red-500 text-xl">{loansError}</div>
             </div>
           ) : (
@@ -234,12 +322,18 @@ const LoansPage: React.FC = () => {
                         {loan.amountLeftToRepay}
                       </td>
                       <td className="border-t px-4 py-2">
-                        <Link
-                          href="#"
-                          className="text-purple-900 border border-purple-900 rounded-full px-4 py-1"
+                      <button
+                          onClick={() => onSubmit(loan.amountLeftToRepay , index)}
+                          className= {` text-gray-900 border border-purple-900 rounded-full px-4 py-1 ${selectedIndex === index && isLoading ? 'bg-gray-200 cursor-not-allowed ' : 'bg-white hover:bg-gray-200' }`}
                         >
-                          Repay
-                        </Link>
+                           { selectedIndex === index && isLoading ? (
+                            <div className="flex justify-center items-center ">
+                              <ArrowPathIcon className="h-5 w-5 animate-spin  text-gray-500  " />
+                            </div>
+                          ) : (
+                            "Repay"
+                          )}
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -261,7 +355,6 @@ const LoansPage: React.FC = () => {
 
       {/* Desktop and Tablet View */}
       <div className="hidden lg:block lg:w-[100%] lg:bg-gary-100 lg:dark:bg-dark dark:text-blue-500 ">
-        
         {loanCardsLoading ? (
           <div className="flex justify-evenly py-10   space-x-6">
             {Array.from({ length: 4 }).map((_, index) => (
@@ -280,8 +373,8 @@ const LoansPage: React.FC = () => {
         ) : loanCardsError ? (
           <div className="hidden  lg:flex lg:flex-col lg:items-center lg:justify-center lg:text-center lg:space-y-4 lg:h-200px lg:bg-gray-100 lg:dark:bg-gray-800 lg:py-8">
             <TbFileSad
-          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
-        />
+              className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+            />
             <div className="text-red-500 text-xl lg:text-2xl">
               {loanCardsError}
             </div>
@@ -355,8 +448,8 @@ const LoansPage: React.FC = () => {
           ) : loansError ? (
             <div className="hidden lg:flex lg:bg-gray-100 lg:dark:bg-gray-800 lg:h-[400px] lg:flex-col lg:items-center lg:justify-center h-20">
               <TbFileSad
-          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
-        />
+                className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+              />
               <div className="text-red-500 text-center">{loansError}</div>
             </div>
           ) : (
@@ -409,12 +502,18 @@ const LoansPage: React.FC = () => {
                         {loan.installment}
                       </td>
                       <td className="border-t px-4 py-2 text-sm">
-                        <Link
-                          href="#"
-                          className="text-purple-900 border border-purple-900 rounded-full px-4 py-1"
+                        <button
+                          onClick={() => onSubmit(loan.amountLeftToRepay , index)}
+                          className="text-purple-900 border border-purple-900 rounded-full px-4 py-1 hover:bg-gray-300"
                         >
-                          Repay
-                        </Link>
+                           { selectedIndex === index && isLoading ? (
+                            <div className="flex justify-center items-center ">
+                              <ArrowPathIcon className="h-5 w-5 animate-spin  text-gray-500  " />
+                            </div>
+                          ) : (
+                            "Repay"
+                          )}
+                        </button>
                       </td>
                     </tr>
                   ))}

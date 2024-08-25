@@ -40,7 +40,7 @@ const getTransactions = async (
   page = 0,
   size = 1,
   token: string
-): Promise<GetTransactionsResponse> => {
+): Promise<TransactionResponse> => {
   try {
     // const token = await getAccessToken();
     const response = await fetch(
@@ -56,7 +56,7 @@ const getTransactions = async (
 
     if (response.status === 200) {
       const data: TransactionResponse = await response.json();
-      return { transactions: [data] }; // Wrap the response in the expected format
+      return data; // Wrap the response in the expected format
     } else {
       throw new Error(`Request failed with status code: ${response.status}`);
     }

@@ -13,7 +13,12 @@ import {
 } from "@/lib/api/userControl";
 import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
 import { storage } from "../firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
 import { v4 } from "uuid";
 interface FormData {
   name: string;
@@ -81,6 +86,12 @@ const EditProfile = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
+      if (user?.profilePicture !== "string") {
+        const previousImageRef = ref(storage, user?.profilePicture);
+        // Delete the previous image
+        await deleteObject(previousImageRef);
+        console.log("Previous profile picture deleted");
+      }
       if (data.profilePicture != null) {
         const imageRef = ref(
           storage,
@@ -120,7 +131,10 @@ const EditProfile = () => {
       <div className="flex flex-col items-center py-10 w-full dark:bg-[#020817]">
         <div className="relative">
           <Image
-            src={user?.profilePicture || "https://firebasestorage.googleapis.com/v0/b/a2sv-wallet.appspot.com/o/images%2Fminions.jpg-8647eb22-f9e6-4766-8093-859c1e9840ea?alt=media&token=b992bea8-c84b-4a93-ac2a-426d08f8647d"} // Fallback to a default image if userData.profilePicture is null or undefined
+            src={
+              user?.profilePicture ||
+              "https://firebasestorage.googleapis.com/v0/b/a2sv-wallet.appspot.com/o/images%2Fminions-removebg-preview.png-65386b73-d848-4f43-bd10-983d6fe55c36?alt=media&token=ae2cc291-f8c0-4e7c-b423-bd9236397e3e" || "/ProfilePicture"
+            } // Fallback to a default image if userData.profilePicture is null or undefined
             alt="Profile Picture"
             width={170}
             height={170}
@@ -131,10 +145,28 @@ const EditProfile = () => {
           <input
             type="file"
             accept="image/*"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              const file = e.target.files?.[0]; // Use optional chaining to check if files exist
+            onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
+              const file = e.target.files?.[0]; // Check if files exist
               if (file) {
                 setValue("profilePicture", file);
+
+                // Immediately upload the image to Firebase
+                try {
+                  const imageRef = ref(storage, `images/${file.name}-${v4()}`);
+                  await uploadBytes(imageRef, file);
+
+                  // Get the download URL after the image is uploaded
+                  const downloadUrl = await getDownloadURL(imageRef);
+                  console.log(downloadUrl);
+
+                  // Update the profile picture in the form state and in the UI
+                  setValue("profilePicture", downloadUrl);
+                  setUser(
+                    (prev) => prev && { ...prev, profilePicture: downloadUrl }
+                  );
+                } catch (error) {
+                  console.error("Error uploading image:", error);
+                }
               }
             }}
             style={{ display: "none" }} // Hide the input

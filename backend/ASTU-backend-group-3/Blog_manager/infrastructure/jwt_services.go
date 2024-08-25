@@ -8,7 +8,7 @@ import (
 )
 
 func GenerateJWT(username string, role string) (string, error) {
-	expirationTime := time.Now().Add(2 * time.Hour)
+	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
 		Username: username,
 		Role:     role,
@@ -25,7 +25,7 @@ func GenerateJWT(username string, role string) (string, error) {
 }
 
 func GenerateRefreshToken(username string) (string, error) {
-	expirationTime := time.Now().Add(24 * time.Hour)
+	expirationTime := time.Now().Add(24 * time.Hour*30)
 	claims := &Claims{
 		Username: username,
 		StandardClaims: jwt.StandardClaims{
@@ -58,14 +58,16 @@ func GetRoleFromToken(token *jwt.Token) (string, error) {
 
 type ResetClaims struct {
     Username string `json:"username"`
+    Role string `json:"role"`
     jwt.StandardClaims
 }
 
 
-func GenerateResetToken(username string, jwtKey []byte) (string, error) {
+func GenerateResetToken(username string, role string, jwtKey []byte) (string, error) {
     expirationTime := time.Now().Add(10 * time.Minute)
     claims := &ResetClaims{
         Username: username,
+        Role: role,
         StandardClaims: jwt.StandardClaims{
             ExpiresAt: expirationTime.Unix(),
         },

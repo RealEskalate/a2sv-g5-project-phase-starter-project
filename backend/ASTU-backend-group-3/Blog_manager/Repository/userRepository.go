@@ -12,6 +12,7 @@ import (
 
 type UserRepository interface {
 	Save(user *Domain.User) error
+	FindByID(id string) (Domain.User, error)
 	FindByEmail(email string) (*Domain.User, error)
 	FindByUsername(username string) (Domain.User, error)
 	Update(username string, UpdatedUser bson.M) error
@@ -19,6 +20,7 @@ type UserRepository interface {
 	IsDbEmpty() (bool, error)
 	InsertToken(username string, accessToke string, refreshToken string) error
 	ExpireToken(token string) error
+	GetIDBYUsername(username string) (string, error)
 }
 
 type userRepository struct {
@@ -28,6 +30,15 @@ type userRepository struct {
 
 func NewUserRepository(collection, tokenCollection *mongo.Collection) UserRepository {
 	return &userRepository{collection: collection, tokenCollection: tokenCollection}
+}
+
+func (r *userRepository) GetIDBYUsername(username string) (string, error) {
+	var user Domain.User
+	err := r.collection.FindOne(context.TODO(), bson.M{"username": username}).Decode(&user)
+	if err != nil {
+		return "", err
+	}
+	return user.Id.Hex(), nil
 }
 
 func (r *userRepository) Save(user *Domain.User) error {
@@ -114,4 +125,17 @@ func (r *userRepository) ExpireToken(token string) error {
 	}
 
 	return nil
+}
+
+func (r *userRepository) FindByID(id string) (Domain.User, error) {
+	var user Domain.User
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return Domain.User{}, err
+	}
+	err = r.collection.FindOne(context.TODO(), bson.M{"id": objectID}).Decode(&user)
+	if err != nil {
+		return Domain.User{}, err
+	}
+	return user, nil
 }

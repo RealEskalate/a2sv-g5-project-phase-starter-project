@@ -19,6 +19,7 @@ type BlogUsecase interface {
 	ToggleDislike(blogID, username string) error
 	AddComment(blogID string, comment Domain.Comment) error
 	FilterBlogs(tags []string, startDate, endDate time.Time, sortBy string) ([]Domain.Blog, error)
+	ReportBlog(blogID string, report Domain.Report) error
 }
 
 type blogUsecase struct {
@@ -30,6 +31,7 @@ func NewBlogUsecase(br Repository.BlogRepository) BlogUsecase {
 		blogRepo: br,
 	}
 }
+
 
 func (uc *blogUsecase) CreateBlog(blog *Domain.Blog) (*Domain.Blog, error) {
 	// Validate the blog details

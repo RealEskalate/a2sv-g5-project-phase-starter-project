@@ -23,6 +23,9 @@ type BlogRepository interface {
 	ToggleDislike(blogID, username string) error
 	ToggleLike(blogID, username string) error
 	FilterBlogs(tags []string, startDate, endDate time.Time, sortBy string) ([]Domain.Blog, error)
+	GetBlogByID(blogID string) (*Domain.Blog, error)
+	AddReport(blogID string, report Domain.Report) error
+	IsUserReported(blogID string , userID string) bool
 }
 
 type blogRepository struct {
@@ -31,6 +34,18 @@ type blogRepository struct {
 
 func NewBlogRepository(collection *mongo.Collection) *blogRepository {
 	return &blogRepository{collection: collection}
+}
+
+
+
+func (r *blogRepository) GetBlogByID(blogID string) (*Domain.Blog, error) {
+	filter := bson.M{"id": blogID}
+	var blog Domain.Blog
+	err := r.collection.FindOne(context.TODO(), filter).Decode(&blog)
+	if err != nil {
+		return nil, err
+	}
+	return &blog, nil
 }
 
 func (r *blogRepository) Save(blog *Domain.Blog) (*Domain.Blog, error) {
@@ -257,3 +272,4 @@ func (r *blogRepository) FilterBlogs(tags []string, startDate, endDate time.Time
 
 	return blogs, nil
 }
+

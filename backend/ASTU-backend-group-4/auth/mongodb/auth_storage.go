@@ -87,7 +87,7 @@ func (au *AuthUserImple) GetUserByID(ctx context.Context, id string) (auth.User,
 
 	var user auth.User
 
-	filter := bson.D{bson.E{Key: "id", Value: id}}
+	filter := bson.D{bson.E{Key: "_id", Value: id}}
 	err = au.usercollection.FindOne(ctx, filter).Decode(&user)
 
 	if err != nil {

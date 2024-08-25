@@ -15,6 +15,8 @@ require (
 	google.golang.org/api v0.192.0
 )
 
+require bou.ke/monkey v1.0.2
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible

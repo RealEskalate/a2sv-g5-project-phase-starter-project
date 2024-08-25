@@ -66,7 +66,7 @@ func (uc *BlogUseCase) GetAllBlog(c context.Context, skip int64, limit int64, so
 	defer cancel()
 	// if not make it default to createtimestamp
 	if sortBy != "createtimestamp" && sortBy != "average_rating" && sortBy != "total_rating" && sortBy != "view_count" && sortBy != "like_count" && sortBy != "comment_count" {
-		sortBy = "createtimestamp"
+		sortBy = "average_rating"
 	}
 
 	return uc.blogRepo.GetAllBlog(ctx, skip, limit, sortBy)

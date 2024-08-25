@@ -18,6 +18,7 @@ class UserModel extends User {
   List<Object?> get props => [id, email, username, password];
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    print("Changingggg");
     return UserModel(
       id: json['_id'],
       email: json['email'],
@@ -28,7 +29,7 @@ class UserModel extends User {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      '_id': id,
       'email': email,
       'username': username,
       'password': password ,

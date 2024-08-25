@@ -15,6 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'features/auth/presentation/view/login.dart';
 import 'features/auth/presentation/view/signup.dart';
+import 'features/product/presentation/view/chat.dart';
 import 'features/product/presentation/view/search_product.dart';
 
 void main() async {
@@ -59,7 +60,8 @@ class Root extends StatelessWidget {
 
         home: const Scaffold(
           // body: Home(),
-          body: Splash(),
+          // body: Splash(),
+          body: Chat()
         ),
         // initialRoute: '/home',
         routes: {

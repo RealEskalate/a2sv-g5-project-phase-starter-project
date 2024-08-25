@@ -236,7 +236,7 @@ void delete() {
 
 class SizeCard extends StatefulWidget {
   SizeCard({super.key, required this.size});
-  int size;
+   int size;
 
   @override
   State<SizeCard> createState() => _SizeCardState();

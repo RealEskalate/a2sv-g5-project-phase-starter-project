@@ -4,7 +4,6 @@ import 'chat_app_bar.dart';
 // import 'currentUser.dart';
 import 'mockdata.dart';
 
-
 class IndividualChatPage extends StatefulWidget {
   const IndividualChatPage({
     super.key,
@@ -16,6 +15,7 @@ class IndividualChatPage extends StatefulWidget {
 
 class _IndividualChatPageState extends State<IndividualChatPage> {
   final ScrollController _scrollController = ScrollController();
+  bool _isTextBeingWritten = false;
 
   @override
   void initState() {
@@ -106,13 +106,17 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
                         border: InputBorder.none,
                       ),
                       onChanged: (text) {
+                        setState(() {
+                          _isTextBeingWritten = text.isNotEmpty;
+                        });
                         _scrollToBottom();
                       },
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(
-                      Icons.copy,
+                    icon: Icon(
+                      Icons.send,
+                      color: _isTextBeingWritten ? Colors.blue : Colors.grey,
                     ),
                     onPressed: () {
                       // Handle copy action

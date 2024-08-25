@@ -26,7 +26,7 @@ class App extends StatelessWidget {
           fontFamily: 'Poppins',
         ),
         onGenerateRoute: route.controller,
-        initialRoute: route.splashPage,
+        initialRoute: route.chatHomeScreen,
       ),
     );
   }

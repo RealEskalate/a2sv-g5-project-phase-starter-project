@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/failure.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 import '../entities/product_entity.dart';
 import '../repositories/product_repository.dart';
 
@@ -17,13 +16,15 @@ class InsertProductUsecase {
     required String description,
     required double price,
     required String imageUrl,
+    required UserEntity seller,
   }) async {
     final product = ProductEntity(
         id: id,
         name: name,
         description: description,
         price: price,
-        imageUrl: imageUrl);
+        imageUrl: imageUrl,
+        seller: seller);
 
     final res = await productRepository.insertProduct(product);
     return res;

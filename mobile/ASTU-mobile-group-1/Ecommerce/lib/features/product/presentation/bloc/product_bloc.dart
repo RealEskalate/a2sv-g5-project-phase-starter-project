@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../../../../core/util/input_converter.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 import '../../domain/entities/product_entity.dart';
 import '../../domain/usecases/delete_prodcut_usecase.dart';
 import '../../domain/usecases/get_all_prodcuts_usecase.dart';
@@ -95,12 +94,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       },
       (data) async {
         final call = await _updateProductUsecase(
-          id: event.id,
-          description: event.description,
-          imageUrl: event.imageUrl,
-          name: event.name,
-          price: data,
-        );
+            id: event.id,
+            description: event.description,
+            imageUrl: event.imageUrl,
+            name: event.name,
+            price: data,
+            seller: UserEntity.empty);
 
         call.fold(
           (failure) {
@@ -131,12 +130,12 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       },
       (data) async {
         final call = await _insertProductUsecase(
-          id: event.id,
-          description: event.description,
-          imageUrl: event.imageUrl,
-          name: event.name,
-          price: data,
-        );
+            id: event.id,
+            description: event.description,
+            imageUrl: event.imageUrl,
+            name: event.name,
+            price: data,
+            seller: UserEntity.empty);
 
         await call.fold(
           (failure) async {

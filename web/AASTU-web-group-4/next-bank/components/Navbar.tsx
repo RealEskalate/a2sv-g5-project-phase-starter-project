@@ -40,7 +40,7 @@ export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
           </svg>
         </button>
-        <div className="text-xl font-bold flex-1 text-center">{pageTitle}</div>
+        <div className="text-xl font-bold flex-1 text-center dark:text-blue-500">{pageTitle}</div>
         <DropdownMenuDemo />
       </div>
 
@@ -55,10 +55,10 @@ export const Navbar: FC<NavbarProps> = ({ pageTitle, toggleSidebar }) => {
       </div>
 
       {/* Larger Screens: Full Navbar */}
-      <div className="hidden lg:flex items-center justify-around w-full">
-        <div className="text-2xl mr-[550px] font-extrabold dark:text-blue-500">{pageTitle}</div>
-        <div className="flex items-center gap-4">
-        <div className="relative w-64">
+      <div className="hidden lg:flex items-center justify-between w-full">
+        <div className="text-2xl ml-8 mr-[100px] font-extrabold dark:text-blue-500">{pageTitle}</div>
+        <div className="flex items-center gap-5 mr-8">
+        <div className="relative w-72">
           <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
           <input
             type="text"

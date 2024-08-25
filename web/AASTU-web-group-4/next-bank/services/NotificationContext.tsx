@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, FC } from 'react';
 import { format } from 'date-fns';
-import { Notification } from '@/types/index';
+import { Notification, UserData } from '@/types/index';
 import { getAllTransactions } from '@/services/transactionfetch'; 
 import Cookies from "js-cookie";
+import { getSession } from 'next-auth/react';
+import { currentuser } from './userupdate';
 
 const token = Cookies.get('accessToken');
 
@@ -18,19 +20,51 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
+  const [info, setInfo] = useState<UserData | null>(null)
+
+  const fetchUserInfo = async() => {
+    try {
+      const data = await currentuser()
+      setInfo(data.data)
+      // console.log("data: ", data.data)
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  }
+  
   const fetchNotifications = async () => {
+    console.log("info: ", info)
+    if (!info) {
+      // Wait until user info is available
+      console.log("User info not available yet.");
+      return;
+    }
+
     try {
       const response = await getAllTransactions(0, 1000);
-      console.log("Fetched response data:", response);
-  
+      // console.log("Fetched response data:", response);
+      
+      
+      
+
       if (response && response.data && Array.isArray(response.data.content)) {
         const readNotificationIds = JSON.parse(localStorage.getItem('readNotifications') || '[]');
+        
+        console.log(info)
+        const currentUser = info.username
+        // console.log("username: ", currentUser)
+         // Assuming you store the current user's username in a cookie or other means
   
         // Process and format the notifications, adding a sequence number based on the index
         const formattedNotifications = response.data.content.map((transaction: { transactionId: any; type: any; receiverUserName: any; senderUserName: any; date: string; amount: any; }, index: number) => {
+          const isSender = transaction.senderUserName === currentUser;
+          const message = isSender
+            ? `You have transferred $${transaction.amount} to ${transaction.receiverUserName}`
+            : `${transaction.senderUserName} transferred you $${transaction.amount}`;
+  
           return {
             id: transaction.transactionId,
-            message: `${transaction.senderUserName} transferred you $${transaction.amount}`,
+            message,
             transactionId: transaction.transactionId,
             userId: transaction.senderUserName,
             timestamp: new Date(transaction.date).getTime(),
@@ -50,8 +84,6 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
           return b.sequence - a.sequence;
         });
   
-        // console.log("Sorted notifications:", formattedNotifications);
-  
         setNotifications(formattedNotifications);
       } else {
         console.error("Unexpected response structure:", response);
@@ -60,6 +92,7 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
       console.error("Error fetching notifications:", error);
     }
   };
+  
   
   
   
@@ -78,8 +111,11 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
   };
 
   useEffect(() => {
-    fetchNotifications();
+    fetchUserInfo();
   }, []);
+  useEffect(() => {
+    fetchNotifications();
+  }, [info]);
 
   const unreadCount = notifications.filter(notification => !notification.isRead).length;
 

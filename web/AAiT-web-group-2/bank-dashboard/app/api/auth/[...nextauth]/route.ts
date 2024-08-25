@@ -5,6 +5,7 @@ import { store } from '@/lib/redux/store';
 import { User } from '@/types/User';
 import { UserResponse } from '@/lib/redux/types/userResponse';
 import { UserSignup } from '@/types/UserSignUp';
+import { CustomSerializedError } from '@/lib/redux/types/CustomSerializedError';
 
 
 
@@ -56,14 +57,14 @@ const handler = NextAuth({
       
         console.log("response authorize", response)
         const res = response.data
+        const error = response.error as CustomSerializedError
         if (res?.success) {
           console.log("success authorize", res, res.data)
           return {data: res.data.data, access_token: res.data.access_token, refresh_token: res.data.refresh_token, id: res.data.data.id };
           
         } else {
-          console.log("failure authorize null", res)
+          throw new Error(response.data?.message || "Error signing up" );
 
-          return null
         }
       },
     }),
@@ -82,19 +83,20 @@ const handler = NextAuth({
 
         const response = await store.dispatch(bankApi.endpoints.signin.initiate(loginData as SigninCredential))
         const res = response.data
+        const error = response.error as CustomSerializedError
+        
 
         if (res?.success && res.data) {
           return {access_token: res.data.access_token, refresh_token: res.data.refresh_token };
 
         } else {
-          return null
+          throw new Error(error.data?.message );
         }
       },
     }),
   ],
   pages:{
     signIn: '/auth/signin',
-    error: '/auth/error',
     verifyRequest: '/auth/verify-request',
     newUser: '/auth/signup'
   },

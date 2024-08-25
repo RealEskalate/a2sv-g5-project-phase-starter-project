@@ -22,9 +22,10 @@ List<String> Messages = ['hello, how are you? ','aa','sssds','sdds','sdsdsdsa','
       appBar: AppBar(
         backgroundColor: Colors.blue,
         leading: IconButton(
-          icon: const Icon(Icons.search),
+          icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
             // Handle the search icon press
+            Navigator.pop(context);
           },
         ),
       ),
@@ -66,11 +67,16 @@ List<String> Messages = ['hello, how are you? ','aa','sssds','sdds','sdsdsdsa','
               child: ListView.builder(
                 itemCount: names.length,
                 itemBuilder: (context, index) {
-                  return chatTileWithReadMessages(
-                    names[index],
-                    Messages[index],
-                    '02:20',
-                    index,
+                  return GestureDetector(
+                    onTap: (){
+                      Navigator.pushNamed(context, '/chat-message');
+                    },
+                    child: chatTileWithReadMessages(
+                      names[index],
+                      Messages[index],
+                      '02:20',
+                      index,
+                    ),
                   );
                 },
               ),

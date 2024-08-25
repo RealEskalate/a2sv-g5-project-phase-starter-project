@@ -20,10 +20,13 @@ const SecurityForm = () => {
     event.preventDefault();
 
     try {
-      const response = await AuthService.changePassword({
-        password: currentPassword,
-        newPassword: newPassword,
-      },"accessToken");
+      const response = await AuthService.changePassword(
+        {
+          password: currentPassword,
+          newPassword: newPassword,
+        },
+        "accessToken"
+      );
       console.log("Password changed:", response);
     } catch (error) {
       console.error("Error changing password:", error);
@@ -31,7 +34,7 @@ const SecurityForm = () => {
   };
 
   return (
-    <form className="mt-6 space-y-6 px-3 py-4" onSubmit={handleSubmit}>
+    <form className="w-full mt-6 space-y-6 px-3 py-4" onSubmit={handleSubmit}>
       <div className="mt-6">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Two-factor Authentication

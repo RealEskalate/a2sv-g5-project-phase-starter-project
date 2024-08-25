@@ -1,7 +1,7 @@
 // authenticationController.ts
-import { RegisterRequest, RegisterResponse, RefreshTokenResponse, LoginRequest, LoginResponse, ChangePasswordRequest, ChangePasswordResponse } from '@/types/authenticationController.interface';
+import { RegisterRequest, RegisterResponse, RefreshTokenResponse, LoginRequest, LoginResponse, ChangePasswordRequest, ChangePasswordResponse, RefreshTokenReturn } from '@/types/authenticationController.interface';
 
-const BASE_URL = 'https://a2svwallet.onrender.com'
+const BASE_URL = 'https://bank-dashboard-mih0.onrender.com'
 
 
 const register = async (userDetails: RegisterRequest): Promise<RegisterResponse> => {
@@ -26,7 +26,7 @@ const register = async (userDetails: RegisterRequest): Promise<RegisterResponse>
   }
 };
 
-const refreshToken = async (refresh_token:string): Promise<string> => {
+const refreshToken = async (refresh_token:string): Promise<RefreshTokenReturn> => {
     try {
       const response = await fetch(`${BASE_URL}/auth/refresh_token`, {
         method: 'POST',

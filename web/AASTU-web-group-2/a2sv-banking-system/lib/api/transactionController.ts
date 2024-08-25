@@ -24,7 +24,7 @@ import { GiConsoleController } from "react-icons/gi";
 // interface ExtendedSession {
 //   user?: ExtendedUser;
 // }
-const BASE_URL = "https://a2svwallet.onrender.com";
+const BASE_URL = "https://bank-dashboard-mih0.onrender.com";
 
 // const fetchSession = async (): Promise<ExtendedSession> => {
 //   const session = await getServerSession();
@@ -40,7 +40,7 @@ const getTransactions = async (
   page = 0,
   size = 1,
   token: string
-): Promise<GetTransactionsResponse> => {
+): Promise<TransactionResponse> => {
   try {
     // const token = await getAccessToken();
     const response = await fetch(
@@ -56,7 +56,7 @@ const getTransactions = async (
 
     if (response.status === 200) {
       const data: TransactionResponse = await response.json();
-      return { transactions: [data] }; // Wrap the response in the expected format
+      return data; // Wrap the response in the expected format
     } else {
       throw new Error(`Request failed with status code: ${response.status}`);
     }

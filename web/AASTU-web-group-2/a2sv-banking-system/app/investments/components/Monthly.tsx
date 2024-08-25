@@ -112,17 +112,37 @@ export default function Monthly() {
 
   if (loading || Loading)
     return (
-      <div className="bg-white rounded-3xl border-none p-8 animate-shimmer">
-        <div className="h-6 w-full bg-gray-300 rounded-md mb-4"></div>
-        <div className="h-4 w-3/4 bg-gray-300 rounded-md mb-4"></div>
-        <div className="h-4 w-1/2 bg-gray-300 rounded-md mb-4"></div>
-        <div className="h-4 w-2/3 bg-gray-300 rounded-md"></div>
+      <div className="border dark:border-gray-600 rounded-3xl my-4 mx-2">
+        <div className="relative w-full bg-gradient-to-b from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-3xl shadow-md h-[230px] min-w-[350px] animate-pulse">
+          <div className="flex justify-between items-start px-6 py-4">
+            <div className="space-y-2">
+              <div className="bg-gray-300 dark:bg-gray-600 h-4 w-24 rounded"></div>
+              <div className="bg-gray-400 dark:bg-gray-500 h-6 w-32 rounded"></div>
+            </div>
+            <div className="bg-gray-300 dark:bg-gray-600 h-8 w-8 rounded-full"></div>
+          </div>
+
+          <div className="flex justify-between gap-12 mt-4 px-6">
+            <div className="space-y-2">
+              <div className="bg-gray-300 dark:bg-gray-600 h-3 w-16 rounded"></div>
+              <div className="bg-gray-400 dark:bg-gray-500 h-4 w-20 rounded"></div>
+            </div>
+            <div className="pr-8 space-y-2">
+              <div className="bg-gray-300 dark:bg-gray-600 h-3 w-16 rounded"></div>
+              <div className="bg-gray-400 dark:bg-gray-500 h-4 w-20 rounded"></div>
+            </div>
+          </div>
+
+          <div className="relative mt-8 py-4 px-6">
+            <div className="bg-gray-400 dark:bg-gray-500 h-8 w-full rounded"></div>
+          </div>
+        </div>
       </div>
     );
   // console.log(data);
   const { monthlyRevenue } = data;
   return (
-    <Card className="bg-white rounded-3xl border-none ">
+    <Card className="bg-white rounded-3xl border-none dark:bg-[#050914] dark:border dark:border-[#333B69]">
       <CardContent className="pt-8 pb-6 ">
         <ChartContainer config={chartConfig}>
           <LineChart

@@ -22,13 +22,7 @@ export default async function Refresh(): Promise<string> {
   const decodedToken = jwtDecode<JwtPayload>(accessToken);
   const currentTime = Date.now() / 1000;
   const expiry = decodedToken.exp;
-
-
-  if (expiry && expiry < currentTime) {
-    
-    const newAccessToken = await refreshToken(refreshTokenValue);
-    return newAccessToken;
-  } else {
-    return accessToken;
-  }
+  console.log(accessToken, "access token");
+  
+  return accessToken
 }

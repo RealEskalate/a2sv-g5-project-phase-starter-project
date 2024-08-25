@@ -1,5 +1,7 @@
 package domain
 
+import "context"
+
 type TokenInfrastructure interface {
 	CreateAllTokens(user *User, accessSecret string, refreshSecret string,
 		accessExpiry int, refreshExpiry int) (accessToken string, refreshToken string, err error)
@@ -10,6 +12,10 @@ type TokenInfrastructure interface {
 	UpdateTokens(id string) (accessToken string, refreshToken string, err error)
 	RemoveTokens(id string) error
 	ExtractUserIDFromToken(tokenString string) (string, error)
+}
+
+type TokenUseacses interface {
+	UpdateTokens(c context.Context, id string) (accessToken string, refreshToken string, err error)
 }
 
 type PasswordInfrastructure interface {

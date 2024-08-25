@@ -15,6 +15,8 @@ import (
 func Setup(env *bootstrap.Env, timeout time.Duration, db mongo.Database, gin *gin.Engine, rc redis.Client) {
 	gin.LoadHTMLGlob("templates/*")
 
+	gin.Static("../../uploads/profileImages", "./uploads/profileImages")
+
 	publicRouter := gin.Group("")
 
 	// Public routes
@@ -25,7 +27,9 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db mongo.Database, gin *gi
 	publicRouterWithImage := gin.Group("")
 	publicRouterWithImage.Use(middlewares.ImageUploadMiddleware())
 	NewSignupRoute(env, timeout, db, publicRouterWithImage)
+	NewUpdateUserProfile(env, timeout, db, publicRouterWithImage)
 
+	// Protected routes
 	userRepository := repositories.NewUserRepository(db, env.UserCollection)
 	protectedRouter := gin.Group("")
 	tokenService := infrastructure.NewTokenService(
@@ -33,16 +37,16 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db mongo.Database, gin *gi
 		env,
 	)
 	protectedRouter.Use(middlewares.AuthMiddleware(env, tokenService))
-
-	// Protected routes
 	NewAiRoute(env, timeout, db, protectedRouter)
 	NewBlogRoute(env, timeout, db, protectedRouter, rc)
 	NewLikeRoute(env, timeout, db, protectedRouter)
 	NewForgotPasswordRoute(env, timeout, db, protectedRouter)
+	NewUserProfileRoute(env, timeout, db, protectedRouter)
+	NewTokenRoute(env, timeout, db, protectedRouter)
 
+	// Admin routes
 	protectedAdminRouter := gin.Group("")
 	protectedAdminRouter.Use(middlewares.AdminMiddleware())
 	protectedAdminRouter.Use(middlewares.AuthMiddleware(env, tokenService))
-	// Admin routes
 	NewPromoteRoute(env, timeout, db, publicRouter)
 }

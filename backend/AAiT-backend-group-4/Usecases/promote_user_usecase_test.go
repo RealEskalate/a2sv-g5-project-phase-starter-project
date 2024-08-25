@@ -23,7 +23,7 @@ type PromoteUsecaseTestSuite struct {
 
 func (suite *PromoteUsecaseTestSuite) SetupTest() {
 	suite.mockUserRepo = new(mocks.UserRepository)
-	suite.promoteUsecase = usecases.NewPromoteUsecase(suite.mockUserRepo, 2*time.Second)
+	suite.promoteUsecase = usecases.NewUserProfileUsecase(suite.mockUserRepo, 2*time.Second)
 }
 
 func (suite *PromoteUsecaseTestSuite) TestPromote_Success() {

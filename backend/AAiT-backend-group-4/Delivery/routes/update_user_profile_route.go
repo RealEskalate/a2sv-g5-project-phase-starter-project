@@ -11,12 +11,12 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewPromoteRoute(env *bootstrap.Env, timeout time.Duration, db mongo.Database, group *gin.RouterGroup) {
+func NewUpdateUserProfile(env *bootstrap.Env, timeout time.Duration, db mongo.Database, group *gin.RouterGroup) {
 	ur := repositories.NewUserRepository(db, env.UserCollection)
-	pc := controllers.PromoteController{
+	upc := controllers.UserProfileController{
 		UserUsecase: usecases.NewUserProfileUsecase(ur, timeout),
 		Env:         env,
 	}
 
-	group.PUT("/user/promote/:id", pc.Promote)
+	group.PUT("/user/profile/:id", upc.UpdateUserProfile)
 }

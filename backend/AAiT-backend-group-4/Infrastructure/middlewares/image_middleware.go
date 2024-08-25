@@ -29,8 +29,7 @@ func ImageUploadMiddleware() gin.HandlerFunc {
 		file, err := c.FormFile("image")
 		if err != nil {
 			log.Println("Error retrieving the image:", err)
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image file"})
-			c.Abort()
+			c.Next()
 			return
 		}
 

@@ -166,8 +166,8 @@ func (au *AuthUserUsecase) GenerateToken(user User, tokenType string) (string, e
 	if tokenType == "refresh" {
 		claims["exp"] = time.Now().Add(7 * 24 * time.Hour).Unix()
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
-	tokenString, err := token.SignedString(secretKey)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(secretKey))
 	if err != nil {
 		return "", err
 	}

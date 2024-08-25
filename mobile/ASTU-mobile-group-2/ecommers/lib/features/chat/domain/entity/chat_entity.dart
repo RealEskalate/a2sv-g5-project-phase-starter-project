@@ -1,4 +1,5 @@
 
+import 'message_entity.dart';
 
 class ChatEntity {
   final String senderId;
@@ -6,16 +7,21 @@ class ChatEntity {
   final String recieverId;
   final String recieverName;
   final String chatId;
-  final List<Map<String,dynamic>> messages;
+  final MessageEntity messages;
+
   
 
-  const ChatEntity({
+  ChatEntity({
     required this.senderId,
     required this.senderName,
     required this.recieverId,
     required this.recieverName,
     required this.chatId,
     required this.messages
+
   });
 
 }
+
+
+

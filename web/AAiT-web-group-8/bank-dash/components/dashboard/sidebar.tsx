@@ -39,7 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
   }, [isOpen]);
 
   return (
-    <div ref={sidebarRef} className={`fixed inset-0 z-50 bg-white p-4 transition-transform transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:w-auto md:h-auto md:bg-transparent`}>
+    <div ref={sidebarRef} className={`w-64 text-white fixed inset-0 z-50 bg-white p-4 transition-transform transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:w-auto md:h-auto md:bg-transparent`}>
       <div className="flex justify-between items-center p-6">
         <div className='flex gap-2'>
           <img src='/logo.png' alt='logo'/>

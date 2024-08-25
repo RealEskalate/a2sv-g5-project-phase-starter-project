@@ -72,24 +72,22 @@ export const TransactionTable = ({
 
   const renderPageButtons = () => {
     const pageButtons = [];
-    const maxVisiblePages = 3; // Number of pages to show before the ellipsis
+    const maxVisiblePages = 3;
 
-    // Determine the range of pages to show
     const startPage = Math.max(currentPage - 1, 1);
     const endPage = Math.min(startPage + maxVisiblePages - 1, totalPages - 1);
 
-    // Always show the first page when it's close enough
     if (currentPage <= maxVisiblePages) {
       for (let page = 1; page <= endPage; page++) {
         pageButtons.push(
           <button
             key={page}
             onClick={() => handlePageChange(page)}
-            className={`${
+            className={`hover:bg-blue-700 hover:text-white ${
               page !== currentPage
                 ? isDarkMode
-                  ? "text-gray-300 hover:bg-gray-700 hover:text-white bg-gray-900"
-                  : "text-blue-600 hover:bg-blue-700 hover:text-white bg-white"
+                  ? "text-gray-300   bg-gray-900"
+                  : "text-blue-600  bg-white"
                 : isDarkMode
                 ? "bg-blue-600 text-white"
                 : "bg-blue-600 text-white"
@@ -108,12 +106,12 @@ export const TransactionTable = ({
           <button
             key={page}
             onClick={() => handlePageChange(page)}
-            className={`${
+            className={`hover:bg-blue-700 hover:text-white ${
               page === currentPage
                 ? "bg-blue-600 text-white"
                 : isDarkMode
-                ? "text-gray-300 hover:bg-gray-700 hover:text-white"
-                : "text-blue-600 bg-white hover:bg-blue-700 hover:text-white"
+                ? "text-gray-300 "
+                : "text-blue-600 bg-white "
             }
             focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 me-2 mb-2 shadow-lg`}
           >
@@ -123,7 +121,6 @@ export const TransactionTable = ({
       }
     }
 
-    // Always show the last page
     if (endPage < totalPages - 1) {
       pageButtons.push(
         <span key="dots-end" className="text-gray-500">
@@ -136,10 +133,10 @@ export const TransactionTable = ({
       <button
         key={totalPages}
         onClick={() => handlePageChange(totalPages)}
-        className={`${
+        className={` text-white${
           currentPage === totalPages
-            ? "bg-blue-600 text-white"
-            : "text-blue-600 hover:bg-blue-700 hover:text-white"
+            ? "bg-blue-600 "
+            : " hover:bg-blue-700 hover:text-white"
         } ${isDarkMode ? "bg-gray-800" : "bg-white"} 
         focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 me-2 mb-2 shadow-lg`}
       >
@@ -152,39 +149,54 @@ export const TransactionTable = ({
 
   return (
     <>
-      <div className="space-y-5 w-[90%] items-center">
-        <div className="space-y-5">
-          <h4>Recent Transactions</h4>
-          <div className="space-x-5 flex">
+      <div className="space-y-5 w-[100%] items-center my-5">
+        <div className={`space-y-5 `}>
+          <h4 className="font-inter  font-semibold lg:text-[22px] md:text-lg text-base">
+            Recent Transactions
+          </h4>
+          <div
+            className={`md:space-x-20 space-x-5 flex flex-grow border-b-2 ${
+              isDarkMode ? "border-[#ebeef23a]" : "border-[#EBEEF2]"
+            }`}
+          >
             <button onClick={() => setActiveTab("all")}>
               <p
-                className={`border-b-2 text-xs ${
-                  activeTab === "all"
-                    ? "border-b-blue-600"
-                    : "border-b-transparent"
-                } ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}
+                className={`border-b-4  font-inter  font-medium lg:text-base text-xs
+                   ${
+                     activeTab === "all"
+                       ? isDarkMode
+                         ? "border-b-blue-600 text-gray-300" // Dark mode when activeTab is "all"
+                         : "border-b-blue-600 text-[#1814F3]" // Light mode when activeTab is "all"
+                       : "border-b-transparent text-[#718EBF]"
+                   }
+                  
+                `}
               >
                 All Transactions
               </p>
             </button>
             <button onClick={() => setActiveTab("income")}>
               <p
-                className={`border-b-2 text-xs ${
+                className={`border-b-4 font-medium lg:text-base text-xs  ${
                   activeTab === "income"
-                    ? "border-b-blue-600"
-                    : "border-b-transparent"
-                } ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}
+                    ? isDarkMode
+                      ? "border-b-blue-600 text-gray-300" // Dark mode when activeTab is "all"
+                      : "border-b-blue-600 text-[#1814F3]" // Light mode when activeTab is "all"
+                    : "border-b-transparent text-[#718EBF]"
+                }`}
               >
                 Income
               </p>
             </button>
             <button onClick={() => setActiveTab("expense")}>
               <p
-                className={`border-b-2 text-xs ${
+                className={`border-b-4 font-medium lg:text-base text-xs  ${
                   activeTab === "expense"
-                    ? "border-b-blue-600"
-                    : "border-b-transparent"
-                } ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}
+                    ? isDarkMode
+                      ? "border-b-blue-600 text-gray-300" // Dark mode when activeTab is "all"
+                      : "border-b-blue-600 text-[#1814F3]" // Light mode when activeTab is "all"
+                    : "border-b-transparent text-[#718EBF]"
+                } `}
               >
                 Expense
               </p>
@@ -201,52 +213,36 @@ export const TransactionTable = ({
           <ExpenseTable transactions={transactions} tab={activeTab} />
         )}
       </div>
-      <div className="flex justify-end items-center space-x-2 m-5">
+      <div className="flex justify-end items-center space-x-2 ">
         <button
           onClick={handlePreviousPage}
-          className={`flex items-center justify-center rounded-xl shadow-lg p-1 ${
+          className={`flex items-center justify-center rounded-xl shadow-lg px-2 py-1 me-2 mb-2  ${
             currentPage === 1
               ? "text-gray-400"
               : isDarkMode
-              ? "text-gray-300 hover:bg-blue-600 hover:text-white"
-              : "text-blue-600 hover:bg-blue-400 hover:text-black"
+              ? "text-gray-300  hover:text-white hover:bg-blue-600"
+              : "text-blue-600 hover:text-white hover:bg-blue-600"
           } ${isDarkMode ? "bg-gray-800" : "bg-white"}`}
           disabled={currentPage === 1}
         >
           <GrFormPrevious size={30} />
-          <p
-            className={` ${
-              currentPage === 1
-                ? "text-gray-400"
-                : isDarkMode
-                ? "text-gray-300"
-                : "text-blue-600"
-            }`}
-          >
-            Previous
-          </p>
+          Previous
         </button>
 
         {renderPageButtons()}
 
         <button
           onClick={handleNextPage}
-          className={`flex items-center justify-center rounded-xl shadow-lg p-1 ${
+          className={`flex items-center justify-center rounded-xl shadow-lg px-2 py-1 me-2 mb-2 ${
             currentPage === totalPages
               ? "text-gray-400 "
               : isDarkMode
-              ? "text-gray-300 hover:bg-blue-600 hover:text-white"
-              : "text-blue-600 hover:bg-blue-400 hover:text-black"
+              ? "text-gray-300  hover:text-white hover:bg-blue-600"
+              : "text-blue-600  hover:text-white hover:bg-blue-600"
           } ${isDarkMode ? "bg-gray-800" : "bg-white"} hover:bg-blue-100`}
           disabled={currentPage === totalPages}
         >
-          <p
-            className={` ${
-              currentPage === totalPages ? "text-gray-400" : "text-blue-600"
-            } ${isDarkMode ? "text-gray-300" : "text-gray-900"}`}
-          >
-            Next
-          </p>
+          Next
           <MdNavigateNext size={30} />
         </button>
       </div>

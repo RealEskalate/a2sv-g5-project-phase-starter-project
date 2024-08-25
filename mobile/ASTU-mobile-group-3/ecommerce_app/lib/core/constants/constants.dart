@@ -15,7 +15,11 @@ class AppData {
   static const String chat = '$baseUrlV3/chats';
 
   static String getChat(String id) => '$baseUrlV3/chats/$id';
-  static String getMssages(String id) => '$baseUrlV3/chats/$id/messages';
+
+  static String getMssagesById(String id) => '$baseUrlV3/chats/$id/messages';
+
+  static const String chatserver =
+      'https://g5-flutter-learning-path-be.onrender.com';
 
 // End
 

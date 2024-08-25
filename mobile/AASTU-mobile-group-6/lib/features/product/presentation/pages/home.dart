@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:ecommerce_app_ca_tdd/features/chat/socket/socket_manager.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/models/product_models.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/bottomnavbar.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/data/models/user_access.dart';
@@ -99,6 +100,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     GestureDetector(
                       onTap: () {
+                      
                         Navigator.pushNamed(context,'/logout');
                       },
                       child: Container(
@@ -161,6 +163,7 @@ class _HomePageState extends State<HomePage> {
                                               }, child: Text("Cancel")),
                                               TextButton(
                                                 onPressed: (){
+
                                                   logOut();
                                                   Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => true);
                                                 },
@@ -287,6 +290,8 @@ class _HomePageState extends State<HomePage> {
                               itemBuilder: (context, index) {
                                 return GestureDetector(
                                     onTap: () {
+                        SocketManager().initializeSocket();
+
                                       Navigator.pushNamed(context, '/detail',
                                           arguments: state.products[index]);
                                     },

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"math"
 	"time"
-
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -171,9 +170,11 @@ func (bf *BlogRepository) FilterBlogs(ctx context.Context, blogRequest *domain.B
 	}
 
 	if blogRequest.Tags != nil {
-		filter["tags"] = bson.M{
-			"$in": blogRequest.Tags,
-		}
+		tagFilters := make([]bson.M, 0, len(blogRequest.Tags))
+        for _, tag := range blogRequest.Tags {
+            tagFilters = append(tagFilters, bson.M{"tags": bson.M{"$elemMatch": bson.M{"$regex": primitive.Regex{Pattern: tag, Options: "i"}}}})
+        }
+        filter["$and"] = tagFilters
 	}
 
 	cur, err := collection.Find(ctx, filter)
@@ -230,13 +231,15 @@ func (sr *BlogRepository) SearchBlogs(ctx context.Context, searchRequest *domain
 
 	if searchRequest.Title != "" && searchRequest.Author != "" {
 		filter = bson.M{
-			"author": bson.M{"$regex": searchRequest.Author, "$options": "i"},
-			"title":  bson.M{"$regex": searchRequest.Title, "$options": "i"},
-		}
+            "$or": []bson.M{
+                {"title": bson.M{"$regex": primitive.Regex{Pattern: searchRequest.Title, Options: "i"}}},
+                {"author": bson.M{"$regex": primitive.Regex{Pattern: searchRequest.Author, Options: "i"}}},
+            },
+        }
 	} else if searchRequest.Title == "" && searchRequest.Author != "" {
-		filter = bson.M{"author": bson.M{"$regex": searchRequest.Author, "$options": "i"}}
+		filter = bson.M{"author": bson.M{"$regex": primitive.Regex{Pattern: searchRequest.Author, Options: "i"}}}
 	} else if searchRequest.Title != "" && searchRequest.Author == "" {
-		filter = bson.M{"title": bson.M{"$regex": searchRequest.Title, "$options": "i"}}
+		filter = bson.M{"title": bson.M{"$regex": primitive.Regex{Pattern: searchRequest.Title, Options: "i"}}}
 	}
 
 	cur, err := collection.Find(ctx, filter)

@@ -43,15 +43,10 @@ const MainDashboard = () => {
   return (
     <div
       className={`min-h-screen 
-        p-10 space-y-5" 
-      } ${isDarkMode ? "bg-gray-700 text-white" : "bg-[#F5F7FA] text-black"}`}
+        md:p-10 p-5 space-y-5 ${isDarkMode ? "bg-gray-700 text-white" : "bg-[#F5F7FA] text-black"}`}
     >
-     
-
-      {/* Render components in the background to trigger data fetching */}
-   
         {/* First Row: My Cards and Recent Transactions */}
-        <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
+        <div className="md:flex sm:grid-cols-2 md:gap-5 md:space-y-0 space-y-5 ">
           <Cards onLoadingComplete={() => setCardLoaded(true)} />
           <RecentTransaction
             onLoadingComplete={() => setRecentTransactionLoaded(true)}

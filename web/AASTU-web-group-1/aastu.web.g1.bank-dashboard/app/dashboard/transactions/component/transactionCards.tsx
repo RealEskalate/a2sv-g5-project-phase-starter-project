@@ -46,11 +46,11 @@ export const TransactionCards = ({
     setIsModalOpen(!isModalOpen);
   };
   return (
-    <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
+    <div className="md:flex sm:grid-cols-2 md:gap-5 md:space-y-0 space-y-5">
       <div className="md:w-2/3 space-y-5">
-        <div className="flex justify-between font-inter text-[16px] font-semibold">
-          <h4>My Cards</h4>
-          <h4>
+        <div className="flex justify-between font-inter  font-semibold">
+          <h4 className="lg:text-[22px] md:text-lg text-base">My Cards</h4>
+          <h4 className="lg:text-lg md:text-[15px] text-sm hover:text-blue-600">
             <button onClick={handleModalToggle}>+Add Card</button>
           </h4>
           {isModalOpen && (
@@ -62,7 +62,6 @@ export const TransactionCards = ({
                 <AddCardModal
                   isOpen={isModalOpen}
                   onClose={handleModalToggle}
-                 
                 />
               </div>
             </div>
@@ -84,12 +83,12 @@ export const TransactionCards = ({
               ))}
         </div>
       </div>
-      <div className="md:w-1/3 md:space-y-5 w-full">
-        <div className="font-inter text-[16px] font-semibold">
-          <h4>My Expense</h4>
+      <div className="md:w-1/3 space-y-5 ">
+        <div className="flex font-inter  font-semibold ">
+          <h4 className="lg:text-[22px] md:text-lg text-base">My Expense</h4>
         </div>
         <div
-          className={`rounded-xl space-y-5 p-3 md:h-[200px] lg:w-[365px] lg:h-[220px] ${
+          className={`rounded-xl space-y-5 p-3 md:h-[200px] lg:w-[365px] lg:h-56 ${
             isDarkMode ? "bg-gray-800" : "bg-white "
           } shadow-lg`}
         >

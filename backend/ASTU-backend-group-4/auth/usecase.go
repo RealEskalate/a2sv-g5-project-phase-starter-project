@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"crypto/sha1"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -66,11 +67,12 @@ func (au *AuthUserUsecase) RegisterUser(ctx context.Context, user User) error {
 		return ErrUserExistWithThisUsername
 	}
 
-	hashedpasswors, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashedpassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
-	user.Password = string(hashedpasswors)
+
+	user.Password = string(hashedpassword)
 	user.IsActive = false
 	user.Email = strings.ToLower(user.Email)
 	// user.IsAdmin = false	activationLink := fmt.Sprintf("http://localhost/activate/%s/%s", user.ID, tokenString)
@@ -86,17 +88,17 @@ func (au *AuthUserUsecase) RegisterUser(ctx context.Context, user User) error {
 		user.IsAdmin = true
 		user.IsSupper = true
 	}
-	_, err = au.repository.CreateUser(ctx, user)
+	id, err := au.repository.CreateUser(ctx, user)
 	if err != nil {
 		return ErrCantCreateUser
 	}
-	tokenString, err := au.GenerateActivateToken(user.Password, user.UpdatedAt)
-	if err != nil {
-		return err
-	}
+	user.ID = id
+
 	from := os.Getenv("FROM")
+	tokenString := au.GenerateActivateToken(user.Password, user.UpdatedAt)
+
 	activationLink := fmt.Sprintf("http://localhost/activate/%s/%s", user.ID, tokenString)
-	au.emailService.SendEmail(from, user.Email, "click the link to activate you account"+activationLink)
+	au.emailService.SendEmail(from, user.Email, fmt.Sprintf("click the link to activate you account %s", activationLink), "Account Activation")
 
 	return nil
 }
@@ -114,10 +116,8 @@ func (au *AuthUserUsecase) Activate(ctx context.Context, userID string, token st
 	if err != nil {
 		return err
 	}
-	expectedToken, err := au.GenerateActivateToken(user.Password, user.UpdatedAt)
-	if err != nil {
-		return err
-	}
+	expectedToken := au.GenerateActivateToken(user.Password, user.UpdatedAt)
+
 	if expectedToken != token {
 		return err
 	}
@@ -140,14 +140,13 @@ func (au *AuthUserUsecase) Logout(ctx context.Context, userID string) {
 	au.repository.DeleteRefreshToken(ctx, token)
 }
 
-func (au *AuthUserUsecase) GenerateActivateToken(hashedpassword string, updatedat time.Time) (string, error) {
+func (au *AuthUserUsecase) GenerateActivateToken(hashedpassword string, updatedat time.Time) string {
 	token := hashedpassword + updatedat.String()
-	tokenbyte, err := bcrypt.GenerateFromPassword([]byte(token), bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-	token = base64.StdEncoding.EncodeToString(tokenbyte)
-	return token, nil
+	hasher := sha1.New()
+	hasher.Write([]byte(token))
+
+	token = base64.URLEncoding.EncodeToString(hasher.Sum(nil))
+	return token
 }
 
 func (au *AuthUserUsecase) GenerateToken(user User, tokenType string) (string, error) {

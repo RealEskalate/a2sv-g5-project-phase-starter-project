@@ -1,4 +1,3 @@
-
 import ExpenseStatisticsChart from "@/components/dashboard/Charts/ExpenseStatisticsChart";
 import WeeklyActivityChart from "@/components/dashboard/Charts/WeeklyActivityChart";
 import CreditCard from "@/components/dashboard/CreditCard";
@@ -10,7 +9,6 @@ import DarkChip from "@/public/Chip_Card.svg";
 import firstIcon from "@/public/Group 313.svg";
 import secondIcon from "@/public/Group 314.svg";
 import thirdIcon from "@/public/Group 315.svg";
-
 
 const Dashboard = () => {
   return (
@@ -82,8 +80,8 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="mt-10 grid grid-cols-1 lg:grid-cols-4 gap-6 h-72">
-        <div className="col-span-3">
+      <div className="mt-10 grid grid-cols-1 gap-6 h-auto lg:grid-cols-4 lg:h-72">
+        <div className="col-span-1 lg:col-span-3">
           <h2 className="text-lg font-semibold mb-4 text-[#343C6A]">
             Weekly Activity
           </h2>
@@ -101,10 +99,10 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      <div></div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 mt-8">
+
+      <div className="grid grid-cols-1 gap-8 px-4 mt-8 lg:grid-cols-2">
         <div className="flex flex-col space-y-4 py-8 pb-10 min-h-full">
-          <p className="font-bold text-[#343C6A]">Quick Transfer</p>
+          <p className="font-bold text-xl text-[#343C6A] ml-4">Quick Transfer</p>
           <QuickTransfer />
         </div>
         <div className="flex flex-col py-6 min-h-full mt-8 lg:mt-0">

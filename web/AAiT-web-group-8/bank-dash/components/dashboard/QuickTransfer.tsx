@@ -27,9 +27,9 @@ const QuickTransfer = () => {
   };
 
   return (
-    <div className="p-7 bg-white rounded-xl shadow-lg w-full md:w-full max-w-lg mx-auto">
-      <div className="flex items-center justify-between mb-4">
-        <button onClick={handlePrev} className="p-2 rounded-full bg-gray-200">
+    <div className="p-4 lg:p-8 bg-white rounded-xl shadow-lg w-full max-w-lg mx-auto">
+      <div className="flex flex-col lg:flex-row items-center justify-between mb-4">
+        <button onClick={handlePrev} className="p-2 rounded-full bg-gray-200 mb-4 lg:mb-0">
           <FaChevronLeft />
         </button>
         <div className="flex items-center justify-center space-x-4 overflow-hidden w-full">
@@ -50,13 +50,13 @@ const QuickTransfer = () => {
             </div>
           ))}
         </div>
-        <button onClick={handleNext} className="p-2 rounded-full bg-gray-200">
+        <button onClick={handleNext} className="p-2 rounded-full bg-gray-200 mt-4 lg:mt-0">
           <FaChevronRight />
         </button>
       </div>
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col lg:flex-row items-center gap-4">
         <p className="flex-2 flex-shrink-0 text-[#718EBF]">Write Amount</p>
-        <div className="relative flex-3">
+        <div className="relative flex-3 w-full lg:w-auto">
           <input
             className="w-full py-2 pl-4 pr-20 text-lg border rounded-full focus:outline-none"
             placeholder="Write Amount"
@@ -65,7 +65,7 @@ const QuickTransfer = () => {
             disabled={!selectedPerson}
           />
           <button
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-[#1814F3] text-white rounded-full shadow-lg flex items-center space-x-2"
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 px-4 py-2 bg-[#1814F3] text-white rounded-full shadow-lg flex items-center space-x-2 w-full lg:w-auto"
             disabled={!selectedPerson || !amount}
           >
             <span>send</span>

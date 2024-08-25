@@ -6,20 +6,11 @@ import {
   LineElement,
   CategoryScale,
   LinearScale,
-  Title,
   Tooltip,
-  Legend,
   PointElement,
 } from "chart.js";
 
-ChartJS.register(
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  Title,
-  Tooltip,
-  PointElement
-);
+ChartJS.register(LineElement, CategoryScale, LinearScale, Tooltip, PointElement);
 
 interface ChartProps {
   data: {
@@ -33,40 +24,55 @@ const LineGraph: React.FC<ChartProps> = ({ data }) => {
     labels: data.labels,
     datasets: [
       {
-        label: "My Dataset",
+        label: "Balance",
         data: data.values,
         borderColor: "blue",
-        backgroundColor: "rgba(0, 0, 0, 0)",
-        fill: true,
-        tension: 0.5,
-        pointRadius: 0,
-        Tooltip: {
-          backgroundColor: "rgba(1, 0, 0, 0)",
-        },
+        backgroundColor: "rgba(0, 0, 255, 0.2)", // Light blue shade for the filled area
+        fill: true, // Enable fill to create the shaded area under the line
+        tension: 0.4,
+        pointRadius: 3,
       },
     ],
   };
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: "top" as const,
+        display: false, 
       },
       tooltip: {
         callbacks: {
           label: (context: any) => {
-            return `${context.dataset.label}: ${context.raw}`;
+            return `${context.raw}`; 
           },
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false, 
+        },
+        ticks: {
+          maxTicksLimit: 5,
+        },
+      },
+      y: {
+        grid: {
+          drawBorder: false, 
+          color: "rgba(0, 0, 0, 0.1)", 
+        },
+        ticks: {
+          display: false, 
         },
       },
     },
   };
 
   return (
-    <div className="w-full max-w-md mx-auto my-10 bg-white shadow-lg rounded-3xl pt-10 pl-10 pb-10 pr-10">
-      {" "}
-    
+    <div className="w-full h-full">
       <Line data={chartData} options={options} />
     </div>
   );

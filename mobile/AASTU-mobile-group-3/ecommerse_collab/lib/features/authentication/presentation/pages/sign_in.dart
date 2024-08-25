@@ -57,7 +57,7 @@ class _SignInState extends State<SignIn> {
         return Scaffold(
           backgroundColor: Colors.white,
           body: SingleChildScrollView(
-            child: Expanded(
+            
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -90,7 +90,7 @@ class _SignInState extends State<SignIn> {
                 ],
               ),
             ),
-          ),
+          
         );
       },
     );

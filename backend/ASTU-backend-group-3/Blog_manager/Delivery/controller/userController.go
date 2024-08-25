@@ -91,12 +91,12 @@ func (uc *UserController) Login(c *gin.Context) {
 		return
 	}
 
-	accessToken, err := uc.UserUsecase.Login(c, &input)
+	accessToken, refresh_token , err := uc.UserUsecase.Login(c, &input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	c.SetCookie("refresh_token", refresh_token, 60*60*24*7, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
 }
 
@@ -109,7 +109,6 @@ func (uc *UserController) RefreshToken(c *gin.Context) {
 	var jwtKey = []byte("BlogManagerSecretKey")
 
 	token, err := jwt.ParseWithClaims(refreshToken, &infrastructure.Claims{}, func(token *jwt.Token) (interface{}, error) {
-		// Verify the token's signing method
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, jwt.ErrSignatureInvalid
 		}
@@ -129,6 +128,7 @@ func (uc *UserController) RefreshToken(c *gin.Context) {
 		c.Abort()
 		return
 	}
+	
 
 	// Set token claims in context
 	claims, ok := token.Claims.(*infrastructure.Claims)
@@ -144,6 +144,12 @@ func (uc *UserController) RefreshToken(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	refreshToken , err = infrastructure.GenerateRefreshToken(claims.Username)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	uc.UserUsecase.InsertToken(claims.Username ,  accessToken , refreshToken)
 
 	c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
 }
@@ -157,19 +163,18 @@ func (uc *UserController) ForgotPassword(c *gin.Context) {
 		return
 	}
 
-	token, err := uc.UserUsecase.ForgotPassword(input.Username)
+	_, err := uc.UserUsecase.ForgotPassword(c , input.Username)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token})
 
 }
 func (uc *UserController) ResetPassword(c *gin.Context) {
 	reset_token := c.Param("token")
 
-	new_token, err := uc.UserUsecase.Reset(reset_token)
+	new_token, err := uc.UserUsecase.Reset(c ,reset_token)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -187,7 +192,10 @@ func (uc *UserController) ChangePassword(c *gin.Context) {
 		return
 	}
 
-	err := uc.UserUsecase.UpdatePassword(input.Username, input.NewPassword)
+	username := c.GetString("username")
+
+
+	err := uc.UserUsecase.UpdatePassword(username, input.NewPassword)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -217,15 +225,18 @@ func (uc *UserController) Logout(c *gin.Context) {
 }
 
 func (uc *UserController) PromoteToAdmin(c *gin.Context) {
-	username := c.Param("username")
+	ID := c.Param("id")
 
-	err := uc.UserUsecase.PromoteTOAdmin(username)
+	user , err := uc.UserUsecase.PromoteTOAdmin(ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	if user.Role != "admin" {
 	c.JSON(http.StatusOK, gin.H{"message": "User promoted to admin successfully"})
+	}else{
+		c.JSON(http.StatusOK, gin.H{"message": "User demoted to user successfully"})
+	}
 }
 
 func (uc *UserController) Verify(c *gin.Context) {

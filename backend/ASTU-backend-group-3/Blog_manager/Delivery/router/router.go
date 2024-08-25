@@ -44,6 +44,7 @@ func SetupRouter(userController *controller.UserController, blogController *cont
 	blogsRoute.POST("/:id/dislike", blogController.ToggleDislike)
 	blogsRoute.POST("/:id/comment", blogController.AddComment)
 	blogsRoute.POST("/filter", blogController.FilterBlogs)
+	blogsRoute.POST("/:id/report", blogController.BlogReport)
 
 	// Increment view count route
 	blogsRoute.POST("/:id/view", blogController.IncrementViewCount)
@@ -53,7 +54,8 @@ func SetupRouter(userController *controller.UserController, blogController *cont
 	adminRoute.Use(infrastructure.RoleMiddleware("admin")) // Apply admin role middleware
 
 	adminRoute.DELETE("/delete/:username", userController.DeleteUser)
-	adminRoute.PUT("/promote/:username", userController.PromoteToAdmin)
+	adminRoute.PUT("/promote/:id", userController.PromoteToAdmin)
+
 
 	return router
 }

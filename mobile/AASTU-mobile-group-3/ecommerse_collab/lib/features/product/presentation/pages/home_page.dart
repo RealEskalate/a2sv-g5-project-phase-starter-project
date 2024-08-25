@@ -195,7 +195,7 @@ class _HomePageState extends State<HomePage> {
                                 itemCount: state.products.length,
                                 itemBuilder: (context, index) {
                                   return ProductCard(
-                                      product: state.products[index]);
+                                      product: state.products[index], user: widget.user,);
                                 },
                               );
                             } else if (state is ErrorState) {

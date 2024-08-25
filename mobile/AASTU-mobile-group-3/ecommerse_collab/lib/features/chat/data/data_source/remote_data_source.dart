@@ -18,17 +18,51 @@ abstract class ChatRemoteDataSource {
 
 class ChatRemoteDataSourceImpl extends ChatRemoteDataSource {
   final http.Client client;
+  final SocketIoManager _socketIoManager;
+
+  ChatRemoteDataSourceImpl({required this.client, required SocketIoManager socketIoManager})
+      : _socketIoManager = socketIoManager;
+
+  void initSocket(String serverUrl, String token){
+    _socketIoManager.init();
+  }
+
+  void sendMessage(String chatId, String content){
+    final message = {
+      'chatId': chatId,
+      'content' : content,
+      'type' : 'text'
+    };
+    _socketIoManager.sendMessage('message:send', message);
+  }
+
+  void handleIncomingMessages(){
+    _socketIoManager.subscribe('message:received', (data){
+      final message = MessageModel.fromJson(json.decode(data));
+      print('New message received: ${message.content}');
+    });
+  }
+
   
-  ChatRemoteDataSourceImpl({required this.client});
   var baseUrl = "https://g5-flutter-learning-path-be.onrender.com/api/v3/chats";
 
   @override
-  Future<ChatModel> chatById(String chatId)  {
+  Future<ChatModel> chatById(String chatId) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    var headers = {
+      'Authorization': "Bearer ${sharedPreferences.getString('token')}",
+      'Content-Type': 'application/json',
+    };
 
+    final response =
+        await client.get(Uri.parse('$baseUrl/$chatId'), headers: headers);
 
-    throw UnimplementedError();
-
-
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body) as Map<String, dynamic>;
+      return ChatModel.fromJson(jsonData['data']);
+    } else {
+      throw Exception("Failed to load chat by ID");
+    }
   }
 
   @override
@@ -39,19 +73,37 @@ class ChatRemoteDataSourceImpl extends ChatRemoteDataSource {
       'Content-Type': 'application/json',
     };
 
-    final response = await client.delete(Uri.parse('$baseUrl/$chatId'), headers: headers);
+    final response =
+        await client.delete(Uri.parse('$baseUrl/$chatId'), headers: headers);
 
     print(response.body);
-    if (response.statusCode != 200){
+    if (response.statusCode != 200) {
       throw Exception();
     }
-    
   }
 
   @override
-  Future<List<MessageModel>> getChatMessage(String chatId) {
-    // TODO: implement getChatMessage
-    throw UnimplementedError();
+  Future<List<MessageModel>> getChatMessage(String chatId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var headers = {
+      'Authorization': "Bearer ${prefs.getString('token')}",
+      'Content-Type': 'application/json',
+    };
+
+    final response = await client.get(Uri.parse('$baseUrl/$chatId/messages'),
+        headers: headers);
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body) as Map<String, dynamic>;
+      List<MessageModel> messages = [];
+
+      for (var messgeData in jsonData['data']) {
+        messages.add(MessageModel.fromJson(messgeData));
+      }
+      return messages;
+    } else {
+      throw Exception("Failed to load chat messages");
+    }
   }
 
   @override
@@ -84,10 +136,9 @@ class ChatRemoteDataSourceImpl extends ChatRemoteDataSource {
       'Content-Type': 'application/json',
     };
 
-    final response = await client.post(Uri.parse(baseUrl), headers: headers, body:json.encode({
-      'userId' : userId
-    }) );
-    
+    final response = await client.post(Uri.parse(baseUrl),
+        headers: headers, body: json.encode({'userId': userId}));
+
     if (response.statusCode == 201) {
       final jsonData = json.decode(response.body) as Map<String, dynamic>;
       final jsonFinal = jsonData['data'];
@@ -95,7 +146,5 @@ class ChatRemoteDataSourceImpl extends ChatRemoteDataSource {
     } else {
       throw Exception();
     }
-
-
   }
 }

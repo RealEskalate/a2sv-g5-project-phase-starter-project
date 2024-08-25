@@ -178,66 +178,36 @@ func (_m *BlogRepository) DeleteTag(ctx context.Context, id string) error {
 	return r0
 }
 
-// FilterBlogs provides a mock function with given fields: ctx, filter
-func (_m *BlogRepository) FilterBlogs(ctx context.Context, filter domain.BlogFilter) ([]*domain.Blog, error) {
-	ret := _m.Called(ctx, filter)
-
-	if len(ret) == 0 {
-		panic("no return value specified for FilterBlogs")
-	}
-
-	var r0 []*domain.Blog
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter) ([]*domain.Blog, error)); ok {
-		return rf(ctx, filter)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter) []*domain.Blog); ok {
-		r0 = rf(ctx, filter)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Blog)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, domain.BlogFilter) error); ok {
-		r1 = rf(ctx, filter)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// FindBlogs provides a mock function with given fields: ctx, filter, page, pageSize
-func (_m *BlogRepository) FindBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int) ([]*domain.Blog, int, error) {
-	ret := _m.Called(ctx, filter, page, pageSize)
+// FindBlogs provides a mock function with given fields: ctx, filter, page, pageSize, orderBy
+func (_m *BlogRepository) FindBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int, orderBy []string) ([]*domain.GetBlogDTO, int, error) {
+	ret := _m.Called(ctx, filter, page, pageSize, orderBy)
 
 	if len(ret) == 0 {
 		panic("no return value specified for FindBlogs")
 	}
 
-	var r0 []*domain.Blog
+	var r0 []*domain.GetBlogDTO
 	var r1 int
 	var r2 error
-	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter, int, int) ([]*domain.Blog, int, error)); ok {
-		return rf(ctx, filter, page, pageSize)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter, int, int, []string) ([]*domain.GetBlogDTO, int, error)); ok {
+		return rf(ctx, filter, page, pageSize, orderBy)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter, int, int) []*domain.Blog); ok {
-		r0 = rf(ctx, filter, page, pageSize)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter, int, int, []string) []*domain.GetBlogDTO); ok {
+		r0 = rf(ctx, filter, page, pageSize, orderBy)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Blog)
+			r0 = ret.Get(0).([]*domain.GetBlogDTO)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, domain.BlogFilter, int, int) int); ok {
-		r1 = rf(ctx, filter, page, pageSize)
+	if rf, ok := ret.Get(1).(func(context.Context, domain.BlogFilter, int, int, []string) int); ok {
+		r1 = rf(ctx, filter, page, pageSize, orderBy)
 	} else {
 		r1 = ret.Get(1).(int)
 	}
 
-	if rf, ok := ret.Get(2).(func(context.Context, domain.BlogFilter, int, int) error); ok {
-		r2 = rf(ctx, filter, page, pageSize)
+	if rf, ok := ret.Get(2).(func(context.Context, domain.BlogFilter, int, int, []string) error); ok {
+		r2 = rf(ctx, filter, page, pageSize, orderBy)
 	} else {
 		r2 = ret.Error(2)
 	}
@@ -306,23 +276,23 @@ func (_m *BlogRepository) GetAllTags(ctx context.Context) ([]*domain.BlogTag, er
 }
 
 // GetBlogByID provides a mock function with given fields: ctx, id
-func (_m *BlogRepository) GetBlogByID(ctx context.Context, id string) (*domain.Blog, error) {
+func (_m *BlogRepository) GetBlogByID(ctx context.Context, id string) (*domain.GetSingleBlogDTO, error) {
 	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetBlogByID")
 	}
 
-	var r0 *domain.Blog
+	var r0 *domain.GetSingleBlogDTO
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (*domain.Blog, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*domain.GetSingleBlogDTO, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.Blog); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.GetSingleBlogDTO); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.Blog)
+			r0 = ret.Get(0).(*domain.GetSingleBlogDTO)
 		}
 	}
 

@@ -2,7 +2,7 @@ package blog
 
 import (
 
-	"blogApp/internal/ai"
+	//"blogApp/internal/ai"
 
 	"blogApp/internal/domain"
 	"blogApp/internal/repository"

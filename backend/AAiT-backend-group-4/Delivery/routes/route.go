@@ -13,8 +13,10 @@ import (
 )
 
 func Setup(env *bootstrap.Env, timeout time.Duration, db mongo.Database, gin *gin.Engine, rc redis.Client) {
+	// Serve Html pages
 	gin.LoadHTMLGlob("templates/*")
 
+	// Serve static files like images
 	gin.Static("../../uploads/profileImages", "./uploads/profileImages")
 
 	publicRouter := gin.Group("")

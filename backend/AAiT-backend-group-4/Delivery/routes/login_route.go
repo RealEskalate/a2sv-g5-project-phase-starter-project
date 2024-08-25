@@ -21,5 +21,8 @@ func NewLoginRoute(env *bootstrap.Env, timeout time.Duration, db mongo.Database,
 		Env:          env,
 	}
 
+	loc := controllers.NewLogoutController(usecases.NewLogoutUsecase(ts, env))
+
 	group.POST("/user/login", lc.Login)
+	group.GET("/user/logout", loc.Logout)
 }

@@ -106,20 +106,20 @@ func (_m *TokenInfrastructure) ExtractRoleFromToken(tokenString string, secret s
 	return r0, r1
 }
 
-// ExtractUserIDFromToken provides a mock function with given fields: tokenString
-func (_m *TokenInfrastructure) ExtractUserIDFromToken(tokenString string) (string, error) {
-	ret := _m.Called(tokenString)
+// ExtractUserIDFromToken provides a mock function with given fields: tokenString, secret
+func (_m *TokenInfrastructure) ExtractUserIDFromToken(tokenString string, secret string) (string, error) {
+	ret := _m.Called(tokenString, secret)
 
 	var r0 string
-	if rf, ok := ret.Get(0).(func(string) string); ok {
-		r0 = rf(tokenString)
+	if rf, ok := ret.Get(0).(func(string, string) string); ok {
+		r0 = rf(tokenString, secret)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(tokenString)
+	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+		r1 = rf(tokenString, secret)
 	} else {
 		r1 = ret.Error(1)
 	}

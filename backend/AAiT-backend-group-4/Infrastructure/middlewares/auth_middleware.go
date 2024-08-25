@@ -56,7 +56,6 @@ func AuthMiddleware(env *bootstrap.Env, tokenService domain.TokenInfrastructure)
 		ok, _ = tokenService.CheckTokenExpiry(accessToken, env.AccessTokenSecret)
 
 		if !ok {
-			log.Printf("Error Expired token is ok: %v", ok)
 
 			// Access token is invalid or expired, check the refresh token
 			_, refreshErr := tokenService.CheckTokenExpiry(refreshToken, env.RefreshTokenSecret)

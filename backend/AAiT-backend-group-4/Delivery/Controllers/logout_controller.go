@@ -3,6 +3,7 @@ package controllers
 import (
 	domain "aait-backend-group4/Domain"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,16 +26,30 @@ func NewLogoutController(logoutUsecase domain.LogoutUsecase) *LogoutController {
 // If the token is provided, it calls the LogoutUsecase to process the logout.
 // The result of the logout operation is then returned in the response.
 func (c *LogoutController) Logout(ctx *gin.Context) {
-	token := ctx.Request.Header.Get("Authorization") // Retrieve the Authorization token from the header
-	if token == "" {
+	authHeader := ctx.Request.Header.Get("Authorization") // Retrieve the Authorization token from the header
+	if authHeader == "" {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Authorization token required"})
 		return
 	}
 
+	authParts := strings.Split(authHeader, " ")
+	if len(authParts) != 2 || strings.ToLower(authParts[0]) != "bearer" {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid authorization header"})
+		return
+	}
+
+	tokens := strings.Split(authParts[1], ":")
+	if len(tokens) != 2 {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Both access and refresh tokens are required"})
+		return
+	}
+
+	accessToken := tokens[0]
+
 	// Call the LogoutUsecase to handle the logout process
-	response, err := c.LogoutUsecase.Logout(ctx, token)
+	response, err := c.LogoutUsecase.Logout(ctx, accessToken)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to logout"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 

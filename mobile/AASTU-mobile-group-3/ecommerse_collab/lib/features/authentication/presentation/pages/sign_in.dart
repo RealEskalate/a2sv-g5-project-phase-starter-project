@@ -38,12 +38,14 @@ class _SignInState extends State<SignIn> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
+              backgroundColor: Colors.red,
             ),
           );
         } else if (state is UserLoggedState) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("User Logged in"),
+              backgroundColor: Colors.green,
             ),
           );
           print("state in sign in ${state.user}");
@@ -61,6 +63,7 @@ class _SignInState extends State<SignIn> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  SizedBox(height: 100,),
                   const Logo(width: 144, height: 50, fontSize: 48),
                   const BigTitle(text: "Sign into your account"),
                   SingleChildScrollView(

@@ -1,7 +1,5 @@
-import 'dart:developer';
 
 import '../../../../config/route/route.dart' as route;
-import '../../../product/presentation/bloc/product_bloc.dart';
 import 'pages.dart';
 
 class SplashPage extends StatefulWidget {

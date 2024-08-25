@@ -76,13 +76,13 @@
 //           <div className="flex flex-col md:w-2/3">
 //             <div className="flex items-center justify-between mb-4">
 //               <h2 className="text-xl font-bold text-[#343C6A] dark:text-[#9faaeb]">My Cards</h2>
-              
+
 //               {/* Add Card Button with Dialog Trigger */}
 //               <DialogTrigger onClick={() => setIsDialogOpen(true)}>
 //                 <Button className="border-none">+ Add Card</Button>
 //               </DialogTrigger>
 //             </div>
-            
+
 //             <div className="relative">
 //               <div className="flex items-center space-x-2 overflow-x-auto">
 //                 {/* Backward Icon */}
@@ -183,7 +183,6 @@
 
 // export default Page;
 
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -206,8 +205,17 @@ import {
 } from "@/lib/api/transactionController";
 import { useRouter } from "next/navigation";
 import Refresh from "@/app/api/auth/[...nextauth]/token/RefreshToken";
-import {Dialog} from "@/components/ui/dialog";
-import {Button} from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import AddCardForm from "../creditCards/AddCardForm";
 
 // Utility to format dates
 const formatDate = (date: string): string => {
@@ -242,7 +250,9 @@ const Page = () => {
         setAccess_token(accessToken);
       } catch (error) {
         console.error("Error fetching session or refreshing token:", error);
-        router.push(`/api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
+        router.push(
+          `/api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+        );
       } finally {
         setLoading(false);
       }
@@ -260,8 +270,9 @@ const Page = () => {
           const cardData = await getCards(access_token, page, size);
           if (cardData.content.length > 0) {
             setCards((prevCards) => [
-              ...prevCards.filter((card) =>
-                !cardData.content.some((newCard) => newCard.id === card.id)
+              ...prevCards.filter(
+                (card) =>
+                  !cardData.content.some((newCard) => newCard.id === card.id)
               ),
               ...cardData.content,
             ]);
@@ -320,51 +331,153 @@ const Page = () => {
     if (access_token) loadTransactions();
   }, [access_token, activeTab]);
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
+
+  const handleNextCards = () => {
+    if (startIndex + 2 < cards.length) {
+      setStartIndex(startIndex + 2);
+      setCards(cards.slice(startIndex + 2, startIndex + 4));
+    }
+  };
+
+  
+  const handlePreviousCards = () => {
+         if (startIndex - 2 >= 0) {
+           setStartIndex(startIndex - 2);
+           setCards(cards.slice(startIndex - 2, startIndex));
+         }
+      };
+
+
+  const handleCardAddition = (newCard: any) => {
+    setCards([...cards, newCard]);
+  };
+
   return (
     <div className="bg-[#f5f7fa] dark:bg-[#020817] py-4 px-8 max-w-full  [&::-webkit-scrollbar]:hidden overflow-x-hidden">
       {loading ? (
-        <div className="text-center text-[#343C6A] dark:text-[#9faaeb]">Loading...</div>
+        <div className="text-center text-[#343C6A] dark:text-[#9faaeb]">
+          Loading...
+        </div>
       ) : (
         <>
           <div className="mb-4">
             <div className="flex flex-col md:flex-row space-x-4  [&::-webkit-scrollbar]:hidden overflow-hidden">
               <div className="flex flex-col md:w-2/3">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-bold text-[#343C6A] dark:text-[#9faaeb]">My Cards</h2>
-                  <Button className="border-none">+ Add Card</Button>
+                  <h2 className="text-xl font-bold text-[#343C6A] dark:text-[#9faaeb]">
+                    My Cards
+                  </h2>
+                  <DialogTrigger onClick={() => setIsDialogOpen(true)}>
+                    <Button className="border-none">+ Add Card</Button>
+                  </DialogTrigger>
                 </div>
                 <div className="relative">
                   <div className="flex items-center space-x-2 overflow-x-auto">
-                    {cards.map((item, index) => (
-                      <div key={item.id} className="flex-shrink-0 min-w-[200px]">
-                        <Card
-                          balance={`$${item.balance}`}
-                          cardHolder={item.cardHolder}
-                          validThru={formatDate(item.expiryDate)}
-                          cardNumber="3778 **** **** 1234"
-                          filterClass={index % 2 === 0 ? "" : "filter-black"}
-                          bgColor={index % 2 === 0 ? "from-[#4C49ED] to-[#0A06F4]" : "from-white to-gray-200"}
-                          textColor={index % 2 === 0 ? "text-white" : "text-black"}
-                          iconBgColor="bg-opacity-10"
-                          showIcon={true}
+                    {startIndex > 0 && (
+                      <button
+                        onClick={handlePreviousCards}
+                        className="text-[#343C6A] dark:text-[#9faaeb] focus:outline-none"
+                      >
+                        <img
+                          src="/back.svg"
+                          alt="Show Previous"
+                          className="h-6 w-6"
                         />
-                      </div>
-                    ))}
+                      </button>
+                    )}
+                    <div className="flex items-center space-x-2 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+                      {cards.map((item, index) => (
+                        <div
+                          key={item.id}
+                          className="flex-shrink-0 min-w-[200px]"
+                        >
+                          <Card
+                            balance={`$${item.balance}`}
+                            cardHolder={item.cardHolder}
+                            validThru={formatDate(item.expiryDate)}
+                            cardNumber="3778 **** **** 1234"
+                            filterClass={index % 2 === 0 ? "" : "filter-black"}
+                            bgColor={
+                              index % 2 === 0
+                                ? "from-[#4C49ED] to-[#0A06F4]"
+                                : "from-white to-gray-200"
+                            }
+                            textColor={
+                              index % 2 === 0 ? "text-white" : "text-black"
+                            }
+                            iconBgColor="bg-opacity-10"
+                            showIcon={true}
+                          />
+                        </div>
+                      ))}
+                      {/* Forward Icon */}
+                    </div>
+                    {startIndex + 2 < cards.length && (
+                      <button
+                        onClick={handleNextCards}
+                        className="text-[#343C6A] dark:text-[#9faaeb] focus:outline-none"
+                      >
+                        <img
+                          src="/forward.svg"
+                          alt="Show Next"
+                          className="h-6 w-6"
+                        />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
               <div className="flex-grow md:w-1/3">
-                <h2 className="text-xl font-bold text-[#343C6A] dark:text-[#9faaeb] pb-10">My Expense</h2>
+                <h2 className="text-xl font-bold text-[#343C6A] dark:text-[#9faaeb] pb-10">
+                  My Expense
+                </h2>
                 {access_token && <BarChart token={access_token} />}
               </div>
             </div>
           </div>
 
+          {/* Dialog for Adding New Card */}
+          <Dialog isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Add New Card</DialogTitle>
+                <DialogDescription>
+                  Fill out the form below to add a new card.
+                </DialogDescription>
+              </DialogHeader>
+              <AddCardForm
+                access_token={access_token}
+                handleAddition={handleCardAddition}
+              />
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  Close
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           {/* Recent Transactions */}
-          <div className="mb-4 w-80% mx-auto">
-            <h2 className="text-xl font-bold mb-4 pt-6 text-[#343C6A] dark:text-[#9faaeb]">Recent Transactions</h2>
-            <Tabs tabs={["All Transactions", "Income", "Expense"]} activeTab={activeTab} onTabChange={setActiveTab} />
-            <TransactionsList transactions={transactions.map((transaction) => ({ ...transaction, amount: transaction.amount.toString() }))} />
+          <div className="mb-4 w-full mx-auto">
+            <h2 className="text-xl font-bold mb-4 pt-6 text-[#343C6A] dark:text-[#9faaeb]">
+              Recent Transactions
+            </h2>
+            <Tabs
+              tabs={["All Transactions", "Income", "Expense"]}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
+            <TransactionsList
+              transactions={transactions.map((transaction) => ({
+                ...transaction,
+                amount: transaction.amount.toString(),
+              }))}
+            />
           </div>
         </>
       )}

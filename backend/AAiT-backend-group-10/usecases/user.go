@@ -25,7 +25,8 @@ func NewUserUseCase(repo interfaces.IUserRepository) *UserUseCase {
 }
 
 func (u *UserUseCase) CreateUser(user *domain.User) (*domain.User, *domain.CustomError) {
-	return  user, u.userRepo.CreateUser(user)
+	user.ID = uuid.New()
+	return user, u.userRepo.CreateUser(user)
 }
 
 func (u *UserUseCase) GetUserByID(id uuid.UUID) (*dto.GetUserResponseDto, *domain.CustomError) {

@@ -49,11 +49,11 @@ func (b *BlogUseCase) CreateBlog(blog *domain.Blog) (*dto.BlogDto, *domain.Custo
 	blog.ID = uuid.New()
 	blog.CreatedAt = time.Now().UTC()
 	blog.UpdatedAt = time.Now().UTC()
-	err := b.blogRepo.Create(blog)
+	author, err := b.userRepo.GetUserByID(blog.Author)
 	if err != nil {
 		return nil, err
 	}
-	author, err := b.userRepo.GetUserByID(blog.Author)
+	err = b.blogRepo.Create(blog)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (b *BlogUseCase) GetAllBlogs() ([]*dto.BlogDto, *domain.CustomError) {
 		if err != nil {
 			return nil, err
 		}
-		likeCount, dislikeCount, commentCount, err := b.getLikeAndCommentCount(blog.ID)
+		likeCount, dislikeCount, commentCount, err := GetLikeAndCommentCount(b, blog.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -108,7 +108,7 @@ func (b *BlogUseCase) GetBlogByID(id uuid.UUID) (*dto.BlogDto, *domain.CustomErr
     if err == nil && cachedBlog != "" {
         var blogDto dto.BlogDto
         err := json.Unmarshal([]byte(cachedBlog), &blogDto)
-		likeCount, dislikeCount, commentCount, cerr := b.getLikeAndCommentCount(id)
+		likeCount, dislikeCount, commentCount, cerr := GetLikeAndCommentCount(b, id)
 		if cerr != nil {
 			return nil, cerr
 		}
@@ -132,7 +132,7 @@ func (b *BlogUseCase) GetBlogByID(id uuid.UUID) (*dto.BlogDto, *domain.CustomErr
 		return nil, err
 	}
 
-	likeCount, dislikeCount, commentCount, err := b.getLikeAndCommentCount(id)
+	likeCount, dislikeCount, commentCount, err := GetLikeAndCommentCount(b, id)
 	if err != nil {
 		return nil, err
 	}
@@ -158,10 +158,13 @@ func (b *BlogUseCase) UpdateBlog(blog *domain.Blog) *domain.CustomError {
 	}
 	blog.UpdatedAt = time.Now().UTC()
 
+	err = b.blogRepo.Update(blog)
+	if err != nil {
+		return err
+	}
 	_ = b.cacheRepo.Delete("blogs:all")
 	_ = b.cacheRepo.Delete("blog:" + blog.ID.String())
-
-	return b.blogRepo.Update(blog)
+	return nil
 }
 
 func (b *BlogUseCase) DeleteBlog(id uuid.UUID, requester_id uuid.UUID, is_admin bool) *domain.CustomError {
@@ -234,7 +237,7 @@ func (b *BlogUseCase) SearchBlogs(filter domain.BlogFilter) ([]dto.BlogDto, int,
 		if err != nil {
 			return nil, 0, 0, err
 		}
-		likeCount, dislikeCount, commentCount, err := b.getLikeAndCommentCount(blog.ID)
+		likeCount, dislikeCount, commentCount, err := GetLikeAndCommentCount(b, blog.ID)
 		if err != nil {
 			return nil, 0, 0, err
 		}
@@ -269,8 +272,7 @@ func (b *BlogUseCase) SuggestImprovements(content string) (*domain.SuggestionRes
 	return aiResponse, nil
 }
 
-
-func (b *BlogUseCase) getLikeAndCommentCount(id uuid.UUID) (int, int, int, *domain.CustomError) {
+var GetLikeAndCommentCount = func(b *BlogUseCase, id uuid.UUID) (int, int, int, *domain.CustomError) {
 	//check if like count is in cache first then fetch from db
 	var likeCount int
 	likeCacheKey := "LikeCount:" + id.String()
@@ -284,7 +286,6 @@ func (b *BlogUseCase) getLikeAndCommentCount(id uuid.UUID) (int, int, int, *doma
 		}
 		_ = b.cacheRepo.Set(likeCacheKey, strconv.Itoa(likeCount), 10*time.Minute)
 	}
-
 
 	var dislikeCount int
 	dislikeCacheKey := "DislikeCount:" + id.String()

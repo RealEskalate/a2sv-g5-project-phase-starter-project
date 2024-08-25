@@ -21,14 +21,14 @@ type CommentUsecaseInterface interface {
 type CommentUsecase struct {
 	CommentRepository interfaces.CommentRepositoryInterface
 	userRepo          interfaces.IUserRepository
-	CacheRepo       interfaces.CacheRepoInterface
+	CacheRepo         interfaces.CacheRepoInterface
 }
 
 func NewCommentUsecase(cr interfaces.CommentRepositoryInterface, ur interfaces.IUserRepository, cacheRepo interfaces.CacheRepoInterface) *CommentUsecase {
 	return &CommentUsecase{
 		CommentRepository: cr,
 		userRepo:          ur,
-		CacheRepo:       cacheRepo,
+		CacheRepo:         cacheRepo,
 	}
 }
 
@@ -54,7 +54,7 @@ func (cu *CommentUsecase) AddComment(comment domain.Comment) *domain.CustomError
 	}
 	cacheKey := fmt.Sprintf("Comments:%s", comment.BlogID)
 	_ = cu.CacheRepo.Delete(cacheKey)
-	
+
 	return nil
 }
 
@@ -88,7 +88,7 @@ func (cu *CommentUsecase) GetComments(blogID uuid.UUID) ([]*dto.CommentDto, *dom
 			return commentDtos, nil
 		}
 	}
-	
+
 	comments, err := cu.CommentRepository.GetComments(blogID)
 	if err != nil {
 		return nil, err
@@ -125,9 +125,6 @@ func (cu *CommentUsecase) UpdateComment(requester_id uuid.UUID, updatedComment d
 		return err
 	}
 	cacheKey := fmt.Sprintf("Comments:%s", updatedComment.BlogID)
-	err = cu.CacheRepo.Delete(cacheKey)
-	if err != nil {
-		return err
-	}
+	_ = cu.CacheRepo.Delete(cacheKey)
 	return nil
 }

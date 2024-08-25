@@ -37,7 +37,7 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 		fmt.Println("user from callback", user.Email)
 
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 
@@ -78,14 +78,14 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 		accessToken, err := oc.LoginUsecase.CreateAccessToken(dbUser, oc.Env.AccessTokenSecret, oc.Env.AccessTokenExpiryHour)
 
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 
 		refreshToken, err := oc.LoginUsecase.CreateRefreshToken(dbUser, oc.Env.RefreshTokenSecret, oc.Env.RefreshTokenExpiryHour)
 
 		if err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 

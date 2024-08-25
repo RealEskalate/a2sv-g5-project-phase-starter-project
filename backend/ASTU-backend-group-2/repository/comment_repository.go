@@ -2,10 +2,10 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"log"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
+	custom_error "github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/errors"
 	mongopagination "github.com/gobeam/mongo-go-pagination"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -36,7 +36,7 @@ func (cr *commentRepository) CreateComment(c context.Context, comment *entities.
 	// This will insert the comment into the database
 	insertedComment, err := cr.Collection.InsertOne(c, comment)
 	if err != nil {
-		return entities.Comment{}, err
+		return entities.Comment{}, custom_error.ErrCreatingComment
 	}
 	log.Println("creating commet [REPO]")
 	comment.ID = insertedComment.InsertedID.(primitive.ObjectID)
@@ -49,7 +49,7 @@ func (cr *commentRepository) GetComments(c context.Context, blogID string, limit
 
 	id, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
-		return []entities.Comment{}, mongopagination.PaginationData{}, err
+		return []entities.Comment{}, mongopagination.PaginationData{}, custom_error.ErrInvalidID
 	}
 	log.Println("[repo] getting blog comment blog id: ", id)
 	filter := bson.M{"blog_id": id}
@@ -59,7 +59,7 @@ func (cr *commentRepository) GetComments(c context.Context, blogID string, limit
 	paginatedData, err := mongopagination.New(cr.Collection).Context(c).Limit(limit).Page(page).Filter(filter).Decode(&comments).Find()
 
 	if err != nil {
-		return []entities.Comment{}, mongopagination.PaginationData{}, err
+		return []entities.Comment{}, mongopagination.PaginationData{}, custom_error.ErrFilteringComments
 	}
 
 	if len(comments) == 0 {
@@ -75,10 +75,14 @@ func (cr *commentRepository) GetComment(c context.Context, commentID string) (en
 	id, err := primitive.ObjectIDFromHex(commentID)
 
 	if err != nil {
-		return comment, err
+		return comment, custom_error.ErrInvalidID
 	}
 
 	err = cr.Collection.FindOne(c, bson.M{"_id": id}).Decode(&comment)
+
+	if err != nil {
+		return comment, custom_error.ErrGettingComment
+	}
 
 	return comment, err
 
@@ -90,12 +94,16 @@ func (cr *commentRepository) UpdateComment(c context.Context, commentID string, 
 	id, err := primitive.ObjectIDFromHex(commentID)
 
 	if err != nil {
-		return comment, err
+		return comment, custom_error.ErrInvalidID
 	}
 
 	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 	// Update the comment and return the updated comment
 	err = cr.Collection.FindOneAndUpdate(c, bson.M{"_id": id}, bson.M{"$set": bson.M{"content": updatedComment.Content, "updated_at": updatedComment.UpdatedAt}}, opts).Decode(&comment)
+
+	if err != nil {
+		return comment, custom_error.ErrUpdatingComment
+	}
 
 	return comment, err
 
@@ -110,8 +118,8 @@ func (cr *commentRepository) DeleteComment(c context.Context, commentID string) 
 	}
 
 	res, err := cr.Collection.DeleteOne(c, bson.M{"_id": id})
-	if res.DeletedCount < 1 {
-		return errors.New("could't find the comment")
+	if res.DeletedCount < 1 || err != nil {
+		return custom_error.ErrDeletingComment
 	}
 
 	return err

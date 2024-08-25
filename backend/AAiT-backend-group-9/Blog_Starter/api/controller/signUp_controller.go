@@ -2,6 +2,7 @@ package controller
 
 import (
 	"Blog_Starter/domain"
+	"Blog_Starter/config"
 	EmailUtil "Blog_Starter/utils"
 	"fmt"
 	"math/rand"
@@ -17,12 +18,14 @@ import (
 type SignUpController struct {
 	signUpUsecase domain.SignupUsecase
 	otpUsecase    domain.OtpUsecase
+	Env           *config.Env
 }
 
-func NewSignUpController(signUpUsecase domain.SignupUsecase, otpUsecase domain.OtpUsecase) *SignUpController {
+func NewSignUpController(signUpUsecase domain.SignupUsecase, otpUsecase domain.OtpUsecase, env *config.Env) *SignUpController {
 	return &SignUpController{
 		signUpUsecase: signUpUsecase,
 		otpUsecase:    otpUsecase,
+		Env:           env, 
 	}
 }
 
@@ -206,3 +209,167 @@ func (s *SignUpController) ResendOTP(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "succesfuly sent otp"})
 }
+
+
+
+func (s *SignUpController) FederatedSignup(c *gin.Context) {
+	var request domain.FederatedSignupRequest
+
+	// Bind the request body to the FederatedSignupRequest struct
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, domain.Response{Message: errorsutil.MapErrors(err)})
+		return
+	}
+
+	// Validate and handle the federated authentication token
+	if request.Provider == "google" {
+		// Verify the Google authentication token (you might use a library or make a request to Google's API for verification)
+		// ...
+
+		// Assuming verification is successful, store or update the user in your database
+		user, err := s.handleFederatedSignup(c, request.Token, request.Role)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, domain.Response{Message: errorsutil.MapErrors(err)})
+			return
+		}
+
+		//Set user object
+		c.Set("user", user)
+
+		accessToken, err := s.SignupUsecase.CreateAccessToken(&user, s.Env.AccessTokenSecret, s.Env.AccessTokenExpiryHour)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, domain.Response{Message: errorsutil.MapErrors(err)})
+			return
+		}
+
+		refreshToken, err := s.SignupUsecase.CreateRefreshToken(&user, s.Env.RefreshTokenSecret, s.Env.RefreshTokenExpiryHour)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, domain.Response{Message: errorsutil.MapErrors(err)})
+			return
+		}
+
+		signupResponse := domain.LoginResponse{
+			AccessToken:     accessToken,
+			RefreshToken:    refreshToken,
+			ID:              user.ID.Hex(),
+			Name:            user.FullName,
+			Email:           user.Email,
+			ProfilePicUrl:   user.ProfilePicUrl,
+			Role:            user.Role,
+			ProfileComplete: user.ProfileComplete,
+			ProfileStatus:   user.ProfileStatus,
+		}
+
+		c.JSON(http.StatusOK, domain.Response{
+			Success: true,
+			Data:    signupResponse,
+		})
+
+	} else {
+		c.JSON(http.StatusBadRequest, domain.Response{Message: "Invalid federated provider"})
+	}
+}
+
+func (s *SignUpController) handleFederatedSignup(c *gin.Context, token, role string) (domain.User, error) {
+	// Verify the token with the federated identity provider (e.g., Google)
+	userInfo, err := verifyFederatedToken(token, s.Env.GoogleClientID)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	userInfo.Email = strings.ToLower(userInfo.Email)
+
+	// Check if the user already exists in the database
+	existingUser, err := s.SignupUsecase.GetUserByEmail(c, userInfo.Email)
+	if err != nil {
+		// User doesn't exist, create a new user
+		newUser := domain.User{
+			ID:            primitive.NewObjectID(),
+			FullName:      userInfo.Name,
+			Email:         userInfo.Email,
+			Password:      "",   // You may leave this empty or handle it differently for federated signup
+			Role:          role, // Set a default role or customize based on your application
+			CreatedAt:     time.Now(),
+			IsActivated:   true,                   // Assuming the user is activated upon federated signup
+			ProfileStatus: enumutil.Incomplete,    // Set a default profile status or customize based on your application
+			ProfilePicUrl: userInfo.ProfilePicUrl, // Assuming the federated provider provides a profile picture URL
+		}
+
+		// Save the new user to the database
+		err := s.SignupUsecase.Create(c, &newUser)
+		if err != nil {
+			return domain.User{}, err
+		}
+
+		return newUser, nil
+	}
+
+	return existingUser, nil
+}
+
+// Function to verify the federated authentication token (e.g., Google)
+
+// UserInfo struct represents the user information obtained from the federated identity provider
+type UserInfo struct {
+	Name          string `json:"name"`
+	Email         string `json:"email"`
+	ProfilePicUrl string `json:"profilePicUrl"`
+}
+
+func verifyFederatedToken(token, googleClientID string) (*UserInfo, error) {
+	// Verify the token with the Google API
+	userInfo, err := verifyGoogleToken(token, googleClientID)
+	if err != nil {
+		return nil, err
+	}
+
+	return userInfo, nil
+}
+
+func verifyGoogleToken(idToken, googleClientID string) (*UserInfo, error) {
+	// TokenInfo struct represents the response from Google's tokeninfo endpoint
+	type TokenInfo struct {
+		Audience string `json:"aud"`
+		Name     string `json:"name"`
+		Email    string `json:"email"`
+		Picture  string `json:"picture"`
+		// Add other relevant fields as needed
+	}
+	// Send a request to Google's tokeninfo endpoint to verify the token
+	resp, err := http.Get(fmt.Sprintf(googleTokenInfoURL, idToken))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New("failed to verify Google token")
+	}
+
+	// Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse the JSON response
+	var tokenInfo TokenInfo
+	err = json.Unmarshal(body, &tokenInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	// Verify audience and other claims as needed
+	if tokenInfo.Audience != googleClientID {
+		return nil, errors.New("invalid audience in Google token")
+	}
+
+	// Extract user information from the token
+	userInfo := &UserInfo{
+		Name:          tokenInfo.Name,
+		Email:         tokenInfo.Email,
+		ProfilePicUrl: tokenInfo.Picture,
+	}
+	return userInfo, nil
+}
+

@@ -24,4 +24,5 @@ func NewSignupRouter(env *config.Env, timeout time.Duration, db *mongo.Client, g
     group.POST("/signup", sc.SignUp)
     group.POST("/verifyemail", sc.VerifyEmail)
     group.POST("/resendotp", sc.ResendOTP)
+    group.POST("/continue-with-google", sc.FederatedSignup)
 }

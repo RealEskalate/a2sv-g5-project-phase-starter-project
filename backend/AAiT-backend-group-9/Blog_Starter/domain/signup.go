@@ -18,6 +18,12 @@ type ResendOTPRequest struct {
 	Email string `form:"email" binding:"required,email"`
 }
 
+type FederatedSignupRequest struct {
+	Provider string `json:"provider" binding:"required"`
+	Token    string `json:"token" binding:"required"`
+	Role     string `json:"role"`
+}
+
 
 type SignupUsecase interface {
 	CreateUser(c context.Context, user *UserSignUp) (*User, error) // do validation here

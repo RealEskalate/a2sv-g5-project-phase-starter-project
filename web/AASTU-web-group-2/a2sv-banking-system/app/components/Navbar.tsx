@@ -105,7 +105,6 @@ const Navbar = ({ handleClick, toggleDarkMode }: Props) => {
           <div className="items-center">
             <Image
               src={
-                user?.profilePicture ||
                 "https://firebasestorage.googleapis.com/v0/b/a2sv-wallet.appspot.com/o/images%2Fminions-removebg-preview.png-99cefd58-79e9-408d-b747-94bcb3bb16ab?alt=media&token=5822c470-99fb-4875-a4fc-425a64bf1473"
               }
               alt="Profile"

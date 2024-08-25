@@ -9,20 +9,20 @@ const CardList = () => {
         icon={<img src="cardsetting1.svg" />}
       />
       <CardSetting
-        data={[["Block Card", "Instantly block your card"]]}
-        icon={<img src="cardsetting1.svg" />}
+        data={[["Change Pic Code", "Withdraw without any card"]]}
+        icon={<img src="cardsetting2.svg" />}
       />
       <CardSetting
-        data={[["Block Card", "Instantly block your card"]]}
-        icon={<img src="cardsetting1.svg" />}
+        data={[["Add to Google Pay", "Withdraw without any card"]]}
+        icon={<img src="cardsetting3.svg" />}
       />
       <CardSetting
-        data={[["Block Card", "Instantly block your card"]]}
-        icon={<img src="cardsetting1.svg" />}
+        data={[["Add to Apple Pay", "Withdraw without any card"]]}
+        icon={<img src="cardsetting4.svg" />}
       />
       <CardSetting
-        data={[["Block Card", "Instantly block your card"]]}
-        icon={<img src="cardsetting1.svg" />}
+        data={[["Add to Apple Store", "Withdraw without any card"]]}
+        icon={<img src="cardsetting4.svg" />}
       />
     </div>
   );

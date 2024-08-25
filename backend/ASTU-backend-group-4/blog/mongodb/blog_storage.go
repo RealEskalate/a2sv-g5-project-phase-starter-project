@@ -241,7 +241,7 @@ func (b *BlogStorage) GetBlogs(ctx context.Context, filterQuery blogDomain.Filte
 		return infrastructure.PaginationResponse[blogDomain.BlogSummary]{}, blogDomain.ErrUnabletoGetBlogs
 	}
 
-	var blogs []blogDomain.BlogSummary
+	var blogs []blogDomain.BlogSummary = make([]blogDomain.BlogSummary, 0)
 	cursor.All(ctx, &blogs)
 
 	return infrastructure.NewPaginationResponse[blogDomain.BlogSummary](pagination.Limit, pagination.Page, count, blogs), nil

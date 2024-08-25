@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../service_locator.dart';
+import '../../../authentication/domain/entity/user.dart';
+import '../../../chat/presentation/bloc/blocs.dart';
+import '../../../chat/presentation/bloc/event.dart';
+import '../../../chat/presentation/pages/chat_list.dart';
+import '../../../chat/presentation/pages/chat_page.dart';
 import '../../domain/entity/product.dart';
 import '../../domain/usecase/add_product.dart';
 import '../../domain/usecase/delete_product.dart';
@@ -12,11 +17,13 @@ import '../bloc/blocs.dart';
 import '../bloc/events.dart';
 import '../bloc/states.dart';
 
+import 'home_page.dart';
 import 'update_page.dart';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({super.key, required this.product});
+  const DetailPage({super.key, required this.product, required this.user});
   final Product product;
+  final User user;
 
   @override
   State<DetailPage> createState() => _DetailPageState();
@@ -94,7 +101,7 @@ class _DetailPageState extends State<DetailPage> {
                           icon: const Icon(Icons.arrow_back_ios_new_rounded,
                               size: 18, color: Colors.blue),
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomePage(user: widget.user)));
                           },
                         ),
                       ))
@@ -123,6 +130,7 @@ class _DetailPageState extends State<DetailPage> {
                     ],
                   ),
                 ),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Row(
@@ -173,6 +181,7 @@ class _DetailPageState extends State<DetailPage> {
                     style: const TextStyle(color: Color(0xFF666666)),
                   ),
                 ),
+                widget.user == widget.product.seller ?
                 Padding(
                   padding: const EdgeInsets.only(
                       top: 15.0, bottom: 3, left: 10, right: 10),
@@ -217,7 +226,7 @@ class _DetailPageState extends State<DetailPage> {
                         onPressed: () {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (BuildContext context) {
-                            return UpdateProduct(product: widget.product);
+                            return UpdateProduct(product: widget.product, user: widget.user,);
                           }));
                         },
                         child: const Text(
@@ -228,7 +237,25 @@ class _DetailPageState extends State<DetailPage> {
                       )
                     ],
                   ),
-                )
+                ):ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[800],
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8))),
+                        onPressed: () {
+                          print("Seller");
+                          // context.read<ChatBloc>().add(LoadMessagesEvent());
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) {
+                            return ChatPage();
+                          }));
+                        },
+                        child: const Text(
+                          "Contact the Seller",
+                          style: TextStyle(
+                              color: Color.fromARGB(255, 210, 206, 206)),
+                        ),
+                      )
               ],
             ),
           ),

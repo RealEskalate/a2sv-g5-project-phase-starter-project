@@ -16,3 +16,4 @@ abstract class ChatRepository {
   Future<void> sendMessage(String chatId, String message);
   Future<void> acknowledgeMessageDelivery(String messageId);
 }
+

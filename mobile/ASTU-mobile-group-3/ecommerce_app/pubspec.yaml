@@ -45,6 +45,7 @@ dependencies:
   bloc_test: ^9.1.7
   hexcolor: ^3.0.1
   image_picker: ^1.1.2
+  device_preview: ^1.2.0
 
 dev_dependencies:
   flutter_test:

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'chat_app_bar.dart';
-import 'currentUser.dart';
+// import 'currentUser.dart';
 import 'mockdata.dart';
 
 
@@ -55,7 +55,7 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
             children: [
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 40),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
                   child: ListView.separated(
                     controller: _scrollController,
                     itemBuilder: (BuildContext context, int index) {
@@ -101,8 +101,8 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
-                      decoration: InputDecoration(
-                        hintText: "Write your message",
+                      decoration: const InputDecoration(
+                        hintText: 'Write your message',
                         border: InputBorder.none,
                       ),
                       onChanged: (text) {

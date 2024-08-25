@@ -7,10 +7,15 @@ class SignUpUseCase{
 
   Future<User> call({required String email, required String password, required String username}) async {
     try{
-      print("from usecase");
-    return await repository.signUp(email: email, password: password, username: username);}
+      print("from usecase: attempting to sign up user");
+    final user = await repository.signUp(email: email, password: password, username: username);
+     print("from usecase: user signed up successfully - $user");
+     return user;
+    }
     catch(e){
-      throw Exception('Server Failure');
+      print("from usecase: error during sign up - $e");
+      throw Exception('Server Failure: ${e.toString()}');
+
     }
   }
 }

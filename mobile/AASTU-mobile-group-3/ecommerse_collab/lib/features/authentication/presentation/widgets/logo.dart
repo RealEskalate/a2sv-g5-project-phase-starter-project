@@ -4,7 +4,7 @@ class Logo extends StatelessWidget {
   final double width;
   final double height;
   final double fontSize;
-  const Logo({super.key, this.width = 264, this.height = 121, this.fontSize = 113});
+  const Logo({super.key, this.width = 150, this.height = 84, this.fontSize = 65});
 
   @override
   Widget build(BuildContext context) {

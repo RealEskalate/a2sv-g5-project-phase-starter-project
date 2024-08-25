@@ -73,7 +73,7 @@ export function Barchart({ weeklyDeposit, weeklyWithdraw }: BarchartProps) {
       <CardContent className="p-0 ">
         <ChartContainer
           config={chartConfig}
-          className="h-60 w-full"
+          className="h-64 w-full"
         >
           <BarChart data={chartData}>
             <CartesianGrid

@@ -47,9 +47,7 @@ export function ExpenseChart({ expenses }: ExpenseChartProps) {
 
   return (
     <Card
-      className={`${
-        isDarkMode ? "bg-gray-800 " : "bg-white"
-      } border-none py-4`}
+      className={`${isDarkMode ? "bg-gray-800 " : "bg-white"} border-none py-4`}
     >
       <CardContent
         className="p-0"
@@ -92,7 +90,9 @@ export function ExpenseChart({ expenses }: ExpenseChartProps) {
               fill={isDarkMode ? "#1e3a8a" : "#EDF0F7"} // Bar color
               radius={8}
               barSize={30}
-              className={`hover:fill-${isDarkMode ? "#16DBCC" : "#16DBCC"}`}
+              className={`${
+                !isDarkMode ? "hover:fill-[#16DBCC]" : "hover:fill-blue-700"
+              }`}
             >
               <LabelList
                 position="top"

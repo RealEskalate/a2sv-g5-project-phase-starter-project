@@ -1,20 +1,20 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import { sidebarLinks } from "@/constants";
-import Link from "next/link";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { useUser } from "@/contexts/UserContext";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
-import { getSession, signOut } from "next-auth/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import ky from "ky";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import ky from "ky";
+import { getSession, signOut } from "next-auth/react";
 
 const Sidebar = () => {
   const [profileUrl, setProfileUrl] = useState("");

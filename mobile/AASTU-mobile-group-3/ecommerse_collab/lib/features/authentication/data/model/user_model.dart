@@ -20,7 +20,7 @@ class UserModel extends User {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     print("Changingggg");
     return UserModel(
-      id: json['_id'],
+      id: json['id'],
       email: json['email'],
       username: json['name'],
       password: json['password'] ?? '',
@@ -31,7 +31,7 @@ class UserModel extends User {
     return {
       '_id': id,
       'email': email,
-      'username': username,
+      'name': username,
       'password': password ,
     };
   }

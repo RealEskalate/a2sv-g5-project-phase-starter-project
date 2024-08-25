@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../product/data/data_sources/local_data_source.dart';
 import '../../../product/presentation/pages/home_page.dart';
+import '../../data/data_source/local_data_source.dart';
+import '../../domain/entity/user.dart';
 import '../../domain/usecases/login.dart';
 import 'package:http/http.dart' as http;
 import '../widgets/logo.dart';
@@ -22,15 +26,28 @@ class _OnboardingState extends State<Onboarding>
     super.initState();
     Future.delayed(Duration(seconds: 10), () async {
       final cache = await SharedPreferences.getInstance();
-      // final isLoggedIn = cache.getBool('isLoggedIn') ?? false;
-
-      
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) { 
-              return const SignIn();}),
-          );
-      
+      final isLoggedIn = cache.getString('token') != null;
+      print(isLoggedIn);
+      if (isLoggedIn) {
+        SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        final result =
+            UserLocalDataSourceImpl(sharedPreferences: sharedPreferences);
+        final user = result.getUser().toEntity();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) {
+            return HomePage(user: user);
+          }),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) {
+            return const SignIn();
+          }),
+        );
+      }
     });
   }
     @override

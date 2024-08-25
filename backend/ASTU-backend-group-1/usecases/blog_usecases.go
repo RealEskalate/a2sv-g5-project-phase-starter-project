@@ -179,3 +179,34 @@ func (uc *BlogUsecase) ViewReply(blogId,commentId,replyId, userId string) error 
 	}
 	return nil
 }
+
+func (uc *BlogUsecase) UpdateReply(blogId,commentId,replyId, userId string,replyData domain.Reply) (domain.Reply,error) {
+	result,err := uc.blogRepository.UpdateReply(blogId,commentId,replyId, userId,replyData)
+	if err != nil {
+		return domain.Reply{},err
+	}
+	return result,nil
+}
+func (uc *BlogUsecase) DeleteReply(blogId,commentId,replyId, userId string) error {
+	err := uc.blogRepository.DeleteReply(blogId,commentId,replyId, userId)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+
+func (uc *BlogUsecase) UpdateComment(blogId,commentId,replyId, userId string,commentData domain.Comment) (domain.Comment,error) {
+	result,err := uc.blogRepository.UpdateComment(blogId,commentId, userId,commentData)
+	if err != nil {
+		return domain.Comment{},err
+	}
+	return result,nil
+}
+func (uc *BlogUsecase) DeleteComment(blogId,commentId, userId string) error {
+	err := uc.blogRepository.DeleteComment(blogId,commentId, userId)
+	if err != nil {
+		return err
+	}
+	return nil
+}

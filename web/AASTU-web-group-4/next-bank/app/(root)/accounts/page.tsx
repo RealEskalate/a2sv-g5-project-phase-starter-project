@@ -11,6 +11,7 @@ import { getAllCards } from "@/services/cardfetch";
 import { colors } from "@/constants";
 import Image from "next/image";
 import MyCardsLoad from "@/components/loadingComponents/MyCardsLoad";
+import CurrencyConverter from '@/components/CurrencyConverter';
 
 const Accounts = () => {
   const [cards, setCards] = useState<any[]>([]);
@@ -130,10 +131,16 @@ const Accounts = () => {
           </div>
           <div className="lg:col-span-3 flex flex-col">
             <h2 className="text-lg font-semibold mb-4">Invoices Sent</h2>
-            <div>
+            <div className="h-36 overflow-y-auto">
               <InvoicesCard />
             </div>
+            {/* <h2 className="text-lg font-semibold mb-4">Currency Converter</h2> */}
+            <div>
+              <h2 className="text-lg font-semibold mb-4">Currency Converter</h2>
+              <CurrencyConverter/>
+            </div>
           </div>
+          
         </div>
       </div>
     </div>

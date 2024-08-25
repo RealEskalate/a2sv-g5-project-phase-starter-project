@@ -242,8 +242,63 @@ const SignupForm = () => {
             </select>
             {errors.currency && <p className="text-red-500 mt-1">{errors.currency.message}</p>}
           </div>
-        </div>
-      )}
+
+            <div>
+              <label htmlFor="timeZone" className="block font-medium text-gray-700">Time Zone</label>
+              <select
+                id="timeZone"
+                {...register("timeZone", { required: "Time Zone is required" })}
+                className="border border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+              >
+                <option value="">Select Time Zone</option>
+                <option value="UTC">UTC</option>
+                {/* Add more time zones as needed */}
+              </select>
+              {errors.timeZone && <p className="text-red-500 mt-1">{errors.timeZone.message}</p>}
+            </div>
+
+          <div  className="flex flex-row p-3">
+            <input
+              type="checkbox"
+              id="sentOrReceiveDigitalCurrency"
+              {...register("sentOrReceiveDigitalCurrency")}
+              className="mr-1"
+            />
+              <label htmlFor="sentOrReceiveDigitalCurrency" className="block font-medium text-gray-700">Send or Receive Digital Currency?</label>
+            </div>
+
+            <div  className="flex flex-row p-3">
+              <input
+                type="checkbox"
+                id="receiveMerchantOrder"
+                {...register("receiveMerchantOrder")}
+                className="mr-1"
+              />
+              <label htmlFor="receiveMerchantOrder" className="block font-medium text-gray-700">Receive Merchant Order Notifications?</label>
+            </div>
+
+            <div className="flex flex-row p-3">
+              <input
+                type="checkbox"
+                id="accountRecommendations"
+                {...register("accountRecommendations")}
+                className="mr-1"
+              />
+              <label htmlFor="accountRecommendations" className="block font-medium text-gray-700">Receive Account Recommendations?</label>
+            </div>
+
+
+            <div  className="flex flex-row p-3">
+              <input
+                type="checkbox"
+                id="twoFactorAuthentication"
+                {...register("twoFactorAuthentication")}
+                className="mr-1"
+              />
+              <label htmlFor="twoFactorAuthentication" className="block font-medium text-gray-700">Enable Two-Factor Authentication?</label>
+            </div>
+          </div>
+        )}
 
       <div className="flex justify-between mt-8">
         {step > 1 && (

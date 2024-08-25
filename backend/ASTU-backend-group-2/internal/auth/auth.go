@@ -9,18 +9,19 @@ import (
 )
 
 const (
-	MaxAge = 86400 * 30
-	prod   = false
+	MaxAge     = 86400 * 30
+	production = false
 )
 
 func NewAuth(env *bootstrap.Env) {
 
 	store := sessions.NewCookieStore([]byte(env.SessionSecret))
-
-	store.MaxAge(MaxAge)
-	store.Options.Path = "/"
-	store.Options.HttpOnly = true
-	store.Options.Secure = prod
+	store.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   MaxAge,
+		HttpOnly: true,
+		Secure:   production, //set to true in production
+	}
 
 	gothic.Store = store
 

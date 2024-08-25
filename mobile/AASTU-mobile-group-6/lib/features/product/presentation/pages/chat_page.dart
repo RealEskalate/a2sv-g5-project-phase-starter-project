@@ -1,7 +1,11 @@
+import 'package:ecommerce_app_ca_tdd/features/product/data/models/seller_model.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/chat_appbar.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/chat_bottom_appbar.dart';
 import 'package:flutter/material.dart';
 
 
 class ChatPage extends StatelessWidget{
+  final SellerModel sellerID;
   final TextEditingController _messageController = TextEditingController();
 
   // Dummy data for chat
@@ -33,13 +37,15 @@ class ChatPage extends StatelessWidget{
   ];
 
 
+
+  ChatPage({super.key, required this.sellerID});
   @override
   Widget build(BuildContext context){
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar:
-          ChatAppBar('Meron Weldu', 'last seen yesterday', "lib/temp_photo.jpg", isOnline: true),
-       
+          ChatAppBar(sellerID.name, 'last seen yesterday', "image.jpg"),
         body: Container(
           color: Colors.white,
           child: Column(

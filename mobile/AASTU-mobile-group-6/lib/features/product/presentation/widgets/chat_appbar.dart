@@ -18,6 +18,7 @@ class ChatAppBar extends StatelessWidget implements PreferredSizeWidget {
         icon: Icon(Icons.arrow_back),
         onPressed: () {
           Navigator.pop(context);
+          // Navigator.pushReplacementNamed(context, '/HomeChat');
         },
       ),
       title: Row(

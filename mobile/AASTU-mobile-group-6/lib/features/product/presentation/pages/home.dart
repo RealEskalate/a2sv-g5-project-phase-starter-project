@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:ecommerce_app_ca_tdd/features/chat/socket_n/chatbox.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/models/product_models.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/HomeChat.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/bottomnavbar.dart';
@@ -187,6 +188,7 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(9)),
                         child: GestureDetector(
                           onTap: () {
+                            SocketService().connectToServer();
                             Navigator.pushNamed(context, '/HomeChat');
                           },
                           child: Image(

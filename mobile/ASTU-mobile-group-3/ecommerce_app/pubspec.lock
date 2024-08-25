@@ -206,6 +206,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  custom_clippers:
+    dependency: "direct main"
+    description:
+      name: custom_clippers
+      sha256: "2b83bb29ccbbd7d2d39220ec0361becb8ab545c3a0cb295979e3450bdad6034b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   dart_style:
     dependency: transitive
     description:

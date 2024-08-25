@@ -1,7 +1,7 @@
 import React from "react";
 import { CircleArrowDown, CircleArrowUp } from "lucide-react";
 interface RecentTransactionDescriptionProps {
-  amount: number;
+  amount: string;
   description: string;
 }
 
@@ -12,15 +12,13 @@ const RecentTransactionDescription = ({
   return (
     <div className="flex flex-row flex-wrap gap-3 items-center">
       <div>
-        {amount < 0 ? (
+        {amount === 'deposit' ? (
           <CircleArrowDown className="w-6 h-6 text-blue-steel" data-testid="downArrow"/>
         ) : (
           <CircleArrowUp className="w-6 h-6 text-blue-steel" data-testid="upArrow"/>
         )}
       </div>
-      <div>
         <p >{description}</p>
-      </div>
     </div>
   );
 };

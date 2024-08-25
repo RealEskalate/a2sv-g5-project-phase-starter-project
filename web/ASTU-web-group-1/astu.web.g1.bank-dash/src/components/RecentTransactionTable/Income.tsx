@@ -1,28 +1,22 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import TableButton from "../TableButton/TableButton";
 import RecentTransactionDescription from "./RecentTransactionDescription";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
-  useGetAllTransactionsQuery,
-  useGetTransactionExpenseQuery,
   useGetTransactionIncomeQuery,
 } from "@/lib/redux/slices/transactionSlice";
 import Pagination from "./Pagination";
-import { TransactionDataType } from "@/types/transaction.types";
-import { number } from "zod";
 import RecentTransctionSkeleton from "../AllSkeletons/RecentTransactionSkeleton/recentTransactionSkeleton";
 
 const Income = () => {
   const [currentPage, setCurrentPage] = useState(0);
 
-  const { data, error, isLoading } = useGetTransactionIncomeQuery({
+  const { data, isLoading, isFetching } = useGetTransactionIncomeQuery({
     page: currentPage,
     size: 5,
   });
-  console.log(data);
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return <RecentTransctionSkeleton />; // Display loading state
   }
 
@@ -70,7 +64,7 @@ const Income = () => {
                   >
                     <td className="py-3">
                       <RecentTransactionDescription
-                        amount={datax.amount}
+                        amount={datax.type}
                         description={datax.description}
                       />
                     </td>
@@ -84,11 +78,11 @@ const Income = () => {
                     <td className="hidden lg:table-cell py-3">{datax.date}</td>
                     <td
                       className={`py-3 ${
-                        datax.amount < 0 ? "text-candyPink" : "text-mintGreen"
+                        datax.type !== 'deposit' ? "text-candyPink" : "text-mintGreen"
                       }`}
                     >
-                      {datax.amount < 0
-                        ? "-$" + -(datax.amount)
+                      {datax.type !== 'deposit'
+                        ? "-$" + (datax.amount)
                         : "+$" + datax.amount}
                     </td>
                     <td className="hidden lg:table-cell py-3 w-24 md:w-32">

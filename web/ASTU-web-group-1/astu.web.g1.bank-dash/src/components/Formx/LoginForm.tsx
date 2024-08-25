@@ -1,14 +1,13 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
-import Email from './Email';
-import Password from './Password';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { redirect, useRouter } from 'next/navigation';
-import { useGetProfileQuery } from '@/lib/redux/api/profileAPI';
+import { useRouter } from 'next/navigation';
+import { Loader } from 'lucide-react';
+import { useState } from 'react';
 
 const LoginFormSchema = z.object({
   username: z
@@ -27,6 +26,7 @@ type FormData = z.infer<typeof LoginFormSchema>;
 function LoginForm(req: any) {
   const session = useSession();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   if (session.data) {
     // console.log('redirect user to posts', session);
@@ -42,19 +42,18 @@ function LoginForm(req: any) {
   });
 
   const onSubmit = async (data: FormData) => {
-    console.log('data is', data);
+    setIsLoading(true);
     try {
       const result = await signIn('credentials', {
         redirect: false,
         username: data.username,
         password: data.password,
       });
-      // console.log('result from signIn', result);
       if (!result?.ok) {
         throw new Error('invalid credentials');
       }
 
-      if (result?.ok) {        
+      if (result?.ok) {
         // console.log('redirecting to ', result?.url);
         const parsedUrl = new URL(result?.url || '/');
         const callbackUrl = parsedUrl.searchParams.get('callbackUrl');
@@ -64,6 +63,7 @@ function LoginForm(req: any) {
     } catch (error) {
       alert('invalid credentials');
     }
+    setIsLoading(false);
   };
 
   return (
@@ -113,9 +113,10 @@ function LoginForm(req: any) {
         <button
           type='submit'
           id='submit'
-          className='w-full bg-indigo-900 text-white rounded-3xl py-2 font-epilogue font-[700] mt-5 hover:bg-indigo-800 transition-all duration-500'
+          className='w-full bg-indigo-900 text-white rounded-3xl py-2 font-epilogue font-[700] mt-5 hover:bg-indigo-800 transition-all duration-200'
+          disabled={isLoading}
         >
-          Login
+          {isLoading ? <Loader className='animate-spin w-full' /> : 'Login'}
         </button>
         <p className='text-sm font-epilogue font-medium text-slate-400 mt-2 mx-2'>
           {!session ? (

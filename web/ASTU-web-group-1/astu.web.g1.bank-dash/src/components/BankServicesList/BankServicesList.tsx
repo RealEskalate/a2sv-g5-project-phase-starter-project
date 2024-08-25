@@ -6,6 +6,7 @@ import {
   useGetBankServiceByIdQuery,
   useGetBankServiceQuery,
 } from "@/lib/redux/slices/bankService";
+import BankServiceSkeleton from "../AllSkeletons/bankServiceSkeleton/bankServiceSkeleton";
 
 const BankServicesList = () => {
   const page = 0;
@@ -14,7 +15,7 @@ const BankServicesList = () => {
   console.log("data is ", data, error);
 
   if (isLoading) {
-    return <p>Loading...</p>; // Add a loading indicator
+    return <BankServiceSkeleton />; // Add a loading indicator
   }
 
   if (error || !data || !data.data) {

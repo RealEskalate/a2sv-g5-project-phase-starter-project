@@ -1,16 +1,16 @@
 import React from "react";
-import { SkeletonCard } from "@/components/AllSkeletons/itemSkeleton/SkeletonCard";
-import ListSkeleton from "@/components/AllSkeletons/listskeleton/Skeleton";
+import ListSkeleton from "@/components/AllSkeletons/Myinvestmentlistskeleton/Skeleton";
 import SkeletonList from "@/components/AllSkeletons/trendingSkeleton/skeletonList";
-import ChartSkeleton from "@/components/AllSkeletons/chartSkeleton/chartSkeleton";
+import Skeletoncard from "@/components/AllSkeletons/loanSkeleton/skeletoncard";
+import GraphSkeletons from "@/components/AllSkeletons/chartSkeleton/graphSkeletons";
 
 export default function page() {
   return (
     <div>
-      <SkeletonCard />
+      <Skeletoncard />
       <div className="md:flex space-x-4">
-        <ChartSkeleton />
-        <ChartSkeleton />
+        <GraphSkeletons />
+        <GraphSkeletons />
       </div>
       <div className="flex flex-col md:flex-row ">
         <ListSkeleton />

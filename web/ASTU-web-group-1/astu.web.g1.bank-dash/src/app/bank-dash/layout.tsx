@@ -19,12 +19,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
-        <div className="flex w-full bg-slate-100 min-h-screen font-Inter">
-          {/* global toastify container */}
-          <ToastContainer position="top-center" theme="colored" />
-          <div className="min-h-screen fixed left-0 top-0 z-50">
+      <div>
+        <ToastContainer />
+        <div className='flex w-full bg-slate-100 min-h-screen font-Inter'>
+          <div className='min-h-screen fixed left-0 top-0 z-50'>
             <StoreProvider>
               <Sidebar />
             </StoreProvider>
@@ -36,7 +34,6 @@ export default function RootLayout({
             <div className="p-5 z-0">{children}</div>
           </div>
         </div>
-      </body>
-    </html>
+      </div>
   );
 }

@@ -54,6 +54,5 @@ type ResetPasswordInput struct {
 }
 
 type ChangePasswordInput struct {
-	Username    string `json:"username" bson:"username"`
 	NewPassword string `json:"password" bson:"password"`
 }

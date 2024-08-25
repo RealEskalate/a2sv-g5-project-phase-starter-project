@@ -2,7 +2,6 @@ package infrastructure
 
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -52,7 +51,6 @@ func AuthMiddleware(tokenCollection *mongo.Collection) gin.HandlerFunc {
 			return
 		}
 
-		fmt.Println("not expayered    ", token.ExpiresAt, time.Now(), "      kdnfmkng===========")
 
 		// Parse the token claims (assuming you have a ParseToken function)
 		claims, err := ParseToken(tokenString, []byte("BlogManagerSecretKey"))

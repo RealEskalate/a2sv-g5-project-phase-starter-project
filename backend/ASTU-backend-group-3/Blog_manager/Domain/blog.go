@@ -16,6 +16,16 @@ type Blog struct {
 	Likes     []string  `json:"likes" bson:"likes"`
 	Dislikes  []string  `json:"dislikes" bson:"dislikes"`
 	Comments  []Comment `json:"comments" bson:"comments"`
+	Reports   []Report  `json:"reports" bson:"reports"`
+}
+
+type Report struct {
+	Id        string `json:"id" bson:"id"`
+	Content   string `json:"content" bson:"content"`
+	BlogId    string `json:"blog_id" bson:"blog_id"`
+	UserId    string `json:"user_id" bson:"user_id"`
+	CreatedAt string `json:"created_at" bson:"created_at"`
+	Tag       string `json:"tag" bson:"tag"`
 }
 
 type UpdateBlogInput struct {

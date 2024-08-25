@@ -4,9 +4,9 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i20;
-import 'dart:convert' as _i37;
+import 'dart:convert' as _i38;
 import 'dart:io' as _i36;
-import 'dart:typed_data' as _i38;
+import 'dart:typed_data' as _i39;
 
 import 'package:bloc/bloc.dart' as _i32;
 import 'package:dartz/dartz.dart' as _i2;
@@ -17,9 +17,8 @@ import 'package:ecommerce_app/features/auth/data/data_source/auth_local_data_sou
     as _i29;
 import 'package:ecommerce_app/features/auth/data/data_source/remote_auth_data_source.dart'
     as _i28;
-import 'package:ecommerce_app/features/auth/data/model/signed_up_user_model.dart'
-    as _i7;
 import 'package:ecommerce_app/features/auth/data/model/token_model.dart' as _i6;
+import 'package:ecommerce_app/features/auth/data/model/user_model.dart' as _i7;
 import 'package:ecommerce_app/features/auth/domain/entities/user_entity.dart'
     as _i27;
 import 'package:ecommerce_app/features/auth/domain/repositories/auth_repository.dart'
@@ -32,6 +31,8 @@ import 'package:ecommerce_app/features/auth/domain/usecases/sign_up_usecase.dart
     as _i9;
 import 'package:ecommerce_app/features/auth/presentation/bloc/auth_bloc.dart'
     as _i30;
+import 'package:ecommerce_app/features/auth/presentation/bloc/cubit/user_input_validation_cubit.dart'
+    as _i37;
 import 'package:ecommerce_app/features/product/data/data_resources/local_product_data_source.dart'
     as _i25;
 import 'package:ecommerce_app/features/product/data/data_resources/remote_product_data_source.dart'
@@ -142,9 +143,8 @@ class _FakeTokenModel_5 extends _i1.SmartFake implements _i6.TokenModel {
         );
 }
 
-class _FakeSignedUpUserModel_6 extends _i1.SmartFake
-    implements _i7.SignedUpUserModel {
-  _FakeSignedUpUserModel_6(
+class _FakeUserModel_6 extends _i1.SmartFake implements _i7.UserModel {
+  _FakeUserModel_6(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -1092,21 +1092,20 @@ class MockRemoteAuthDataSource extends _i1.Mock
       ) as _i20.Future<_i6.TokenModel>);
 
   @override
-  _i20.Future<_i7.SignedUpUserModel> signUp(_i27.UserEntity? user) =>
+  _i20.Future<_i7.UserModel> signUp(_i27.UserEntity? user) =>
       (super.noSuchMethod(
         Invocation.method(
           #signUp,
           [user],
         ),
-        returnValue:
-            _i20.Future<_i7.SignedUpUserModel>.value(_FakeSignedUpUserModel_6(
+        returnValue: _i20.Future<_i7.UserModel>.value(_FakeUserModel_6(
           this,
           Invocation.method(
             #signUp,
             [user],
           ),
         )),
-      ) as _i20.Future<_i7.SignedUpUserModel>);
+      ) as _i20.Future<_i7.UserModel>);
 }
 
 /// A class which mocks [AuthLocalDataSource].
@@ -1780,6 +1779,15 @@ class MockInputValidationCubit extends _i1.Mock
       );
 
   @override
+  void refresh() => super.noSuchMethod(
+        Invocation.method(
+          #refresh,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
   void emit(_i35.InputValidationState? state) => super.noSuchMethod(
         Invocation.method(
           #emit,
@@ -1790,6 +1798,152 @@ class MockInputValidationCubit extends _i1.Mock
 
   @override
   void onChange(_i32.Change<_i35.InputValidationState>? change) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #onChange,
+          [change],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void addError(
+    Object? error, [
+    StackTrace? stackTrace,
+  ]) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #addError,
+          [
+            error,
+            stackTrace,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void onError(
+    Object? error,
+    StackTrace? stackTrace,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #onError,
+          [
+            error,
+            stackTrace,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  _i20.Future<void> close() => (super.noSuchMethod(
+        Invocation.method(
+          #close,
+          [],
+        ),
+        returnValue: _i20.Future<void>.value(),
+        returnValueForMissingStub: _i20.Future<void>.value(),
+      ) as _i20.Future<void>);
+}
+
+/// A class which mocks [UserInputValidationCubit].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockUserInputValidationCubit extends _i1.Mock
+    implements _i37.UserInputValidationCubit {
+  MockUserInputValidationCubit() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i18.InputDataValidator get inputDataValidator => (super.noSuchMethod(
+        Invocation.getter(#inputDataValidator),
+        returnValue: _FakeInputDataValidator_17(
+          this,
+          Invocation.getter(#inputDataValidator),
+        ),
+      ) as _i18.InputDataValidator);
+
+  @override
+  _i37.UserInputValidationState get state => (super.noSuchMethod(
+        Invocation.getter(#state),
+        returnValue: _i31.dummyValue<_i37.UserInputValidationState>(
+          this,
+          Invocation.getter(#state),
+        ),
+      ) as _i37.UserInputValidationState);
+
+  @override
+  _i20.Stream<_i37.UserInputValidationState> get stream => (super.noSuchMethod(
+        Invocation.getter(#stream),
+        returnValue: _i20.Stream<_i37.UserInputValidationState>.empty(),
+      ) as _i20.Stream<_i37.UserInputValidationState>);
+
+  @override
+  bool get isClosed => (super.noSuchMethod(
+        Invocation.getter(#isClosed),
+        returnValue: false,
+      ) as bool);
+
+  @override
+  void checkWith(
+    String? from,
+    String? type,
+    String? val, [
+    String? conf,
+  ]) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #checkWith,
+          [
+            from,
+            type,
+            val,
+            conf,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void reset() => super.noSuchMethod(
+        Invocation.method(
+          #reset,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void changeCheckbox(
+    String? from,
+    bool? val,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #changeCheckbox,
+          [
+            from,
+            val,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void emit(_i37.UserInputValidationState? state) => super.noSuchMethod(
+        Invocation.method(
+          #emit,
+          [state],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void onChange(_i32.Change<_i37.UserInputValidationState>? change) =>
       super.noSuchMethod(
         Invocation.method(
           #onChange,
@@ -1896,7 +2050,7 @@ class MockHttpClient extends _i1.Mock implements _i19.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i37.Encoding? encoding,
+    _i38.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1927,7 +2081,7 @@ class MockHttpClient extends _i1.Mock implements _i19.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i37.Encoding? encoding,
+    _i38.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1958,7 +2112,7 @@ class MockHttpClient extends _i1.Mock implements _i19.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i37.Encoding? encoding,
+    _i38.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1989,7 +2143,7 @@ class MockHttpClient extends _i1.Mock implements _i19.Client {
     Uri? url, {
     Map<String, String>? headers,
     Object? body,
-    _i37.Encoding? encoding,
+    _i38.Encoding? encoding,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -2037,7 +2191,7 @@ class MockHttpClient extends _i1.Mock implements _i19.Client {
       ) as _i20.Future<String>);
 
   @override
-  _i20.Future<_i38.Uint8List> readBytes(
+  _i20.Future<_i39.Uint8List> readBytes(
     Uri? url, {
     Map<String, String>? headers,
   }) =>
@@ -2047,8 +2201,8 @@ class MockHttpClient extends _i1.Mock implements _i19.Client {
           [url],
           {#headers: headers},
         ),
-        returnValue: _i20.Future<_i38.Uint8List>.value(_i38.Uint8List(0)),
-      ) as _i20.Future<_i38.Uint8List>);
+        returnValue: _i20.Future<_i39.Uint8List>.value(_i39.Uint8List(0)),
+      ) as _i20.Future<_i39.Uint8List>);
 
   @override
   _i20.Future<_i19.StreamedResponse> send(_i19.BaseRequest? request) =>

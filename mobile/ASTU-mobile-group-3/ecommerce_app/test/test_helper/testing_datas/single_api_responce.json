@@ -2,10 +2,16 @@
   "statusCode": 200,
   "message": "",
   "data": {
-    "id": "6672776eb905525c145fe0bb",
-    "name": "Anime website",
-    "description": "Explore anime characters.",
+    "id": "66c778ec10de84211de27fe1",
+    "name": "PC",
+    "description": "long description",
     "price": 123,
-    "imageUrl": "https://res.cloudinary.com/g5-mobile-track/image/upload/v1718777711/images/clmxnecvavxfvrz9by4w.jpg"
+    "imageUrl": "https://res.cloudinary.com/g5-mobile-track/image/upload/v1724348651/images/pug5nl6gv14np2bqdofu.png",
+    "seller": {
+      "_id": "66bde36e9bbe07fc39034cdd",
+      "name": "Mr. User",
+      "email": "user@gmail.com",
+      "__v": 0
+    }
   }
 }

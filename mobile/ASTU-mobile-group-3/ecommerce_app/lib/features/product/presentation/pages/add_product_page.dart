@@ -4,6 +4,7 @@ import '../bloc/cubit/input_validation_cubit.dart';
 import '../bloc/product_bloc.dart';
 import '../bloc/product_events.dart';
 import '../bloc/product_states.dart';
+import '../widgets/loading_dialog.dart';
 import '../widgets/product_widgets.dart';
 
 // ignore: must_be_immutable
@@ -33,7 +34,11 @@ class AddProductPage extends StatelessWidget with AppBars {
                 BlocProvider.of<ProductBloc>(context)
                     .add(LoadAllProductEvents());
                 Navigator.pop(context);
+
+                Navigator.pop(context);
               } else if (state is ErrorState) {
+                Navigator.pop(context);
+
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text(state.message)));
               }
@@ -72,6 +77,11 @@ class AddProductPage extends StatelessWidget with AppBars {
                                     .state;
                             if (state is InputValidatedState) {
                               if (state.isValidated()) {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return const LoadingDialog();
+                                    });
                                 BlocProvider.of<ProductBloc>(context)
                                     .add(InsertProductEvent(
                                   name: nameControl.text,

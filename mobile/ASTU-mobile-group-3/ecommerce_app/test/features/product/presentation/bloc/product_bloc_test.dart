@@ -48,14 +48,13 @@ void main() {
       'Should return actual value when succes',
       build: () {
         when(mockGetProductUseCase.execute(any))
-            .thenAnswer((_) async => const Right(TestingDatas.testDataEntity));
+            .thenAnswer((_) async => Right(TestingDatas.testDataEntity));
         return productBloc;
       },
       act: (bloc) => bloc.add(GetSingleProductEvents(id: TestingDatas.id)),
       expect: () => [
         LoadingState(),
-        const LoadedSingleProductState(
-            productEntity: TestingDatas.testDataEntity)
+        LoadedSingleProductState(productEntity: TestingDatas.testDataEntity)
       ],
     );
 
@@ -92,14 +91,14 @@ void main() {
     blocTest<ProductBloc, ProductStates>(
       'Should return actual value when succes',
       build: () {
-        when(mockGetAllProductUseCase.execute()).thenAnswer(
-            (_) async => const Right(TestingDatas.productEntityList));
+        when(mockGetAllProductUseCase.execute())
+            .thenAnswer((_) async => Right(TestingDatas.productEntityList));
         return productBloc;
       },
       act: (bloc) => bloc.add(LoadAllProductEvents()),
       expect: () => [
         LoadingState(),
-        const LoadedAllProductState(data: TestingDatas.productEntityList)
+        LoadedAllProductState(data: TestingDatas.productEntityList)
       ],
     );
 
@@ -160,7 +159,7 @@ void main() {
       act: (bloc) => bloc.add(InsertProductEvent(
           name: TestingDatas.testDataEntity.name,
           imageUrl: File(TestingDatas.testDataEntity.imageUrl),
-          price: '${TestingDatas.testDataEntity.price.toString()}',
+          price: TestingDatas.testDataEntity.price.toString(),
           description: TestingDatas.testDataEntity.description)),
       expect: () => [
         LoadingState(),

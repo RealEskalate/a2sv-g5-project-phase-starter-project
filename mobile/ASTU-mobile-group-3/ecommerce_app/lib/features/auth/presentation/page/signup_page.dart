@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/constants.dart';
 import '../../../../core/themes/themes.dart';
+import '../../../../core/validator/validator.dart';
 import '../../../product/presentation/widgets/fill_custom_button.dart';
+import '../../../product/presentation/widgets/loading_dialog.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/cubit/user_input_validation_cubit.dart';
 import '../widgets/auth_widgets.dart';
@@ -42,7 +44,11 @@ class SignUpPage extends StatelessWidget {
         listener: (context, state) {
           if (state is RegisterSuccessState) {
             Navigator.pop(context);
+
+            Navigator.pop(context);
           } else if (state is SignupErrorState) {
+            Navigator.pop(context);
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
@@ -106,6 +112,7 @@ class SignUpPage extends StatelessWidget {
                           UserInputValidationState>(
                         builder: (context, state) {
                           return Checkbox(
+                            key: const Key(InputDataValidator.checkBox),
                             value: state.checkbox == AppData.strValidated,
                             onChanged: (val) {
                               BlocProvider.of<UserInputValidationCubit>(context)
@@ -138,6 +145,11 @@ class SignUpPage extends StatelessWidget {
                                   .state
                                   .validate();
                           if (message == null) {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return const LoadingDialog();
+                                });
                             BlocProvider.of<AuthBloc>(context).add(
                               SignUpEvent(
                                 name: nameController.text.trim(),

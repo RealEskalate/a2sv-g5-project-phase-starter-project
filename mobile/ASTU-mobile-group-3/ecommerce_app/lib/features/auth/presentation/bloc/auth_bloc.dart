@@ -21,8 +21,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       : super(AuthInitial()) {
     on<LogInEvent>((event, emit) async {
       emit(AuthLoadingstate());
-      UserEntity myEnity =
-          UserEntity(name: '', email: event.email, password: event.password);
+      UserEntity myEnity = UserEntity(
+        name: '',
+        email: event.email,
+        password: event.password,
+        id: '',
+        v: 0,
+      );
       final result = await logInUsecase.execute(myEnity);
       result.fold((failure) {
         emit(LoginErrorState(message: failure.message));
@@ -33,7 +38,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignUpEvent>((event, emit) async {
       emit(AuthLoadingstate());
       UserEntity myEnity = UserEntity(
-          name: event.name, email: event.email, password: event.password);
+        name: event.name,
+        email: event.email,
+        password: event.password,
+        id: '',
+        v: 0,
+      );
       final result = await signUpUsecase.execute(myEnity);
 
       result.fold((failure) {

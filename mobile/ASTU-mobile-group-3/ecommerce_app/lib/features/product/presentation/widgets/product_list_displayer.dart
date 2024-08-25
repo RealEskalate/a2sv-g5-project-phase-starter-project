@@ -5,6 +5,7 @@ import '../bloc/product_events.dart';
 import '../bloc/product_states.dart';
 import '../pages/single_product_page.dart';
 import 'product_card.dart';
+import 'skeleton_loading.dart';
 
 class ProductListDisplayer extends StatelessWidget {
   const ProductListDisplayer({
@@ -44,7 +45,12 @@ class ProductListDisplayer extends StatelessWidget {
               child: Text(state.message),
             );
           } else if (state is LoadingState) {
-            return const Center(child: CircularProgressIndicator());
+            return ListView.builder(
+              itemCount: 10,
+              itemBuilder: (context, index) {
+                return const SkeletonLoading();
+              },
+            );
           } else {
             return const Center(
               child: Text('No Data'),

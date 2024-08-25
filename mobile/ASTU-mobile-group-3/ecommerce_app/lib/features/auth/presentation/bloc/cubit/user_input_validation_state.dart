@@ -54,9 +54,6 @@ final class LoginUserInputValidated extends UserInputValidationState {
     if (password == AppData.strNotValidated || password == AppData.strInitial) {
       return AppData.getMessage(AppData.invalidPassword);
     }
-    if (checkbox == AppData.strNotValidated || checkbox == AppData.strInitial) {
-      return AppData.getMessage(AppData.checkbox);
-    }
     return null;
   }
 

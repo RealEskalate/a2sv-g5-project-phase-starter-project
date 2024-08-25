@@ -1,4 +1,6 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class TextInputter extends StatefulWidget {
   const TextInputter({Key? key}) : super(key: key);
@@ -8,22 +10,78 @@ class TextInputter extends StatefulWidget {
 }
 
 class _TextInputterState extends State<TextInputter> {
+  final TextEditingController _controller = TextEditingController();
+  bool isRecording = false;
+  bool isTyping = false;
+  final ImagePicker _picker = ImagePicker();
+
+   @override
+  void initState() {
+    super.initState();
+
+    _controller.addListener(() {
+      setState(() {
+        isTyping = _controller.text.isNotEmpty;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      // Handle file selection
+    }
+  }
+
+  void _pickImageFromGallery() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      // Handle image selection
+    }
+  }
+
+  void _openCamera() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      // Handle image capture
+    }
+  }
+
+  void _toggleRecording() {
+    setState(() {
+      isRecording = !isRecording;
+      // Add your recording logic here
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Container(
-          height: 70,
-          width: 500, 
-          color: Colors.white,
+      backgroundColor: Colors.white,
+      body: Container(
+        
+        height: double.infinity,
+        width: double.infinity,
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Row(
+            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.attach_file),
+              IconButton(
+                onPressed: _pickFile,
+                icon: Icon(Icons.attach_file)
+                ),
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+              
                   child: TextField(
-                    controller: TextEditingController(),
+                    controller: _controller,
                     decoration: InputDecoration(
                       hintText: "Write your message",
                       hintStyle: const TextStyle(
@@ -35,20 +93,35 @@ class _TextInputterState extends State<TextInputter> {
                       fillColor: const Color.fromARGB(255, 229, 233, 233),
                       filled: true,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(25),
                         borderSide: const BorderSide(
                           width: 0,
                           style: BorderStyle.none,
                         ),
                       ),
-                      suffixIcon: Icon(Icons.send), // Correct placement of suffixIcon
+                      suffixIcon: IconButton(
+                        icon:Icon(
+                            isTyping ? Icons.send:
+                            Icons.image,
+                            size: 20, 
+                            color : const Color.fromARGB(255, 95, 94, 94)
+                            ),
+                            onPressed: isTyping ? (){} : _pickImageFromGallery, // Correct placement of suffixIcon
                     ),
-                  ),
-                ),
-              ),
-              const Icon(Icons.camera_alt_outlined),
-              const SizedBox(width: 10),
-              const Icon(Icons.keyboard_voice_outlined),
+                  ),),),
+                
+              const SizedBox(width: 5),
+              Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+          
+              IconButton(
+                icon: Icon(Icons.camera_alt),
+                onPressed: _openCamera),
+              IconButton(
+                icon: Icon(isRecording ? Icons.stop : Icons.mic,  ),
+                onPressed: _toggleRecording,),
+              ],)
             ],
           ),
         ),

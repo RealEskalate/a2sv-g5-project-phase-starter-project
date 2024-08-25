@@ -6,7 +6,7 @@ import (
 	"backend-starter-project/mongo"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/google/generative-ai-go/genai"
 )
 

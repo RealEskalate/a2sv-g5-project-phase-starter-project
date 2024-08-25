@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
 	"github.com/google/generative-ai-go/genai"
+	"github.com/go-redis/redis/v8"
 )
 
 func NewBlogRouter(db *mongo.Database, group *gin.RouterGroup, model *genai.GenerativeModel, redis *redis.Client) {

@@ -4,7 +4,6 @@ import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/domain/interfaces"
 	"errors"
-	"log"
 )
 
 type commentService struct {
@@ -24,7 +23,7 @@ func NewCommentService(cr interfaces.CommentRepository, br interfaces.BlogReposi
 func (cs *commentService) AddComment(comment *entities.Comment) (*entities.Comment, error) {
 	// Check if the user exists by authorId
 	userExists, err := cs.userRepository.FindUserById(comment.AuthorID.Hex())
-	log.Println(comment.AuthorID.Hex())
+
 	if userExists == nil || err != nil {
 		return nil, errors.New("user not found")
 	}

@@ -1,14 +1,10 @@
 package bootstrap
 
 import (
-	"context"
-	"log"
-
 	"backend-starter-project/mongo"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/google/generative-ai-go/genai"
-	"google.golang.org/api/option"
 )
 
 type Application struct {

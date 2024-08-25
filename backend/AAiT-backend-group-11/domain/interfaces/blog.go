@@ -32,9 +32,6 @@ type BlogService interface {
 	FilterBlogPosts(dto.FilterBlogPostsRequest) (*dto.GetBlogPostsResponse, error)
 }
 
-
-
-
 type PopularityTrackingService interface {
     IncrementViewCount( blogPostId string) error
     LikeBlogPost( blogPostId, userId string) error

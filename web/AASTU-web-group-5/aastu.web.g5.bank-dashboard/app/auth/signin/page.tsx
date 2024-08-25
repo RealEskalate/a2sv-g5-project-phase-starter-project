@@ -128,7 +128,7 @@ const Login = () => {
             </button>
           </form>
           <p className="mt-8 text-center text-gray-400">
-            Don't have an account? <a href="/auth/signup" className="text-blue-400 hover:text-blue-600 underline">Sign up</a>
+            Don$&apos;t have an account? <a href="/auth/signup" className="text-blue-400 hover:text-blue-600 underline">Sign up</a>
           </p>
         </div>
       </div>

@@ -122,7 +122,7 @@ export default function Component() {
 		};
 
 		fetchData();
-	}, [session]);
+	}, [session, user?.accessToken]);
 
 	return (
 		<Card

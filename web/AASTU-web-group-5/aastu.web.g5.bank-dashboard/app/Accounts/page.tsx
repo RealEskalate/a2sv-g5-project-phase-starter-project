@@ -75,6 +75,7 @@ const Accounts = () => {
 		} else {
 			setLoading(true); // Ensure loading state is set while waiting for session
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [session, income, expense]);
 
 	const fetchTransactions = async (accessToken: string) => {

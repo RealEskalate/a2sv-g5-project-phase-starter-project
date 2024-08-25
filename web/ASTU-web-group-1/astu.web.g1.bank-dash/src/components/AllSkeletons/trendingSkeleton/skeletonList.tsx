@@ -29,16 +29,16 @@ const SkeletonList = () => {
           <thead className="sticky top-0 bg-white z-10">
             <tr>
               <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
-                <Skeleton className="h-4 w-10" />
+                <Skeleton className="h-4 w-10 bg-slate-200" />
               </th>
               <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
-                <Skeleton className="h-4 w-10" />
+                <Skeleton className="h-4 w-10 bg-slate-200" />
               </th>
               <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
-                <Skeleton className="h-4 w-10" />
+                <Skeleton className="h-4 w-10 bg-slate-200" />
               </th>
               <th className="font-[500] font-Inter text-14px text-blue-steel py-3 pl-4">
-                <Skeleton className="h-4 w-10" />
+                <Skeleton className="h-4 w-10 bg-slate-200" />
               </th>
             </tr>
           </thead>

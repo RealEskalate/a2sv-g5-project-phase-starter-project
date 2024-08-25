@@ -5,7 +5,6 @@ type RecentTransactionCardProps = {
   calender: string;
   amount: number;
   imageUrl: string;
-  moneyColor: string;
   sign: string;
 };
 
@@ -14,9 +13,13 @@ const RecentTransactionCard: React.FC<RecentTransactionCardProps> = ({
   calender,
   amount,
   imageUrl,
-  moneyColor,
   sign,
 }) => {
+  const dateObj = new Date(calender);
+  const sign2 = sign === 'deposit';
+
+  const options = { day: '2-digit', month: 'short', year: 'numeric' };
+  // const formattedDate = dateObj.toLocaleDateString('en-GB', options);
   return (
     <div className='flex items-center'>
       <div className='flex-shrink-0'>
@@ -27,11 +30,17 @@ const RecentTransactionCard: React.FC<RecentTransactionCardProps> = ({
         />
       </div>
       <div className='flex-1 min-w-0 ms-4'>
-        <p className='text-sm text-[#232323] truncate'>{TransactionName}</p>
-        <p className='text-sm text-[#718EBF]'>{calender}</p>
+        <p className='font-semibold text-[#232323] truncate'>{TransactionName}</p>
+        <p className='text-sm text-[#718EBF] font-medium'>
+          {dateObj.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+        </p>
       </div>
-      <div className='inline-flex items-center text-sm font-medium' style={{ color: moneyColor }}>
-        {sign}${amount}
+      <div
+        className={`inline-flex items-center font-medium ${
+          sign2 ? 'text-[#41D4A8]' : 'text-red-600'
+        }`}
+      >
+        {sign2 ? '+' : '-'}${amount}
       </div>
     </div>
   );

@@ -139,6 +139,10 @@ func (b *blogUsecase) SearchBlogs(ctx context.Context, filter dtos.FilterBlogReq
 
 func (b *blogUsecase) UpdateBlog(ctx context.Context, blogID string, blog *models.Blog) *models.ErrorResponse {
 
+	if _, err := b.repository.GetBlog(ctx, blogID); err != nil {
+		return err
+	}
+
 	if err := b.repository.UpdateBlog(ctx, blogID, blog); err != nil {
 		return err
 	}
@@ -184,6 +188,10 @@ func (b *blogUsecase) DeleteBlog(ctx context.Context, deleteBlogReq dtos.DeleteB
 }
 
 func (b *blogUsecase) TrackPopularity(ctx context.Context, popularity dtos.TrackPopularityRequest) *models.ErrorResponse {
+
+	if popularity.Action != models.Like && popularity.Action != models.Dislike {
+		return models.BadRequest("Invalid action")
+	}
 
 	existingAction, err := b.popularity.GetBlogPopularityAction(ctx, popularity.BlogID, popularity.UserID)
 

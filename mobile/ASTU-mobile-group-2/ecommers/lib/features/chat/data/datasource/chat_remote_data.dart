@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,7 +28,7 @@ class ChatRemoteDataImpl implements ChatRemoteData {
   });
 
   @override
-  Future<bool> deleteChats(String id) async{
+  Future<bool> deleteChats(String id) async {
     try {
       await client.delete(
         Uri.parse(ChatApi.deleteChatApi(id)),
@@ -37,7 +36,7 @@ class ChatRemoteDataImpl implements ChatRemoteData {
           'Authorization': 'Bearer ${sharedPreferences.getString('key')}',
         },
       );
-      
+
       return Future.value(true);
     } on ConnectionFailur catch (e) {
       throw ConnectionFailur(message: e.toString());
@@ -49,50 +48,44 @@ class ChatRemoteDataImpl implements ChatRemoteData {
   @override
   Future<ChatEntity> getChatById(String chatId) async {
     try {
-      final respond = await client.get(
-        Uri.parse(ChatApi.chatByIdApi(chatId)),
-        headers: {
-           'Authorization': 'Bearer ${sharedPreferences.getString('key')}',
-        }
-      );
-      if (respond.statusCode == 200){
-        final data = await client.get(
-          Uri.parse(ChatApi.getMessagesApi(chatId)),
-          headers: {
-           'Authorization': 'Bearer ${sharedPreferences.getString('key')}',
-        }
-        );
-        if (data.statusCode == 200){
-          List<Map<String,String>> chatData = [];
+      final respond =
+          await client.get(Uri.parse(ChatApi.chatByIdApi(chatId)), headers: {
+        'Authorization': 'Bearer ${sharedPreferences.getString('key')}',
+      });
+      if (respond.statusCode == 200) {
+        final data = await client
+            .get(Uri.parse(ChatApi.getMessagesApi(chatId)), headers: {
+          'Authorization': 'Bearer ${sharedPreferences.getString('key')}',
+        });
+        if (data.statusCode == 200) {
+          List<Map<String, String>> chatData = [];
           final jsonDecode = json.decode(data.body);
           dynamic messages = jsonDecode['data'];
-          for (dynamic message in messages){
-            Map<String,String> temp = {
+          for (dynamic message in messages) {
+            Map<String, String> temp = {
               'senderId': message['sender']['_id'],
-              'content':  message['content']
+              'content': message['content']
             };
             chatData.add(temp);
           }
           Map<String, dynamic> toEntity = {
-            'messageId' : chatId,
-            'messages' : chatData
+            'messageId': chatId,
+            'messages': chatData
           };
           final MessageModel result = MessageModel.fromJson(toEntity);
           final MessageEntity messageEntity = result.toEntity();
           final dynamic mainData = json.decode(respond.body);
-          final Map<String,dynamic> jsonData  = {
-            'senderId' : mainData['data']['user1']['_id'],
-            'senderName' : mainData['data']['user1']['name'],
-            'recieverId' : mainData['data']['user2']['id'],
-            'recieverName' : mainData['data']['user2']['name'],
-            'chatId' : chatId,
-            'messages' : messageEntity
+          final Map<String, dynamic> jsonData = {
+            'senderId': mainData['data']['user1']['_id'],
+            'senderName': mainData['data']['user1']['name'],
+            'recieverId': mainData['data']['user2']['id'],
+            'recieverName': mainData['data']['user2']['name'],
+            'chatId': chatId,
+            'messages': messageEntity
           };
           final ChatModel datas = ChatModel.fromJson(jsonData);
           final ChatEntity chatEntity = datas.toEntity();
           return Future.value(chatEntity);
-
-
         }
       }
       throw const ConnectionFailur(message: 'try again');
@@ -104,24 +97,73 @@ class ChatRemoteDataImpl implements ChatRemoteData {
   }
 
   @override
-  Future<List<ChatEntity>> getMychats() {
-    throw UnimplementedError();
+  Future<List<ChatEntity>> getMychats() async {
+    try {
+      final response =
+          await client.get(Uri.parse(ChatApi.getChatsApi()), headers: {
+        'Authorization': 'Bearer ${sharedPreferences.getString('key')}',
+      });
+
+      List<ChatEntity> allChats = [];
+      if (response.statusCode == 200) {
+        final jsonDecode = json.decode(response.body);
+        dynamic chats = jsonDecode['data'];
+        for (dynamic chat in chats) {
+          final data = await client
+              .get(Uri.parse(ChatApi.getMessagesApi(chat['_id'])), headers: {
+            'Authorization': 'Bearer ${sharedPreferences.getString('key')}',
+          });
+          if (data.statusCode == 200) {
+            List<Map<String, String>> chatData = [];
+            final jsonDecode = json.decode(data.body);
+            dynamic messages = jsonDecode['data'];
+            for (dynamic message in messages) {
+              Map<String, String> temp = {
+                'senderId': message['sender']['_id'],
+                'content': message['content']
+              };
+              chatData.add(temp);
+            }
+            Map<String, dynamic> toEntity = {
+              'messageId': chat['_id'],
+              'messages': chatData
+            };
+            final MessageModel result = MessageModel.fromJson(toEntity);
+            final MessageEntity messageEntity = result.toEntity();
+            final dynamic mainData = json.decode(response.body);
+            final Map<String, dynamic> jsonData = {
+              'senderId': mainData['data']['user2']['_id'],
+              'senderName': mainData['data']['user2']['name'],
+              'recieverId': mainData['data']['user1']['id'],
+              'recieverName': mainData['data']['user1']['name'],
+              'chatId': chat['_id'],
+              'messages': messageEntity
+            };
+            final ChatModel datas = ChatModel.fromJson(jsonData);
+            final ChatEntity chatEntity = datas.toEntity();
+
+            chats.add(chatEntity);
+          }
+        }
+      }
+      return allChats;
+    } on ConnectionFailur catch (e) {
+      throw ConnectionFailur(message: e.toString());
+    } catch (e) {
+      throw ServerFailure(message: e.toString());
+    }
   }
 
   @override
   Future<bool> initiate(String id) async {
     try {
-      final result =  await client.post(
-        Uri.parse(ChatApi.startChatApi()),
-        body:  {
-          'userId': id
-        },
-        headers: {
-           'Authorization': 'Bearer ${sharedPreferences.getString('key')}',
-        }
-
-      );
-      if(result.statusCode == 201){
+      final result =
+          await client.post(Uri.parse(ChatApi.startChatApi()), body: {
+        'userId': id
+      }, headers: {
+        'Authorization': 'Bearer ${sharedPreferences.getString('key')}',
+      });
+      if (result.statusCode == 201) {
         return Future.value(true);
       }
       return Future.value(false);

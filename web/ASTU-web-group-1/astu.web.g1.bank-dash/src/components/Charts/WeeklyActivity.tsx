@@ -25,17 +25,27 @@ const WeeklyActivity = () => {
         label: 'Deposit',
         data: datavalues1,
         backgroundColor: 'rgba(80, 10, 192, 0.9)',
-        borderRadius: 6,
+        borderRadius: 26,
         barThickness: 23,
-        barPercentage: 0.5,
+        barPercentage: 0,
+        categoryPercentage: 0,
+      },
+      {
+        label: 'Spacer',
+        data: new Array(datavalues1.length).fill(null),
+        backgroundColor: 'transparent',
+        barThickness: 5,
+        barPercentage: 0.001,
+        categoryPercentage: 0.001,
       },
       {
         label: 'Withdraw',
         data: datavalues2,
         backgroundColor: '#16dbcc',
-        borderRadius: 6,
-        barThickness: 23,
-        barPercentage: 0.5,
+        borderRadius: 26,
+        barThickness: 26,
+        barPercentage: 0,
+        categoryPercentage: 0,
       },
     ],
   };
@@ -48,17 +58,17 @@ const WeeklyActivity = () => {
         position: 'top' as const,
         align: 'end' as const,
         labels: {
-          boxWidth: 23,
+          boxWidth: 10,
           boxHeight: 23,
           usePointStyle: true,
           pointStyle: 'circle',
         },
       },
       tooltip: {
-        enabled: true, // Keep tooltips if needed
+        enabled: true,
       },
       datalabels: {
-        display: false, // Disable data labels if using chartjs-plugin-datalabels
+        display: false,
       },
     },
     scales: {
@@ -76,7 +86,7 @@ const WeeklyActivity = () => {
       y: {
         beginAtZero: true,
         ticks: {
-          stepSize: 5, // Set the y-axis increments to 5
+          stepSize: 5,
         },
       },
     },
@@ -86,7 +96,7 @@ const WeeklyActivity = () => {
     <div className='w-full md:w-8/12 md:me-6'>
       <h1 className='text-[#333B69] pb-3 font-semibold'>Weekly Activity</h1>
       <div className='bg-white rounded-3xl md:px-5 md:py-6 p-2 w-full'>
-        <div style={{ position: 'relative', height: '270px', width: '100%' }}>
+        <div className='w-full' style={{ height: '270px', maxWidth: '100%' }}>
           <Bar data={data} options={options} />
         </div>
       </div>

@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
 
 /* imports inter font from google fonts */
 

@@ -68,12 +68,12 @@ type BlogRepository interface {
 	LikeOrDislikeBlog(blogId, userId string, like int) (string, error)
 
 	AddComment(blogid string, comment Comment) error
-	GetAllComments(blogId string) ([]Comment, error)
+	GetAllComments(blogId string,opt PaginationInfo) ([]Comment, error)
 	GetCommentById(blogId, commentId string) (Comment, error)
 	LikeOrDislikeComment(blogId, commentId, userId string, like int) error
 
 	AddReply(blogId, commentId string, reply Reply) error
-	GetAllReplies(blogId,commentId string) ([]Reply, error)
+	GetAllReplies(blogId,commentId string,opt PaginationInfo) ([]Reply, error)
 	GetReplyById(blogId,commentId,replyId string) (Reply, error)
 	LikeOrDislikeReply(blogId,commentId,replyId, userId string, like int) error
 }

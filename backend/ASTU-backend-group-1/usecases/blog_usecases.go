@@ -20,8 +20,9 @@ func (uc *BlogUsecase) CreateBLog(blog domain.Blog) (domain.Blog, error) {
 	return blog, nil
 }
 
-func (uc *BlogUsecase) GetAllBlogs() ([]domain.Blog, error) {
-	blogs, err := uc.blogRepository.GetBlog(domain.BlogFilterOption{})
+func (uc *BlogUsecase) GetAllBlogs(opts domain.PaginationInfo) ([]domain.Blog, error) {
+
+	blogs, err := uc.blogRepository.GetBlog(domain.BlogFilterOption{Pagination: opts})
 	if err != nil {
 		return []domain.Blog{}, err
 	}
@@ -96,8 +97,8 @@ func (uc *BlogUsecase) AddComment(blogid string,comment domain.Comment) error {
 	return nil
 }
 
-func (uc *BlogUsecase) GetAllComments(blogId string) ([]domain.Comment, error) {
-	comments, err := uc.blogRepository.GetAllComments(blogId)
+func (uc *BlogUsecase) GetAllComments(blogId string,opts domain.PaginationInfo) ([]domain.Comment, error) {
+	comments, err := uc.blogRepository.GetAllComments(blogId,opts)
 	if err != nil {
 		return []domain.Comment{}, err
 	}
@@ -142,8 +143,8 @@ func (uc *BlogUsecase) ReplyToComment(blogid,commentid string,reply domain.Reply
 	}
 	return nil
 }
-func (uc *BlogUsecase) GetAllReplies(blogId,commentId string) ([]domain.Reply, error) {
-	replies, err := uc.blogRepository.GetAllReplies(blogId,commentId)
+func (uc *BlogUsecase) GetAllReplies(blogId,commentId string,opts domain.PaginationInfo) ([]domain.Reply, error) {
+	replies, err := uc.blogRepository.GetAllReplies(blogId,commentId,opts)
 	if err != nil {
 		return []domain.Reply{}, err
 	}

@@ -8,9 +8,10 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (r *MongoBlogRepository) GetCommentById(blogId,commentId string) (domain.Comment, error) {
+func (r *MongoBlogRepository) GetCommentById(blogId, commentId string) (domain.Comment, error) {
 	bid, err := IsValidObjectID(blogId)
 	if err != nil {
 		return domain.Comment{}, err
@@ -21,7 +22,7 @@ func (r *MongoBlogRepository) GetCommentById(blogId,commentId string) (domain.Co
 	}
 	filter := bson.M{
 		"comment_id": cid,
-		"blog_id": bid,
+		"blog_id":    bid,
 	}
 	fmt.Println("this is the filter", filter)
 	var result domain.Comment
@@ -33,7 +34,7 @@ func (r *MongoBlogRepository) GetCommentById(blogId,commentId string) (domain.Co
 	return result, nil
 }
 
-func (r *MongoBlogRepository) LikeOrDislikeComment(blogId,commentId, userId string, like int) error {
+func (r *MongoBlogRepository) LikeOrDislikeComment(blogId, commentId, userId string, like int) error {
 	bid, err := IsValidObjectID(blogId)
 	if err != nil {
 		return err
@@ -46,7 +47,7 @@ func (r *MongoBlogRepository) LikeOrDislikeComment(blogId,commentId, userId stri
 	if err != nil {
 		return err
 	}
-	filter := bson.M{"comment_id": cid,"blog_id":bid}
+	filter := bson.M{"comment_id": cid, "blog_id": bid}
 	update := bson.M{}
 	if like == 1 {
 		result := bson.M{}
@@ -87,14 +88,26 @@ func (r *MongoBlogRepository) LikeOrDislikeComment(blogId,commentId, userId stri
 	return nil
 }
 
-func (r *MongoBlogRepository) GetAllComments(blogId string) ([]domain.Comment, error) {
-	cursor, err := r.CommentCollection.Find(context.Background(), bson.M{})
+func (r *MongoBlogRepository) GetAllComments(blogId string, opts domain.PaginationInfo) ([]domain.Comment, error) {
+	var comments []domain.Comment
+	findOptions := options.Find()
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return comments, err
+	}
+	if opts.PageSize > 0 {
+		findOptions.SetLimit(int64(opts.PageSize))
+	}
+	if opts.Page > 0 {
+		findOptions.SetSkip(int64((opts.Page - 1) * opts.PageSize))
+	}
+	cursor, err := r.CommentCollection.Find(context.Background(), bson.M{"blog_id": bid}, findOptions)
+
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(context.Background())
 
-	var comments []domain.Comment
 	for cursor.Next(context.Background()) {
 		var comment domain.Comment
 		if err := cursor.Decode(&comment); err != nil {

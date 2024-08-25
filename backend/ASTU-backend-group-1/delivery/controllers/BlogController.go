@@ -5,6 +5,7 @@ import (
 	"astu-backend-g1/infrastructure"
 	usecase "astu-backend-g1/usecases"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -39,7 +40,20 @@ func (cont *BlogController) HandleCreateBlog(ctx *gin.Context) {
 }
 
 func (cont *BlogController) HandleGetAllBlogs(ctx *gin.Context) {
-	blogs, err := cont.usecase.GetAllBlogs()
+	page := ctx.Query("pageNumber")
+	ipage, err := strconv.Atoi(page)
+	if err != nil || ipage < 1 {
+		ipage = 1
+	}
+	pageSize := ctx.Query("pageSize")
+	ipageSize, err := strconv.Atoi(pageSize)
+	if err != nil || ipageSize < 1 {
+		ipageSize = 5
+	}
+	x := domain.PaginationInfo{}
+	x.Page = ipage
+	x.PageSize = ipageSize
+	blogs, err := cont.usecase.GetAllBlogs(x)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -66,27 +80,28 @@ func (cont *BlogController) HandleGetPopularBlog(ctx *gin.Context) {
 }
 
 func (cont *BlogController) HandleFilterBlogs(ctx *gin.Context) {
+	
 	var blf domain.BlogFilterOption
 	err := ctx.ShouldBindJSON(&blf)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, err)
 		return
 	}
-	// page := ctx.Query("pageNumber")
-	// ipage, err := strconv.Atoi(page)
-	// if err != nil || ipage < 1 {
-	// 	ipage = 1
-	// }
-	// pageSize := ctx.Query("pageSize")
-	// ipageSize, err := strconv.Atoi(pageSize)
-	// if err != nil || ipageSize < 1 {
-	// 	ipageSize = 5
-	// }
-	// x := domain.BlogFilterOption{}
-	// x.Pagination.Page = ipage
-	// x.Pagination.PageSize = ipageSize
+	page := ctx.Query("pageNumber")
+	ipage, err := strconv.Atoi(page)
+	if err != nil || ipage < 1 {
+		ipage = 1
+	}
+	pageSize := ctx.Query("pageSize")
+	ipageSize, err := strconv.Atoi(pageSize)
+	if err != nil || ipageSize < 1 {
+		ipageSize = 5
+	}
+	x := domain.PaginationInfo{}
+	x.Page = ipage
+	x.PageSize = ipageSize
+	blf.Pagination = x
 
-	// blogs, err := cont.usecase.FilterBlogs(x)
 
 	blogs, err := cont.usecase.FilterBlogs(blf)
 	if err != nil {
@@ -185,7 +200,21 @@ func (cont *BlogController) HandleCommentOnBlog(ctx *gin.Context) {
 
 func (cont *BlogController) HandleGetAllComments(ctx *gin.Context) {
 	blogId := ctx.Param("blogId")
-	comments, err := cont.usecase.GetAllComments(blogId)
+	page := ctx.Query("pageNumber")
+	ipage, err := strconv.Atoi(page)
+	if err != nil || ipage < 1 {
+		ipage = 1
+	}
+	pageSize := ctx.Query("pageSize")
+	ipageSize, err := strconv.Atoi(pageSize)
+	if err != nil || ipageSize < 1 {
+		ipageSize = 5
+	}
+	x := domain.PaginationInfo{}
+	x.Page = ipage
+	x.PageSize = ipageSize
+
+	comments, err := cont.usecase.GetAllComments(blogId,x)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -196,7 +225,7 @@ func (cont *BlogController) HandleGetAllComments(ctx *gin.Context) {
 func (cont *BlogController) HandleGetCommentById(ctx *gin.Context) {
 	blogId := ctx.Param("blogId")
 	commentId := ctx.Param("commentId")
-	comments, err := cont.usecase.GetCommentById(blogId,commentId)
+	comments, err := cont.usecase.GetCommentById(blogId, commentId)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -215,21 +244,21 @@ func (cont *BlogController) HandleCommentLikeOrDislike(ctx *gin.Context) {
 	}
 
 	if interactionType == "like" {
-		err := cont.usecase.LikeComment(blogId,commentId, claims.ID)
+		err := cont.usecase.LikeComment(blogId, commentId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {
 			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment liked successfully"})
 		}
 	} else if interactionType == "dislike" {
-		err := cont.usecase.DislikeComment(blogId,commentId, claims.ID)
+		err := cont.usecase.DislikeComment(blogId, commentId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {
 			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment disliked successfully"})
 		}
 	} else if interactionType == "view" {
-		err := cont.usecase.ViewComment(blogId,commentId, claims.ID)
+		err := cont.usecase.ViewComment(blogId, commentId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {
@@ -255,7 +284,7 @@ func (cont *BlogController) HandleReplyOnComment(ctx *gin.Context) {
 		return
 	}
 	newReply.AuthorId = claims.ID
-	err = cont.usecase.ReplyToComment(blogId,commentId, newReply)
+	err = cont.usecase.ReplyToComment(blogId, commentId, newReply)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -266,7 +295,21 @@ func (cont *BlogController) HandleReplyOnComment(ctx *gin.Context) {
 func (cont *BlogController) HandleGetAllRepliesForComment(ctx *gin.Context) {
 	blogId := ctx.Param("blogId")
 	commentId := ctx.Param("commentId")
-	replies, err := cont.usecase.GetAllReplies(blogId,commentId)
+	page := ctx.Query("pageNumber")
+	ipage, err := strconv.Atoi(page)
+	if err != nil || ipage < 1 {
+		ipage = 1
+	}
+	pageSize := ctx.Query("pageSize")
+	ipageSize, err := strconv.Atoi(pageSize)
+	if err != nil || ipageSize < 1 {
+		ipageSize = 5
+	}
+	x := domain.PaginationInfo{}
+	x.Page = ipage
+	x.PageSize = ipageSize
+
+	replies, err := cont.usecase.GetAllReplies(blogId, commentId,x)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -278,7 +321,7 @@ func (cont *BlogController) HandleGetReplyById(ctx *gin.Context) {
 	blogId := ctx.Param("blogId")
 	commentId := ctx.Param("commentId")
 	replyId := ctx.Param("replyId")
-	replies, err := cont.usecase.GetReplyById(blogId,commentId,replyId)
+	replies, err := cont.usecase.GetReplyById(blogId, commentId, replyId)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -297,21 +340,21 @@ func (cont *BlogController) HandleReplyLikeOrDislike(ctx *gin.Context) {
 		return
 	}
 	if like == "like" {
-		err := cont.usecase.LikeReply(blogId,commentId,replyId, claims.ID)
+		err := cont.usecase.LikeReply(blogId, commentId, replyId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {
 			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply liked successfully"})
 		}
 	} else if like == "dislike" {
-		err := cont.usecase.DislikeReply(blogId,commentId,replyId, claims.ID)
+		err := cont.usecase.DislikeReply(blogId, commentId, replyId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {
 			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply disliked successfully"})
 		}
 	} else if like == "view" {
-		err := cont.usecase.ViewReply(blogId,commentId,replyId, claims.ID)
+		err := cont.usecase.ViewReply(blogId, commentId, replyId, claims.ID)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusNotFound, err)
 		} else {

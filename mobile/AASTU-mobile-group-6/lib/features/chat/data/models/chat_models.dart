@@ -3,33 +3,28 @@ import 'package:ecommerce_app_ca_tdd/features/product/data/models/seller_model.d
 
 class ChatModel{
   final String id;
-  final String name;
-  final String description;
-  final num price;
-  final String imagePath;
-  final SellerModel sellerId;
-  final String user1, user2;
-  ChatModel({
-    required this.user1,
-    required this.user2,
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.price,
-    required this.imagePath,
-    required this.sellerId
-  }) : super();
+  final String id;
+  final ChatEntity chat;
+  final User sender;
+  final String type;
+  final String content;
 
+  get receiver => chat.user1 == sender ? chat.user2 : chat.user1;
+
+  const ChatModel({
+    required this.id,
+    required this.chat,
+    required this.sender,
+    required this.type,
+    required this.content,
+  });
+
+  @override
+  List<Object?> get props => [id, chat, sender, type, content];
+}
   factory ChatModel.fromJson(Map<String, dynamic> json) {
     return ChatModel(
-      id : json['id'],// TO be deleteed
-      name: json['name'],
-      description: json['description'],
-      price: (json['price']).toDouble(),
-      imagePath: json['imageUrl'] ?? '',
-      sellerId: SellerModel.fromJson(json['sellerId']),
-      user1: json['user1'],
-      user2: json['user2']
+      
     );
   }
 

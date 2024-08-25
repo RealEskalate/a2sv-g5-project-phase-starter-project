@@ -1,7 +1,12 @@
+import 'package:ecommerce_app/features/chat/domain/entity/chat.dart';
+import 'package:ecommerce_app/features/chat/domain/entity/chat.dart';
+import 'package:ecommerce_app/features/chat/domain/entity/chat.dart';
 import 'package:equatable/equatable.dart';
 import '../../../auth/domain/entities/user_entity.dart';
 import 'chat.dart';
 
+
+import '../../../auth/domain/entities/user_entity.dart';
 
 class MessageEntity extends Equatable {
   final String messageId;
@@ -10,7 +15,8 @@ class MessageEntity extends Equatable {
   final String content;
 
 
-   const MessageEntity({
+  
+  const MessageEntity({
     required this.messageId,
     required this.sender,
     required this.chat,
@@ -19,11 +25,6 @@ class MessageEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-        messageId,
-        sender,
-        chat,
-        content
-      ];
+  List<Object?> get props => [messageId,sender,chat,content];
 }
 

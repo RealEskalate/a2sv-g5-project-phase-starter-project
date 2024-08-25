@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/constants.dart';
 import '../../../../core/themes/themes.dart';
-import '../../../../core/validator/validator.dart';
 import '../../../product/presentation/pages/product_list_page.dart';
 import '../../../product/presentation/widgets/fill_custom_button.dart';
 import '../../../product/presentation/widgets/loading_dialog.dart';

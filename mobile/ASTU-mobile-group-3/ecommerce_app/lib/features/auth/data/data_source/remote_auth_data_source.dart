@@ -5,12 +5,12 @@ import 'package:http/http.dart' as http;
 import '../../../../core/constants/constants.dart';
 import '../../../../core/errors/exceptions/product_exceptions.dart';
 import '../../domain/entities/user_entity.dart';
-import '../model/signed_up_user_model.dart';
 import '../model/token_model.dart';
+import '../model/user_model.dart';
 
 abstract class RemoteAuthDataSource {
   Future<TokenModel> logIn(UserEntity user);
-  Future<SignedUpUserModel> signUp(UserEntity user);
+  Future<UserModel> signUp(UserEntity user);
 }
 
 class RemoteAuthDataSourceImpl implements RemoteAuthDataSource {
@@ -44,7 +44,7 @@ class RemoteAuthDataSourceImpl implements RemoteAuthDataSource {
   }
 
   @override
-  Future<SignedUpUserModel> signUp(UserEntity user) async {
+  Future<UserModel> signUp(UserEntity user) async {
     try {
       final result = await client.post(
         Uri.parse(AppData.registerUser),
@@ -57,7 +57,7 @@ class RemoteAuthDataSourceImpl implements RemoteAuthDataSource {
 
       if (result.statusCode == 201) {
         final Map<String, dynamic> jsonFormat = json.decode(result.body);
-        return SignedUpUserModel.fromJson(jsonFormat['data']);
+        return UserModel.fromJson(jsonFormat['data']);
       } else if (result.statusCode == 409) {
         throw UserConflictException();
       } else {

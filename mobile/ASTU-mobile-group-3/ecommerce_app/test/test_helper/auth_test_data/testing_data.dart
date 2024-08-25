@@ -1,12 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:ecommerce_app/features/auth/data/model/signed_up_user_model.dart';
 import 'package:ecommerce_app/features/auth/data/model/token_model.dart';
 import 'package:ecommerce_app/features/auth/data/model/user_model.dart';
-import 'package:ecommerce_app/features/auth/domain/entities/signed_up_user_entity.dart';
 import 'package:ecommerce_app/features/auth/domain/entities/token_entity.dart';
 import 'package:ecommerce_app/features/auth/domain/entities/user_entity.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../testing_datas/product_testing_data.dart';
 
 class AuthData {
   static const String token =
@@ -17,16 +18,12 @@ class AuthData {
   static const String id = '66bde36e9bbe07fc39034cdd';
   static const TokenEntity tokenEntity = TokenEntity(token: token);
   static const TokenModel tokenModel = TokenModel(token: token);
-
-  static const signedUpUserEntity =
-      SignedUpUserEntity(id: id, email: email, name: name);
-  static const signedUpUserModel =
-      SignedUpUserModel(id: id, email: email, name: name);
+  static const int v = 0;
 
   static const userEntity =
-      UserEntity(name: name, email: email, password: password);
+      UserEntity(name: name, email: email, password: password, id: id, v: v);
   static const userModel =
-      UserModel(name: name, email: email, password: password);
+      UserModel(name: name, email: email, password: password, id: id, v: v);
   static String readJson() {
     String dir = Directory.current.path;
     if (dir.contains('/test')) {
@@ -37,10 +34,11 @@ class AuthData {
 
     return File(dir).readAsStringSync();
   }
+
+  static UserModel sellerData = UserModel.fromSellerJson(
+      json.decode(TestingDatas.getSingleProduct())['data']['seller']);
 }
 
 void main() {
-  test('description', () {
-    print(AuthData.readJson());
-  });
+  test('description', () {});
 }

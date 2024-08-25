@@ -14,18 +14,20 @@ import (
 
 type userRepository struct {
 	database   mongo.Database
-	collection string
+	Usercollection string
+	Refreshcollection string
 }
 
-func NewUserRepository(db mongo.Database, collection string) entities.UserRepository {
+func NewUserRepository(db mongo.Database, usercollection string ,refreshcollection string) entities.UserRepository {
 	return &userRepository{
 		database:   db,
-		collection: collection,
+		Usercollection: usercollection,
+		Refreshcollection: refreshcollection,
 	}
 }
 
 func (ur *userRepository) CreateUser(c context.Context, user *entities.User) (*entities.User, error) {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 
 	_, err := collection.InsertOne(c, user)
 	if err != nil {
@@ -35,26 +37,45 @@ func (ur *userRepository) CreateUser(c context.Context, user *entities.User) (*e
 	return user, err
 }
 func (ur *userRepository) IsOwner(c context.Context) (bool, error) {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 	count, err := collection.CountDocuments(context.TODO(), bson.M{})
 	if err != nil {
 		return false, err
 	}
 	return count == 0, nil
 }
-func (ur *userRepository) UpdateRefreshToken(c context.Context, userID string, refreshToken string) error {
-	collection := ur.database.Collection(ur.collection)
-	id, err := primitive.ObjectIDFromHex(userID)
+func (ur *userRepository) CreateRefreshToken(c context.Context, refreshData entities.RefreshData) error {
+	collection := ur.database.Collection(ur.Refreshcollection)
+	_,err:=collection.InsertOne(c,refreshData)
 	if err != nil {
 		return err
 	}
-	filter := bson.M{"_id": id}
-	_, err = collection.UpdateOne(c, filter, bson.M{"$push": bson.M{"tokens": refreshToken}})
-	return err
+	return nil
 }
 
+func (ur *userRepository) GetRefreshToken(c context.Context, id string) (*entities.RefreshData, error) {
+	collection := ur.database.Collection(ur.Refreshcollection)
+	var refreshData entities.RefreshData
+	err := collection.FindOne(c, bson.M{"_id": id}).Decode(&refreshData)
+	if err != nil {
+		return nil, err
+	}
+	return &refreshData, err
+}
+
+func (ur *userRepository) DeleteRefreshToken(c context.Context, id string) error {
+	collection := ur.database.Collection(ur.Refreshcollection)
+	_, err := collection.DeleteOne(c, bson.M{"_id": id})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+
+
 func (ur *userRepository) GetUserById(c context.Context, userId string) (*entities.User, error) {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 	var user entities.User
 
 	id, err := primitive.ObjectIDFromHex(userId)
@@ -74,7 +95,7 @@ func (ur *userRepository) GetUserById(c context.Context, userId string) (*entiti
 }
 
 func (ur *userRepository) GetUserByEmail(c context.Context, email string) (*entities.User, error) {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 	var user entities.User
 	err := collection.FindOne(c, bson.M{"email": email}).Decode(&user)
 	if err != nil {
@@ -84,7 +105,7 @@ func (ur *userRepository) GetUserByEmail(c context.Context, email string) (*enti
 }
 
 func (ur *userRepository) GetUsers(c context.Context, filter bson.M, userFilter entities.UserFilter) (*[]entities.User, mongopagination.PaginationData, error) {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 
 	projectQuery := bson.M{"$project": bson.M{
 		"password":     0,
@@ -114,7 +135,7 @@ func (ur *userRepository) GetUsers(c context.Context, filter bson.M, userFilter 
 }
 
 func (ur *userRepository) RevokeRefreshToken(c context.Context, userID, refreshToken string) error {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 	objID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return errors.New("object id invalid")
@@ -132,7 +153,7 @@ func (ur *userRepository) RevokeRefreshToken(c context.Context, userID, refreshT
 }
 
 func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUser *entities.UserUpdate) (*entities.User, error) {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 	id, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return nil, errors.New("object id invalid")
@@ -152,7 +173,7 @@ func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUs
 }
 
 func (ur *userRepository) ActivateUser(c context.Context, userID string) (*entities.User, error) {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 	id, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return nil, errors.New("object id invalid")
@@ -173,7 +194,7 @@ func (ur *userRepository) ActivateUser(c context.Context, userID string) (*entit
 }
 
 func (ur *userRepository) DeleteUser(c context.Context, userID string) error {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 	id, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return errors.New("object id invalid")
@@ -192,7 +213,7 @@ func (ur *userRepository) DeleteUser(c context.Context, userID string) error {
 	return nil
 }
 func (ur *userRepository) IsUserActive(c context.Context, userID string) (bool, error) {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 	var user entities.User
 	err := collection.FindOne(c, bson.M{"_id": userID}).Decode(&user)
 	if err != nil {
@@ -202,7 +223,7 @@ func (ur *userRepository) IsUserActive(c context.Context, userID string) (bool, 
 
 }
 func (ur *userRepository) ResetUserPassword(c context.Context, userID string, resetPassword *entities.ResetPasswordRequest) error {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 	ObjID, err := primitive.ObjectIDFromHex(userID)
 
 	if err != nil {
@@ -218,7 +239,7 @@ func (ur *userRepository) ResetUserPassword(c context.Context, userID string, re
 	return nil
 }
 func (ur *userRepository) UpdateUserPassword(c context.Context, userID string, updatePassword *entities.UpdatePassword) error {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 	ObjID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return errors.New("object id invalid")
@@ -234,7 +255,7 @@ func (ur *userRepository) UpdateUserPassword(c context.Context, userID string, u
 	return nil
 }
 func (ur *userRepository) PromoteUserToAdmin(c context.Context, userID string) error {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 	ObjID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return errors.New("object id invalid")
@@ -249,7 +270,7 @@ func (ur *userRepository) PromoteUserToAdmin(c context.Context, userID string) e
 	return nil
 }
 func (ur *userRepository) DemoteAdminToUser(c context.Context, userID string) error {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 	ObjID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return errors.New("object id invalid")
@@ -264,7 +285,7 @@ func (ur *userRepository) DemoteAdminToUser(c context.Context, userID string) er
 	return nil
 }
 func (ur *userRepository) UpdateProfilePicture(c context.Context, userID string, filename string) error {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.Usercollection)
 	ObjID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return errors.New("object id invalid")

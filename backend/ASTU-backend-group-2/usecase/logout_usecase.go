@@ -12,25 +12,17 @@ type logoutUsecase struct {
 	contextTimeout time.Duration
 }
 
-func NewLogoutUsecase(userRepository entities.UserRepository, timeout time.Duration) entities.LoginUsecase {
-	return &loginUsecase{
+func NewLogoutUsecase(userRepository entities.UserRepository, timeout time.Duration) entities.LogOutUsecase {
+	return &logoutUsecase{
 		userRepository: userRepository,
 		contextTimeout: timeout,
 	}
 }
 
-func (lu *logoutUsecase) GetUserByEmail(c context.Context, email string) (entities.User, error) {
+func (lu *logoutUsecase) LogOut(c context.Context, refreshid string)error {
 	ctx, cancel := context.WithTimeout(c, lu.contextTimeout)
 	defer cancel()
-	user, err := lu.userRepository.GetUserByEmail(ctx, email)
-	if err != nil {
-		return entities.User{}, err
-	}
-	return *user, nil
-}
+	err := lu.userRepository.DeleteRefreshToken(ctx, refreshid)
 
-func (lu *logoutUsecase) RevokeRefreshToken(c context.Context, userID string, refreshToken string) error {
-	ctx, cancel := context.WithTimeout(c, lu.contextTimeout)
-	defer cancel()
-	return lu.userRepository.RevokeRefreshToken(ctx, userID, refreshToken)
+	return err
 }

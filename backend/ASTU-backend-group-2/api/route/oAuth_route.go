@@ -13,7 +13,7 @@ import (
 )
 
 func NewOAuthRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
-	ur := repository.NewUserRepository(*db, entities.CollectionUser)
+	ur := repository.NewUserRepository(*db, entities.CollectionUser,entities.CollectionRefresh)
 	oc := controller.OAuthController{
 		UserUsecase:  usecase.NewUserUsecase(ur, timeout),
 		LoginUsecase: usecase.NewLoginUsecase(ur, timeout),

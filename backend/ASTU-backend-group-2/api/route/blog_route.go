@@ -14,7 +14,7 @@ import (
 
 func NewProtectedBlogsRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
 	br := repository.NewBlogRepository(*db, entities.CollectionBlog)
-	ur := repository.NewUserRepository(*db, entities.CollectionUser)
+	ur := repository.NewUserRepository(*db, entities.CollectionUser,entities.CollectionRefresh)
 	cr := repository.NewCommentRepository(db)
 	rr := repository.NewReactionRepository(db)
 

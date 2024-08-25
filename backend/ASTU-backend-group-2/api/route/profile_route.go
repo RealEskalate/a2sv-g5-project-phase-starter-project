@@ -16,7 +16,7 @@ import (
 
 // NewProfileRouter is a function that defines all the routes for the profile
 func NewProfileRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup, cloudinary *cloudinary.Cloudinary) {
-	ur := repository.NewUserRepository(*db, entities.CollectionUser)
+	ur := repository.NewUserRepository(*db, entities.CollectionUser,entities.CollectionRefresh)
 	pc := controller.ProfileController{
 		UserUsecase: usecase.NewUserUsecase(ur, timeout),
 		Env:         env,

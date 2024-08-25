@@ -273,19 +273,33 @@ func (c *UserController) DeleteUser(ctx *gin.Context) {
 // @Failure      406 {object} map[string]string "error"
 // @Failure      500 {object} map[string]string "error"
 // @Router       /users/{id} [put]
-func (c *UserController) UpdateUser(ctx *gin.Context) {
+func (c *UserController) UpdateProfiles(ctx *gin.Context) {
 	userId := ctx.Param("id")
 	updateData := domain.User{}
 	if err := ctx.ShouldBind(&updateData); err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	updatedUser, err := c.userUsecase.Update(userId, updateData)
+	updatedUser, err := c.userUsecase.UpdateUser(userId, updateData)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.IndentedJSON(http.StatusOK, updatedUser)
+}
+
+func (c *UserController) ChangePassword(ctx *gin.Context) {
+	userdata := domain.ChangePassword{}
+	if err := ctx.ShouldBind(&userdata); err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+		return
+	}
+	_ ,err := c.userUsecase.ChangePassword(userdata.Email, userdata.OldPassword, userdata.NewPassword)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully"})
 }
 
 // RefreshAccessToken godoc
@@ -329,7 +343,7 @@ func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
 
 		if refreshClaims.ExpiresAt < time.Now().Unix() {
 
-			_, err := c.userUsecase.Update(TheUser.ID, domain.User{RefreshToken: ""})
+			_, err := c.userUsecase.UpdateUser(TheUser.ID, domain.User{RefreshToken: ""})
 			if err != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			}
@@ -356,7 +370,7 @@ func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
 			}
 			ctx.IndentedJSON(200, gin.H{"refreshed access token": newToken})
 			TheUser.RefreshToken = refresh
-			_, err = c.userUsecase.Update(TheUser.ID, domain.User{RefreshToken: refresh})
+			_, err = c.userUsecase.UpdateUser(TheUser.ID, domain.User{RefreshToken: refresh})
 			if err != nil {
 				ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": err})
 				return

@@ -45,9 +45,10 @@ func (gr *MainRouter) GinBlogRouter() {
 		userrouter.POST("/:uid/refresh", gr.handler.RefreshAccessToken)
 		userrouter.GET("/", gr.handler.GetUsers)
 		userrouter.GET("/:id", gr.handler.GetUserByID)
-		userrouter.PUT("/:id", gr.handler.UpdateUser)
 		userrouter.Use(gr.authController.AuthenticationMiddleware())
 		{
+			userrouter.PUT("/changePassword", gr.handler.ChangePassword)
+			userrouter.PUT("/changeEmail", gr.handler.UpdateProfiles)
 			userrouter.PATCH("promote/:username", gr.authController.ADMINMiddleware(), gr.handler.Promote)
 			userrouter.PATCH("demote/:username",gr.authController.ADMINMiddleware(),gr.handler.Demote)
 			userrouter.PATCH("promotebyemail/:email", gr.authController.ADMINMiddleware(), gr.handler.PromoteByEmail)

@@ -193,10 +193,37 @@ func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	return nUser, err
 }
 
-func (useCase *userUsecase) Update(userId string, updateData domain.User) (domain.User, error) {
+func (useCase *userUsecase) UpdateUser(userId string, updateData domain.User) (domain.User, error) {
+	user,err := useCase.GetByEmail(updateData.Email)
+	updateData.IsAdmin = user.IsAdmin
+	updateData.IsActive = user.IsActive
+	updateData.Password = ""
+	if err != nil {
+		return user,err
+	}
 	return useCase.userRepository.Update(userId, updateData)
 }
 
+func (useCase *userUsecase) ChangePassword(email string, oldPassword string, newPassword string) (string, error) {
+	user, err := useCase.GetByEmail(email)
+	if err != nil {
+		return "", err
+	}
+	if !user.IsActive {
+		return "", errors.New("Account not activated")
+	}
+	oldPassword, _ = infrastructure.PasswordHasher(oldPassword)
+	if user.Password == oldPassword {
+		user.Password, _ = infrastructure.PasswordHasher(newPassword)
+		user.Password = newPassword
+		_, err := useCase.userRepository.Update(user.ID, domain.User{Password: newPassword,IsAdmin: user.IsAdmin})
+		if err != nil {
+			return "password has not been updated", err
+		}
+		return "Password change successful", nil
+	}
+	return "Invalid password", errors.New("Invalid password")
+}
 func (useCase *userUsecase) Delete(userId string) error {
 	return useCase.userRepository.Delete(userId)
 }

@@ -17,5 +17,5 @@ class Message extends Equatable {
       required this.type,
       required this.content});
   @override
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [messageId, sender, chat, type, content];
 }

@@ -3,20 +3,26 @@ import React from "react";
 import { useGetAllServicesQuery } from "@/lib/services/services";
 import { BankService } from "@/types";
 import Image from "next/image";
+import Spinner from "./Spinner";
+
 
 
 
 const ServiceList = () => {
-  const { data, isError, isLoading, error, isSuccess } = useGetAllServicesQuery(
+  const { data, isLoading, isSuccess } = useGetAllServicesQuery(
     {
       accessToken:?
-      page:? ,
+      page: ?,
       size: ?,
     }
   );
 
-  if (isLoading) return <div>Loading...</div>;
-  if (!isSuccess) return <div>Failed</div>;
+  if (isLoading) return  <Spinner />;
+  if (!isSuccess) return (
+    <div className="text-red-600 bg-red-100 border border-red-400 p-4 rounded-md text-center m-4">
+      Failed to load services. Please try again later.
+    </div>
+  );
 
   const bankServices = data?.data.content;
 

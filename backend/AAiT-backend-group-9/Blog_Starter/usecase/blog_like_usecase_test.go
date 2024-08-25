@@ -2,22 +2,23 @@ package usecase
 
 import (
 	"Blog_Starter/domain"
+	"Blog_Starter/domain/mocks" // Adjust this import path based on your project structure
 	"context"
 	"errors"
 	"testing"
 	"time"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
 	"github.com/stretchr/testify/mock"
-	"Blog_Starter/domain/mocks" // Adjust this import path based on your project structure
+	"github.com/stretchr/testify/suite"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type LikeUseCaseSuite struct {
 	suite.Suite
-	likeUseCase    domain.LikeUseCase
-	likeRepoMock   *mocks.LikeRepository
-	blogRepoMock   *mocks.BlogRepository
+	likeUseCase  domain.LikeUseCase
+	likeRepoMock *mocks.LikeRepository
+	blogRepoMock *mocks.BlogRepository
 }
 
 func (suite *LikeUseCaseSuite) SetupTest() {
@@ -32,9 +33,9 @@ func (suite *LikeUseCaseSuite) SetupTest() {
 func (suite *LikeUseCaseSuite) TestGetByID_Success() {
 	// Arrange
 	expectedLike := &domain.Like{
-		LikeID:   primitive.NewObjectID(),
-		UserID:   "user123",
-		BlogID:   "blog123",
+		LikeID:    primitive.NewObjectID(),
+		UserID:    "user123",
+		BlogID:    "blog123",
 		CreatedAt: time.Now(),
 	}
 
@@ -65,9 +66,9 @@ func (suite *LikeUseCaseSuite) TestGetByID_Failure() {
 func (suite *LikeUseCaseSuite) TestLikeBlog_Success() {
 	// Arrange
 	like := &domain.Like{
-		LikeID:   primitive.NewObjectID(),
-		UserID:   "user123",
-		BlogID:   "blog123",
+		LikeID:    primitive.NewObjectID(),
+		UserID:    "user123",
+		BlogID:    "blog123",
 		CreatedAt: time.Now(),
 	}
 
@@ -87,9 +88,9 @@ func (suite *LikeUseCaseSuite) TestLikeBlog_Success() {
 func (suite *LikeUseCaseSuite) TestLikeBlog_Failure_LikeRepo() {
 	// Arrange
 	like := &domain.Like{
-		LikeID:   primitive.NewObjectID(),
-		UserID:   "user123",
-		BlogID:   "blog123",
+		LikeID:    primitive.NewObjectID(),
+		UserID:    "user123",
+		BlogID:    "blog123",
 		CreatedAt: time.Now(),
 	}
 
@@ -107,9 +108,9 @@ func (suite *LikeUseCaseSuite) TestLikeBlog_Failure_LikeRepo() {
 func (suite *LikeUseCaseSuite) TestLikeBlog_Failure_BlogRepo() {
 	// Arrange
 	like := &domain.Like{
-		LikeID:   primitive.NewObjectID(),
-		UserID:   "user123",
-		BlogID:   "blog123",
+		LikeID:    primitive.NewObjectID(),
+		UserID:    "user123",
+		BlogID:    "blog123",
 		CreatedAt: time.Now(),
 	}
 
@@ -130,9 +131,9 @@ func (suite *LikeUseCaseSuite) TestUnlikeBlog_Success() {
 	// Arrange
 	likeID := "like123"
 	like := &domain.Like{
-		LikeID:   primitive.NewObjectID(),
-		UserID:   "user123",
-		BlogID:   "blog123",
+		LikeID:    primitive.NewObjectID(),
+		UserID:    "user123",
+		BlogID:    "blog123",
 		CreatedAt: time.Now(),
 	}
 
@@ -168,9 +169,9 @@ func (suite *LikeUseCaseSuite) TestUnlikeBlog_Failure_BlogRepo() {
 	// Arrange
 	likeID := "like123"
 	like := &domain.Like{
-		LikeID:   primitive.NewObjectID(),
-		UserID:   "user123",
-		BlogID:   "blog123",
+		LikeID:    primitive.NewObjectID(),
+		UserID:    "user123",
+		BlogID:    "blog123",
 		CreatedAt: time.Now(),
 	}
 

@@ -7,17 +7,18 @@ import (
 	"errors"
 	"testing"
 	"time"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogCommentUseCaseTestSuite struct {
 	suite.Suite
-	commentUseCase    domain.CommentUseCase
-	commentRepoMock   *mocks.CommentRepository
-	blogRepoMock      *mocks.BlogRepository 
-	timeout           time.Duration
+	commentUseCase  domain.CommentUseCase
+	commentRepoMock *mocks.CommentRepository
+	blogRepoMock    *mocks.BlogRepository
+	timeout         time.Duration
 }
 
 func (suite *BlogCommentUseCaseTestSuite) SetupTest() {

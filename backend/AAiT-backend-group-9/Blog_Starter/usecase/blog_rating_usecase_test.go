@@ -4,9 +4,10 @@ import (
 	"Blog_Starter/domain"
 	"Blog_Starter/domain/mocks"
 	"context"
+	"errors"
 	"testing"
 	"time"
-	"errors"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -39,9 +40,9 @@ func (suite *BlogRatingUseCaseSuite) TestInsertRating_Success() {
 	}
 
 	rating := &domain.BlogRating{
-		UserID:   "user123",
-		BlogID:   "blog123",
-		Rating:   5,
+		UserID:    "user123",
+		BlogID:    "blog123",
+		Rating:    5,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}

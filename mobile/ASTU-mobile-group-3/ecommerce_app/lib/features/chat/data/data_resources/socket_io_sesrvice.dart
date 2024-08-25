@@ -27,7 +27,7 @@ class SocketIOServiceImpl implements SocketIOService {
   Future<void> emitSendMessage(String chatId, MessageEntity message) async {
     socket.emit('send:message', {
       'chatId': chatId,
-      'message': message.toJson(),
+      'message': {},
     });
   }
 

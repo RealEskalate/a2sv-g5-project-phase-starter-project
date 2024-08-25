@@ -6,11 +6,11 @@ type PaginationRequest struct {
 }
 
 type PaginationResponse[T interface{}] struct {
-	Limit      int   `json:"limit,omitempty"`
-	Page       int   `json:"page,omitempty"`
-	Count      int64 `json:"count,omitempty"`
-	TotalPages int   `json:"total_pages,omitempty"`
-	Items      []T   `json:"items,omitempty"`
+	Limit      int   `json:"limit"`
+	Page       int   `json:"page"`
+	Count      int64 `json:"count"`
+	TotalPages int   `json:"total_pages"`
+	Items      []T   `json:"items"`
 }
 
 func NewPaginationResponse[T interface{}](limit, page int, count int64, items []T) PaginationResponse[T] {

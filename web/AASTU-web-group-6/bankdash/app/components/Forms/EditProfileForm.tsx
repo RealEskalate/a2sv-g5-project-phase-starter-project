@@ -41,7 +41,7 @@ const EditProfileForm = () => {
   };
 
   return (
-    <div className="w-full py-8 flex gap-3 xs:flex-wrap md:flex-nowrap">
+    <div className="w-full py-8 flex gap-3 xss:mb-2 sm:mb-0 xxs:flex-wrap xxs:justify-center sm:justify-normal md:flex-nowrap md:px-6 md:justify-around lg:justify-between ">
       <div className="flex justify-center xs:w-full md:w-fit md:pl-5">
         <div className="relative h-fit flex justify-center">
           <Image
@@ -58,11 +58,11 @@ const EditProfileForm = () => {
       </div>
 
       <form
-        className="w-flex flex-col md:justify-around lg:w-[800px] py-2 xs:px-2 sm:px-0 "
+        className="w-flex flex-col xxs:justify-center xxs:px-3 sm:px-0 sm:justify-normal md:justify-around lg:w-[800px] py-2   "
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="name"
@@ -77,7 +77,7 @@ const EditProfileForm = () => {
               placeholder="Charlene Reed"
             />
           </div>
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="username"
@@ -95,7 +95,7 @@ const EditProfileForm = () => {
         </div>
 
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="email"
@@ -110,7 +110,7 @@ const EditProfileForm = () => {
               placeholder="charlenereed@gmail.com"
             />
           </div>
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="password"
@@ -128,7 +128,7 @@ const EditProfileForm = () => {
         </div>
 
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="dob"
@@ -143,7 +143,7 @@ const EditProfileForm = () => {
               placeholder="25 January 1990"
             />
           </div>
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="present-address"
@@ -161,7 +161,7 @@ const EditProfileForm = () => {
         </div>
 
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="permanent-address"
@@ -176,7 +176,7 @@ const EditProfileForm = () => {
               placeholder="San Jose, California, USA"
             />
           </div>
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="city"
@@ -194,7 +194,7 @@ const EditProfileForm = () => {
         </div>
 
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="postal-code"
@@ -209,7 +209,7 @@ const EditProfileForm = () => {
               placeholder="45962"
             />
           </div>
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="country"
@@ -228,7 +228,7 @@ const EditProfileForm = () => {
           </div>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-6 flex justify-end">
           <button
             className="px-4 py-2 bg-[#1814F3] text-white rounded-md hover:bg-[#0702db] transition-all duration-300"
             type="submit"

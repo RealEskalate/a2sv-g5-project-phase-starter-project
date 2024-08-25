@@ -50,17 +50,9 @@ class _HomePageState extends State<HomePage> {
 
     const maxNum = 10.0;
     return Scaffold(
-      // bottomNavigationBar: NavigationBar(destinations: [
-
-      //   NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-      //   NavigationDestination(icon: Icon(Icons.add), label: 'Add'),
-      //   NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
-      // ],
-      // height: MediaQuery.of(context).size.height * 0.07),
-
       bottomNavigationBar: Container(child: Bottomnavbar()),
 
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       // floatingActionButton: SizedBox(
       //   width: 72,
       //   height: 72,
@@ -101,12 +93,12 @@ class _HomePageState extends State<HomePage> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                "July 31, 2024",
-                                style: GoogleFonts.syne(
+                              Text("July 31, 2024",
+                                  style: GoogleFonts.syne(
                                     fontWeight: FontWeight.w500,
-                                    color: Color.fromARGB(255, 170, 170, 170)),
-                              ),
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
+                                  )),
                               Row(children: [
                                 Text("Hello,",
                                     style: GoogleFonts.sora(
@@ -118,11 +110,19 @@ class _HomePageState extends State<HomePage> {
                                     if (state is GetUserLoading) {
                                       return Text("Fetching User...",
                                           style: GoogleFonts.sora(
-                                              fontWeight: FontWeight.w600));
+                                            fontWeight: FontWeight.w600,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                          ));
                                     } else if (state is GetUserLoaded) {
                                       return Text("${state.user.name}",
                                           style: GoogleFonts.sora(
-                                              fontWeight: FontWeight.w600));
+                                            fontWeight: FontWeight.w600,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                          ));
                                     } else {
                                       return Text('name');
                                     }
@@ -150,15 +150,26 @@ class _HomePageState extends State<HomePage> {
                                 builder: (context) => AlertDialog(
                                       title: Text(
                                         "Are you sure you want to logout ?",
-                                        style:
-                                            GoogleFonts.poppins(fontSize: 15),
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 15,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
+                                        ),
                                       ),
                                       actions: [
                                         TextButton(
                                             onPressed: () {
                                               Navigator.pop(context);
                                             },
-                                            child: Text("Cancel")),
+                                            child: Text(
+                                              "Cancel",
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface,
+                                              ),
+                                            )),
                                         TextButton(
                                             onPressed: () {
                                               logOut();
@@ -171,11 +182,19 @@ class _HomePageState extends State<HomePage> {
                                       ],
                                     ));
                           },
-                          child: Image(
-                              width: 40,
-                              height: 40,
-                              image: AssetImage(
-                                  'assets/icons8-notification-bell-24.png')),
+                          child: Container(
+                            margin: EdgeInsets.only(top: 7),
+                            child: Icon(
+                              Icons.logout,
+                              size: 30,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                          // Image(
+                          //     width: 40,
+                          //     height: 40,
+                          //     image: AssetImage(
+                          //         'assets/icons8-notification-bell-24.png')),
                         )),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.05,
@@ -186,14 +205,16 @@ class _HomePageState extends State<HomePage> {
                             // color: Color.fromRGBO(221, 221, 221, 1), width: 2),
                             borderRadius: BorderRadius.circular(9)),
                         child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/HomeChat');
-                          },
-                          child: Image(
-                              width: 30,
-                              height: 30,
-                              image: AssetImage('assets/message.png')),
-                        )),
+                            onTap: () {
+                              Navigator.pushNamed(context, '/HomeChat');
+                            },
+                            child: Transform.rotate(
+                              angle: 5.5,
+                              child: Icon(
+                                Icons.send_rounded,
+                                size: 30,
+                              ),
+                            ))),
                   ],
                 ),
 
@@ -231,6 +252,7 @@ class _HomePageState extends State<HomePage> {
                     "Available Products",
                     style: TextStyle(
                         fontFamily: "Poppins",
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 24,
                         fontWeight: FontWeight.w600),
                   ),
@@ -285,12 +307,12 @@ class _HomePageState extends State<HomePage> {
                               itemBuilder: (context, index) {
                                 return GestureDetector(
                                     onTap: () {
-                                      
-
-                                      Navigator.pushNamed(context, '/detail',
-                                          arguments: state.products[index],);
-                                      },
-                                    
+                                      Navigator.pushNamed(
+                                        context,
+                                        '/detail',
+                                        arguments: state.products[index],
+                                      );
+                                    },
                                     child: OverflowCard(
                                       product: state.products[index],
                                     ));
@@ -360,6 +382,7 @@ class OverflowCard extends StatelessWidget {
                       Text(
                         product.name,
                         style: GoogleFonts.poppins(
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 20.0,
                           fontWeight: FontWeight.w500,
                         ),
@@ -368,9 +391,10 @@ class OverflowCard extends StatelessWidget {
                       Text('Ecommerce Items',
                           overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.poppins(
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w400,
-                              color: Color.fromRGBO(217, 217, 217, 1))),
+                            fontSize: 15.0,
+                            fontWeight: FontWeight.w400,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          )),
                     ],
                   ),
                   SizedBox(height: 8.0),
@@ -382,7 +406,9 @@ class OverflowCard extends StatelessWidget {
                         '\$' + product.price.toString(),
                         overflow: TextOverflow.fade,
                         style: GoogleFonts.sora(
-                            fontSize: 14, fontWeight: FontWeight.w500),
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500),
                       ),
                       SizedBox(height: 8.0),
                       Row(
@@ -396,7 +422,8 @@ class OverflowCard extends StatelessWidget {
                               style: GoogleFonts.sora(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w400,
-                                  color: Color.fromARGB(255, 170, 170, 170))),
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface)),
                         ],
                       )
                     ],

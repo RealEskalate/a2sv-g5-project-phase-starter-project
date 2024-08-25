@@ -47,7 +47,7 @@ class Chat extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(bottom: 10),
+            // margin: EdgeInsets.only(bottom: 10),
             height: 109, // Set a fixed height for the horizontal list
             color: const Color.fromARGB(255, 72, 168, 246),
             child: ListView.builder(
@@ -124,6 +124,12 @@ class Chat extends StatelessWidget {
                       'Estifanos Zinabu',
                       'How are you today?',
                     ),
+                    _duplicate(
+                      context,
+                      'assets/av3.png',
+                      'Estifanos Zinabu',
+                      'How are you today?',
+                    ),
                   ],
                 ),
               ),
@@ -143,14 +149,14 @@ Widget _duplicate(
   String peekMessage,
 ) {
   return Container(
-    margin: EdgeInsets.only(bottom: 30),
+    margin: EdgeInsets.only(bottom: 20, top: 5),
     width: MediaQuery.of(context).size.width * 0.95,
     height: MediaQuery.of(context).size.height * 0.08,
     child: Row(
       children: [
         CircleAvatar(
           backgroundColor: Colors.yellow,
-          radius: 30,
+          radius: 25,
           child: Icon(
             Icons.person,
             size: 35,

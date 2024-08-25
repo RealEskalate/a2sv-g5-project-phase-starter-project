@@ -5,6 +5,7 @@ import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/s
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/update/bloc/update_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/HomeChat.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/Theme.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/login/bloc/sign_in_bloc.dart';
@@ -59,9 +60,13 @@ class Main extends StatelessWidget {
     return BlocProvider(
       create: (context) => sl.get<HomeBloc>()..add(GetProductsEvent()),
       child: MaterialApp(
+        theme: lightmode,
+        darkTheme: darkmode,
+        themeMode: ThemeMode.system,
+
         debugShowCheckedModeBanner: false,
         // initial for splash page
-        initialRoute: '/splash',
+        initialRoute: '/home',
 
         onGenerateRoute: (settings) {
           if (settings.name == '/detail') {
@@ -74,8 +79,8 @@ class Main extends StatelessWidget {
                       create: (context) => sl.get<DetailBloc>(),
                     ),
                     BlocProvider(
-                      create: (context) =>
-                          sl.get<GetUserBloc>()..add(GetUserInfoEvent())),
+                        create: (context) =>
+                            sl.get<GetUserBloc>()..add(GetUserInfoEvent())),
                   ],
                   child: DetailsPage(item: item),
                 );

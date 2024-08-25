@@ -2,6 +2,7 @@ import { profileAPI } from "@/lib/redux/api/profileAPI";
 import { activeLoanApi } from "@/lib/redux/slices/activeLoanSlice";
 import { bankServiceApi } from "@/lib/redux/slices/bankService";
 import { cardApi } from "@/lib/redux/slices/cardSlice";
+import { investmentApi } from "@/lib/redux/slices/investmentSlice";
 import profileSlice from "@/lib/redux/slices/profileSlice";
 import { transactionApi } from "@/lib/redux/slices/transactionSlice";
 import uiSlice from "@/lib/redux/slices/uiSlice";
@@ -15,6 +16,8 @@ export const store = configureStore({
     [transactionApi.reducerPath]: transactionApi.reducer,
     [activeLoanApi.reducerPath]: activeLoanApi.reducer,
     [profileAPI.reducerPath]: profileAPI.reducer,
+    [bankServiceApi.reducerPath]: bankServiceApi.reducer,
+    [investmentApi.reducerPath]: investmentApi.reducer,
   },
   middleware: (getDefaultMiddleware) => {
     return getDefaultMiddleware()
@@ -22,6 +25,8 @@ export const store = configureStore({
       .concat(transactionApi.middleware)
       .concat(activeLoanApi.middleware)
       .concat(profileAPI.middleware)
+      .concat(bankServiceApi.middleware)
+      .concat(investmentApi.middleware);
   },
 });
 

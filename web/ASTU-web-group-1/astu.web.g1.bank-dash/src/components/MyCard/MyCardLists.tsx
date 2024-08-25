@@ -7,7 +7,7 @@ import CardSkeleton from "../AllSkeletons/CardSkeleton/CardSkeleton";
 
 export default function MyCardLists() {
   const { data, isLoading } = useGetAllCardsQuery({ page: 0, size: 5 });
-  console.log(data?.content);
+  // console.log(data?.content);
   if (isLoading) {
     return <CardSkeleton />;
   }

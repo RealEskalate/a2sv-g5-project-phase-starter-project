@@ -11,6 +11,7 @@ import (
 	redis_service "blog_api/infrastructure/redis"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/robfig/cron/v3"
 )
@@ -61,7 +62,9 @@ func main() {
 	// setup cron jobs
 	cronManager := cron.New()
 
-	cronManager.AddFunc("@every 1h", cron_jobs.DeleteUnverifiedUsers(database.Collection(domain.CollectionUsers)))
+	cronManager.AddFunc("@every 1h", cron_jobs.DeleteUnverifiedUsers(database.Collection(domain.CollectionUsers), 12*time.Hour))
+
+	defer cronManager.Stop()
 
 	// setup router
 	router.SetupRouter(env.ENV.PORT, env.ENV.ROUTE_PREFIX, database, redisClient)

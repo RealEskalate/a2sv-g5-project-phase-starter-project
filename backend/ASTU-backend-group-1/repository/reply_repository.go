@@ -240,13 +240,20 @@ func (r *MongoBlogRepository) UpdateReply(blogId, commentId, replyId,authorId st
 	return updateData, nil
 }
 
-func (r *MongoBlogRepository) DeleteReply(ReplyId, authorId string) error {
-	id, err := IsValidObjectID(ReplyId)
+func (r *MongoBlogRepository) DeleteReply(blogId, commentId, replyId,authorId string) error {
+	rid, err := IsValidObjectID(replyId)
 	if err != nil {
-		return err
+		return  err
 	}
-
-	filter := bson.M{"reply_id": id}
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return  err
+	}
+	cid, err := IsValidObjectID(commentId)
+	if err != nil {
+		return  err
+	}
+	filter := bson.M{"reply_id": rid,"blog_id":bid,"comment_id":cid}
 	var reply domain.Reply
 	err = r.ReplyCollection.FindOne(context.Background(), filter).Decode(&reply)
 	if err != nil {
@@ -258,7 +265,7 @@ func (r *MongoBlogRepository) DeleteReply(ReplyId, authorId string) error {
 
 	result, err := r.ReplyCollection.DeleteOne(context.Background(), filter)
 	if err != nil || result.DeletedCount == 0 {
-		return errors.New("Failed to delete reply with ID" + ReplyId + ":" + err.Error())
+		return errors.New("Failed to delete reply with ID" + replyId + ":" + err.Error())
 	} else {
 		commentUpdate := bson.M{"$inc": bson.M{"replies": -1}}
 		cid, _ := IsValidObjectID(reply.CommentId)

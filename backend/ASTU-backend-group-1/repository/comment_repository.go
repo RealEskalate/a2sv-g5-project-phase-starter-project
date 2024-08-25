@@ -191,28 +191,44 @@ func UpdateCommentQuery(b domain.Comment) bson.M {
 	return update
 }
 
-func (r *MongoBlogRepository) UpdateComment(strCommentId string, updateData domain.Comment) (domain.Comment, error) {
-	CommentId, err := IsValidObjectID(strCommentId)
+func (r *MongoBlogRepository) UpdateComment(blogId, commentId, authorId string, updateData domain.Comment) (domain.Comment, error) {
+	cid, err := IsValidObjectID(commentId)
 	if err != nil {
 		return domain.Comment{}, err
 	}
-	filter := bson.M{"comment_id": CommentId}
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return domain.Comment{}, err
+	}
+	filter := bson.M{"comment_id": cid, "blog_id": bid}
 	update := bson.M{"$set": UpdateCommentQuery(updateData)}
 
+	var comment domain.Comment
+	err = r.CommentCollection.FindOne(context.Background(), filter).Decode(&comment)
+	if err != nil {
+		return domain.Comment{}, err
+	}
+	if comment.AuthorId != authorId {
+		return domain.Comment{}, errors.New("unauthorized to delete this comment")
+	}
 	result, err := r.CommentCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil || result.MatchedCount == 0 {
-		return domain.Comment{}, errors.New("Failed to update Comment with ID" + strCommentId + ":" + err.Error())
+		return domain.Comment{}, errors.New("Failed to update Comment with ID" + commentId + ":" + err.Error())
 	}
 
 	return updateData, nil
 }
 
-func (r *MongoBlogRepository) DeleteComment(authorId string, scommentId string) error {
-	commentId, err := IsValidObjectID(scommentId)
+func (r *MongoBlogRepository) DeleteComment(authorId string, blogId, scommentId string) error {
+	cid, err := IsValidObjectID(scommentId)
 	if err != nil {
 		return fmt.Errorf("invalid comment ID: %w", err)
 	}
-	filter := bson.M{"comment_id": commentId}
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return fmt.Errorf("invalid comment ID: %w", err)
+	}
+	filter := bson.M{"comment_id": cid, "blog_id": bid}
 	var comment domain.Comment
 	err = r.CommentCollection.FindOne(context.Background(), filter).Decode(&comment)
 	if err != nil {
@@ -230,7 +246,7 @@ func (r *MongoBlogRepository) DeleteComment(authorId string, scommentId string) 
 		bid, _ := IsValidObjectID(comment.BlogId)
 		_, err = r.BlogCollection.UpdateOne(context.Background(), bson.M{"comment_id": bid}, commentUpdate)
 		if err != nil {
-			return fmt.Errorf("failed to update comment after comment reply: %w", err)
+			return fmt.Errorf("failed to update blog after comment deletion: %w", err)
 		}
 	}
 

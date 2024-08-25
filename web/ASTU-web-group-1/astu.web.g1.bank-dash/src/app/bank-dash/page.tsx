@@ -41,12 +41,12 @@ export default function Home() {
           </StoreProvider>
         </div>
       </div>
-      <div className="md:flex my-5">
+      <div className="lg:flex my-5">
         <WeeklyActivity />
         <ExpenseStatistics />
       </div>
-      <div className="md:flex justify-between">
-        <div className="w-5/12 pe-6">
+      <div className="lg:flex justify-between w-full">
+        <div className="lg:w-5/12 pe-6">
           <QuickTransfer />
         </div>
         <BalanceHistory />

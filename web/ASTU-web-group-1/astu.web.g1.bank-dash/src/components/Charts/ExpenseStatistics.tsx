@@ -89,7 +89,7 @@ const options: ChartOptions<'polarArea'> = {
 
 const ExpenseStatistics: React.FC = () => {
   return (
-    <div className='w-full md:w-4/12'>
+    <div className='w-full lg:w-4/12'>
       <h1 className='text-[#333B69] pb-3 font-semibold'>Expense Statistics</h1>
       <div className='bg-white rounded-3xl flex justify-center items-center p-4'>
         <div style={{ position: 'relative', width: '100%', height: '300px' }}>

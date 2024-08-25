@@ -25,24 +25,24 @@ const WeeklyActivity = () => {
         label: 'Deposit',
         data: datavalues1,
         backgroundColor: 'rgba(80, 10, 192, 0.9)',
-        borderRadius: 26,
-        barThickness: 23,
+        borderRadius: 24,
+        barThickness: 26,
         barPercentage: 0,
         categoryPercentage: 0,
       },
-      {
-        label: 'Spacer',
-        data: new Array(datavalues1.length).fill(null),
-        backgroundColor: 'transparent',
-        barThickness: 5,
-        barPercentage: 0.001,
-        categoryPercentage: 0.001,
-      },
+      // {
+      //   label: 'Spacer',
+      //   data: new Array(datavalues1.length).fill(null),
+      //   backgroundColor: 'transparent',
+      //   barThickness: 5,
+      //   barPercentage: 0.001,
+      //   categoryPercentage: 0.001,
+      // },
       {
         label: 'Withdraw',
         data: datavalues2,
         backgroundColor: '#16dbcc',
-        borderRadius: 26,
+        borderRadius: 24,
         barThickness: 26,
         barPercentage: 0,
         categoryPercentage: 0,
@@ -93,7 +93,7 @@ const WeeklyActivity = () => {
   };
 
   return (
-    <div className='w-full md:w-8/12 md:me-6'>
+    <div className='w-full lg:w-8/12 md:me-6'>
       <h1 className='text-[#333B69] pb-3 font-semibold'>Weekly Activity</h1>
       <div className='bg-white rounded-3xl md:px-5 md:py-6 p-2 w-full'>
         <div className='w-full' style={{ height: '270px', maxWidth: '100%' }}>

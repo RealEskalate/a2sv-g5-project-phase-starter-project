@@ -41,7 +41,7 @@ func GetAiBlog(chat_id, query string) (domain.Blog, error) {
 	}
 	return domain.Blog{
 		Title:   result["title"].(string),
-		Content: result["content"].([]interface{}),
+		Content: result["content"].(string),
 	}, nil
 
 }

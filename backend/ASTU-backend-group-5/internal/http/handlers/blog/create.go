@@ -1,6 +1,8 @@
 package blog
 
 import (
+	"blogApp/internal/ai"
+	"blogApp/internal/config"
 	"blogApp/internal/domain"
 	"blogApp/internal/usecase/blog"
 	"context"
@@ -18,7 +20,7 @@ func NewBlogHandler(useCase blog.BlogUseCase) *BlogHandler {
 }
 
 func (h *BlogHandler) CreateBlogHandler(c *gin.Context) {
-	var blog domain.Blog
+	var blog domain.CreateBlogDTO
 	claims, err := GetClaims(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -29,12 +31,33 @@ func (h *BlogHandler) CreateBlogHandler(c *gin.Context) {
 		return
 	}
 	// blog.Author = claims.UserID
-	if err := h.UseCase.CreateBlog(context.Background(), &blog, claims.UserID); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+	dbBlog := domain.Blog{
+		Title:   blog.Title,
+		Content: blog.Content,
+		Tags:    blog.Tags,
 	}
-
-	c.JSON(http.StatusCreated, blog)
+	pass := false
+	Config, err := config.Load()
+	if err == nil {
+		if Config.MODERATE_BLOG_BEFORE_CREATE == "TRUE" {
+			grade, message, err := ai.ModerateBlog(blog.Content, blog.Title)
+			if err != nil {
+				pass = true
+			}
+			if grade < 50 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": message})
+				return
+			}
+			pass = true
+		}
+	}
+	if pass {
+		if err := h.UseCase.CreateBlog(context.Background(), &dbBlog, claims.UserID); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusCreated, blog)
+	}
 }
 
 func (h *BlogHandler) AddCommentHandler(c *gin.Context) {

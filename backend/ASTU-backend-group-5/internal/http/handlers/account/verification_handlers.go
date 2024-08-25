@@ -69,7 +69,6 @@ func (h *UserHandler) ResetPasswordRequest(c *gin.Context) {
 func (h *UserHandler) ResetPassword(c *gin.Context) {
 	token := c.Query("token")
 	var request struct {
-		Email    string `json:"email" binding:"required,email"`
 		Password string `json:"password" binding:"required"`
 	}
 	err := c.ShouldBindJSON(&request)
@@ -78,7 +77,7 @@ func (h *UserHandler) ResetPassword(c *gin.Context) {
 		return
 	}
 
-	err = h.UserUsecase.ResetPassword(token, request.Password, request.Email)
+	err = h.UserUsecase.ResetPassword(token, request.Password)
 	if err != nil {
 		log.Printf("Error resetting password: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password"})

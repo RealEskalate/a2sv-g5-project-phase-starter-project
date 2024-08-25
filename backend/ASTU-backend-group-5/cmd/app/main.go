@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	// os.Clearenv()
 	confs, err := config.Load()
 	if err != nil {
 		panic(err)
@@ -27,6 +28,6 @@ func main() {
 	router := gin.Default()
 	// Serve static files from the "upload" directory
 	router.Static("/uploads", "./uploads")
-	routes.SetUpRoute(router, blogCollection, commentCollection, likeCollection, viewCollection, tagCollection, userCollection)
+	routes.SetUpRoute(router)
 	router.Run(":" + confs.GO_PORT)
 }

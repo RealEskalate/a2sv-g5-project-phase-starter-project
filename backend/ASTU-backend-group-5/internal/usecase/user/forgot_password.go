@@ -7,7 +7,6 @@ import (
 	"blogApp/pkg/jwt"
 	"context"
 	"errors"
-	"fmt"
 	"log"
 )
 
@@ -25,14 +24,14 @@ func (u *UserUsecase) RequestPasswordResetUsecase(userEmail string) error {
 	case "simple":
 		emailSender = email.NewSimpleEmailSender(
 			Config.SMTP_HOST,
-			Config.SMTP_PORT,
+			Config.EMAIL_PORT,
 			Config.EMAIL_SENDER_EMAIL,
 			Config.EMAIL_SENDER_PASSWORD,
 		)
 	default:
 		emailSender = email.NewSimpleEmailSender(
 			Config.SMTP_HOST,
-			Config.SMTP_PORT,
+			Config.EMAIL_PORT,
 			Config.EMAIL_SENDER_EMAIL,
 			Config.EMAIL_SENDER_PASSWORD,
 		)
@@ -51,16 +50,16 @@ func (u *UserUsecase) RequestPasswordResetUsecase(userEmail string) error {
 	return nil
 }
 
-func (u *UserUsecase) ResetPassword(resetToken string, newPassword string, email string) error {
+func (u *UserUsecase) ResetPassword(resetToken string, newPassword string) error {
 	claims, err := jwt.ValidateToken(resetToken)
+
 	if err != nil {
 		return err
 	}
-	issuerEmail := claims.Email
-	fmt.Println(issuerEmail, email)
-	if issuerEmail != email {
+	if claims.Role != "password-reset" || claims.Email == "password-reset" || claims.ID != "password-reset" {
 		return errors.New("invalid token")
 	}
+	email := claims.Email
 	hashedPassword, err := hash.HashPassword(newPassword)
 	if err != nil {
 		return err

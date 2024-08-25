@@ -17,9 +17,9 @@ func (u *UserUsecase) Login(email string, password string) (*domain.User, *domai
 	if user == nil {
 		return nil, nil, errors.New("invalid credentials")
 	}
-	if !user.Verified {
-		return nil, nil, errors.New("you need to verify your email first")
-	}
+	// if !user.Verified {
+	// 	return nil, nil, errors.New("you need to verify your email first")
+	// }
 
 	if !hash.CheckPasswordHash(password, user.Password) {
 		return nil, nil, errors.New("invalid credentials")

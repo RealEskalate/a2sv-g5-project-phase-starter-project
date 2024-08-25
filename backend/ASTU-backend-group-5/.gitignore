@@ -3,9 +3,13 @@ tmp
 .air.toml
 venv
 venv/
+virtual/
 .venv
-<<<<<<< HEAD
+
 mokery.yml
-=======
+.envf
+env.yaml
+
 uploads
->>>>>>> ff353a95068e678ce0e83867a33ea9d25fd10dcf
+.env
+

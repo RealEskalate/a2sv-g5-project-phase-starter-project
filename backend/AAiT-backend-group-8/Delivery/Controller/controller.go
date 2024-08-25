@@ -9,7 +9,7 @@ import (
 
 type Controller struct {
 	blogUseCase    interfaces.IBlogUseCase
-	commentUseCase *usecase.CommentUseCase
+	commentUseCase interfaces.ICommentUseCase
 	UserUseCase    interfaces.IUserUseCase
 	LikeUseCase    *usecase.LikeUseCase
 	AiUseCase      interfaces.IAiUsecase
@@ -17,7 +17,7 @@ type Controller struct {
 	cacheUseCase   interfaces.ICacheUseCase
 }
 
-func NewController(commentUseCase *usecase.CommentUseCase, userUseCase interfaces.IUserUseCase, likeUseCase *usecase.LikeUseCase, blogUseCase interfaces.IBlogUseCase, aiUseCase interfaces.IAiUsecase, rdb *redis.Client, cacheUseCase interfaces.ICacheUseCase) *Controller {
+func NewController(commentUseCase interfaces.ICommentUseCase, userUseCase interfaces.IUserUseCase, likeUseCase *usecase.LikeUseCase, blogUseCase interfaces.IBlogUseCase, aiUseCase interfaces.IAiUsecase, rdb *redis.Client, cacheUseCase interfaces.ICacheUseCase) *Controller {
 	return &Controller{
 		blogUseCase:    blogUseCase,
 		commentUseCase: commentUseCase,

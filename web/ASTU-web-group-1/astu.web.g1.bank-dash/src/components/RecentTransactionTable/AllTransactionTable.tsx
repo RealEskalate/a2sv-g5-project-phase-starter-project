@@ -67,7 +67,7 @@ const AllTransactionTable = () => {
                   >
                     <td className="py-3">
                       <RecentTransactionDescription
-                        amount={datax.amount}
+                        amount={datax.type}
                         description={datax.description}
                       />
                     </td>

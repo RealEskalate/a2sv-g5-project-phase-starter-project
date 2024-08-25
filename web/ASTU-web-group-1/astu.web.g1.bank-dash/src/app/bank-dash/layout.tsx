@@ -18,8 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en'>
-      <body>
+      <div>
         <div className='flex w-full bg-slate-100 min-h-screen font-Inter'>
           <div className='min-h-screen fixed left-0 top-0 z-50'>
             <StoreProvider>
@@ -34,7 +33,6 @@ export default function RootLayout({
           </div>
         </div>
         <Toaster />
-      </body>
-    </html>
+      </div>
   );
 }

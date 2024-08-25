@@ -14,4 +14,5 @@ class UserModel extends UserEntity {
       email: json['email'] as String,
     );
   }
+
 }

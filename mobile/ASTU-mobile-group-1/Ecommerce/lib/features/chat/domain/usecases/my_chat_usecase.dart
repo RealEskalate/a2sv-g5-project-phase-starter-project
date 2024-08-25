@@ -1,16 +1,16 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/failure.dart';
-
+import '../entities/chat_entity.dart';
 import '../repositories/chat_repository.dart';
 
-class DeleteChat {
+class MyChatUsecase {
   final ChatRepository _chatRepository;
 
-  DeleteChat({required ChatRepository chatRepository})
+  const MyChatUsecase({required ChatRepository chatRepository})
       : _chatRepository = chatRepository;
 
-  Future<Either<Failure, bool>> deleteChat(String chatId) {
-    return _chatRepository.deleteChat(chatId);
+  Future<Either<Failure, List<ChatEntity>>> execute() {
+    return _chatRepository.myChat();
   }
 }

@@ -21,7 +21,7 @@ export default function RootLayout({
               <div className="h-fit bg-red-300">
                 <Header />
               </div>
-              <main className="mt-20 lg:ml-64 sm:ml-60 w-full ">{children}</main>
+              <main className="mt-16 lg:ml-64 sm:ml-60 w-full ">{children}</main>
             </body>
       </Provider>
     </html>

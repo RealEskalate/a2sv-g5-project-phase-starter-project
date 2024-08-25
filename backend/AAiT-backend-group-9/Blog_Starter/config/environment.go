@@ -23,6 +23,7 @@ type Env struct {
 	AccessTokenSecret      string `mapstructure:"ACCESS_TOKEN_SECRET"`
 	RefreshTokenSecret     string `mapstructure:"REFRESH_TOKEN_SECRET"`
 	APIKEY                 string `mapstructure:"API_KEY"`
+	CacheAddr              string `mapstructure:"CACHE_ADDR"`
 }
 
 // NewEnv initializes and returns a new instance of the Env struct.

@@ -102,31 +102,31 @@ func (suite *BlogControllerTestSuite) TestCreateBlog_InvalidContentLength() {
 
 
 func (suite *BlogControllerTestSuite) TestGetBlogByID_Success() {
-	blogID := primitive.NewObjectID()
-	blog := &domain.Blog{
-		BlogID:    blogID,
-		Title:     "Test Blog",
-		Content:   "Test Content",
-		Author:    "Test Author",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
+    blogID := primitive.NewObjectID()
+    blog := &domain.Blog{
+        BlogID:    blogID,
+        Title:     "Test Blog",
+        Content:   "Test Content",
+        Author:    "Test Author",
+        CreatedAt: time.Now(),
+        UpdatedAt: time.Now(),
+    }
 
-	suite.mockUseCase.On("GetBlogByID", mock.Anything, blogID.Hex()).Return(blog, nil)
+    suite.mockUseCase.On("GetBlogByID", mock.AnythingOfType("*gin.Context"), "").Return(blog, nil)
 
-	req, _ := http.NewRequest(http.MethodGet, "/blogs/" + blogID.Hex(), nil)
-	w := httptest.NewRecorder()
+    req, _ := http.NewRequest(http.MethodGet, "/blogs/"+blogID.Hex(), nil)
+    w := httptest.NewRecorder()
 
-	suite.router.ServeHTTP(w, req)
+    suite.router.ServeHTTP(w, req)
 
-	suite.Equal(http.StatusOK, w.Code)
-	suite.mockUseCase.AssertExpectations(suite.T())
+    suite.Equal(http.StatusOK, w.Code)
+    suite.mockUseCase.AssertExpectations(suite.T())
 }
 
 func (suite *BlogControllerTestSuite) TestGetBlogByID_BlogNotFound() {
 	blogID := primitive.NewObjectID().Hex()
 
-	suite.mockUseCase.On("GetBlogByID", mock.Anything, blogID).Return(nil, errors.New("blog not found"))
+	suite.mockUseCase.On("GetBlogByID", mock.AnythingOfType("*gin.Context"), "").Return(nil, errors.New("blog not found"))
 
 	req, _ := http.NewRequest(http.MethodGet, "/blogs/"+blogID, nil)
 	w := httptest.NewRecorder()
@@ -140,7 +140,7 @@ func (suite *BlogControllerTestSuite) TestGetBlogByID_BlogNotFound() {
 func (suite *BlogControllerTestSuite) TestGetBlogByID_InvalidBlogID() {
 	invalidBlogID := "invalidID"
 
-	suite.mockUseCase.On("GetBlogByID", mock.Anything, invalidBlogID).Return(nil, errors.New("invalid blog id"))
+	suite.mockUseCase.On("GetBlogByID", mock.AnythingOfType("*gin.Context"), "").Return(nil, errors.New("invalid blog id"))
 
 	req, _ := http.NewRequest(http.MethodGet, "/blogs/"+invalidBlogID, nil)
 	w := httptest.NewRecorder()
@@ -223,7 +223,7 @@ func (suite *BlogControllerTestSuite) TestUpdateBlog_Success() {
 		UpdatedAt: time.Now(),
 	}
 
-	suite.mockUseCase.On("UpdateBlog", mock.Anything, blogUpdate, blogID).Return(updatedBlog, nil)
+	suite.mockUseCase.On("UpdateBlog", mock.Anything, blogUpdate, "").Return(updatedBlog, nil)
 
 	body, _ := json.Marshal(blogUpdate)
 	req, _ := http.NewRequest(http.MethodPut, "/blogs/"+blogID, bytes.NewBuffer(body))
@@ -244,7 +244,7 @@ func (suite *BlogControllerTestSuite) TestUpdateBlog_BlogNotFound() {
 		Tags:    []string{"tag1", "tag2"},
 	}
 
-	suite.mockUseCase.On("UpdateBlog", mock.Anything, blogUpdate, blogID).Return(nil, errors.New("blog not found"))
+	suite.mockUseCase.On("UpdateBlog", mock.Anything, blogUpdate, "").Return(nil, errors.New("blog not found"))
 
 	body, _ := json.Marshal(blogUpdate)
 	req, _ := http.NewRequest(http.MethodPut, "/blogs/"+blogID, bytes.NewBuffer(body))
@@ -260,7 +260,7 @@ func (suite *BlogControllerTestSuite) TestUpdateBlog_BlogNotFound() {
 func (suite *BlogControllerTestSuite) TestDeleteBlog_Success() {
 	blogID := primitive.NewObjectID().Hex()
 
-	suite.mockUseCase.On("DeleteBlog", mock.Anything, blogID, "mockedUserID","").Return(nil)
+	suite.mockUseCase.On("DeleteBlog", mock.Anything, "", "mockedUserID","").Return(nil)
 
 	req, _ := http.NewRequest(http.MethodDelete, "/blogs/"+blogID, nil)
 	w := httptest.NewRecorder()
@@ -274,7 +274,7 @@ func (suite *BlogControllerTestSuite) TestDeleteBlog_Success() {
 func (suite *BlogControllerTestSuite) TestDeleteBlog_BlogNotFound() {
 	blogID := primitive.NewObjectID().Hex()
 
-	suite.mockUseCase.On("DeleteBlog", mock.Anything, blogID, "mockedUserID", "").Return(errors.New("blog not found"))
+	suite.mockUseCase.On("DeleteBlog", mock.Anything, "", "mockedUserID", "").Return(errors.New("blog not found"))
 
 	req, _ := http.NewRequest(http.MethodDelete, "/blogs/"+blogID, nil)
 	w := httptest.NewRecorder()

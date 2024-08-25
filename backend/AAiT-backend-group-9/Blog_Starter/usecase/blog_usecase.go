@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"Blog_Starter/domain"
+	"Blog_Starter/utils"
 	"context"
 	"errors"
 	"time"
@@ -9,16 +10,18 @@ import (
 )
 
 type BlogUseCase struct {
-	blogRepo domain.BlogRepository
-	userRepo domain.UserRepository
-	timeout time.Duration
+	blogRepo  domain.BlogRepository
+	userRepo  domain.UserRepository
+	timeout   time.Duration
+	cacheServ utils.Cache
 }
 
-func NewBlogUseCase(blogRepo domain.BlogRepository, userRepo domain.UserRepository, timeout time.Duration) domain.BlogUseCase {
+func NewBlogUseCase(blogRepo domain.BlogRepository, userRepo domain.UserRepository, timeout time.Duration, cacheServ utils.Cache) domain.BlogUseCase {
 	return &BlogUseCase{
-		blogRepo: blogRepo,
-		userRepo: userRepo,
-		timeout : timeout,
+		blogRepo:  blogRepo,
+		userRepo:  userRepo,
+		timeout:   timeout,
+		cacheServ: cacheServ,
 	}
 }
 
@@ -53,15 +56,26 @@ func (uc *BlogUseCase) CreateBlog(c context.Context, blog *domain.BlogCreate) (*
 	return uc.blogRepo.CreateBlog(ctx, blogModel)
 }
 
-func (uc *BlogUseCase) GetBlogByID(c context.Context, blogID string) (*domain.Blog,error) {
+func (uc *BlogUseCase) GetBlogByID(c context.Context, blogID string) (*domain.Blog, error) {
+	// check if the blog exist in the cache else go for repository and save it in the cache
 	ctx, cancel := context.WithTimeout(c, uc.timeout)
 	defer cancel()
+	blog, found := uc.cacheServ.Get(blogID)
+
+	if found {
+		return blog.(*domain.Blog), nil
+	}
+
 	updatedBlog, err := uc.blogRepo.IncrementViewCount(ctx, blogID)
+	if err != nil {
+		return nil, err
+	}
+	uc.cacheServ.Set(blogID, updatedBlog, 0)
+
 	return updatedBlog, err
 }
 
 func (uc *BlogUseCase) GetAllBlog(c context.Context, skip int64, limit int64, sortBy string) ([]*domain.Blog, *domain.PaginationMetadata, error) {
-
 	ctx, cancel := context.WithTimeout(c, uc.timeout)
 	defer cancel()
 	// if not make it default to createtimestamp
@@ -69,13 +83,29 @@ func (uc *BlogUseCase) GetAllBlog(c context.Context, skip int64, limit int64, so
 		sortBy = "average_rating"
 	}
 
-	return uc.blogRepo.GetAllBlog(ctx, skip, limit, sortBy)
+	cacheKey := "allblogs" + sortBy + string(rune(skip)) + string(rune(limit))
+	paginationKey := "pagination" + sortBy + string(rune(skip)) + string(rune(limit))
+	blogs, found := uc.cacheServ.Get(cacheKey)
+	paginations, foundPagination := uc.cacheServ.Get(paginationKey)
+
+	// if both found get the data from the cache
+	if found && foundPagination {
+		return blogs.([]*domain.Blog), paginations.(*domain.PaginationMetadata), nil
+	}
+
+	allBlog, pagination, err := uc.blogRepo.GetAllBlog(ctx, skip, limit, sortBy)
+	if err != nil {
+		return nil, nil, err
+	}
+	uc.cacheServ.Set(cacheKey, allBlog, 0)
+	uc.cacheServ.Set(paginationKey, pagination, 0)
+	return allBlog, pagination, nil
 }
 
 func (uc *BlogUseCase) UpdateBlog(c context.Context, blog *domain.BlogUpdate, blogID string) (*domain.Blog, error) {
-	// implementation i want only to change the title, content and tags
 	ctx, cancel := context.WithTimeout(c, uc.timeout)
 	defer cancel()
+	// implementation i want only to change the title, content and tags
 	existedBlog, err := uc.blogRepo.GetBlogByID(c, blogID)
 	if err != nil {
 		return nil, err
@@ -96,8 +126,16 @@ func (uc *BlogUseCase) UpdateBlog(c context.Context, blog *domain.BlogUpdate, bl
 		Content: blog.Content,
 		Tags:    blog.Tags,
 	}
+	newUpdatedBlog, err := uc.blogRepo.UpdateBlog(ctx, updatedBlog, blogID)
+	if err != nil {
+		return newUpdatedBlog, err
+	}
 
-	return uc.blogRepo.UpdateBlog(ctx, updatedBlog, blogID)
+	// delete the blog from the cache
+	// set the blog
+	uc.cacheServ.Delete(blogID)
+	uc.cacheServ.Set(blogID, newUpdatedBlog, 0)
+	return newUpdatedBlog, err
 }
 
 func (uc *BlogUseCase) DeleteBlog(c context.Context, blogID string, userId string, role string) error {
@@ -115,9 +153,10 @@ func (uc *BlogUseCase) DeleteBlog(c context.Context, blogID string, userId strin
 		return err
 	}
 
-	if existedBlog.UserID != blogUserId  && role != "admin" && role != "superAdmin"{
+	if existedBlog.UserID != blogUserId && role != "admin" && role != "superAdmin" {
 		return errors.New("user is not the owner of the blog")
 	}
+	uc.cacheServ.Delete(blogID)
 
 	return uc.blogRepo.DeleteBlog(ctx, blogID)
 }

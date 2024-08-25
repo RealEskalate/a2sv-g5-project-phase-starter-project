@@ -1,8 +1,11 @@
-// import '../../../authentication/domain/entity/user.dart';
+import '../entity/chat.dart';
+import '../entity/message.dart';
 
-// abstract class ChatRepository {
-//   Future<User> SendMessage({required String userId});
-//   Future<void> ReciveMessage(String chatId);
-//   Future<void> DeletMessage(String chatId);
-//   Future<List<Chat>> GetMyChats();
-// }
+abstract class ChatRepository {
+  Future<List<Chat>>getMyChats();
+  Future<Chat> intiateChat(String userId);
+  Future<Chat> chatById(String chatId);
+  Future<void> deleteMessage(String chatId);
+  Future<List<Message>>getChatMessage(String chatId);
+  
+}

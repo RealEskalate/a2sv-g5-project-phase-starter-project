@@ -19,6 +19,7 @@ import 'splash_page.dart';
 void main() async {
   WidgetsFlutterBinding().ensureSemantics();
   await init();
+
   runApp(const MyApp());
 }
 

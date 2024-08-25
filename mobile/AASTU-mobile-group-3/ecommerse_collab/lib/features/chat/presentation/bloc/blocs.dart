@@ -8,13 +8,13 @@ class ChatBloc extends Bloc<ChatEvent, ChatState>{
   
   ChatBloc() : super(ChatInitialState()){
     on<LoadChatsEvent>(_onLoadChats);
-    on<LoadMessagesEvent>(_onLoadMessagesEvent);
-    on<SendMessageEvent>(_onSendMessageEvent);
-    on<ReceiveMessageEvent>(_onReceiveMessageEvent);
-    on<TypingEvent>(_onTypingEvent);
-    on<DeleteMessageEvent>(_onDeleteMessage);
-    on<NotificationEvent>(_onNotification);
-    on<ErrorEvent>(_onError);
+    on<LoadMessagesEvent>(_onLoadMessagesEvent as EventHandler<LoadMessagesEvent, ChatState>);
+    on<SendMessageEvent>(_onSendMessageEvent as EventHandler<SendMessageEvent, ChatState>);
+    on<ReceiveMessageEvent>(_onReceiveMessageEvent as EventHandler<ReceiveMessageEvent, ChatState>);
+    on<TypingEvent>(_onTypingEvent as EventHandler<TypingEvent, ChatState>);
+    on<DeleteMessageEvent>(_onDeleteMessage as EventHandler<DeleteMessageEvent, ChatState>);
+    on<NotificationEvent>(_onNotification as EventHandler<NotificationEvent, ChatState>);
+    on<ErrorEvent>(_onError as EventHandler<ErrorEvent, ChatState>);
   } 
   
 

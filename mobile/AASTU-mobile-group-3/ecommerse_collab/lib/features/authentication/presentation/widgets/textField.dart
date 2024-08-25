@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
-
 class CustomTextField extends StatefulWidget {
   final String name;
   final String placeHolder;
   final TextEditingController controller;
   final String hintText;
-  const CustomTextField({super.key, required this.name, this.placeHolder = '', required this.controller, required this.hintText});
+  final bool ispassword;
+  final String? Function(String value)? validator; // Make the validator nullable
+
+  const CustomTextField({
+    Key? key,
+    required this.name,
+    this.placeHolder = '',
+    required this.controller,
+    required this.hintText,
+    required this.validator,
+    this.ispassword = false,
+  }) : super(key: key);
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
@@ -20,17 +30,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(widget.name, style: const TextStyle(
-
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w400,
-            fontSize: 16,
-            color: Color(0xFF6F6F6F)
-),
-
+          Text(
+            widget.name,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.w400,
+              fontSize: 16,
+              color: Color(0xFF6F6F6F),
+            ),
           ),
-          TextField(
+          TextFormField(
+            obscureText: widget.ispassword,
             controller: widget.controller,
+            validator: (value) => widget.validator!(value!), // Wrap the existing validator function
             decoration: InputDecoration(
               hintText: widget.hintText,
               hintStyle: const TextStyle(
@@ -38,24 +50,27 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 fontFamily: 'Poppins',
                 fontWeight: FontWeight.w400,
                 fontSize: 15,
-                
               ),
               fillColor: Color(0xFFFAFAFA),
               filled: true,
-              border:
-                      OutlineInputBorder(borderRadius: BorderRadius.circular(5)),
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                          color: Color(0xFFFAFAFA),
-                          width:  1.0)),
-                  focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: Color.fromARGB(255, 212, 224, 208), width: 2))),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: const BorderSide(
+                  color: Color(0xFFFAFAFA),
+                  width: 1.0,
+                ),
+              ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Color.fromARGB(255, 212, 224, 208),
+                  width: 2,
+                ),
+              ),
             ),
-            
-          
-         
+          ),
         ],
       ),
     );

@@ -152,7 +152,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                                   productId: widget.product.id,
                                   newName: name.text,
                                   newDescription: description.text,
-                                  newPrice: int.parse(price.text),
+                                  newPrice: double.parse(price.text),
                                 ),
                               );
 
@@ -180,7 +180,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                                 id: widget.product.id,
                                 name: name.text,
                                 category: category,
-                                price: int.parse(price.text),
+                                price: double.parse(price.text),
                                 description: description.text,
                                 image: widget.product.image,seller: widget.product.seller
                               );
@@ -193,7 +193,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                                 id: widget.product.id,
                                 name: name.text,
                                 category: category,
-                                price: int.parse(price.text),
+                                price: double.parse(price.text),
                                 description: description.text,
                                 image: widget.product.image,
                                 seller: widget.product.seller

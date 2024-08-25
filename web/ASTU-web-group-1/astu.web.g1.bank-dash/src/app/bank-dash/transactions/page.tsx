@@ -5,6 +5,7 @@ import { Plus } from 'lucide-react';
 import MyExpence from '@/components/Charts/MyExpence';
 import StoreProvider from '@/providers/StoreProvider';
 import MyCardLists from '@/components/MyCard/MyCardLists';
+import Link from 'next/link';
 
 interface idParamsType {
   params: {
@@ -27,7 +28,9 @@ export default function page({ params }: idParamsType) {
                 <MyCardLists />
               </StoreProvider>
               <div className='w-[295px] h-[175px] bg-gray-200 rounded-3xl justify-center items-center flex flex-shrink-0'>
+              <Link href='/bank-dash/credit-card'>
                 <Plus size={32} />
+              </Link>
               </div>
             </div>
             {/* </div> */}

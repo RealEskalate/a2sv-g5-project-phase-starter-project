@@ -9,33 +9,30 @@ import {
   useGetTransactionIncomeQuery,
 } from "@/lib/redux/slices/transactionSlice";
 import Pagination from "./Pagination";
-import { TransactionDataType } from "@/types/transaction.types";
-import { number } from "zod";
 import RecentTransctionSkeleton from "../AllSkeletons/RecentTransactionSkeleton/recentTransactionSkeleton";
 
 const AllTransactionTable = () => {
   const [currentPage, setCurrentPage] = useState(0);
 
-  const { data, error, isLoading } = useGetAllTransactionsQuery({
+  const { data, isLoading, isFetching } = useGetAllTransactionsQuery({
     page: currentPage,
     size: 5,
   });
-  console.log(data);
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return <RecentTransctionSkeleton />; // Display loading state
   }
 
   const currentData = data?.data.content;
-  const totalPages = data?.data.totalPages;
+  const totalPages = data?.data.totalPages || 0;
 
   return (
     <div>
       <div className="flex flex-col gap-4">
         {currentData?.length == 0 ? (
-          <div>No transactions found.</div>
+          <div className="p-5">No transactions found.</div>
         ) : (
-          <div className="relative overflow-x-auto bg-white px-4 md:px-6 pt-5 md:pt-6 rounded-2xl md:rounded-2xl">
+          <div className="relative overflow-x-auto bg-white px-2 pt-3 md:pt-6 rounded-2xl md:rounded-2xl">
             <table className="bg-white px-5 lg:px-11 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
               <thead className=" text-12px md:text-16px font-Lato font-medium text-blue-steel bg-white border-b">
                 <tr className="">
@@ -84,11 +81,11 @@ const AllTransactionTable = () => {
                     <td className="hidden lg:table-cell py-3">{datax.date}</td>
                     <td
                       className={`py-3 ${
-                        datax.amount < 0 ? "text-candyPink" : "text-mintGreen"
+                        datax.type !== "deposit" ? "text-candyPink" : "text-mintGreen"
                       }`}
                     >
-                      {datax.amount < 0
-                        ? "-$" + -(datax.amount)
+                      {datax.type !== "deposit"
+                        ? "-$" + (datax.amount)
                         : "+$" + datax.amount}
                     </td>
                     <td className="hidden lg:table-cell py-3 w-24 md:w-32">
@@ -104,9 +101,9 @@ const AllTransactionTable = () => {
           </div>
         )}
       </div>
-      {typeof totalPages === "number" && totalPages > 0 && (
+      {totalPages && (
         <Pagination
-          totalPages={totalPages ? totalPages : 0}
+          totalPages={totalPages}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
         />

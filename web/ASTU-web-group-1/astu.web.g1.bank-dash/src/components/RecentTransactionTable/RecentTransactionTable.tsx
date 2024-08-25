@@ -6,10 +6,10 @@ import Expense from './Expense';
 const RecentTransactionTable = () => {
   return (
     <div>
-      <h1 className='text-16px md:text-18px xl:text-22px text-[#333B69] font-semibold'>
+      <h1 className='text-16px md:text-18px xl:text-22px text-[#333B69] font-semibold mb-5'>
         Recent Transaction
       </h1>
-      <div className='bg-white px-2 py-4 rounded-3xl'>
+      <div className='bg-white px-2 py-5 rounded-3xl'>
         <Tabs defaultValue='all_transaction' className='w-full'>
           <TabsList className='w-full px-2 md:justify-start bg-white'>
             <TabsTrigger

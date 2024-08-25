@@ -50,7 +50,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource{
       // final jsonData = json.encode(response.body) as Map<String, dynamic>;
       final jsonData = json.decode(response.body) as Map<String, dynamic>;
       final jsonFinal = jsonData['data'];
-      return UserModel.fromJson(jsonFinal);      
+      return UserModel.fromJsonRegister(jsonFinal);      
 
     } else {
       throw Exception('Failed to load user');

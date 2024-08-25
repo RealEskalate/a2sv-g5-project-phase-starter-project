@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../../authentication/domain/entity/user.dart';
 import '../../domain/entity/product.dart';
 
 import '../pages/detail_page.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key, required this.product});
+  const ProductCard({super.key, required this.product, required this.user});
+  final User user;
   final Product product;
 
   @override
@@ -16,7 +18,7 @@ class ProductCard extends StatelessWidget {
               Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (BuildContext context) {
-                        return DetailPage(product: product);
+                        return DetailPage(product: product, user: user);
                       },
                     ),
                   );

@@ -98,43 +98,9 @@ class _SignInState extends State<SignIn> {
             backgroundColor: Colors.white,
             body: SingleChildScrollView(
               child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 100,
-                    ),
-                    const Logo(width: 144, height: 50, fontSize: 48),
-                    const BigTitle(text: "Sign into your account"),
-                    SingleChildScrollView(
-                      // child: Column(
-                      //   children: [
-                      //     CustomTextField(
-                      //       validator: validateEmail,
-                      //         name: "Email",
-                      //         controller: emailController,
-                      //         hintText: "ex: jon.smith@email.com"),
-                      //     CustomTextField(
-                      //       validator: (value) {
-                      //       },
-                      //         name: "Password",
-                      //         controller: passwordController,
-                      //         hintText: "********"),
-                      //     CustomButton(
-
-                      //       name: 'SIGN IN',
-                      //       controllers: [emailController, passwordController],
-                      //       login: true,
-                      //     ),
-                      //     const SizedBox(height: 40),
-                      //     const LinkedText(
-                      //         description: "Don’t have an account?",
-                      //         linkedText: " SIGN UP",
-                      //         navigateTo: SignUp()),
-                      //   ],
-                      // ),
-                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          SizedBox(height : 80),
                           const Logo(width: 144, height: 40, fontSize: 30),
                           const BigTitle(text: "Sign into your account"),
                           Form(
@@ -177,8 +143,7 @@ class _SignInState extends State<SignIn> {
                           ),
                         ],
                       ),
-                    ),
-                  ]),
+                    
             ));
       },
     );

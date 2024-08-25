@@ -54,6 +54,7 @@ func (r *RefreshTokenUsecase) CheckRefreshToken(ctx context.Context, userID stri
 		// Check the expiration time
 		exp := int64(claims["exp"].(float64))
 		if exp < time.Now().Unix() {
+			
 			return errors.New("refresh token has expired")
 		}
 	} else {

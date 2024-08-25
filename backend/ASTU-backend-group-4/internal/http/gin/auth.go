@@ -69,6 +69,7 @@ func (uc *UserController) ActivateUser(ctx *gin.Context) {
 	err := uc.authuserusecase.Activate(ctx, userID, token)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "activated"})
 }
@@ -96,7 +97,7 @@ func (uc *UserController) DemoteUser(ctx *gin.Context) {
 	err := uc.authuserusecase.DemoteUser(ctx, userID)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": " un able to demote user"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "unable to demote user"})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "demoted "})

@@ -97,7 +97,7 @@ func (au *AuthUserUsecase) RegisterUser(ctx context.Context, user User) error {
 	from := os.Getenv("FROM")
 	tokenString := au.GenerateActivateToken(user.Password, user.UpdatedAt)
 
-	activationLink := fmt.Sprintf("http://localhost/activate/%s/%s", user.ID, tokenString)
+	activationLink := fmt.Sprintf("http://localhost:8000/v1/auth/activate/%s/%s", user.ID, tokenString)
 	au.emailService.SendEmail(from, user.Email, fmt.Sprintf("click the link to activate you account %s", activationLink), "Account Activation")
 
 	return nil
@@ -121,7 +121,6 @@ func (au *AuthUserUsecase) Activate(ctx context.Context, userID string, token st
 	if expectedToken != token {
 		return err
 	}
-
 	user.IsActive = true
 	user.UpdatedAt = time.Now()
 

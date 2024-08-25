@@ -46,4 +46,6 @@ func SetUpAuthRouter(r *gin.RouterGroup, userController *UserController) {
 	r.PUT("/profile", AuthMiddleware(), userController.UpdateProfile)
 	r.POST("/activate/:userID/:token", userController.ActivateUser)
 	r.POST("/logout", AuthMiddleware(), userController.Logout)
+	r.POST("/promote/userID", AuthMiddleware(), userController.PromoteUser)
+	r.POST("/demote/userID", AuthMiddleware(), userController.DemoteUser)
 }

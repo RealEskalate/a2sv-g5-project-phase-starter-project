@@ -33,6 +33,7 @@
     "flowbite": "^2.5.1",
     "flowbite-react": "^0.10.1",
     "framer-motion": "^11.3.29",
+    "jwt-decode": "^4.0.0",
     "ky": "^1.6.0",
     "lucide-react": "^0.427.0",
     "nanoid": "^5.0.7",

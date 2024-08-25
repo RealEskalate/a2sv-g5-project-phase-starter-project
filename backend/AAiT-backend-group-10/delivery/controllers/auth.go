@@ -17,6 +17,7 @@ import (
 type AuthController struct {
 	userUsecase  usecases.IAuthUsecase
 	googleConfig *oauth2.Config
+	validations  UserValidation
 }
 
 func NewAuthController(uc usecases.IAuthUsecase, googleConfig *oauth2.Config) *AuthController {
@@ -30,6 +31,11 @@ func (ctrl *AuthController) Register(c *gin.Context) {
 	var userDTO dto.RegisterUserDTO
 	if err := c.ShouldBindJSON(&userDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	errs := ctrl.validations.ValidateUser(&userDTO)
+	if errs != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": errs.Error()})
 		return
 	}
 
@@ -105,6 +111,20 @@ func (uc *AuthController) ResetPassword(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Password reset successfully"})
 }
+func (uc *AuthController) ActivateUser(c *gin.Context) {
+	var token = c.Query("token")
+	if token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Token is required"})
+		return
+	}
+	err := uc.userUsecase.ActivateUser(token)
+	if err != nil {
+		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password reset successfully"})
+}
 
 func (uc *AuthController) HandleGoogleCallback(ctx *gin.Context) {
 	code := ctx.Query("code")
@@ -162,4 +182,15 @@ func (uc *AuthController) HandleGoogleLogin(c *gin.Context) {
 	// Redirect to Google login page
 	url := uc.googleConfig.AuthCodeURL("state-token")
 	c.Redirect(http.StatusTemporaryRedirect, url)
+}
+
+// logout user
+func (uc *AuthController) LogoutUser(c *gin.Context) {
+	email := c.MustGet("email").(string)
+	err := uc.userUsecase.LogoutUser(email)
+	if err != nil {
+		c.JSON(err.StatusCode, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "User logged out successfully"})
 }

@@ -13,10 +13,13 @@ type JwtService struct {
 
 func (s *JwtService) GenerateToken(user *domain.User) (string, string, *domain.CustomError) {
 	// Define JWT claims
+	if !user.Activated {
+		return "", "", domain.ErrTokenGenerationFailed
+	}
 	claims := jwt.MapClaims{
-		"id": user.ID,
-		"email": user.Email,
-		"exp":   time.Now().Add(time.Hour * 1).Unix(), // 1 hour expiration
+		"id":       user.ID,
+		"email":    user.Email,
+		"exp":      time.Now().Add(time.Hour * 1).Unix(), // 1 hour expiration
 		"is_admin": user.IsAdmin,
 	}
 
@@ -61,6 +64,20 @@ func (s *JwtService) GenerateResetToken(email string, code int64) (string, *doma
 		"email": email,
 		"exp":   time.Now().Add(time.Hour * 1).Unix(),
 		"code":  code,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(s.JwtSecret))
+	if err != nil {
+		return "", domain.ErrResetTokenGenerationFailed
+	}
+
+	return tokenString, nil
+}
+func (s *JwtService) GenerateActivationToken(email string) (string, *domain.CustomError) {
+	claims := jwt.MapClaims{
+		"email": email,
+		"exp":   time.Now().Add(time.Hour * 1).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

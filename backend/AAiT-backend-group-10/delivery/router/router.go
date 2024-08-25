@@ -56,6 +56,8 @@ func NewRouter(db *mongo.Database, redisClient *redis.Client, routerControllers 
 	router.POST("/reset-password", routerControllers.AuthController.ResetPassword)
 	router.GET("/auth/google", routerControllers.AuthController.HandleGoogleLogin)
 	router.GET("/auth/google/callback", routerControllers.AuthController.HandleGoogleCallback)
+	router.GET("/auth/activate/:token", routerControllers.AuthController.ActivateUser)
+	router.POST("/logout", infrastructures.AuthMiddleware(jwtService), routerControllers.AuthController.LogoutUser)
 
 	router.Run(":" + config.ENV.PORT)
 }

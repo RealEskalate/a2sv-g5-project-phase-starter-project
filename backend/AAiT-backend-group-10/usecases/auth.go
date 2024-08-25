@@ -18,6 +18,8 @@ type IAuthUsecase interface {
 	RefreshTokens(refreshToken string) (*dto.TokenResponseDTO, *domain.CustomError)
 	ResetPassword(dto *dto.ResetPasswordRequestDTO) *domain.CustomError
 	ForgotPassword(dto *dto.ForgotPasswordRequestDTO) *domain.CustomError
+	ActivateUser(token string) *domain.CustomError
+	LogoutUser(email string) *domain.CustomError
 	HandleGoogleCallback(userDto *domain.User) (string, string, error)
 }
 
@@ -40,7 +42,7 @@ func NewAuthUsecase(ur interfaces.IUserRepository, jwt interfaces.IJwtService, p
 func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, *domain.CustomError) {
 	existingUser, _ := u.userRepository.GetUserByEmail(User.Email)
 
-	if existingUser != nil && !existingUser.GoogleSignIn {
+	if existingUser != nil && !existingUser.GoogleSignIn && existingUser.Activated {
 		return nil, domain.ErrUserEmailExists
 	}
 
@@ -48,6 +50,11 @@ func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, *dom
 	if err != nil {
 		return nil, err
 	}
+	activationToken, err := u.jwtService.GenerateActivationToken(User.Email)
+	if err != nil {
+		return nil, err
+	}
+
 	user := &domain.User{
 		FullName:  User.FullName,
 		Email:     User.Email,
@@ -56,6 +63,7 @@ func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, *dom
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 		Password:  hashedPassword,
+		Activated: false,
 		IsAdmin:   false,
 	}
 	if existingUser != nil && existingUser.GoogleSignIn {
@@ -94,6 +102,10 @@ func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, *dom
 	if err != nil {
 		return nil, domain.ErrUserCreationFailed
 	}
+	err = u.emailService.SendActivationEmail(User.Email, activationToken)
+	if err != nil {
+		return nil, err
+	}
 
 	return &dto.CreatedResponseDto{
 		ID:       user.ID,
@@ -102,6 +114,7 @@ func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, *dom
 		Bio:      user.Bio,
 		ImageUrl: user.ImageURL,
 	}, nil
+
 }
 
 func (uc *AuthUsecase) LoginUser(loginUser *dto.LoginUserDTO) (*dto.TokenResponseDTO, *domain.CustomError) {
@@ -256,6 +269,30 @@ func (uc *AuthUsecase) ResetPassword(dto *dto.ResetPasswordRequestDTO) *domain.C
 	return uc.userRepository.UpdateUserToken(user)
 }
 
+func (uc *AuthUsecase) ActivateUser(token string) *domain.CustomError {
+	validToken, err := uc.jwtService.ValidateToken(token)
+	if err != nil || !validToken.Valid {
+		return domain.ErrUserNotFound
+	}
+
+	claims, ok := validToken.Claims.(jwt.MapClaims)
+
+	if !ok || !validToken.Valid {
+		return domain.ErrInvalidToken
+	}
+	email := claims["email"].(string)
+	user, err := uc.userRepository.GetUserByEmail(email)
+	if err != nil || user == nil {
+		return domain.ErrUserNotFound
+	}
+	if user.ActivationToken != token {
+		return domain.ErrInvalidToken
+	}
+	user.ActivationToken = ""
+	user.Activated = true
+	return uc.userRepository.UpdateUserToken(user)
+}
+
 func (uc *AuthUsecase) HandleGoogleCallback(userDto *domain.User) (string, string, error) {
 	// Get the authorization code from the query parameters
 
@@ -289,6 +326,7 @@ func (uc *AuthUsecase) HandleGoogleCallback(userDto *domain.User) (string, strin
 	userDto.AccessToken = accessToken
 	userDto.RefreshToken = refreshToken
 	userDto.ID = uuid.New()
+	userDto.Activated = true
 	userDto.CreatedAt = time.Now()
 	userDto.UpdatedAt = time.Now()
 	err = uc.userRepository.CreateUser(userDto)
@@ -298,4 +336,15 @@ func (uc *AuthUsecase) HandleGoogleCallback(userDto *domain.User) (string, strin
 	return accessToken, refreshToken, nil
 	// For example, redirect to the home page with the user info
 	// c.Redirect(http.StatusTemporaryRedirect, "/")
+}
+
+// logout user
+func (uc *AuthUsecase) LogoutUser(email string) *domain.CustomError {
+	user, err := uc.userRepository.GetUserByEmail(email)
+	if err != nil || user == nil {
+		return domain.ErrUserNotFound
+	}
+	user.RefreshToken = ""
+	user.AccessToken = ""
+	return uc.userRepository.UpdateUserToken(user)
 }

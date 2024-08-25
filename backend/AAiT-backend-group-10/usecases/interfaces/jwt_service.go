@@ -11,4 +11,5 @@ type IJwtService interface {
 	GenerateResetToken(email string, code int64) (string, *domain.CustomError)
 	CheckToken(authPart string) (*jwt.Token, *domain.CustomError)
 	FindClaim(token *jwt.Token) (jwt.MapClaims, bool)
+	GenerateActivationToken(email string) (string, *domain.CustomError)
 }

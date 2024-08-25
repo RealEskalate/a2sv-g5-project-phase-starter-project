@@ -5,5 +5,6 @@ class ChatEntity {
   final UserEntity user1;
   final UserEntity user2;
 
-  ChatEntity({required this.chatId, required this.user1, required this.user2});
+  const ChatEntity(
+      {required this.chatId, required this.user1, required this.user2});
 }

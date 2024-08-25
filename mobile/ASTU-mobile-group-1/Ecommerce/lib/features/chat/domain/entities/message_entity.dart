@@ -8,7 +8,7 @@ class MessageEntity {
   final String type;
   final UserEntity sender;
 
-  MessageEntity(
+  const MessageEntity(
       {required this.messageId,
       required this.chatEntity,
       required this.content,

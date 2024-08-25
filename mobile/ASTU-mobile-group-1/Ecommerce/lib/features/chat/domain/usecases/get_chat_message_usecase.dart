@@ -10,7 +10,7 @@ class GetChatMessageUsecase {
   GetChatMessageUsecase({required ChatRepository chatRepository})
       : _chatRepository = chatRepository;
 
-  Future<Either<Failure, List<MessageEntity>>> getChatMessages(String chatId) {
+  Future<Either<Failure, List<MessageEntity>>> execute(String chatId) {
     return _chatRepository.getChatMessages(chatId);
   }
 }

@@ -90,7 +90,7 @@ class HeaderPart extends StatelessWidget {
                 )),
             child: GestureDetector(
               onTap: () {
-               print(123);
+               Navigator.pushNamed(context, '/chat-screen');
               },
               child: const Icon(
                 Icons.message,

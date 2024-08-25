@@ -13,16 +13,18 @@ import getRandomBalance, {
   getallTransactions,
   getCreditCards,
 } from "@/lib/api";
-import { Loading } from "../_components/Loading";
+import { CreditCardShimmer } from "../_components/Shimmer"; // Import Shimmer component
 
 const CreditCards = () => {
   const { isDarkMode } = useUser();
   const formSectionRef = useRef<HTMLDivElement>(null);
 
   // Check for hash in URL and scroll to the target section
-  if (window.location.hash === "#add-card") {
-    formSectionRef.current?.scrollIntoView({ behavior: "smooth" });
-  }
+  useEffect(() => {
+    if (window.location.hash === "#add-card") {
+      formSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
 
   const [recentTransactions, setRecentTransactions] = useState<
     TransactionContent[]
@@ -35,24 +37,24 @@ const CreditCards = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getCreditCards(0, 50);
-        const recent = await getallTransactions(0, 3);
-        const balance = await getRandomBalance();
+        const [creditCardsRes, recentTransactionsRes, balanceRes] =
+          await Promise.all([
+            getCreditCards(0, 50),
+            getallTransactions(0, 3),
+            getRandomBalance(),
+          ]);
 
-        setCreditCards(res?.content || []);
-        totalCreditcardpage = res?.totalPages;
-        setBalanceHistory(balance || []);
-        setRecentTransactions(recent?.content || []);
+        setCreditCards(creditCardsRes?.content || []);
+        totalCreditcardpage = creditCardsRes?.totalPages;
+        setBalanceHistory(balanceRes || []);
+        setRecentTransactions(recentTransactionsRes?.content || []);
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
   }, []);
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <div
@@ -67,17 +69,19 @@ const CreditCards = () => {
           My Cards
         </h1>
         <div className="flex flex-row max-y-[200px] overflow-y-auto gap-6 sm:max-x-[500px] md:max-x-[600px] ">
-          {creditCards.map((card) => (
-            <CreditCard
-              key={card.id}
-              id={card.id}
-              balance={card.balance}
-              semiCardNumber={card.semiCardNumber}
-              cardHolder={card.cardHolder}
-              expiryDate={card.expiryDate}
-              cardType={card.cardType}
-            />
-          ))}
+          {loading
+            ? [...Array(3)].map((_, index) => <CreditCardShimmer key={index} />)
+            : creditCards.map((card) => (
+                <CreditCard
+                  key={card.id}
+                  id={card.id}
+                  balance={card.balance}
+                  semiCardNumber={card.semiCardNumber}
+                  cardHolder={card.cardHolder}
+                  expiryDate={card.expiryDate}
+                  cardType={card.cardType}
+                />
+              ))}
         </div>
       </div>
       <div className="p-3">

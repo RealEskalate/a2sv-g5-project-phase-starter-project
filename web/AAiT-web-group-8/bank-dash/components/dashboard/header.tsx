@@ -13,7 +13,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="flex flex-col md:flex-row justify-between items-center py-4 px-6 bg-white shadow-sm relative">
+    <header className="flex flex-col w-full text-white p-4 md:flex-row justify-between items-center py-4 px-6 bg-white shadow-sm relative">
       <div className="flex justify-between items-center w-full md:w-auto">
         <div className="flex items-center space-x-4">
           <button onClick={toggleSidebar} className="md:hidden">

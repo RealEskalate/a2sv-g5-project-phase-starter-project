@@ -1,7 +1,8 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'package:ecommerce_app_ca_tdd/features/chat/socket/socket_manager.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/socket_n/chatbox.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/models/product_models.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/HomeChat.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/bottomnavbar.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/data/models/user_access.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/data/models/user_model.dart';
@@ -39,32 +40,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  
-  
-
-
   @override
   Widget build(BuildContext context) {
     Future<void> _refresh() {
       context.read<HomeBloc>().add(GetProductsEvent());
       context.read<GetUserBloc>().add(GetUserInfoEvent());
-    
-  
-  return  Future.delayed(Duration(seconds: 3));}
-    
+
+      return Future.delayed(Duration(seconds: 3));
+    }
+
     const maxNum = 10.0;
     return Scaffold(
-
       // bottomNavigationBar: NavigationBar(destinations: [
 
       //   NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
       //   NavigationDestination(icon: Icon(Icons.add), label: 'Add'),
       //   NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
-      // ], 
+      // ],
       // height: MediaQuery.of(context).size.height * 0.07),
 
-      bottomNavigationBar: Container(
-        child: Bottomnavbar()),
+      bottomNavigationBar: Container(child: Bottomnavbar()),
 
       backgroundColor: Colors.white,
       // floatingActionButton: SizedBox(
@@ -100,8 +95,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                      
-                        Navigator.pushNamed(context,'/logout');
+                        Navigator.pushNamed(context, '/logout');
                       },
                       child: Container(
                         padding: EdgeInsets.only(top: 4, left: 10),
@@ -118,22 +112,21 @@ class _HomePageState extends State<HomePage> {
                                 Text("Hello,",
                                     style: GoogleFonts.sora(
                                         fontWeight: FontWeight.w400,
-                                        color:
-                                            Color.fromARGB(255, 102, 102, 102))),
+                                        color: Color.fromARGB(
+                                            255, 102, 102, 102))),
                                 BlocBuilder<GetUserBloc, GetUserState>(
                                   builder: (context, state) {
-                                    if (state is GetUserLoading){
+                                    if (state is GetUserLoading) {
                                       return Text("Fetching User...",
-                                        style: GoogleFonts.sora(
-                                            fontWeight: FontWeight.w600));
-                                    }else if (state is GetUserLoaded){
+                                          style: GoogleFonts.sora(
+                                              fontWeight: FontWeight.w600));
+                                    } else if (state is GetUserLoaded) {
                                       return Text("${state.user.name}",
-                                        style: GoogleFonts.sora(
-                                            fontWeight: FontWeight.w600));
-                                    }else{
+                                          style: GoogleFonts.sora(
+                                              fontWeight: FontWeight.w600));
+                                    } else {
                                       return Text('name');
                                     }
-                                    
                                   },
                                 ),
                               ])
@@ -142,89 +135,93 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Container(
                         decoration: BoxDecoration(
                             // border: Border.all(
-                                // color: Color.fromRGBO(221, 221, 221, 1), width: 2),
+                            // color: Color.fromRGBO(221, 221, 221, 1), width: 2),
                             borderRadius: BorderRadius.circular(9)),
-                              child: GestureDetector(
-                                  onTap: (){
-                                      showDialog(
-                                          context: context, 
-                                          builder: (context)=> AlertDialog(
-                                            title: Text("Are you sure you want to logout ?",style: GoogleFonts.poppins(fontSize: 15),),
-                                            actions: [
-                                              TextButton(onPressed: (){
-                                                Navigator.pop(context);
-                                              }, child: Text("Cancel")),
-                                              TextButton(
-                                                onPressed: (){
-
-                                                  logOut();
-                                                  Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => true);
-                                                },
-                                                child: Text("Log-Out")
-                                                )
-                                            ],
-                                            )
-                                            );
-                                  },
+                        child: GestureDetector(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      title: Text(
+                                        "Are you sure you want to logout ?",
+                                        style:
+                                            GoogleFonts.poppins(fontSize: 15),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text("Cancel")),
+                                        TextButton(
+                                            onPressed: () {
+                                              logOut();
+                                              Navigator.pushNamedAndRemoveUntil(
+                                                  context,
+                                                  '/login',
+                                                  (route) => true);
+                                            },
+                                            child: Text("Log-Out"))
+                                      ],
+                                    ));
+                          },
                           child: Image(
                               width: 40,
                               height: 40,
                               image: AssetImage(
                                   'assets/icons8-notification-bell-24.png')),
                         )),
-                        SizedBox(width: MediaQuery.of(context).size.width * 0.05,),
-                        Container(
-                    decoration: BoxDecoration(
-                        // border: Border.all(
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.05,
+                    ),
+                    Container(
+                        decoration: BoxDecoration(
+                            // border: Border.all(
                             // color: Color.fromRGBO(221, 221, 221, 1), width: 2),
-                        borderRadius: BorderRadius.circular(9)),
-                          child: GestureDetector(
-                              onTap: (){
-                                 
-                              },
-                      child: Image(
-                          width: 30,
-                          height: 30,
-                          image: AssetImage(
-                              'assets/message.png')),
-                    )),
-              
+                            borderRadius: BorderRadius.circular(9)),
+                        child: GestureDetector(
+                          onTap: () {
+                            SocketService().connectToServer();
+                            Navigator.pushNamed(context, '/HomeChat');
+                          },
+                          child: Image(
+                              width: 30,
+                              height: 30,
+                              image: AssetImage('assets/message.png')),
+                        )),
                   ],
                 ),
 
-              //       Container(
-              //         decoration: BoxDecoration(
-              //             // border: Border.all(color: Colors.grey, width: 1),
-              //             borderRadius: BorderRadius.circular(10)),
-              //         // padding: EdgeInsets.only(right: 2),
-              //         child: IconButton(
-              //             onPressed: () {
-              //               Navigator.push(
-              //                 context,
-              //                 PageTransition(
-              //                     alignment: Alignment.bottomCenter,
-              //                     curve: Curves.easeInOut,
-              //                     duration: Duration(milliseconds: 1200),
-              //                     reverseDuration: Duration(milliseconds: 400),
-              //                     type: PageTransitionType.leftToRightPop,
-              //                     child: searchPage(),
-              //                     childCurrent: HomePage()),
-              //               );
-              //             },
-              //             icon: Icon(Icons.messenger_outline_sharp),
-              //             color: Color.fromARGB(255, 217, 217, 217),
-              //             iconSize: 29))
-
+                //       Container(
+                //         decoration: BoxDecoration(
+                //             // border: Border.all(color: Colors.grey, width: 1),
+                //             borderRadius: BorderRadius.circular(10)),
+                //         // padding: EdgeInsets.only(right: 2),
+                //         child: IconButton(
+                //             onPressed: () {
+                //               Navigator.push(
+                //                 context,
+                //                 PageTransition(
+                //                     alignment: Alignment.bottomCenter,
+                //                     curve: Curves.easeInOut,
+                //                     duration: Duration(milliseconds: 1200),
+                //                     reverseDuration: Duration(milliseconds: 400),
+                //                     type: PageTransitionType.leftToRightPop,
+                //                     child: searchPage(),
+                //                     childCurrent: HomePage()),
+                //               );
+                //             },
+                //             icon: Icon(Icons.messenger_outline_sharp),
+                //             color: Color.fromARGB(255, 217, 217, 217),
+                //             iconSize: 29))
               ],
-                    
-
             ),
 
             Container(
@@ -239,28 +236,28 @@ class _HomePageState extends State<HomePage> {
                         fontSize: 24,
                         fontWeight: FontWeight.w600),
                   ),
-                //   Container(
-                //       decoration: BoxDecoration(
-                //           border: Border.all(color: Colors.grey, width: 1),
-                //           borderRadius: BorderRadius.circular(10)),
-                //       padding: EdgeInsets.only(right: 2),
-                //       child: IconButton(
-                //           onPressed: () {
-                //             Navigator.push(
-                //               context,
-                //               PageTransition(
-                //                   alignment: Alignment.bottomCenter,
-                //                   curve: Curves.easeInOut,
-                //                   duration: Duration(milliseconds: 1200),
-                //                   reverseDuration: Duration(milliseconds: 400),
-                //                   type: PageTransitionType.leftToRightPop,
-                //                   child: searchPage(),
-                //                   childCurrent: HomePage()),
-                //             );
-                //           },
-                //           icon: Icon(Icons.search),
-                //           color: Color.fromARGB(255, 217, 217, 217),
-                //           iconSize: 29))
+                  //   Container(
+                  //       decoration: BoxDecoration(
+                  //           border: Border.all(color: Colors.grey, width: 1),
+                  //           borderRadius: BorderRadius.circular(10)),
+                  //       padding: EdgeInsets.only(right: 2),
+                  //       child: IconButton(
+                  //           onPressed: () {
+                  //             Navigator.push(
+                  //               context,
+                  //               PageTransition(
+                  //                   alignment: Alignment.bottomCenter,
+                  //                   curve: Curves.easeInOut,
+                  //                   duration: Duration(milliseconds: 1200),
+                  //                   reverseDuration: Duration(milliseconds: 400),
+                  //                   type: PageTransitionType.leftToRightPop,
+                  //                   child: searchPage(),
+                  //                   childCurrent: HomePage()),
+                  //             );
+                  //           },
+                  //           icon: Icon(Icons.search),
+                  //           color: Color.fromARGB(255, 217, 217, 217),
+                  //           iconSize: 29))
                 ],
               ),
             ),
@@ -284,17 +281,18 @@ class _HomePageState extends State<HomePage> {
                         child: SizedBox(
                           height: MediaQuery.of(context).size.height * 0.8,
                           child: RefreshIndicator(
-                            onRefresh:_refresh,
+                            onRefresh: _refresh,
                             child: ListView.builder(
                               itemCount: state.products.length,
                               itemBuilder: (context, index) {
                                 return GestureDetector(
                                     onTap: () {
-                        SocketManager().initializeSocket();
+                                      
 
                                       Navigator.pushNamed(context, '/detail',
-                                          arguments: state.products[index]);
-                                    },
+                                          arguments: state.products[index],);
+                                      },
+                                    
                                     child: OverflowCard(
                                       product: state.products[index],
                                     ));
@@ -325,9 +323,6 @@ Future<String?> getAccessToken() async {
   var token = prefs.getString('access_token');
   return token.toString();
 }
-
-
-
 
 class OverflowCard extends StatelessWidget {
   final ProductModel product;
@@ -373,7 +368,7 @@ class OverflowCard extends StatelessWidget {
                       ),
                       SizedBox(height: 8.0),
                       Text('Ecommerce Items',
-                      overflow: TextOverflow.ellipsis,
+                          overflow: TextOverflow.ellipsis,
                           style: GoogleFonts.poppins(
                               fontSize: 15.0,
                               fontWeight: FontWeight.w400,
@@ -387,7 +382,6 @@ class OverflowCard extends StatelessWidget {
                     children: [
                       Text(
                         '\$' + product.price.toString(),
-                        
                         overflow: TextOverflow.fade,
                         style: GoogleFonts.sora(
                             fontSize: 14, fontWeight: FontWeight.w500),
@@ -434,13 +428,13 @@ Future<void> logOut() async {
   SharedPreferences remove = await SharedPreferences.getInstance();
   remove.remove('access_token');
 }
+
 Future<bool?> checkToken() async {
   SharedPreferences remove = await SharedPreferences.getInstance();
   var result = remove.getString('access_token');
-  if (result != null){
+  if (result != null) {
     return false;
-  }else{
-  return true;
-
+  } else {
+    return true;
   }
 }

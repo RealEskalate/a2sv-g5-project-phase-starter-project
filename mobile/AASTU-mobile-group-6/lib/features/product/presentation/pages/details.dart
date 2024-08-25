@@ -1,9 +1,14 @@
+import 'dart:math';
+
 import 'package:ecommerce_app_ca_tdd/features/product/data/models/product_models.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/detail_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/detail_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/detail_state.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/home_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/home_event.dart';
+import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_bloc.dart';
+import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_event.dart';
+import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_state.dart';
 import 'package:ecommerce_app_ca_tdd/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +29,7 @@ class _DetailsState extends State<DetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<GetUserBloc>().add(GetUserInfoEvent());
     var on = () {
       context.read<DetailBloc>().add(DeleteProductEvent(widget.item.id));
     };
@@ -193,94 +199,146 @@ class _DetailsState extends State<DetailsPage> {
                             ),
                           ),
                           SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(
-                                width: 152,
-                                height: 50,
-                                child: OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
-                                      ),
-                                    ),
-                                    side: BorderSide(color: Colors.red),
-                                  ),
-                                  onPressed: () {
-                                    var onPress = () {
-                                      context
-                                          .read<DetailBloc>()
-                                          .add(DeleteProductEvent(widget.item.id));
-                                    };
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: Text(
-                                          "Are you sure you want to delete this product?",
-                                          style: GoogleFonts.poppins(fontSize: 15),
+                          
+                          BlocBuilder<GetUserBloc, GetUserState>(
+                            builder: (context, state) {
+                              if (state is GetUserLoaded && state.user.id==widget.item.sellerId.id){
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: 152,
+                                    height: 50,
+                                    child: OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10),
+                                          ),
                                         ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text("Cancel"),
-                                          ),
-                                          TextButton(
-                                            style: ButtonStyle(
-                                              backgroundColor:
-                                                  WidgetStatePropertyAll<Color>(
-                                                      Colors.red),
+                                        side: BorderSide(color: Colors.red),
+                                      ),
+                                      onPressed: () {
+                                        var onPress = () {
+                                          context.read<DetailBloc>().add(
+                                              DeleteProductEvent(
+                                                  widget.item.id));
+                                        };
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: Text(
+                                              "Are you sure you want to delete this product?",
+                                              style: GoogleFonts.poppins(
+                                                  fontSize: 15),
                                             ),
-                                            onPressed: onPress,
-                                            child: Text("Delete"),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text("Cancel"),
+                                              ),
+                                              TextButton(
+                                                style: ButtonStyle(
+                                                  backgroundColor:
+                                                      WidgetStatePropertyAll<
+                                                          Color>(Colors.red),
+                                                ),
+                                                onPressed: onPress,
+                                                child: Text("Delete"),
+                                              ),
+                                            ],
                                           ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                  child: Text(
-                                    "Delete",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 152,
-                                height: 50,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(10),
+                                        );
+                                      },
+                                      child: Text(
+                                        "Delete",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                     ),
-                                    side: BorderSide(color: Color(0xff3F51F3)),
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: Color(0xff3F51F3),
                                   ),
-                                  onPressed: () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      '/update',
-                                      arguments: widget.item,
-                                    );
-                                  },
-                                  child: Text(
-                                    "Update",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
+                                  SizedBox(
+                                    width: 152,
+                                    height: 50,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10),
+                                          ),
+                                        ),
+                                        side: BorderSide(
+                                            color: Color(0xff3F51F3)),
+                                        foregroundColor: Colors.white,
+                                        backgroundColor: Color(0xff3F51F3),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                          context,
+                                          '/update',
+                                          arguments: widget.item,
+                                        );
+                                      },
+                                      child: Text(
+                                        "Update",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ),
-                            ],
+                                ],
+                              );
+                              }else if (state is GetUserLoaded && state.user.id!=widget.item.sellerId.id){
+                                return Column(
+                                  children: [
+                                    SizedBox(
+                                          height: MediaQuery.of(context).size.height*0.15,
+                                        ),
+                                    Center(
+                                      child:SizedBox(
+                                      width: 366,
+                                      height: 45,
+                                      child: ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10))),
+                                        side: BorderSide(color: Color(0xff3F51F3)),
+                                        // overlayColor: Colors.red,
+                                        foregroundColor: Colors.white,
+                                        backgroundColor: Color(0xff3F51F3),
+                                      ),
+                                        onPressed: (){
+                                          Navigator.pushNamed(context, '/chatPage', arguments: widget.item.sellerId);
+                                        },
+                                        child: Row(
+                                          children: [
+                                            SizedBox(width: MediaQuery.of(context).size.width*0.17,),
+                                            Icon(Icons.phone, color: Colors.white),
+                                            SizedBox(width: MediaQuery.of(context).size.width*0.02,),
+                                            Text(
+                                            "Contact Seller",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500),
+                                                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    )),
+                                  ],
+                                );}
+                                else{
+                                  return SizedBox();
+                                }
+                            },
                           ),
                         ],
                       ),

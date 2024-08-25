@@ -15,9 +15,9 @@ class Message extends Equatable{
 
   Map<String, String> toJson() {
     return {
-      '_id': senderId,
+      '_id': senderId='',
       'chatId': chatId,
-      'type': type,
+      'type': type='text',
       'message': content
     };
 

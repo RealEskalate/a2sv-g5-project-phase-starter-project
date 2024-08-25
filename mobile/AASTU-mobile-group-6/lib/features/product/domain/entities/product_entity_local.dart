@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:ecommerce_app_ca_tdd/features/product/data/models/product_models.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/data/models/seller_model.dart';
 import 'package:equatable/equatable.dart';
 
 class ProductEntity_local extends Equatable {
@@ -8,13 +10,16 @@ class ProductEntity_local extends Equatable {
   final String description;
   final num price;
   final String imagePath;
+  final SellerModel sellerId;
   const ProductEntity_local(
       {
       required this.id,
       required this.name,
       required this.description,
       required this.price,
-      required this.imagePath});
+      required this.imagePath,
+      required this.sellerId 
+      });
 
   @override
   List<Object?> get props => [id,name, description, price,imagePath];

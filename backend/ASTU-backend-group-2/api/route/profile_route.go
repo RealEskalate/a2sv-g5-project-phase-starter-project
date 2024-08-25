@@ -22,7 +22,7 @@ func NewProfileRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Datab
 		Env:         env,
 	}
 
-	group.GET("/profiles", pc.GetProfiles())
+	group.GET("/profiles", middleware.AdminMiddleware(), pc.GetProfiles())
 	group.GET("/profiles/:id", pc.GetProfile())
 	group.PUT("/profiles/:id", pc.UpdateProfile())
 	group.PATCH("/profiles/:id", pc.UpdateProfile())
@@ -31,6 +31,6 @@ func NewProfileRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Datab
 	group.POST("/profiles/", pc.ChangePassword())
 
 	// promote/demote user to admin
-	group.POST("/profiles/:id/promote", pc.PromoteUser())
-	group.POST("/profiles/:id/demote", pc.DemoteUser())
+	group.POST("/profiles/:id/promote", middleware.AdminMiddleware(), pc.PromoteUser())
+	group.POST("/profiles/:id/demote", middleware.AdminMiddleware(), pc.DemoteUser())
 }

@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
@@ -74,7 +75,7 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 			}
 
 		}
-
+		log.Println("[oauth] db user", dbUser)
 		accessToken, err := oc.LoginUsecase.CreateAccessToken(dbUser, oc.Env.AccessTokenSecret, oc.Env.AccessTokenExpiryHour)
 
 		if err != nil {
@@ -90,6 +91,11 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 		}
 
 		err = oc.LoginUsecase.UpdateRefreshToken(c.Request.Context(), dbUser.ID.Hex(), refreshToken)
+		if err != nil {
+			c.JSON(500, entities.ErrorResponse{Message: err.Error()})
+			return
+
+		}
 
 		loginResponse := entities.LoginResponse{
 			AccessToken:  accessToken,

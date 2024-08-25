@@ -25,14 +25,24 @@ func NewUserRepository(db mongo.Database, collection string) entities.UserReposi
 }
 
 func (ur *userRepository) CreateUser(c context.Context, user *entities.User) (*entities.User, error) {
+
 	collection := ur.database.Collection(ur.collection)
 
-	_, err := collection.InsertOne(c, user)
+	res, err := collection.InsertOne(c, user)
+
+	if err != nil {
+		return nil, err
+	}
+	// Find the inserted user by ID
+	insertedID, _ := res.InsertedID.(primitive.ObjectID)
+	var insertedUser entities.User
+	err = collection.FindOne(c, bson.M{"_id": insertedID}).Decode(&insertedUser)
+
 	if err != nil {
 		return nil, err
 	}
 
-	return user, err
+	return &insertedUser, err
 }
 func (ur *userRepository) IsOwner(c context.Context) (bool, error) {
 	collection := ur.database.Collection(ur.collection)
@@ -41,6 +51,21 @@ func (ur *userRepository) IsOwner(c context.Context) (bool, error) {
 		return false, err
 	}
 	return count == 0, nil
+}
+func (ur *userRepository) GetAllUsers(c context.Context) ([]entities.UserOut, error) {
+	collection := ur.database.Collection(ur.collection)
+	var users []entities.UserOut
+	cursor, err := collection.Find(c, bson.M{})
+	if err != nil {
+		return []entities.UserOut{}, err
+	}
+	err = cursor.All(c, &users)
+	if err != nil {
+		return []entities.UserOut{}, err
+	}
+
+	return users, nil
+
 }
 func (ur *userRepository) UpdateRefreshToken(c context.Context, userID string, refreshToken string) error {
 	collection := ur.database.Collection(ur.collection)
@@ -274,4 +299,24 @@ func (ur *userRepository) UpdateProfilePicture(c context.Context, userID string,
 		return errors.New("couldn't update profie")
 	}
 	return nil
+}
+
+// GetRefreshToken implements entities.UserRepository.
+func (ur *userRepository) RefreshTokenExist(c context.Context, userID, refreshToken string) (bool, error) {
+	collection := ur.database.Collection(ur.collection)
+	id, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		return false, err
+	}
+	filter := bson.M{
+		"_id":    id,
+		"tokens": refreshToken, // Check if the refreshToken exists tokens[]
+	}
+	err = collection.FindOne(c, filter).Decode(&entities.User{})
+	if err != nil {
+		return false, nil
+	}
+
+	return true, nil
+
 }

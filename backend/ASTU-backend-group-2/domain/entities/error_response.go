@@ -3,7 +3,7 @@ package entities
 import "errors"
 
 type ErrorResponse struct {
-	Message string `json:"message"`
+	Message string `json:"error"`
 }
 
 // General Errors

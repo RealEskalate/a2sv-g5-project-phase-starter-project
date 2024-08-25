@@ -13,7 +13,8 @@ import { useEffect } from "react";
 import { UpdatedUser } from "@/types/user.types";
 import { useAppDispatch, useAppSelector } from "@/hooks/hoooks";
 import { Loader } from "lucide-react";
-import EditProfileSkeleton from "../AllSkeletons/SettingSkeleton/EditProfileSkeleton";
+import { toastError, toastSuccess } from "../Toastify/Toastify";
+import EditProfileSkeleton from '../AllSkeletons/SettingSkeleton/EditProfileSkeleton';
 
 const editProfileSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -86,11 +87,15 @@ const EditProfileForm = () => {
   }
 
   const onSubmit = (data: UpdatedUser) => {
-    updateUser(data).then((res: any) => {
-      dispatch(setProfile(res?.data?.data));
-      alert('Profile updated successfully');
-      refetch();
-    });
+    updateUser(data)
+      .then((res: any) => {
+        dispatch(setProfile(res?.data?.data));
+        toastSuccess("Profile updated successfully");
+        refetch();
+      })
+      .catch((err) => {
+        toastError("Something went wrong");
+      });
   };
 
   return (

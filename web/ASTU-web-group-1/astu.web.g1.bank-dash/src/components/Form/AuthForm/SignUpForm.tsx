@@ -6,6 +6,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { toastError, toastSuccess } from "@/components/Toastify/Toastify";
+import Link from "next/link";
+import { Loader } from "lucide-react";
 
 const stepOneSchema = z
   .object({
@@ -16,7 +19,9 @@ const stepOneSchema = z
     }),
     permanentAddress: z.string().min(1, "Permanent address is required"),
     postalCode: z.string().min(1, "Postal code is required"),
-    username: z.string().min(1, "Username is required"),
+    username: z
+      .string({ required_error: "Username is required" })
+      .min(4, "Username is too short"),
     password: z.string().min(6, "At least 6 characters long"),
     confirmPassword: z.string().min(6, "At least 6 characters long"),
   })
@@ -45,6 +50,7 @@ const stepSchemas = [stepOneSchema, stepTwoSchema];
 
 const SignUpForm = () => {
   const [step, setStep] = useState(0);
+  const [isLoading, serIsLoading] = useState(false);
   const [prevFormData, setprevFormData] = useState({});
   const router = useRouter();
 
@@ -81,6 +87,7 @@ const SignUpForm = () => {
       console.log("Form Data at step", prevFormData);
       setStep(step + 1);
     } else {
+      serIsLoading(true);
       setprevFormData((prevFormData) => ({ ...prevFormData, ...data }));
 
       const finalData = {
@@ -110,15 +117,20 @@ const SignUpForm = () => {
           body: JSON.stringify(finalData),
         }
       );
+      
       console.log("res from sign up", res);
 
       // res.then(res) => {
       if (res.ok) {
         console.log("User created successfully");
         router.push("/api/auth/signin");
+        serIsLoading(false);
+        toastSuccess("Account created successfully");
       }
       if (!res.ok) {
         console.log("Failed to create user");
+        toastError("Failed to create user");
+        serIsLoading(false);
       }
       // })
     }
@@ -128,10 +140,10 @@ const SignUpForm = () => {
 
   return (
     <form
-      className='flex flex-col items-center w-full lg:w-10/12 justify-center py-6 p-4 lg:p-6 rounded-2xl bg-white'
+      className="flex flex-col items-center w-full lg:w-10/12 justify-center py-6 p-4 lg:p-6 rounded-2xl bg-white"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <p className="text-[#333B69] pb-3 text-20px text-left font-semibold w-full">
+      <p className="text-[#333B69] pb-3 text-28px text-left font-semibold w-full">
         Register
       </p>
       {step == 0 && (
@@ -286,9 +298,9 @@ const SignUpForm = () => {
                 {...register("currency")}
                 className="w-full border-2 border-[#DFEAF2] p-5 py-3 rounded-xl placeholder:text-blue-steel focus:border-blue-steel outline-none"
               >
-                <option value='USD'>USD</option>
-                <option value='ETB'>ETB</option>
-                <option value='GPY'>Yen</option>
+                <option value="USD">USD</option>
+                <option value="ETB">ETB</option>
+                <option value="GPY">Yen</option>
               </select>
               {errors?.currency && (
                 <p className="text-red-400">
@@ -307,10 +319,10 @@ const SignUpForm = () => {
                 {...register("timeZone")}
                 className="w-full border-2 border-[#DFEAF2] p-5 py-3 rounded-xl placeholder:text-blue-steel focus:border-blue-steel outline-none"
               >
-                <option value='GMT3p'>GMT 3+</option>
-                <option value='GMT4p'>GMT 4+</option>
-                <option value='GMT5p'>GMT 5+</option>
-                <option value='GMT6p'>GMT 6+</option>
+                <option value="GMT3p">GMT 3+</option>
+                <option value="GMT4p">GMT 4+</option>
+                <option value="GMT5p">GMT 5+</option>
+                <option value="GMT6p">GMT 6+</option>
               </select>
               {errors?.timeZone && (
                 <p className="text-red-400">
@@ -342,8 +354,20 @@ const SignUpForm = () => {
           type="submit"
           className="bg-[#1814f3] text-white px-10 py-3 font-Lato font-bold rounded-lg mt-4"
         >
-          {step < steps.length - 1 ? "Next" : "Register"}
+          {isLoading ? (
+            <Loader className="animate-spin" />
+          ) : step < steps.length - 1 ? (
+            "Next"
+          ) : (
+            "Register"
+          )}
         </button>
+      </div>
+      <div className="w-full mt-5">
+        {`Already have an account?`}
+        <Link href="/api/auth/signin">
+          <span className="text-indigo-800 font-[700] ml-1">SignIn</span>
+        </Link>
       </div>
     </form>
   );

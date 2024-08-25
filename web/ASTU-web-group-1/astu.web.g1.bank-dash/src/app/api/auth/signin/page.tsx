@@ -1,28 +1,26 @@
-import LoginForm from '@/components/Formx/LoginForm';
-import React from 'react';
-import Image from 'next/image';
-import AuthProvider from '@/components/Formx/AuthProvider';
+import LoginForm from "@/components/Form/AuthForm/LoginForm";
+import React from "react";
+import Image from "next/image";
+import AuthProvider from "@/components/Formx/AuthProvider";
 
 export default function Page() {
   return (
     <>
-      <div className='bg-white w-screen h-screen flex justify-around items-center'>
-        <div className='text-center hidden min-[800px]:block'>
-          <h1 className='text-indigo-900 text-4xl font-poppins font-[900]'>Welcome To Bank-Dash</h1>
-          <div className='w-[35vw] h-[60vh] relative'>
-            <Image
-              src='/assets/images/welcome-page.png'
-              alt='hello'
-              layout='fill'
-              objectFit='cover'
-              sizes='100vw'
-              className='object-cover'
-            />
-          </div>
+      <div className="flex justify-around items-center min-h-screen">
+        <div className="hidden md:w-1/2 minrelative lg:flex items-center justify-center">
+          <Image
+            src="/assets/images/welcome-page.png"
+            alt="hello"
+            width={500}
+            height={500}
+            className="object-cover"
+          />
         </div>
-        <AuthProvider>
-          <LoginForm />
-        </AuthProvider>
+        <div className="min-h-[100vh] lg:bg-slate-200 w-full px-10 sm:w-1/2 lg:p-6 flex items-center justify-center ">
+          <AuthProvider>
+            <LoginForm />
+          </AuthProvider>
+        </div>
       </div>
     </>
   );

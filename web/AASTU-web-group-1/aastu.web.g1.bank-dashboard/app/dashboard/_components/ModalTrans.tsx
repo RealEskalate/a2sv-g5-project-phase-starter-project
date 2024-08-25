@@ -56,7 +56,11 @@ export const ModalTrans = ({ isOpen, onClose, reciverUserName }: Props) => {
       }
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("An unexpected error occurred.");
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred.!",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -66,16 +70,14 @@ export const ModalTrans = ({ isOpen, onClose, reciverUserName }: Props) => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center ${
-        isDarkMode
-          ? "bg-black  bg-opacity-5 backdrop-blur-md"
-          : "bg-black bg-opacity-50"
+      className={`fixed inset-0 z-50 flex items-center justify-center  backdrop-blur-sm ${
+        isDarkMode ? "bg-black  bg-opacity-5" : "bg-black bg-opacity-50"
       } `}
     >
       <div
         className={`relative w-full max-w-lg p-8 rounded-3xl shadow-xl transition-transform transform ${
           isDarkMode
-            ? "bg-black bg-opacity-5"
+            ? "bg-black bg-opacity-100"
             : "bg-gradient-to-r from-white via-gray-100 to-white"
         } ${isSubmitting ? "scale-95" : "scale-100"}`}
       >
@@ -129,7 +131,7 @@ export const ModalTrans = ({ isOpen, onClose, reciverUserName }: Props) => {
             <div>
               <label
                 htmlFor="amount"
-                className={`block text-sm font-medium ${
+                className={`block text-md font-medium ${
                   isDarkMode ? "text-gray-300" : "text-gray-700"
                 }`}
               >
@@ -155,7 +157,7 @@ export const ModalTrans = ({ isOpen, onClose, reciverUserName }: Props) => {
             <div>
               <label
                 htmlFor="description"
-                className={`block text-sm font-medium ${
+                className={`block text-md font-medium ${
                   isDarkMode ? "text-gray-300" : "text-gray-700"
                 }`}
               >

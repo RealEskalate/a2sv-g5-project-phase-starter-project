@@ -1,3 +1,5 @@
+import Balancequick from "@/components/Balancequick";
+import BalanceChart from "@/components/charts/Balance";
 import BarNPie from "@/components/charts/barnpie";
 import CardS from "@/components/CreditCards/CardS";
 import QuickTransfer from "@/components/QuickTransfer";
@@ -18,9 +20,7 @@ export default function Home() {
         <div>
           <BarNPie />
         </div>
-        <div>
-          <QuickTransfer />
-        </div>
+        <Balancequick />
       </div>
     </div>
   );

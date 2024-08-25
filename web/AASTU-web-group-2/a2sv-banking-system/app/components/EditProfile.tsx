@@ -6,9 +6,20 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useForm, Controller } from "react-hook-form";
 import User, { UserInfo } from "@/types/userInterface";
-import { getCurrentUser, getUserByUsername } from "@/lib/api/userControl";
+import {
+  getCurrentUser,
+  getUserByUsername,
+  userUpdate,
+} from "@/lib/api/userControl";
 import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
-
+import { storage } from "../firebase";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
+import { v4 } from "uuid";
 interface FormData {
   name: string;
   username: string;
@@ -18,20 +29,21 @@ interface FormData {
   presentAddress: string;
   permanentAddress: string;
   country: string;
+  postalCode: string;
+  profilePicture: string | File;
 }
 
 const EditProfile = () => {
   const { control, handleSubmit, setValue } = useForm<FormData>();
   const [user, setUser] = useState<UserInfo | null>(null);
   const [accessToken, setAccessToken] = useState<string>("");
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const accessToken = await Refresh();
         setAccessToken(accessToken);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching token:", error);
       }
     };
 
@@ -54,21 +66,44 @@ const EditProfile = () => {
           setValue("username", userData.username || "");
           setValue("email", userData.email || "");
           setValue("city", userData.city || "");
-          setValue("dateOfBirth", userData.dateOfBirth ? new Date(userData.dateOfBirth) : null);
+          setValue(
+            "dateOfBirth",
+            userData.dateOfBirth ? new Date(userData.dateOfBirth) : null
+          );
           setValue("presentAddress", userData.presentAddress || "");
           setValue("permanentAddress", userData.permanentAddress || "");
           setValue("country", userData.country || "");
+          setValue("postalCode", userData.postalCode || "");
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching user data:", error);
       }
     };
 
     fetchData();
-  }, [accessToken]);
+  }, [accessToken, setValue]);
 
-  const onSubmit = (data: FormData) => {
-    console.log(data); // Handle form submission
+  const onSubmit = async (data: FormData) => {
+    try {
+      if (data.profilePicture != null) {
+        // Update the data with the download URL for profilePicture
+        const updatedData = {
+          ...data,
+          profilePicture: String(data.profilePicture),
+          dateOfBirth: data.dateOfBirth
+            ? data.dateOfBirth.toISOString().split("T")[0]
+            : null,
+        };
+
+        // Send the updated data to userUpdate
+        await userUpdate(updatedData, accessToken);
+      }
+
+      console.log("Profile updated successfully");
+      alert("Profile Edited Successfully")
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
   };
 
   return (
@@ -76,15 +111,54 @@ const EditProfile = () => {
       <div className="flex flex-col items-center py-10 w-full dark:bg-[#020817]">
         <div className="relative">
           <Image
-            src="/ProfilePicture.png"
+            src={
+              user?.profilePicture ||
+              "https://firebasestorage.googleapis.com/v0/b/a2sv-wallet.appspot.com/o/images%2Fminions-removebg-preview.png-99cefd58-79e9-408d-b747-94bcb3bb16ab?alt=media&token=5822c470-99fb-4875-a4fc-425a64bf1473" || "/ProfilePicture"
+            } // Fallback to a default image if userData.profilePicture is null or undefined
             alt="Profile Picture"
             width={170}
             height={170}
             className="rounded-full"
           />
-          <span className="absolute bottom-5 right-0 bg-[#1814F3] rounded-full w-10 h-10 flex items-center justify-center text-white">
-            <FaPencilAlt />
-          </span>
+
+          {/* Hidden file input for selecting a new profile picture */}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={async (e: React.ChangeEvent<HTMLInputElement>) => {
+              const file = e.target.files?.[0]; // Check if files exist
+              if (file) {
+                setValue("profilePicture", file);
+
+                // Immediately upload the image to Firebase
+                try {
+                  const imageRef = ref(storage, `images/${file.name}-${v4()}`);
+                  await uploadBytes(imageRef, file);
+
+                  // Get the download URL after the image is uploaded
+                  const downloadUrl = await getDownloadURL(imageRef);
+                  console.log("dowloaded the url ", downloadUrl);
+
+                  // Update the profile picture in the form state and in the UI
+                  setValue("profilePicture", downloadUrl);
+                  setUser(
+                    (prev) => prev && { ...prev, profilePicture: downloadUrl }
+                  );
+                } catch (error) {
+                  console.error("Error uploading image:", error);
+                }
+              }
+            }}
+            style={{ display: "none" }} // Hide the input
+            id="profilePictureInput"
+          />
+
+          {/* Label for the file input, styled as an edit icon */}
+          <label htmlFor="profilePictureInput">
+            <span className="absolute bottom-5 right-0 bg-[#1814F3] rounded-full w-10 h-10 flex items-center justify-center text-white cursor-pointer">
+              <FaPencilAlt />
+            </span>
+          </label>
         </div>
       </div>
 
@@ -265,6 +339,29 @@ const EditProfile = () => {
                       id="permanentAddress"
                       className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
                       placeholder="Permanent Address"
+                    />
+                  )}
+                />
+              </div>
+
+              {/* Country Goes In Here */}
+              <div className="flex flex-col gap-3 px-6 py-3 md:w-[48%]">
+                <label
+                  htmlFor="postalCode"
+                  className="text-[#232323] font-semibold px-1 dark:text-[#9faaeb]"
+                >
+                  Postal Code
+                </label>
+                <Controller
+                  name="postalCode"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      id="postalCode"
+                      className="border border-[#DFEAF2] focus:outline-[#DFEAF2] focus:border-[#DFEAF2] rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
+                      placeholder="postal Code"
                     />
                   )}
                 />

@@ -13,7 +13,7 @@ import (
 )
 
 func NewSignupRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
-	ur := repository.NewUserRepository(*db, entities.CollectionUser)
+	ur := repository.NewUserRepository(*db, entities.CollectionUser,entities.CollectionRefresh)
 	sc := controller.SignupController{
 		SignupUsecase: usecase.NewSignupUsecase(ur, timeout),
 		Env:           env,
@@ -23,7 +23,7 @@ func NewSignupRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Databa
 }
 
 func NewLoginRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
-	ur := repository.NewUserRepository(*db, entities.CollectionUser)
+	ur := repository.NewUserRepository(*db, entities.CollectionUser,entities.CollectionRefresh)
 	lc := &controller.LoginController{
 		LoginUsecase: usecase.NewLoginUsecase(ur, timeout),
 		Env:          env,
@@ -32,16 +32,16 @@ func NewLoginRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Databas
 }
 
 func NewLogoutRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
-	ur := repository.NewUserRepository(*db, entities.CollectionUser)
-	lc := &controller.LoginController{
-		LoginUsecase: usecase.NewLogoutUsecase(ur, timeout),
+	ur := repository.NewUserRepository(*db, entities.CollectionUser,entities.CollectionRefresh)
+	lc := &controller.LogoutController{
+		LogoutUsecase: usecase.NewLogoutUsecase(ur, timeout),
 		Env:          env,
 	}
-	group.POST("/logout", lc.Login)
+	group.POST("/logout", lc.Logout)
 }
 
 func NewRefreshTokenRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, group *gin.RouterGroup) {
-	ur := repository.NewUserRepository(*db, entities.CollectionUser)
+	ur := repository.NewUserRepository(*db, entities.CollectionUser,entities.CollectionRefresh)
 	rtc := &controller.RefreshTokenController{
 		RefreshTokenUsecase: usecase.NewRefreshTokenUsecase(ur, timeout),
 		Env:                 env,

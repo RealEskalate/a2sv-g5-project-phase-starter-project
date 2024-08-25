@@ -12,8 +12,8 @@ type LoginResponse struct {
 }
 
 type LoginUsecase interface {
-	UpdateRefreshToken(c context.Context, userID string, refreshToken string) error
 	GetUserByEmail(c context.Context, email string) (User, error)
-	CreateAccessToken(user *User, secret string, expiry int) (accessToken string, err error)
-	CreateRefreshToken(user *User, secret string, expiry int) (refreshToken string, err error)
+	CreateAccessToken(user *User, secret string, expiry int,refreshDataId string) (accessToken string, err error)
+	CreateRefreshToken(user *User, secret string, expiry int,refreshDataId string) (refreshToken string, err error) 
+	CreateRefreshData(c context.Context, refreshData RefreshData) error
 }

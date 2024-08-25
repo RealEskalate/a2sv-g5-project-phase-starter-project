@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
@@ -40,19 +41,32 @@ func (lc *LoginController) Login(c *gin.Context) {
 		return
 	}
 
-	accessToken, err := lc.LoginUsecase.CreateAccessToken(&user, lc.Env.AccessTokenSecret, lc.Env.AccessTokenExpiryHour)
+	
+
+	var refreshData entities.RefreshData
+	refreshData.Id =  primitive.NewObjectID()
+	refreshData.UserId = user.ID.Hex()
+	
+	refreshData.Revoked = false
+	refreshData.Expire_date = refreshData.Expire_date
+
+	accessToken, err := lc.LoginUsecase.CreateAccessToken(&user, lc.Env.AccessTokenSecret, lc.Env.AccessTokenExpiryHour,refreshData.Id.Hex())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
 		return
 	}
 
-	refreshToken, err := lc.LoginUsecase.CreateRefreshToken(&user, lc.Env.RefreshTokenSecret, lc.Env.RefreshTokenExpiryHour)
+	refreshToken, err := lc.LoginUsecase.CreateRefreshToken(&user, lc.Env.RefreshTokenSecret, lc.Env.RefreshTokenExpiryHour,refreshData.Id.Hex())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
 		return
 	}
-
-	err = lc.LoginUsecase.UpdateRefreshToken(c.Request.Context(), user.ID.Hex(), refreshToken)
+	refreshData.RefreshToken = refreshToken
+	err = lc.LoginUsecase.CreateRefreshData(c, refreshData)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
+		return
+	}
 
 	loginResponse := entities.LoginResponse{
 		AccessToken:  accessToken,

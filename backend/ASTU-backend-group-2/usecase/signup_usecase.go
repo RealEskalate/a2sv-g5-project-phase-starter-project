@@ -50,13 +50,6 @@ func (su *signupUsecase) GetUserByEmail(c context.Context, email string) (entiti
 	return *user, nil
 }
 
-func (su *signupUsecase) CreateAccessToken(user *entities.User, secret string, expiry int) (accessToken string, err error) {
-	return tokenutil.CreateAccessToken(user, secret, expiry)
-}
-
-func (su *signupUsecase) CreateRefreshToken(user *entities.User, secret string, expiry int) (refreshToken string, err error) {
-	return tokenutil.CreateRefreshToken(user, secret, expiry)
-}
 
 func (su *signupUsecase) CreateVerificationToken(user *entities.User, secret string, expiry int) (refreshToken string, err error) {
 	return tokenutil.CreateVerificationToken(user, secret, expiry)

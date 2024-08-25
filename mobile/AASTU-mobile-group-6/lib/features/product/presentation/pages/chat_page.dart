@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:temp_project/chat_bottom_appbar.dart';
-import 'package:temp_project/chat_appbar.dart';
-import 'package:temp_project/chat_body.dart';
+
 
 class ChatPage extends StatelessWidget{
   final TextEditingController _messageController = TextEditingController();

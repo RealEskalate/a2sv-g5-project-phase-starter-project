@@ -6,9 +6,14 @@ import CardListSkeleton from "../AllSkeletons/CardListSkeleton/CardlistSkeleton"
 
 const CardList = () => {
   const { data, isLoading } = useGetAllCardsQuery({ page: 1, size: 5 });
-  if (isLoading) {
-    return <CardListSkeleton />;
-  }
+  if (isLoading)
+    return (
+      <div>
+        {[...Array(5)].map((_, index) => (
+          <CardListSkeleton key={index} />
+        ))}
+      </div>
+    );
   const imageList = ["/assets/images/cardList.png"];
   const bankList = ["CBE", "DBL Bank", "BRC Bank", "ABM Bank"];
   const formatCardNumber = (cardNumber: string) => {

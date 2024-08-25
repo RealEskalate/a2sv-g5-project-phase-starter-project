@@ -3,7 +3,7 @@ import StoreProvider from "@/providers/StoreProvider";
 import { Plus } from "lucide-react";
 import React from "react";
 import MyCardLists from "@/components/MyCard/MyCardLists";
-import CardSkeleton from "@/components/AllSkeletons/creditCardSkeleton/CardSkeleton";
+import CardSkeleton from "@/components/AllSkeletons/AtmCardSkeleton/CardSkeleton";
 import CardAndExpenceStatisticsSkeleton from "@/components/AllSkeletons/CardAndExpenseStatistics/CardAndExpenseStatistics";
 import CardListCardSkeleton from "@/components/AllSkeletons/CardListSkeleton/CardListSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";

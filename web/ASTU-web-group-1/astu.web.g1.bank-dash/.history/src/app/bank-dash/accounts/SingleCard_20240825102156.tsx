@@ -9,6 +9,7 @@ import React from "react";
 
 export default function SingleCard() {
   const { data, isLoading } = useGetAllCardsQuery({ page: 0, size: 5 });
+  console.log(data?.content);
   const card = data?.content[0];
   return (
     <>

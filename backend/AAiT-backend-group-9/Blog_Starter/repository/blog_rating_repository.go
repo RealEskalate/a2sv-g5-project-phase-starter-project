@@ -140,11 +140,8 @@ func (br *BlogRatingRepository) DeleteRating(ctx context.Context, ratingID strin
 }
 
 func (br *BlogRatingRepository) DeleteRatingByBlogID(ctx context.Context, blogID string) error {
-	objId, err := primitive.ObjectIDFromHex(blogID)
-	if err != nil {
-		return err
-	}
+
 	collection := br.DataBase.Collection(br.ratingCollection)
-	_, err = collection.DeleteMany(ctx, bson.M{"blog_id": objId})
+	_, err := collection.DeleteMany(ctx, bson.M{"blog_id": blogID})
 	return err
 }

@@ -261,6 +261,58 @@ func (suite *BlogCommentRepositorySuit) TestGetCommentByIDError() {
 	suite.Error(err)
 }
 
+func (suite *BlogCommentRepositorySuit) TestDeleteCommentsByBlogID() {
+	// create multiple comment with blog id 1 and one comment with blog id 2 then delete comment with blog id 1 then check the length of the left comment
+	// create a new comment
+	comment := &domain.Comment{
+		UserID:  "1",
+		BlogID:  "1",
+		Content: "This is a test comment",
+	}
+	comment2 := &domain.Comment{
+		UserID:  "1",
+		BlogID:  "1",
+		Content: "This is a test comment",
+	}
+	comment3 := &domain.Comment{
+		UserID:  "1",
+		BlogID:  "2",
+		Content: "This is a test comment",
+	}
+
+	// create the comment
+	_, err := suite.repository.Create(context.Background(), comment)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = suite.repository.Create(context.Background(), comment2)
+	if err != nil {
+		log.Fatal(err)
+	}
+	_, err = suite.repository.Create(context.Background(), comment3)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// delete the comment
+	err = suite.repository.DeleteCommentByBlogID(context.Background(), "1")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// get the comments
+	comments, err := suite.repository.GetComments(context.Background(), "1", "1")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// check if the comments were found
+	suite.NoError(err)
+	// suite.NotNil(comments)
+	suite.Equal(0, len(comments))
+
+}
+
 func Test_blogCommentRepositorySuite(t *testing.T) {
 	/// we still need this to run all tests in our suite
 	suite.Run(t, &BlogCommentRepositorySuit{})

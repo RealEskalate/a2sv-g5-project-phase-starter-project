@@ -25,7 +25,7 @@ func (u *commentUsecase) CreateComment(comment *domain.Comment) (*domain.Comment
 	if err != nil {
 		return nil, domain.ErrFailedToCreateComment
 	}
-	return createdComment, nil
+	return createdComment, &domain.CustomError{}
 }
 
 func (u *commentUsecase) UpdateComment(comment *domain.Comment, role_, userId string) (*domain.Comment, *domain.CustomError) {
@@ -43,7 +43,7 @@ func (u *commentUsecase) UpdateComment(comment *domain.Comment, role_, userId st
 	if rerr != nil {
 		return nil, domain.ErrFailedToUpdateComment
 	}
-	return updatedComment, nil
+	return updatedComment, &domain.CustomError{}
 }
 
 func (u *commentUsecase) DeleteComment(commentID, role_, userID string) (*domain.Comment, *domain.CustomError) {
@@ -63,7 +63,7 @@ func (u *commentUsecase) DeleteComment(commentID, role_, userID string) (*domain
 	if err != nil {
 		return nil, domain.ErrFailedToDeleteComment
 	}
-	return deletedComment, nil
+	return deletedComment, &domain.CustomError{}
 }
 
 func (u *commentUsecase) GetCommentByID(commentID string) (*domain.Comment, *domain.CustomError) {
@@ -75,7 +75,7 @@ func (u *commentUsecase) GetCommentByID(commentID string) (*domain.Comment, *dom
 	if err != nil {
 		return nil, domain.ErrFailedToGetComment
 	}
-	return comment, nil
+	return comment, &domain.CustomError{}
 }
 
 func (u *commentUsecase) GetComments(postID string, page, limit int) ([]domain.Comment, *domain.CustomError) {
@@ -86,7 +86,7 @@ func (u *commentUsecase) GetComments(postID string, page, limit int) ([]domain.C
 	if err != nil {
 		return nil, domain.ErrFailedToGetComments
 	}
-	return convertComments(comments), nil
+	return convertComments(comments), &domain.CustomError{}
 }
 
 func convertComments(comments []*domain.Comment) []domain.Comment {
@@ -97,6 +97,8 @@ func convertComments(comments []*domain.Comment) []domain.Comment {
 	return result
 }
 
+
+
 func (u *commentUsecase) CreateReply(reply *domain.Reply) (*domain.Reply, *domain.CustomError) {
 	if reply.CommentID.IsZero() || reply.UserID == "" || reply.Content == "" {
 		return nil, domain.ErrMissingRequiredFields
@@ -105,7 +107,7 @@ func (u *commentUsecase) CreateReply(reply *domain.Reply) (*domain.Reply, *domai
 	if err != nil {
 		return nil, domain.ErrFailedToCreateReply
 	}
-	return createdReply, nil
+	return createdReply, &domain.CustomError{}
 }
 
 func (u *commentUsecase) UpdateReply(reply *domain.Reply, userID string) (*domain.Reply, *domain.CustomError) {
@@ -123,7 +125,7 @@ func (u *commentUsecase) UpdateReply(reply *domain.Reply, userID string) (*domai
 	if err != nil {
 		return nil, domain.ErrFailedToUpdateReply
 	}
-	return updatedReply, nil
+	return updatedReply, &domain.CustomError{}
 }
 
 func (u *commentUsecase) DeleteReply(replyID, role_, userID string) (*domain.Reply, *domain.CustomError) {
@@ -143,7 +145,7 @@ func (u *commentUsecase) DeleteReply(replyID, role_, userID string) (*domain.Rep
 	if err != nil {
 		return nil, domain.ErrFailedToDeleteReply
 	}
-	return deletedReply, nil
+	return deletedReply, &domain.CustomError{}
 }
 
 func (u *commentUsecase) GetReplies(commentID string, page, limit int) ([]domain.Reply, *domain.CustomError) {
@@ -174,7 +176,7 @@ func (u *commentUsecase) LikeComment(commentID, userID string) *domain.CustomErr
 	if err != nil {
 		return domain.ErrFailedToLikeComment
 	}
-	return nil
+	return &domain.CustomError{}
 }
 
 func (u *commentUsecase) UnlikeComment(commentID, userID string) *domain.CustomError {
@@ -186,7 +188,7 @@ func (u *commentUsecase) UnlikeComment(commentID, userID string) *domain.CustomE
 	if err != nil {
 		return domain.ErrFailedToUnlikeComment
 	}
-	return nil
+	return &domain.CustomError{}
 }
 
 func (u *commentUsecase) LikeReply(replyID, userID string) *domain.CustomError {
@@ -198,7 +200,7 @@ func (u *commentUsecase) LikeReply(replyID, userID string) *domain.CustomError {
 	if err != nil {
 		return domain.ErrFailedToLikeReply
 	}
-	return nil
+	return &domain.CustomError{}
 }
 
 func (u *commentUsecase) UnlikeReply(replyID, userID string) *domain.CustomError {
@@ -210,5 +212,5 @@ func (u *commentUsecase) UnlikeReply(replyID, userID string) *domain.CustomError
 	if err != nil {
 		return domain.ErrFailedToUnlikeReply
 	}
-	return nil
+	return &domain.CustomError{}
 }

@@ -57,7 +57,8 @@ type UserUsecase interface {
 	GetByEmail(email string) (User, error)
 	GetByUsername(username string) (User, error)
 	Create(u *User) (User, error)
-	Update(userId string, updateData User) (User, error)
+	UpdateUser(userId string, updateData User) (User, error)
+	ChangePassword(email string, oldPassword string, newPassword string) (string, error)
 	Delete(userId string) error
 	AccountVerification(uemail string, confirmationToken string) error
 	ResetPassword(email string, token string, password string) (string, error)
@@ -77,4 +78,10 @@ type Claims struct {
 	Username string `json:"username"`
 	IsActive bool   `json:"is_active"`
 	jwt.StandardClaims
+}
+
+type ChangePassword struct {
+	Email       string `json:"email"`
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
 }

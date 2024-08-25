@@ -1,16 +1,21 @@
+import 'package:ecommerce/features/chat_feature/chat/data_layer/data_source/Service/socker_service.dart';
+import 'package:ecommerce/features/chat_feature/chat/domain/usecase/delete_chat.dart';
+import 'package:ecommerce/features/chat_feature/chat/domain/usecase/get_messages.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/public/flutter_sound_player.dart';
-import 'package:flutter_sound/public/flutter_sound_recorder.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-
+import '../../domain/usecase/send_message.dart';
 import '../widget/left_chat.dart';
 import '../widget/right_chat.dart';
 import 'data.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+// ignore: must_be_immutable
 class Directmessage extends StatefulWidget {
-  const Directmessage({super.key});
+  SendMessage sendMessage;
+  GetMessages getMessages;
+  Directmessage({required this.getMessages,required this.sendMessage, super.key});
 
   @override
   State<Directmessage> createState() => _DirectmessageState();
@@ -21,10 +26,10 @@ class _DirectmessageState extends State<Directmessage> {
   final ImagePicker _picker = ImagePicker();
   String imagePath = '';
   String audioPath = '';
-  late FlutterSoundRecorder _recorder;
-  late FlutterSoundPlayer _player;
+
   bool isRecording = false;
   bool isPlaying = false;
+  String chatId = "66c82e01bb16bfe67cd3b541";
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
@@ -40,46 +45,12 @@ class _DirectmessageState extends State<Directmessage> {
   @override
   void initState() {
     super.initState();
-    _recorder = FlutterSoundRecorder();
-    _player = FlutterSoundPlayer();
-    _initialize();
-  }
-
-  Future<void> _initialize() async {
-    await _recorder.openRecorder();
-    await _player.openPlayer();
-  }
-
-  Future<void> _startRecording() async {
-    await _recorder.startRecorder(toFile: 'test.mp4');
-    setState(() {
-      isRecording = true;
-    });
-  }
-
-  Future<void> _stopRecording() async {
-    audioPath = (await _recorder.stopRecorder())!;
-    setState(() {
-      isRecording = false;
-      print('audioPath $audioPath');
-    });
-  }
-
-  Future<void> _playAudio() async {
-    await _player.startPlayer(
-      fromURI: audioPath,
-    );
-  }
-
-  Future<void> stopPlayFunc() async {
-    _player.pausePlayer();
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    _recorder.closeRecorder();
-    _player.closePlayer();
+
     super.dispose();
   }
 
@@ -94,7 +65,7 @@ class _DirectmessageState extends State<Directmessage> {
           // Header Row
           Container(
             padding: const EdgeInsets.only(top: 25, left: 20, right: 20),
-            child: const Row(
+            child:  Row(
               children: [
                 Padding(
                   padding: EdgeInsets.only(right: 20),
@@ -102,7 +73,7 @@ class _DirectmessageState extends State<Directmessage> {
                 ),
                 CircleAvatar(
                   backgroundColor: Color(0XFFFEC7D3),
-                  backgroundImage: AssetImage('assets/avat1.png'),
+                  backgroundImage: AssetImage('assets/images/splash.png'),
                   radius: 30,
                 ),
                 SizedBox(width: 20),
@@ -110,9 +81,14 @@ class _DirectmessageState extends State<Directmessage> {
                   'Username',
                 ),
                 Spacer(),
-                Icon(
-                  CupertinoIcons.phone,
-                  size: 25,
+                IconButton(
+                  onPressed: 
+                  (){
+                      widget.getMessages.call(chatId);
+                  }
+                  ,
+                  icon:Icon(CupertinoIcons.phone,size: 25,),
+                  
                 ),
                 SizedBox(width: 8),
                 Icon(
@@ -166,11 +142,18 @@ class _DirectmessageState extends State<Directmessage> {
                       ),
                       suffixIcon: messageController.text.isEmpty
                           ? IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                              
+                                widget.sendMessage.call(
+                                    chatId, messageController.text, 'text');
+                              },
                               icon: const Icon(CupertinoIcons.square_on_square),
                             )
                           : IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                widget.sendMessage.call(
+                                    chatId, messageController.text, 'text');
+                              },
                               icon: const Icon(
                                 Icons.send,
                                 size: 25,
@@ -197,13 +180,7 @@ class _DirectmessageState extends State<Directmessage> {
                         ? const Icon(CupertinoIcons.stop_circle,
                             color: Colors.red)
                         : const Icon(CupertinoIcons.mic),
-                    onPressed: () {
-                      if (isRecording) {
-                        _stopRecording();
-                      } else {
-                        _startRecording();
-                      }
-                    },
+                    onPressed: () {},
                   ),
               ],
             ),

@@ -125,7 +125,7 @@ export default function Home() {
               title="Apple Store"
               date="5h ago"
               amount="$450"
-              icon="/assets/apple.svg"
+              icon="/assets/apple-icon.svg"
               color="#DCFAF8"
             />
             <InvoiceCard
@@ -139,7 +139,7 @@ export default function Home() {
               title="Playstation"
               date="5 days ago"
               amount="$1085"
-              icon="/assets/Group.svg"
+              icon="/assets/Group-m.svg"
               color="#E7EDFF"
             />
             <InvoiceCard

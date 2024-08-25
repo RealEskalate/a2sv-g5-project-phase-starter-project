@@ -18,18 +18,27 @@ const useTranDispatch = (accessToken: string) => {
     const fetchInitialCards = async () => {
       try {
         dispatch(setStatus("loading"));
+        const total_expense : any =  await TransactionService.getOneExpenseData(accessToken);
+        console.log(total_expense , "vvvvvvvvv")
+        const total_income: any =  await TransactionService.getOneIncomeData(accessToken);
+        console.log(total_income , "wwwwwww")
         const transaction: any = await TransactionService.getTransactions(
           accessToken
         );
-
+        console.log(transaction , "transaction")
         const history: any = await TransactionService.balanceHistory(
           accessToken
         );
+        // console.log(history , "his")
         const expense: any = await TransactionService.getExpenseData(
-          accessToken
+          accessToken , total_expense.totalPages
         );
-        const income: any = await TransactionService.getIncomeData(accessToken);
-
+        console.log(total_income.totalPages , "total")
+        const income: any = await TransactionService.getIncomeData(accessToken , total_income.totalPages);
+        console.log(income , "inc")
+        // console.log(transaction , "transaction")
+        // console.log(history , "history")
+        // console.log(expense , "dddddd")
         if (transaction) {
           dispatch(setTran(transaction.content));
           dispatch(setBalHist(history));

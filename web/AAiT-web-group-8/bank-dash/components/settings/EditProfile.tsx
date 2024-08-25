@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import livia from "../../public/images/Livia.svg";
 import { FaPen } from "react-icons/fa6";
-import { EditProfileProps , FormValues} from "@/types/index.";
+import { EditProfileProps, FormValues } from "@/types/index.";
 
 const EditProfile: React.FC<EditProfileProps> = ({ isActive }) => {
   const [formValues, setFormValues] = useState<FormValues>({
@@ -127,7 +127,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ isActive }) => {
             name="password"
             value={formValues.password}
             onChange={handleChange}
-            className="w-full p-3 mt-3 border mb-5 rounded-2xl"
+            className="w-full  p-3 mt-3 border mb-5 rounded-2xl"
           />
 
           <label htmlFor="presentAddress">Present Address</label>

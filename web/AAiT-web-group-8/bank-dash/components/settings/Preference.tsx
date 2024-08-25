@@ -2,12 +2,11 @@
 import React, { useState } from "react";
 
 const Preference: React.FC = () => {
-  // State for each notification toggle
+
   const [sendReceive, setSendReceive] = useState(false);
   const [merchantOrder, setMerchantOrder] = useState(false);
   const [accountRecommendation, setAccountRecommendation] = useState(false);
 
-  // Save function (you can update this to actually handle saving preferences)
   const handleSave = () => {
     const preferences = {
       sendReceive,

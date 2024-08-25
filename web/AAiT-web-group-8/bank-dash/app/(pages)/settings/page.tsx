@@ -1,21 +1,19 @@
-'use client';
-
-import EditProfile from '@/components/settings/EditProfile';
-import Preference from '@/components/settings/Preference';
-import Security from '@/components/settings/Security';
-import { useState } from 'react';
-
+"use client";
+import { useState } from "react";
+import EditProfile from "@/components/settings/EditProfile";
+import Preference from "@/components/settings/Preference";
+import Security from "@/components/settings/Security";
 
 const Tabs = () => {
-  const [activeTab, setActiveTab] = useState('editProfile');
+  const [activeTab, setActiveTab] = useState("editProfile");
 
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'editProfile':
+      case "editProfile":
         return <EditProfile isActive={false} />;
-      case 'preferences':
+      case "preferences":
         return <Preference />;
-      case 'security':
+      case "security":
         return <Security />;
       default:
         return <EditProfile isActive={false} />;
@@ -27,31 +25,31 @@ const Tabs = () => {
       <div className="ml-4 lg:ml-14 flex justify-start gap-4 lg:gap-10 lg:w-[950px] border-b bg-white pt-5 pb-0 text-[#718EBF]">
         <button
           className={`${
-            activeTab === 'editProfile'
-              ? 'border-b-2 border-[#1814f3] text-[#1814f3] font-bold'
-              : ''
+            activeTab === "editProfile"
+              ? "border-b-2 border-[#1814f3] text-[#1814f3] font-bold"
+              : ""
           }`}
-          onClick={() => setActiveTab('editProfile')}
+          onClick={() => setActiveTab("editProfile")}
         >
-          Edit Profile
+           Edit Profile
         </button>
         <button
           className={`${
-            activeTab === 'preferences'
-              ? 'border-b-2 border-[#1814f3] text-[#1814f3] font-bold'
-              : ''
+            activeTab === "preferences"
+              ? "border-b-2 border-[#1814f3] text-[#1814f3] font-bold"
+              : ""
           }`}
-          onClick={() => setActiveTab('preferences')}
+          onClick={() => setActiveTab("preferences")}
         >
           Preferences
         </button>
         <button
           className={`${
-            activeTab === 'security'
-              ? 'border-b-2 border-[#1814f3] text-[#1814f3] font-bold'
-              : ''
+            activeTab === "security"
+              ? "border-b-2 border-[#1814f3] text-[#1814f3] font-bold"
+              : ""
           }`}
-          onClick={() => setActiveTab('security')}
+          onClick={() => setActiveTab("security")}
         >
           Security
         </button>

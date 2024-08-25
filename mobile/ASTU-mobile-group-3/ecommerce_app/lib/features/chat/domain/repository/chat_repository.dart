@@ -1,13 +1,7 @@
+
 import '../../../auth/domain/entities/user_entity.dart';
 import '../entity/chat.dart';
 import '../entity/message.dart';
-
-abstract class UserRepository {
-  Future<List<UserEntity>> getUsers();
-}
-
-
-
 
 abstract class ChatRepository {
   Future<List<ChatEntity>> getChatRooms();

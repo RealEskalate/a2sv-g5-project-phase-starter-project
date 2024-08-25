@@ -15,14 +15,6 @@ class ChatModel extends ChatEntity {
   factory ChatModel.fromEntity(ChatEntity chatEntity)=>
         ChatModel(chatId: chatEntity.chatId, user1: chatEntity.user1, user2: chatEntity.user2);
 
-        chatId: json['id'],
-        user1: UserModel.fromJson(json, ''),
-        user2: json['user2'] as UserEntity);
+    
   }
 
-
-  factory ChatModel.fromEntity(ChatEntity chatEntity) => ChatModel(
-      chatId: chatEntity.chatId,
-      user1: chatEntity.user1,
-      user2: chatEntity.user2);
-}

@@ -36,9 +36,9 @@ class _IndividiualChatScreenState extends State<IndividiualChatScreen> {
               toolbarHeight: 70,
               centerTitle: false,
               automaticallyImplyLeading: false,
-              flexibleSpace:const Padding(
-                padding: EdgeInsets.only(top: 15.0),
-                child: MyAppBar(),
+              flexibleSpace: Padding(
+                padding: const EdgeInsets.only(top: 15.0),
+                child: MyAppBar(onBack: () => Navigator.of(context).pop(),),
               ),
               actions: [
                 IconButton(onPressed: (){}, icon: const Icon(Icons.phone)),
@@ -83,15 +83,17 @@ class _IndividiualChatScreenState extends State<IndividiualChatScreen> {
 }
 
 class MyAppBar extends StatelessWidget {
-  const MyAppBar({super.key});
-
+  const MyAppBar({super.key, required this.onBack});
+  final VoidCallback onBack;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Row(
         children: [
-        IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_back)),
-        showUser(),
+        IconButton(onPressed: (){
+          onBack();
+        }, icon: const Icon(Icons.arrow_back)),
+        showUser(onClicked: (){}),
         const Column(
           children: [
             Text('Sabila Sayima',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),

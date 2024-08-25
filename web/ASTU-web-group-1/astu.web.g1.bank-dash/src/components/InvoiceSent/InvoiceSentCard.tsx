@@ -14,7 +14,7 @@ const InvoiceSentCard: React.FC<InvoiceSentCardProps> = ({
   imageUrl,
 }) => {
   return (
-    <div className="flex items-center">
+    <div className="flex items-center w-full">
       <div className="flex-shrink-0">
         <img
           className="lg:w-[50px] lg:h-[50px] w-[45px] h-[45px] lg:rounded-[20px] rounded-[12px]"

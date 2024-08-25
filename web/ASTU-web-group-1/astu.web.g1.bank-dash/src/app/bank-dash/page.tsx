@@ -23,7 +23,7 @@ export default function Home() {
                 <Link href="bank-dash/credit-card">See All</Link>{" "}
               </p>
             </div>
-            <div className="flex  overflow-x-auto scrollbar-none space-x-2">
+            <div className="flex overflow-x-auto scrollbar-none space-x-2">
               <StoreProvider>
                 <MyCardLists />
               </StoreProvider>

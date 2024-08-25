@@ -41,13 +41,13 @@ func main() {
 
 	blogRepository := Repository.NewBlogRepository(blogCollection)
 	blogUsecase := Usecases.NewBlogUsecase(blogRepository)
-	blogController := controller.NewBlogController(blogUsecase)
 
 	// Initialize the Email Service
 	emailService := infrastructure.NewEmailService()
 
 	// Initialize the User Usecase with the User Repository and Email Service
 	userUsecase := Usecases.NewUserUsecase(userRepository, emailService)
+	blogController := controller.NewBlogController(blogUsecase, userUsecase)
 	userController := controller.NewUserController(userUsecase)
 
 	router := router.SetupRouter(userController, blogController, tokenCollection)

@@ -21,15 +21,17 @@ type UserUsecase interface {
 	Register(input Domain.RegisterInput) (*Domain.User, error)
 	UpdateUser(username string, updatedUser *Domain.UpdateUserInput) error
 	DeleteUser(username string) error
-	Login(c *gin.Context, LoginUser *Domain.LoginInput) (string, error)
+	Login(c *gin.Context, LoginUser *Domain.LoginInput) (string, string, error)
 	Logout(tokenString string) error
-	ForgotPassword(username string) (string, error)
-	Reset(token string) (string, error)
+	ForgotPassword(c *gin.Context, username string) (string, error)
+	Reset(c *gin.Context, token string) (string, error)
 	UpdatePassword(username string, newPassword string) error
-	PromoteTOAdmin(username string) error
+	PromoteTOAdmin(username string) (Domain.User, error)
 	Verify(token string) error
 	OAuthLogin(c *gin.Context, code string) (*Domain.User, string, error)
 	FindUser() ([]Domain.User, error)
+	GiveId(username string) (string, error)
+	InsertToken(username string, accessToken string, refreshToken string) error
 }
 
 type userUsecase struct {
@@ -50,6 +52,25 @@ const (
 	passwordMinLength = 8
 	passwordMaxLength = 20
 )
+
+func (u *userUsecase) InsertToken(username string, accessToken string, refreshToken string) error {
+	err := u.userRepo.InsertToken(username, accessToken, refreshToken)
+	if err != nil {
+		return err
+
+	}
+	return nil
+}
+
+func (u *userUsecase) GiveId(username string) (string, error) {
+	fmt.Println("===============uffffffffffffffff")
+
+	id, err := u.userRepo.GetIDBYUsername(username)
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}
 
 // Register creates a new user, hashes the password, generates a verification token, and sends a welcome email.
 func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error) {
@@ -113,7 +134,7 @@ func (u *userUsecase) Register(input Domain.RegisterInput) (*Domain.User, error)
 	}
 
 	// Generate a verification token
-	newToken, err := infrastructure.GenerateResetToken(user.Username, []byte("BlogManagerSecretKey"))
+	newToken, err := infrastructure.GenerateResetToken(user.Username, user.Role, []byte("BlogManagerSecretKey"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate verification token: %v", err)
 	}
@@ -184,15 +205,53 @@ func (u *userUsecase) DeleteUser(username string) error {
 	return nil
 }
 
-func (u *userUsecase) Login(c *gin.Context, LoginUser *Domain.LoginInput) (string, error) {
+func (u *userUsecase) Login(c *gin.Context, LoginUser *Domain.LoginInput) (string, string, error) {
 	user, err := u.userRepo.FindByUsername(LoginUser.Username)
 	if err != nil {
-		return "", errors.New("invalid username or password")
+		return "", "", errors.New("invalid username or password")
 	}
 
 	err = u.passwordService.ComparePasswords(user.Password, LoginUser.Password)
 	if err != nil {
-		return "", errors.New("invalid username or password")
+		return "", "", errors.New("invalid username or password")
+	}
+
+	accessToken, err := infrastructure.GenerateJWT(user.Username, user.Role)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to generate access token: %v", err)
+	}
+
+	refreshToken, err := infrastructure.GenerateRefreshToken(user.Username)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to generate refresh token: %v", err)
+	}
+
+	c.SetCookie("refresh_token", refreshToken, 3600, "/", "", false, true)
+
+	err = u.userRepo.InsertToken(user.Username, accessToken, refreshToken)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to store tokens: %v", err)
+	}
+
+	if !user.IsActive {
+		return "", "", fmt.Errorf("user not verified")
+	}
+
+	return accessToken, refreshToken, nil
+}
+
+func (u *userUsecase) Logout(tokenString string) error {
+	err := u.userRepo.ExpireToken(tokenString)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (u *userUsecase) ForgotPassword(c *gin.Context, username string) (string, error) {
+	user, err := u.userRepo.FindByUsername(username)
+	if err != nil {
+		return "", errors.New("user not found")
 	}
 
 	accessToken, err := infrastructure.GenerateJWT(user.Username, user.Role)
@@ -212,31 +271,6 @@ func (u *userUsecase) Login(c *gin.Context, LoginUser *Domain.LoginInput) (strin
 		return "", fmt.Errorf("failed to store tokens: %v", err)
 	}
 
-	if !user.IsActive {
-		return "", fmt.Errorf("user not verified")
-	}
-
-	return accessToken, nil
-}
-
-func (u *userUsecase) Logout(tokenString string) error {
-	err := u.userRepo.ExpireToken(tokenString)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (u *userUsecase) ForgotPassword(username string) (string, error) {
-	user, err := u.userRepo.FindByUsername(username)
-	if err != nil {
-		return "", errors.New("user not found")
-	}
-
-	resetToken, err := infrastructure.GenerateResetToken(user.Username, []byte("BlogManagerSecretKey"))
-	if err != nil {
-		return "", err
-	}
 	subject := "Password Reset Request"
 	body := fmt.Sprintf(`
 	Hi %s,
@@ -247,19 +281,19 @@ func (u *userUsecase) ForgotPassword(username string) (string, error) {
 
 	If you did not request a password reset, please ignore this email.
 
-	Best regards,
+Best regards,
 	Your Support Team
-	`, user.Name, resetToken)
+	`, user.Name, accessToken)
 
 	err = u.emailService.SendEmail(user.Email, subject, body)
 	if err != nil {
 		return "", fmt.Errorf("failed to send reset email: %v", err)
 	}
 
-	return resetToken, nil
+	return accessToken, nil
 }
 
-func (u *userUsecase) Reset(token string) (string, error) {
+func (u *userUsecase) Reset(c *gin.Context, token string) (string, error) {
 
 	claims, err := infrastructure.ParseResetToken(token, []byte("BlogManagerSecretKey"))
 	if err != nil {
@@ -269,6 +303,23 @@ func (u *userUsecase) Reset(token string) (string, error) {
 
 	user, err := u.userRepo.FindByUsername(claims.Username)
 
+	if err != nil {
+		return "", errors.New("user not found")
+	}
+
+	accessToken, err := infrastructure.GenerateJWT(user.Username, user.Role)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate access token: %v", err)
+	}
+
+	refreshToken, err := infrastructure.GenerateRefreshToken(user.Username)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate refresh token: %v", err)
+	}
+
+	c.SetCookie("refresh_token", refreshToken, 3600, "/", "", false, true)
+
+	err = u.userRepo.InsertToken(user.Username, accessToken, refreshToken)
 	if err != nil {
 		return "", errors.New("user not found")
 	}
@@ -296,18 +347,25 @@ func (u *userUsecase) UpdatePassword(username string, newPassword string) error 
 	return nil
 }
 
-func (u *userUsecase) PromoteTOAdmin(username string) error {
-	_, err := u.userRepo.FindByUsername(username)
+func (u *userUsecase) PromoteTOAdmin(ID string) (Domain.User, error) {
+	user, err := u.userRepo.FindByID(ID)
 	if err != nil {
-		return errors.New("user not found")
+		return Domain.User{}, errors.New("user not found")
+	}
+	username := user.Username
+	if user.Role == "user" {
+		err = u.userRepo.Update(username, bson.M{"role": "admin"})
+		if err != nil {
+			return Domain.User{}, fmt.Errorf("failed to promote user to admin: %v", err)
+		}
+	} else {
+		err = u.userRepo.Update(username, bson.M{"role": "user"})
+		if err != nil {
+			return Domain.User{}, fmt.Errorf("failed to demote user to user: %v", err)
+		}
 	}
 
-	err = u.userRepo.Update(username, bson.M{"role": "admin"})
-	if err != nil {
-		return fmt.Errorf("failed to promote user to admin: %v", err)
-	}
-
-	return nil
+	return user, nil
 }
 
 func (u *userUsecase) Verify(token string) error {

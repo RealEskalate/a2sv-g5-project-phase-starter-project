@@ -16,13 +16,19 @@ import (
 
 type BlogController struct {
 	blogUsecase Usecases.BlogUsecase
+	userUsecase Usecases.UserUsecase
 }
 
-func NewBlogController(bu Usecases.BlogUsecase) *BlogController {
+func NewBlogController(bu Usecases.BlogUsecase, uu Usecases.UserUsecase) *BlogController {
 	return &BlogController{
 		blogUsecase: bu,
+		userUsecase: uu,
 	}
 }
+
+
+
+
 
 func (h *BlogController) CreateBlog(c *gin.Context) {
 	var input struct {
@@ -82,7 +88,7 @@ func (h *BlogController) RetrieveBlogs(c *gin.Context) {
 }
 func (h *BlogController) DeleteBlogByID(c *gin.Context) {
 	id := c.Param("id")
-	userRole := c.GetHeader("Role") // Extract the role from the header
+	userRole, _ := c.Get("role") // Extract the role from the header
 
 	// Get the current user's username from the context
 	username, exists := c.Get("username")
@@ -90,7 +96,7 @@ func (h *BlogController) DeleteBlogByID(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found in context"})
 		return
 	}
-
+	fmt.Println("Username from context:", username)
 	// Check if the user is an admin or the author of the blog
 	isAdmin := userRole == "admin"
 	if !isAdmin {
@@ -259,7 +265,7 @@ func (c *BlogController) FilterBlogs(ctx *gin.Context) {
 		}
 	}
 
-	fmt.Print(startDate,endDate)
+	fmt.Print(startDate, endDate)
 	sortBy := ctx.Query("sortBy")
 
 	blogs, err := c.blogUsecase.FilterBlogs(tags, startDate, endDate, sortBy)

@@ -4,6 +4,8 @@ import { FiSearch, FiSettings, FiBell, FiMenu } from 'react-icons/fi';
 import Image from 'next/image';
 import { useState } from 'react';
 import Sidebar from './sidebar';
+import livia from '../../public/images/Livia.svg'
+
 
 const Header: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -13,7 +15,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="flex flex-col md:flex-row justify-between items-center py-4 px-6 bg-white shadow-sm relative">
+    <header className="flex flex-col md:flex-row justify-between items-center py-4 px-6 bg-white shadow-md relative">
       <div className="flex justify-between items-center w-full md:w-auto">
         <div className="flex items-center space-x-4">
           <button onClick={toggleSidebar} className="md:hidden">
@@ -59,7 +61,7 @@ const Header: React.FC = () => {
           <Image
             width={60}
             height={60}
-            src="https://via.placeholder.com/150"
+            src={livia}
             alt="Profile"
             className="w-full h-full rounded-full object-cover"
           />
@@ -82,5 +84,7 @@ const Header: React.FC = () => {
     </header>
   );
 };
+
+
 
 export default Header;

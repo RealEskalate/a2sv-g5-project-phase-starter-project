@@ -16,13 +16,13 @@ import RecentTransctionSkeleton from "../AllSkeletons/RecentTransactionSkeleton/
 const Expense = () => {
   const [currentPage, setCurrentPage] = useState(0);
 
-  const { data, error, isLoading } = useGetTransactionExpenseQuery({
+  const { data, error, isLoading, isFetching } = useGetTransactionExpenseQuery({
     page: currentPage,
     size: 5,
   });
   console.log(data);
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return <RecentTransctionSkeleton />; // Display loading state
   }
 

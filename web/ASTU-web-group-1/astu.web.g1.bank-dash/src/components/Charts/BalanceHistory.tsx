@@ -26,7 +26,7 @@ const data = [
 ];
 const BalanceHistory = () => {
   return (
-    <div className='w-full md:w-7/12'>
+    <div className='w-full lg:w-7/12'>
       <h1 className='text-[#333B69] pb-3 font-semibold'>Balance History</h1>
       <div className=' bg-white px-3 py-5 rounded-3xl'>
         <ResponsiveContainer width={'100%'} height={240}>

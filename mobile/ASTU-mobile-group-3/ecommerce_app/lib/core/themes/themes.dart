@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
 
 class MyTheme {
   /// The following are the colors that i will be using
+  static const Color skeletonColor1 = Color.fromARGB(255, 236, 236, 236);
+  static const Color skeletonColor2 = Color.fromARGB(255, 231, 231, 231);
+
   ///
   static const Color ecRed = Color.fromARGB(255, 255, 19, 19);
   static const Color ecInputGrey = Color.fromARGB(255, 243, 243, 243);

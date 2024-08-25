@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-import 'features/chat/presentation/Chat_page/IndividualChatPage.dart';
-import 'features/chat/presentation/ui/chatScreen/chatapp.dart';
+import 'features/chat/presentation/UI/Chat_page/IndividualChatPage.dart';
+import 'features/chat/presentation/UI/chatScreen/chatapp.dart';
 import 'features/ecommerce/presentation/UI/add_product/add_product.dart';
 import 'features/ecommerce/presentation/UI/home/Product_detail/detail_page.dart';
 import 'features/ecommerce/presentation/UI/home/home.dart';

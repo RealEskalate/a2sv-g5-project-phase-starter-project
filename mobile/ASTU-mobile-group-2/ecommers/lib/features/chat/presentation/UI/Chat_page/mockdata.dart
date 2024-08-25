@@ -12,7 +12,7 @@ final List<Widget> mock_chat_data = [
   ),
   const SingleText(
     isMe: true,
-    profile_pic: 'assets//images/profileG.jpg',
+    profile_pic: 'assets/image/profileG.jpg',
     name: 'Fahmi',
     text: 'You too, thanks!',
     time: '09:30 AM',
@@ -26,7 +26,7 @@ final List<Widget> mock_chat_data = [
   ),
   const SingleText(
     isMe: true,
-    profile_pic: 'assets//images/profileG.jpg',
+    profile_pic: 'assets/image/profileG.jpg',
     name: 'Fahmi',
     text: 'Just relaxing, maybe catch up on some projects.',
     time: '09:40 AM',
@@ -40,7 +40,7 @@ final List<Widget> mock_chat_data = [
   ),
   const SingleText(
     isMe: true,
-    profile_pic: 'assets//images/profileG.jpg',
+    profile_pic: 'assets/image/profileG.jpg',
     name: 'Fahmi',
     text: 'Hiking is fun! I should do that more often.',
     time: '09:50 AM',
@@ -54,7 +54,7 @@ final List<Widget> mock_chat_data = [
   ),
   const SingleText(
     isMe: true,
-    profile_pic: 'assets//images/profileG.jpg',
+    profile_pic: 'assets/image/profileG.jpg',
     name: 'Fahmi',
     text: 'Absolutely agree.',
     time: '10:00 AM',
@@ -68,7 +68,7 @@ final List<Widget> mock_chat_data = [
   ),
   const SingleText(
     isMe: true,
-    profile_pic: 'assets//images/profileG.jpg',
+    profile_pic: 'assets/image/profileG.jpg',
     name: 'Fahmi',
     text: 'Wow, that view is stunning!',
     time: '10:10 AM',
@@ -82,7 +82,7 @@ final List<Widget> mock_chat_data = [
   ),
   const SingleText(
     isMe: true,
-    profile_pic: 'assets//images/profileG.jpg',
+    profile_pic: 'assets/image/profileG.jpg',
     name: 'Fahmi',
     text: 'Send more pics when you do!',
     time: '10:20 AM',
@@ -96,14 +96,14 @@ final List<Widget> mock_chat_data = [
   ),
   const SingleText(
     isMe: true,
-    profile_pic: 'assets/image//images/profileG.jpg',
+    profile_pic: 'assets/image/profileG.jpg',
     name: 'Fahmi',
     text: 'Take care!',
     time: '10:30 AM',
   ),
   const SingleText(
     isMe: false,
-    profile_pic: 'assets/image/image/avator.png',
+    profile_pic: 'assets/image/avator.png',
     name: 'Sabila Sayma',
     text: 'You too!',
     time: '10:35 AM',

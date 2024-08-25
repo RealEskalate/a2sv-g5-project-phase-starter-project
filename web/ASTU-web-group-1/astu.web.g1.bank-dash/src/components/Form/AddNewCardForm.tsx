@@ -54,7 +54,7 @@ const AddNewCardForm = () => {
       toast({
         description: "Your card has been added successfully.",
         className: "bg-green-600 text-white font-bold",
-        duration: 2000,
+        duration: 3000,
       });
     }
   };

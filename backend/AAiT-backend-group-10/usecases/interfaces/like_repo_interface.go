@@ -7,7 +7,7 @@ import (
 )
 
 type LikeRepositoryInterface interface {
-	GetLike(blogID uuid.UUID, reacterID uuid.UUID) (domain.Like, *domain.CustomError)
+	GetLike(blogID uuid.UUID, reacterID uuid.UUID) (*domain.Like, *domain.CustomError)
 	AddLike(like domain.Like) *domain.CustomError
 	UpdateLike(like domain.Like) *domain.CustomError
 	DeleteLike(like dto.UnlikeDto) *domain.CustomError

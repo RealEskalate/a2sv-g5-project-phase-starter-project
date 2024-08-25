@@ -2,8 +2,7 @@
 import { toggleSidebar } from "@/lib/redux/slices/menuSlice";
 import { AppDispatch } from "@/lib/redux/store";
 import { useDispatch } from "react-redux";
-import Page from "./dashboard/Page";
-import ServicePage from "./services/ServicePage";
+import DashboardPage from "./components/Dashboard/DashboardPage";
 
 export default function Home() {
   const dispatch: AppDispatch = useDispatch();
@@ -13,7 +12,7 @@ export default function Home() {
   };
   return (
     <div className="w-full" onClick={handleBurgerClick}>
-        <Page/>
+        <DashboardPage/>
     </div>
   );
 }

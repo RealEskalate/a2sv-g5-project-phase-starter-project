@@ -6,6 +6,7 @@ import 'core/constants/constants.dart';
 import 'core/themes/themes.dart';
 import 'dependency_injection.dart';
 import 'features/auth/presentation/page/login_page.dart';
+import 'features/chat/presentation/pages/chat_list.dart';
 import 'features/product/presentation/pages/product_list_page.dart';
 
 class SplashPage extends StatefulWidget {
@@ -30,11 +31,11 @@ class _SplashPageState extends State<SplashPage>
       if (result == null) {
         // ignore: use_build_context_synchronously
         Navigator.of(context)
-            .pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));
+            .pushReplacement(MaterialPageRoute(builder: (_) => ChatList()));
       } else {
         // ignore: use_build_context_synchronously
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const ProductListPage()));
+            MaterialPageRoute(builder: (_) => const ChatList()));
       }
     });
   }

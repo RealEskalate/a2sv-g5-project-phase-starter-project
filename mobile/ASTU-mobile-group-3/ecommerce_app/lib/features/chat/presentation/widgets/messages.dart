@@ -28,13 +28,13 @@ class ChatMessage extends StatelessWidget {
           : Alignment.centerRight,
       child: Padding(
         padding: messageType == MessageType.receive
-            ? const EdgeInsets.only(right: 100, bottom: 12)
+            ? const EdgeInsets.only(right: 80, bottom: 12)
             : const EdgeInsets.only(left: 80, bottom: 12),
         child: ClipPath(
           clipper: UpperNipMessageClipperTwo(messageType),
           child: Container(
-            width: 50,
-            padding: const EdgeInsets.all(20),
+            width: MediaQuery.sizeOf(context).width * 0.4,
+            padding: const EdgeInsets.all(10),
             color: messageType == MessageType.receive
                 ? Color(0xff3F51F3)
                 : const Color(0xffF2F7FB),

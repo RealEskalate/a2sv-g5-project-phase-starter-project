@@ -29,7 +29,7 @@ const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
           <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
           <div className={`flex-1 flex flex-col transition-transform duration-300 ${isSidebarOpen ? 'ml-0' : 'ml-0'} overflow-x-hidden`}>
             <Navbar pageTitle={pageTitle} toggleSidebar={toggleSidebar} />
-            <main className="flex-grow">{children}</main>
+            <main className="flex-grow pt-[120px] lg:pt-20">{children}</main>
           </div>
         </div>
       </NotificationProvider>

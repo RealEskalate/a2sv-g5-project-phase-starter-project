@@ -3,6 +3,7 @@ import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
 import { getExpenses } from "@/services/transactionfetch";
 import { formatDistanceToNowStrict } from 'date-fns';
 
+import { TbFileSad } from "react-icons/tb";
 interface Transaction {
   id: number;
   receiverUserName: string;
@@ -13,6 +14,7 @@ interface Transaction {
 
 const TransactionList: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [status, setStatus] = useState<'loading' | 'error' | 'success'>('loading');
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -21,11 +23,14 @@ const TransactionList: React.FC = () => {
 
         if (Array.isArray(transactionData.data.content)) {
           setTransactions(transactionData.data.content);
+          setStatus('success');
         } else {
           console.error("Transaction data is not an array");
+          setStatus('error');
         }
       } catch (error) {
         console.error("Failed to fetch transactions", error);
+        setStatus('error');
       }
     };
 
@@ -35,6 +40,38 @@ const TransactionList: React.FC = () => {
   const formatTimeSince = (date: string) => {
     return formatDistanceToNowStrict(new Date(date));
   };
+
+  if (status === 'loading') {
+    return (
+      <div className="flex-1 py-3 flex flex-col justify-between  dark:bg-dark rounded-lg shadow-md p-4 space-y-4">
+        {[...Array(5)].map((_, index) => (
+          <div key={index} className="flex items-center dark:bg-dark justify-between animate-pulse">
+            <div className="w-10 h-10 rounded-full bg-gray-200"></div>
+            <div className="flex-1 px-3">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+            <div className="h-4 bg-gray-200 rounded w-12"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="p-3 gap-4  flex flex-col justify-center items-center h-auto  dark:bg-dark   text-center ">
+        <TbFileSad
+          className={`text-gray-300 dark:text-white w-[400px] h-[70px]`}
+        />
+        <p className="text-red-500" >Failed to fetch</p>
+      </div>
+    );
+  }
+
+  if (transactions.length === 0) {
+    return <div className="text-center text-gray-500">No transactions to display.</div>;
+  }
 
   return (
     <div className="flex-1 py-3 flex flex-col justify-between bg-white rounded-lg shadow-md p-4 space-y-4">

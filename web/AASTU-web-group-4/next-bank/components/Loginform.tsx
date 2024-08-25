@@ -32,9 +32,14 @@ const LoginForm: React.FC = () => {
     setErrorMessage("");
       try {
         const loggedInUser = await loginUser(data);
+
+        console.log("Logged in user:", loggedInUser)
         
         Cookie.set('accessToken', loggedInUser.data.access_token);
         Cookie.set('refreshToken', loggedInUser.data.refresh_token);
+
+        
+        
 
         setIsLoading(false);
         // console.log("redirect...")

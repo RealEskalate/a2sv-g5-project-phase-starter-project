@@ -12,7 +12,7 @@ const Transactions = () => {
   const [transactionCardsLoaded, setTransactionCardsLoaded] = useState(false);
   const [transactionTableLoaded, setTransactionTableLoaded] = useState(false);
 
-  // Check if all data has been fetched
+ 
   useEffect(() => {
     if (transactionCardsLoaded && transactionTableLoaded) {
       setDataFetched(true);
@@ -21,8 +21,7 @@ const Transactions = () => {
 
   return (
     <div
-      className={`min-h-screen  p-10 space-y-5" 
-      } ${
+      className={`min-h-screen  md:p-10 p-5  space-y-5 ${
         isDarkMode ? "bg-gray-700 text-gray-200" : "bg-[#F5F7FA] text-gray-900"
       }`}
     >

@@ -30,9 +30,11 @@ export const RecentTransaction = ({onLoadingComplete}:{onLoadingComplete:any}) =
   }, [onLoadingComplete]);
 
   return (
-    <div className=" md:space-y-5 w-full md:w-1/3">
+    <div className=" space-y-5 w-full md:w-1/3">
       <div className="font-inter text-[16px] font-semibold">
-        <h4>Recent Transactions</h4>
+        <h4 className="lg:text-[22px] md:text-lg text-base">
+          Recent Transactions
+        </h4>
       </div>
       <div
         className={`space-y-5  md:p-5 p-3 md:h-[200px] lg:w-[365px] lg:h-[220px] ${

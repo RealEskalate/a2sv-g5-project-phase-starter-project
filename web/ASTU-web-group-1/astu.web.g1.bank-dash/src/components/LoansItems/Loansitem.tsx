@@ -2,10 +2,14 @@
 import React from "react";
 import LoanCard from "./LoanCard";
 import { useGetDetailActiveLoansQuery } from "@/lib/redux/slices/activeLoanSlice";
+import LoanSkeletons from "../AllSkeletons/loanSkeleton/loanSkeletons";
 
 const Loansitem = () => {
   const { data, isLoading } = useGetDetailActiveLoansQuery();
   const allData = data?.data;
+  if (isLoading) {
+    return <LoanSkeletons />;
+  }
   return (
     <div
       className="flex overflow-x-auto justify-around overflow-clip whitespace-nowrap w-full"

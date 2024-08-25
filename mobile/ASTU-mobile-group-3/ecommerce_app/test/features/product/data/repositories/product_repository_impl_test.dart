@@ -72,7 +72,7 @@ void main() {
         verify(mockNetworkInfo.isConnected);
         verify(
             mockLocalProductDataSource.addProduct(TestingDatas.testDataModel));
-        expect(result, const Right(TestingDatas.testDataEntity));
+        expect(result, Right(TestingDatas.testDataEntity));
       });
 
       /// This test for updateProduct
@@ -179,7 +179,7 @@ void main() {
 
         verify(mockNetworkInfo.isConnected);
         verify(mockLocalProductDataSource.getProduct(TestingDatas.id));
-        expect(result, const Right(TestingDatas.testDataEntity));
+        expect(result, Right(TestingDatas.testDataEntity));
       });
 
       /// This test for updateProduct offline

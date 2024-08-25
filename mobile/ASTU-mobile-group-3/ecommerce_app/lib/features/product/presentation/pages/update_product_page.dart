@@ -44,7 +44,7 @@ class UpdateProductPage extends StatelessWidget with AppBars {
                   BlocProvider.of<ProductBloc>(context)
                       .add(GetSingleProductEvents(id: id!));
                 }
-
+                Navigator.pop(context);
                 Navigator.pop(context);
               } else if (state is ErrorState) {
                 Navigator.pop(context);

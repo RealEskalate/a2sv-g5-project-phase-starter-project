@@ -22,13 +22,12 @@ void main() {
   late MockAuthLocalDataSource mockAuthLocalDataSource;
 
   List<ProductModel> expectedListOfModel = <ProductModel>[];
-  Map<String, dynamic> finalResult =
-      json.decode(TestingDatas.getAllProductResponce());
+  Map<String, dynamic> finalResult = json.decode(TestingDatas.readProductV3());
   for (Map<String, dynamic> jsonModel in finalResult['data']) {
     expectedListOfModel.add(ProductModel.fromJson(jsonModel));
   }
-  ProductModel expectedSingleProduct = ProductModel.fromJson(
-      json.decode(TestingDatas.getSingleProduct())['data']);
+  ProductModel expectedSingleProduct =
+      ProductModel.fromJson(json.decode(TestingDatas.readJson()));
   setUp(() {
     mockHttpClient = MockHttpClient();
     mockAuthLocalDataSource = MockAuthLocalDataSource();
@@ -157,12 +156,12 @@ void main() {
       final uri = Uri.parse(AppData.baseUrl);
       final request = http.MultipartRequest('POST', uri);
       final myTest = ProductModel(
-        id: TestingDatas.id,
-        name: TestingDatas.testDataModel.name,
-        description: TestingDatas.testDataModel.description,
-        price: TestingDatas.testDataModel.price,
-        imageUrl: fakePath,
-      );
+          id: TestingDatas.id,
+          name: TestingDatas.testDataModel.name,
+          description: TestingDatas.testDataModel.description,
+          price: TestingDatas.testDataModel.price,
+          imageUrl: fakePath,
+          seller: AuthData.userModel);
       request.files.add(
         await http.MultipartFile.fromPath(
           'image',
@@ -199,12 +198,12 @@ void main() {
       final uri = Uri.parse(AppData.baseUrl);
       final request = http.MultipartRequest('POST', uri);
       final myTest = ProductModel(
-        id: TestingDatas.id,
-        name: TestingDatas.testDataModel.name,
-        description: TestingDatas.testDataModel.description,
-        price: TestingDatas.testDataModel.price,
-        imageUrl: fakePath,
-      );
+          id: TestingDatas.id,
+          name: TestingDatas.testDataModel.name,
+          description: TestingDatas.testDataModel.description,
+          price: TestingDatas.testDataModel.price,
+          imageUrl: fakePath,
+          seller: AuthData.sellerData);
       request.files.add(
         await http.MultipartFile.fromPath(
           'image',

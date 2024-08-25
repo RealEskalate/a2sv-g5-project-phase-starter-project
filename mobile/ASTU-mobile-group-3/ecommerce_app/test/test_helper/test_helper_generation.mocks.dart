@@ -17,9 +17,8 @@ import 'package:ecommerce_app/features/auth/data/data_source/auth_local_data_sou
     as _i29;
 import 'package:ecommerce_app/features/auth/data/data_source/remote_auth_data_source.dart'
     as _i28;
-import 'package:ecommerce_app/features/auth/data/model/signed_up_user_model.dart'
-    as _i7;
 import 'package:ecommerce_app/features/auth/data/model/token_model.dart' as _i6;
+import 'package:ecommerce_app/features/auth/data/model/user_model.dart' as _i7;
 import 'package:ecommerce_app/features/auth/domain/entities/user_entity.dart'
     as _i27;
 import 'package:ecommerce_app/features/auth/domain/repositories/auth_repository.dart'
@@ -144,9 +143,8 @@ class _FakeTokenModel_5 extends _i1.SmartFake implements _i6.TokenModel {
         );
 }
 
-class _FakeSignedUpUserModel_6 extends _i1.SmartFake
-    implements _i7.SignedUpUserModel {
-  _FakeSignedUpUserModel_6(
+class _FakeUserModel_6 extends _i1.SmartFake implements _i7.UserModel {
+  _FakeUserModel_6(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -1094,21 +1092,20 @@ class MockRemoteAuthDataSource extends _i1.Mock
       ) as _i20.Future<_i6.TokenModel>);
 
   @override
-  _i20.Future<_i7.SignedUpUserModel> signUp(_i27.UserEntity? user) =>
+  _i20.Future<_i7.UserModel> signUp(_i27.UserEntity? user) =>
       (super.noSuchMethod(
         Invocation.method(
           #signUp,
           [user],
         ),
-        returnValue:
-            _i20.Future<_i7.SignedUpUserModel>.value(_FakeSignedUpUserModel_6(
+        returnValue: _i20.Future<_i7.UserModel>.value(_FakeUserModel_6(
           this,
           Invocation.method(
             #signUp,
             [user],
           ),
         )),
-      ) as _i20.Future<_i7.SignedUpUserModel>);
+      ) as _i20.Future<_i7.UserModel>);
 }
 
 /// A class which mocks [AuthLocalDataSource].
@@ -1777,6 +1774,15 @@ class MockInputValidationCubit extends _i1.Mock
         Invocation.method(
           #setImage,
           [urls],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  void refresh() => super.noSuchMethod(
+        Invocation.method(
+          #refresh,
+          [],
         ),
         returnValueForMissingStub: null,
       );

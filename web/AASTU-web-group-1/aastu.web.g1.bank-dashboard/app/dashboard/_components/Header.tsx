@@ -90,17 +90,20 @@ const Header = ({ title }: { title: string }) => {
               placeholder="Search for something"
             />
           </div>
-          <button onClick={() => setIsDarkMode(!isDarkMode)}>
+          <button
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className="hover:scale-105 transition-all duration-150"
+          >
             {isDarkMode ? (
-              <CiDark color="white" size={30} />
+              <CiLight size={30} color="white" />
             ) : (
-              <CiLight size={30} />
+              <CiDark size={30} />
             )}
           </button>
 
           {/* Settings */}
           <div
-            className={`p-2 rounded-full cursor-pointer ${
+            className={`hover:scale-105 transition-all duration-150 p-2 rounded-full cursor-pointer ${
               isDarkMode ? "bg-gray-800" : "bg-[#F5F7FA]"
             }`}
           >
@@ -115,7 +118,7 @@ const Header = ({ title }: { title: string }) => {
           </div>
 
           <div
-            className={`p-2 rounded-full cursor-pointer ${
+            className={`p-2 rounded-full cursor-pointer hover:scale-105 transition-all duration-150 ${
               isDarkMode ? "bg-gray-800" : "bg-[#F5F7FA]"
             }`}
           >
@@ -130,7 +133,7 @@ const Header = ({ title }: { title: string }) => {
           {/* Avatar */}
           <Popover>
             <PopoverTrigger>
-              <Avatar>
+              <Avatar className="hover:scale-105 transition-all duration-150">
                 <AvatarImage src={profileUrl} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>

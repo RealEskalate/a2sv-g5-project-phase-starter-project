@@ -108,7 +108,7 @@ const ExpenseStatisticsPieChart = ({
   }, [bgColors, sectors]);
 
   return (
-    <div className="max-mobile:h-[285px] mobile:h-[261px] tablet:h-[360px]">
+    <div className="h-full">
       <canvas
         className="bg-white rounded-3xl w-full h-full"
         ref={chartRef}

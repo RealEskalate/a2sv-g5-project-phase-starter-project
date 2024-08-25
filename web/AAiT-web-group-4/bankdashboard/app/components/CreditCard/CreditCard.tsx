@@ -2,8 +2,8 @@ import React from "react";
 
 const CreditCard = () => {
   return (
-    <div className="flex flex-col justify-around px-5 py-3 bg-blue-gradient rounded-3xl  max-mobile:w-[265px] max-mobile:h-[170px] mobile:w-[231px] mobile:h-[170px] tablet:w-[350px] tablet:h-[235px] ">  
-    {/* max-mobile:w-[350px] max-mobile:h-[235px] tablet:w-[231px] table:h-[170px] desktop:w-[350px] desktop:h-[235px] */}
+    <div className="flex flex-col justify-around px-5 py-3 bg-blue-gradient rounded-3xl mobile:w-1/2 h-[235px] max-mobile:w-[270px]">  
+    {/* max-mobile:w-[265px] max-mobile:h-[170px] mobile:w-[231px] mobile:h-[170px] tablet:w-[350px] tablet:h-[235px]  */}
       <div className="h-1/4 ">
         <div className="flex justify-between">
           <div className="flex flex-col">
@@ -56,7 +56,7 @@ const CreditCard = () => {
         </div>
       </div>
 
-      <div className="flex justify-between h-1/4">
+      <div className="flex justify-between h-1/4 ">
         <p className="text-white max-tablet:text-sm text-[22px] font-semibold ">3778 **** **** 1234</p>
         <svg
           width="44"

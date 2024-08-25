@@ -102,7 +102,7 @@ const WeeklyActivity = () => {
   }, []);
   return (
     // <div className=" flex flex-grow mobile:w-3/5 max-mobile:w-full max-mobile:h-52 mobile:h-80 bg-white rounded-3xl">
-    <div className="max-mobile:h-[285px] max-mobile:w-[325px] mobile:w-[487px] mobile:h-[299px] tablet:h-[360px] tablet:w-[720px]">
+    <div className="w-full">
       <canvas className=" bg-white rounded-3xl w-full h-full " ref={chartRef} /></div>
       
 

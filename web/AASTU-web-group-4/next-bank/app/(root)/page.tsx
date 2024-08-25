@@ -50,7 +50,7 @@ const Page = () => {
   }, []);
 
   return (
-    <div className={`${colors.graybg} p-6 md:ml-64 md:max-w-full md:px-12  dark:bg-dark text-gray-900 dark:text-white`}>
+    <div className={`${colors.graybg} p-6 md:ml-10 lg:ml-64 md:max-w-full md:px-12  dark:bg-dark text-gray-900 dark:text-white`}>
       <div className="flex flex-col justify-between md:flex-row  gap-10 ">
         <div className=" py-4 md:w-3/5 md:max-w-full">
           <div className={`${colors.navbartext} flex justify-between `}>

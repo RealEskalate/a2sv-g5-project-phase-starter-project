@@ -14,6 +14,7 @@ import {
 import { creditcardstyles, colors ,logo } from "../constants/index";
 import Cookie from 'js-cookie';
 import { loginUser } from '@/services/authentication';
+import { initializeTokenRefresh } from "@/components/refreshToken";
 
 
 const LoginForm: React.FC = () => {
@@ -34,8 +35,8 @@ const LoginForm: React.FC = () => {
         const loggedInUser = await loginUser(data);
         
         Cookie.set('accessToken', loggedInUser.data.access_token);
-        Cookie.set('refreshToken', loggedInUser.data.refresh_token);
-
+        localStorage.setItem('refreshToken', loggedInUser.data.refresh_token);
+        initializeTokenRefresh();
         setIsLoading(false);
         // console.log("redirect...")
         window.location.href = '/'

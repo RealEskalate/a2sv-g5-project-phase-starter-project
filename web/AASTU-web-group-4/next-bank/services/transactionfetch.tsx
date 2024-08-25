@@ -6,7 +6,7 @@ const token = Cookies.get("accessToken");
 // GET /transactionshttps://bank-dashboard-1tst.onrender.com
 export const getAllTransactionsss = async () => {
   try {
-    console.log(token)
+   
     const response = await fetch(`${API_BASE_URL}/transactions`, {
       method: "GET",
       headers: {

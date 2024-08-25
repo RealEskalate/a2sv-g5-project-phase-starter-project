@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation';
 import { sidebarLinks } from '@/constants';
 import { NotificationProvider } from '@/services/NotificationContext';
 import {  message } from 'antd';
+import { initializeTokenRefresh } from "@/components/refreshToken";
+
 
 const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -20,6 +22,11 @@ const RootLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
     document.body.style.overflow = isSidebarOpen ? 'hidden' : 'auto';
   }, [isSidebarOpen]);
   const [messageApi, contextHolder] = message.useMessage();
+
+  useEffect(() => {
+    // Initialize the token refresh logic when the app mounts
+    initializeTokenRefresh();
+  }, []);
 
   return (
     <>

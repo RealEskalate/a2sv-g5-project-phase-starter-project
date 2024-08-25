@@ -5,7 +5,9 @@ const REFRESH_TOKEN_KEY = "refreshToken";
 
 // Function to get the refresh token from cookies
 export const getRefreshToken = () => {
-  return Cookies.get(REFRESH_TOKEN_KEY);
+  const token = localStorage.getItem(REFRESH_TOKEN_KEY);
+  console.log("Current Refresh Token:", token);
+  return token;
 };
 
 // Function to refresh the access token using the refresh token
@@ -15,13 +17,15 @@ export const refreshAccessToken = async () => {
   if (!refreshToken) return;
 
   try {
-    const response = await fetch("https://your-api-domain.com/refresh-token", {
+    console.log("Refreshing access token...",refreshToken);
+    const response = await fetch(" https://web-team-g4.onrender.com/auth/refresh_token", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+         Authorization: `Bearer ${refreshToken}`
       },
-      body: JSON.stringify({ refreshToken }),
     });
+     
 
     if (!response.ok) {
       throw new Error("Failed to refresh access token");
@@ -29,8 +33,9 @@ export const refreshAccessToken = async () => {
 
     const data = await response.json();
     // Store the new access token in cookies
-    Cookies.set(ACCESS_TOKEN_KEY, data.accessToken, { expires: 1/96 }); // Cookie expires in 15 minutes
-    console.log("New Access Token:", data.accessToken);
+    Cookies.set(ACCESS_TOKEN_KEY, data.accessToken, { expires: 2 / 1440 });
+    // Cookie expires in 15 minutes
+    console.log("New Access Token:", data);
   } catch (error) {
     console.error("Error refreshing access token:", error);
   }
@@ -38,8 +43,10 @@ export const refreshAccessToken = async () => {
 
 // Function to initialize the auto-refresh of the access token
 export const initializeTokenRefresh = () => {
-  // Set an interval to refresh the token every 15 minutes
+  console.log("Initializing token refresh every 30 seconds.");
   setInterval(() => {
-    refreshAccessToken();
-  }, 15 * 60 * 1000); // 15 minutes
+    console.log("Attempting to refresh token...");
+    refreshAccessToken(); // Call the refresh function
+  }, 30 * 1000); // 30 seconds
 };
+

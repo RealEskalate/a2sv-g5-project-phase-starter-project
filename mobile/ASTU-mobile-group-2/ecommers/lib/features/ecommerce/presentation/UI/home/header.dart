@@ -96,7 +96,7 @@ class HeaderPart extends StatelessWidget {
                 Icons.message,
               ),
             ),
-          )
+          )  
         ],
       ),
     );

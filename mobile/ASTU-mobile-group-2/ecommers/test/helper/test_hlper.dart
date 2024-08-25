@@ -1,7 +1,11 @@
 
-
-
 import 'package:ecommers/core/network/check_connectivity.dart';
+import 'package:ecommers/features/chat/data/datasource/chat_local_data.dart';
+import 'package:ecommers/features/chat/data/datasource/chat_remote_data.dart';
+import 'package:ecommers/features/chat/data/repository_implimentation/chat_repo_impl.dart';
+import 'package:ecommers/features/chat/domain/repository/chat_repo.dart';
+import 'package:ecommers/features/chat/domain/usecase/chat_usecase.dart';
+import 'package:ecommers/features/chat/presentation/bloc/chat_bloc/chat_bloc.dart';
 import 'package:ecommers/features/ecommerce/Data/data_source/local_data_source.dart';
 import 'package:ecommers/features/ecommerce/Data/data_source/remote_data_source.dart';
 import 'package:ecommers/features/ecommerce/Domain/repositories/ecommerce_repositories.dart';
@@ -40,11 +44,16 @@ import 'package:shared_preferences/shared_preferences.dart';
     LoginUserStatesBloc,
     LoginUseCase,
     LoginBloc,
-    LoginRegistrationBloc
+    LoginRegistrationBloc,
+    ChatUsecase,
+    ChatRemoteDataImpl,
+    ChatLocalDataImpl,
+    ChatRepositories,
+    ChatRepoImpl,
+    ChatBloc,
   ],
   customMocks :[MockSpec<http.Client>(as : #MockHttpClient)],
 
 )
 @GenerateMocks([http.Client])
 void main() {}
-

@@ -7,8 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'package:chat_bubbles/bubbles/bubble_normal_audio.dart';
 import 'package:bubble/bubble.dart';
-// import 'package:social_media_recorder/audio_encoder_type.dart';
-// import 'package:social_media_recorder/screen/social_media_recorder.dart';
+
 class Chat extends StatefulWidget {
   const Chat({super.key});
 
@@ -18,7 +17,6 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
   final TextEditingController _controller = TextEditingController();
-   final ScrollController _scrollController = ScrollController();
   final List<Message> messages = [
     Message(
       type: 'text',
@@ -26,7 +24,7 @@ class _ChatState extends State<Chat> {
       isUser: true,
       name: 'User',
       date: '8/23/2024',
-      profileImage: File('assets/smile.png'),
+      profileImage: File('assets/smile.pngg'),
     ),
     Message(
       type: 'image',
@@ -78,20 +76,8 @@ class _ChatState extends State<Chat> {
           date: "date"));
       selectedImage = pickedImage.path;
     });
-    _scroll();
   }
-  void _scroll() {
-     FocusScope.of(context).unfocus();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-        );
-      }
-    });
-  }
+
 // Duration _getDuration(String filePath) async{
 //    return await _audioUtils.getAudioDuration(filePath) ?? Duration.zero;
 //   }
@@ -145,7 +131,6 @@ class _ChatState extends State<Chat> {
         date: "date"));
 
     // print(getFileDuration(_filePath!));
-    _scroll();
     setState(() {
       _isRecording = false;
     
@@ -186,17 +171,15 @@ class _ChatState extends State<Chat> {
 
   void _sendMessage() {
     if (_controller.text.isNotEmpty) {
-      // FocusScope.of(context).unfocus();
       setState(() {
         messages.add(Message(
-            type: "text",
-            content: _controller.text,
+            type: "type",
+            content: "content",
             isUser: true,
             name: "name",
             date: "date"));
         _controller.clear();
       });
-      _scroll();
     }
   }
 
@@ -296,7 +279,6 @@ class _ChatState extends State<Chat> {
 
           Expanded(
             child: ListView.builder(
-              controller: _scrollController,
               itemCount: messages.length,
               itemBuilder: (context, index) {
                 final message = messages[index];
@@ -344,23 +326,6 @@ class _ChatState extends State<Chat> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-
-
-            //     Align(
-            // alignment: Alignment.centerRight,
-            // child: SocialMediaRecorder(
-            //   // maxRecordTimeInSecond: 5,
-            //   startRecording: () {
-            //     // function called when start recording
-            //   },
-            //   stopRecording: (_time) {
-            //     // function called when stop recording, return the recording time
-            //   },
-            //   sendRequestFunction: (soundFile, _time) {
-            //     //  print("the current path is ${soundFile.path}");
-            //   },
-            //   encode: AudioEncoderType.AAC,
-            // ),),
                 IconButton(
                   icon: Icon(Icons.attach_file),
                   onPressed: null,
@@ -439,7 +404,6 @@ class _ChatState extends State<Chat> {
           child: Image.file(File(message.content)),
         );
       case 'voice':
-      // stop here
         return BubbleNormalAudio(
           // constraints: BoxConstraints(maxWidth: screenWidth * 0.75),
           color: Color(0xFFE8E8EE),

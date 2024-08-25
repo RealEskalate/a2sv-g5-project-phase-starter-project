@@ -1,5 +1,7 @@
 import 'package:e_commerce_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:e_commerce_app/features/auth/presentation/view/splash.dart';
+import 'package:e_commerce_app/features/chat/presentation/view/chat.dart';
+import 'package:e_commerce_app/features/chat/presentation/view/chat_list_page.dart';
 import 'package:e_commerce_app/features/product/domain/usecase/insert_product_usecase.dart';
 import 'package:e_commerce_app/features/product/presentation/bloc/home/home_bloc.dart';
 import 'package:e_commerce_app/features/product/presentation/bloc/insert_product/insert_product_bloc.dart';
@@ -61,7 +63,12 @@ class Root extends StatelessWidget {
         home: const Scaffold(
           // body: Home(),
           // body: Splash(),
+<<<<<<< HEAD
           body: Chat()
+=======
+          body: Chat(),
+          // body: ChatPeopleList(),
+>>>>>>> 35b08cdab62075fde43aad61127c6ec7d249e5e9
         ),
         // initialRoute: '/home',
         routes: {

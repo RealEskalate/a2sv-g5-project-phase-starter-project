@@ -7,12 +7,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class DetailsPage extends StatelessWidget {
-  const DetailsPage({super.key});
+  DetailsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    bool isOwner = false;
     
-
     final route = ModalRoute.of(context);
 
     if (route == null || route.settings.arguments == null) {
@@ -224,6 +224,21 @@ void delete() {
               ),
             ],
           ),
+        ),
+        floatingActionButton: isOwner ? null : Builder(builder: (context) {
+          return FloatingActionButton(
+            backgroundColor: Colors.blue,
+            onPressed: () {
+              Navigator.pushNamed(context, '/insertitem');
+            },
+            child: Icon(
+              Icons.add,
+              color: Colors.white,
+              size: 36,
+            ),
+            shape: CircleBorder(),
+          );
+        }
         ),
       ),
     );

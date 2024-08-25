@@ -197,7 +197,8 @@ class Home extends StatelessWidget {
             ),
             shape: CircleBorder(),
           );
-        }),
+        }
+        ),
       ),
     );
   }

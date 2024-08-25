@@ -1,3 +1,5 @@
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/chat_entity.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/message.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketService {
@@ -13,7 +15,8 @@ class SocketService {
 
     // Event listeners
     socket.onConnect((_) {
-      print('Connected to server');
+      var text = 'Connected to server';
+      print(text);  
     });
 
     socket.onDisconnect((_) {
@@ -22,8 +25,7 @@ class SocketService {
 
   }
 
-  void sendMessage(String message) {
-    
+  void sendMessage(Message message) {
     socket.emit('message', message);
   }
 

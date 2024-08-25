@@ -1,6 +1,7 @@
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:ecommerce_app_ca_tdd/features/product/data/models/seller_model.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/domain/entities/product_entity_local.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/domain/entities/product_entity.dart';
@@ -9,7 +10,7 @@ import 'package:image_picker/image_picker.dart';
 class ProductModel extends ProductEntity_local {
   const ProductModel({
     required String id,
-      required String name, required String description, required num price, required String imagePath,required String sellerId,
+      required String name, required String description, required num price, required String imagePath,required SellerModel sellerId,
       
     }) : super(id:id,name:  name, description: description, price: price, imagePath: imagePath, sellerId: sellerId);
 
@@ -23,7 +24,7 @@ class ProductModel extends ProductEntity_local {
       description: json['description'],
       price: (json['price']).toDouble(),
       imagePath: json['imageUrl'] ?? '',
-      sellerId: json['seller']["_id"],
+      sellerId: SellerModel.fromJson(json['seller']),
     );
   }
 

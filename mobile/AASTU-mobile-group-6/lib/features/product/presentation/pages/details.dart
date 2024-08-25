@@ -203,102 +203,100 @@ class _DetailsState extends State<DetailsPage> {
                           SizedBox(height: 20),
                           BlocBuilder<GetUserBloc, GetUserState>(
                             builder: (context, state) {
-                              if (state is GetUserLoaded &&
-                                  state.user.id == widget.item.sellerId) {
-                                return Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    SizedBox(
-                                      width: 152,
-                                      height: 50,
-                                      child: OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(
-                                              Radius.circular(10),
-                                            ),
+                              if (state is GetUserLoaded && state.user.id==widget.item.sellerId.id){
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: 152,
+                                    height: 50,
+                                    child: OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10),
                                           ),
-                                          side: BorderSide(color: Colors.red),
                                         ),
-                                        onPressed: () {
-                                          var onPress = () {
-                                            context.read<DetailBloc>().add(
-                                                DeleteProductEvent(
-                                                    widget.item.id));
-                                          };
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) => AlertDialog(
-                                              title: Text(
-                                                "Are you sure you want to delete this product?",
-                                                style: GoogleFonts.poppins(
-                                                    fontSize: 15),
+                                        side: BorderSide(color: Colors.red),
+                                      ),
+                                      onPressed: () {
+                                        var onPress = () {
+                                          context.read<DetailBloc>().add(
+                                              DeleteProductEvent(
+                                                  widget.item.id));
+                                        };
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: Text(
+                                              "Are you sure you want to delete this product?",
+                                              style: GoogleFonts.poppins(
+                                                  fontSize: 15),
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Text("Cancel"),
                                               ),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Text("Cancel"),
+                                              TextButton(
+                                                style: ButtonStyle(
+                                                  backgroundColor:
+                                                      WidgetStatePropertyAll<
+                                                          Color>(Colors.red),
                                                 ),
-                                                TextButton(
-                                                  style: ButtonStyle(
-                                                    backgroundColor:
-                                                        WidgetStatePropertyAll<
-                                                            Color>(Colors.red),
-                                                  ),
-                                                  onPressed: onPress,
-                                                  child: Text("Delete"),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                        child: Text(
-                                          "Delete",
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
+                                                onPressed: onPress,
+                                                child: Text("Delete"),
+                                              ),
+                                            ],
                                           ),
+                                        );
+                                      },
+                                      child: Text(
+                                        "Delete",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
                                     ),
-                                    SizedBox(
-                                      width: 152,
-                                      height: 50,
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.all(
-                                              Radius.circular(10),
-                                            ),
+                                  ),
+                                  SizedBox(
+                                    width: 152,
+                                    height: 50,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10),
                                           ),
-                                          side: BorderSide(
-                                              color: Color(0xff3F51F3)),
-                                          foregroundColor: Colors.white,
-                                          backgroundColor: Color(0xff3F51F3),
                                         ),
-                                        onPressed: () {
-                                          Navigator.pushNamed(
-                                            context,
-                                            '/update',
-                                            arguments: widget.item,
-                                          );
-                                        },
-                                        child: Text(
-                                          "Update",
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
+                                        side: BorderSide(
+                                            color: Color(0xff3F51F3)),
+                                        foregroundColor: Colors.white,
+                                        backgroundColor: Color(0xff3F51F3),
+                                      ),
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                          context,
+                                          '/update',
+                                          arguments: widget.item,
+                                        );
+                                      },
+                                      child: Text(
+                                        "Update",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
                                         ),
                                       ),
                                     ),
-                                  ],
-                                );
-                              } else if (state is GetUserLoaded &&
-                                  state.user.id != widget.item.sellerId) {
+                                  ),
+                                ],
+                              );
+                              }else if (state is GetUserLoaded && state.user.id!=widget.item.sellerId.id){
                                 return Column(
                                   children: [
                                     SizedBox(
@@ -312,16 +310,17 @@ class _DetailsState extends State<DetailsPage> {
                                       height: 45,
                                       child: ElevatedButton(
                                         style: ElevatedButton.styleFrom(
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(10))),
-                                          side: BorderSide(
-                                              color: Color(0xff3F51F3)),
-                                          // overlayColor: Colors.red,
-                                          foregroundColor: Colors.white,
-                                          backgroundColor: Color(0xff3F51F3),
-                                        ),
-                                        onPressed: () {},
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(10))),
+                                        side: BorderSide(color: Color(0xff3F51F3)),
+                                        // overlayColor: Colors.red,
+                                        foregroundColor: Colors.white,
+                                        backgroundColor: Color(0xff3F51F3),
+                                      ),
+                                        onPressed: (){
+                                          Navigator.pushNamed(context, '/chatPage', arguments: widget.item.sellerId);
+                                        },
                                         child: Row(
                                           children: [
                                             SizedBox(

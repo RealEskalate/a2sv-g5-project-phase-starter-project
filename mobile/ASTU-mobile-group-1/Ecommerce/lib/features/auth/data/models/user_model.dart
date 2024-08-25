@@ -17,4 +17,5 @@ class UserModel extends UserEntity {
       accessToken: token,
     );
   }
+
 }

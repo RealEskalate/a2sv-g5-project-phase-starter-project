@@ -15,3 +15,4 @@ class MessageEntity {
       required this.type,
       required this.sender});
 }
+  

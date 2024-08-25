@@ -24,7 +24,7 @@ type UserControllerTestSuite struct {
 
 func (suite *UserControllerTestSuite) SetupTest() {
 	suite.userUsecase = new(mocks.UserUsecase)
-	suite.userController = controller.NewUserController(suite.userUsecase)
+	suite.userController = &controller.UserController{}
 
 	suite.router = gin.Default()
 	suite.router.POST("/register", suite.userController.Register)
@@ -88,7 +88,7 @@ func (suite *UserControllerTestSuite) TestUpdateUser() {
 	c.Set("username", "hamza")
 
 	// Set the request params and body
-	c.Params = []gin.Param{gin.Param{Key: "username", Value: Username}}
+	c.Params = []gin.Param{{Key: "username", Value: Username}}
 	c.Request = httptest.NewRequest("PUT", "/update/"+Username, bytes.NewBuffer([]byte(`{
         "Username": "hamza",
         "Password": "1234"
@@ -108,7 +108,7 @@ func (suite *UserControllerTestSuite) TestDeleteUser() {
 	suite.userUsecase.On("DeleteUser", username).Return(nil)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	c.Params = []gin.Param{gin.Param{Key: "username", Value: username}}
+	c.Params = []gin.Param{{Key: "username", Value: username}}
 	c.Set("username", "hamza")
 	c.Set("role", "admin")
 
@@ -195,7 +195,6 @@ func (suite *UserControllerTestSuite) TestChangePassword() {
 	newPassword := "Hamza123$"
 
 	input := Domain.ChangePasswordInput{
-		Username:    username,
 		NewPassword: newPassword,
 	}
 

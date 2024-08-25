@@ -21,14 +21,17 @@ import (
 type BlogControllerTestSuite struct {
 	suite.Suite
 	blogUsecase    *mocks.BlogUsecase
+	userUsecase    *mocks.UserUsecase
 	blogController *controller.BlogController
 	router         *gin.Engine
 }
 
 func (suite *BlogControllerTestSuite) SetupTest() {
+	gin.SetMode(gin.TestMode)
 	// Initialize the mocks and the controller
 	suite.blogUsecase = new(mocks.BlogUsecase)
-	suite.blogController = controller.NewBlogController(suite.blogUsecase)
+	suite.userUsecase = new(mocks.UserUsecase)
+	suite.blogController = &controller.BlogController{}
 
 	// Set up the router with the controller routes
 	suite.router = gin.Default()
@@ -128,7 +131,7 @@ func (suite *BlogControllerTestSuite) TestDeleteBlogByID() {
 
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	c.Params = []gin.Param{gin.Param{Key: "id", Value: "123"}}
+	c.Params = []gin.Param{{Key: "id", Value: "123"}}
 	// Manually set the username in the Gin context
 	c.Set("username", "adminuser")
 	c.Set("role", "admin")

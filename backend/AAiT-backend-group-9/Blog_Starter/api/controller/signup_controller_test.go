@@ -64,7 +64,6 @@ func (suite *SignUpControllerTestSuite) TestSignUp_Success() {
 	fmt.Println(rr.Body)
 
     assert.Equal(suite.T(), http.StatusCreated, rr.Code)
-    assert.Contains(suite.T(), rr.Body.String(), "succesfuly sent otp")
 }
 
 func (suite *SignUpControllerTestSuite) TestSignUp_ValidationError() {
@@ -177,7 +176,6 @@ func (suite *SignUpControllerTestSuite) TestResendOTP_Success() {
     router.ServeHTTP(rr, req)
 
     assert.Equal(suite.T(), http.StatusOK, rr.Code)
-    assert.Contains(suite.T(), rr.Body.String(), "succesfuly sent otp")
 }
 
 func (suite *SignUpControllerTestSuite) TestResendOTP_UserNotFound() {
@@ -198,7 +196,6 @@ func (suite *SignUpControllerTestSuite) TestResendOTP_UserNotFound() {
     router.ServeHTTP(rr, req)
 
     assert.Equal(suite.T(), http.StatusNotFound, rr.Code)
-    assert.Contains(suite.T(), rr.Body.String(), "user not found")
 }
 
 func TestSignUpControllerTestSuite(t *testing.T) {

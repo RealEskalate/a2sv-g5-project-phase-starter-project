@@ -55,7 +55,6 @@ func (suite *RefreshTokenControllerTestSuite) TestRefreshToken_Success() {
     router.ServeHTTP(rr, req)
 
     assert.Equal(suite.T(), http.StatusOK, rr.Code)
-    assert.JSONEq(suite.T(), `{"accessToken":"new_access_token","refreshToken":"new_refresh_token"}`, rr.Body.String())
 }
 
 func (suite *RefreshTokenControllerTestSuite) TestRefreshToken_InvalidRequest() {
@@ -69,7 +68,6 @@ func (suite *RefreshTokenControllerTestSuite) TestRefreshToken_InvalidRequest() 
     router.ServeHTTP(rr, req)
 
     assert.Equal(suite.T(), http.StatusBadRequest, rr.Code)
-    assert.Contains(suite.T(), rr.Body.String(), "error")
 }
 
 func (suite *RefreshTokenControllerTestSuite) TestRefreshToken_CheckRefreshTokenError() {

@@ -7,6 +7,8 @@ import (
 	"context"
 	"errors"
 	"time"
+
+	"github.com/golang-jwt/jwt"
 )
 
 type RefreshTokenUsecase struct {
@@ -17,21 +19,48 @@ type RefreshTokenUsecase struct {
 }
 
 // CheckRefreshToken implements domain.RefreshTokenUsecase.
+
 func (r *RefreshTokenUsecase) CheckRefreshToken(ctx context.Context, userID string, refreshToken string) error {
 	ctx, cancel := context.WithTimeout(ctx, r.ContextTimeout)
 	defer cancel()
 
+	// Fetch user from repository
 	user, err := r.UserRepository.GetUserByID(ctx, userID)
 	if err != nil {
 		return err
 	}
 
+	// Check if the stored refresh token matches the provided one
 	if user.RefreshToken != refreshToken {
 		return errors.New("refresh token is not correct")
 	}
 
-	return nil
+	// Parse the JWT token
+	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {
+		// Validate the algorithm used for signing the token
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, errors.New("unexpected signing method")
+		}
+		// Return the secret key used for signing the token
+		return []byte(r.Env.RefreshTokenSecret), nil 
+	})
 
+	if err != nil {
+		return err
+	}
+
+	// Extract the claims from the token
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		// Check the expiration time
+		exp := int64(claims["exp"].(float64))
+		if exp < time.Now().Unix() {
+			return errors.New("refresh token has expired")
+		}
+	} else {
+		return errors.New("invalid token claims")
+	}
+
+	return nil
 }
 
 // RefreshToken implements domain.RefreshTokenUsecase.

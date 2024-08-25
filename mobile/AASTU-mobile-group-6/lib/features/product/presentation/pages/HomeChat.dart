@@ -142,70 +142,73 @@ Widget _duplicate(
   String name,
   String peekMessage,
 ) {
-  return Container(
-    margin: EdgeInsets.only(bottom: 30),
-    width: MediaQuery.of(context).size.width * 0.95,
-    height: MediaQuery.of(context).size.height * 0.08,
-    child: Row(
-      children: [
-        CircleAvatar(
-          backgroundColor: Colors.yellow,
-          radius: 30,
-          child: Icon(
-            Icons.person,
-            size: 35,
+  return GestureDetector(
+    onTap: () => Navigator.pushNamed(context, '/chatPage'),
+    child: Container(
+      margin: EdgeInsets.only(bottom: 30),
+      width: MediaQuery.of(context).size.width * 0.95,
+      height: MediaQuery.of(context).size.height * 0.08,
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: Colors.yellow,
+            radius: 30,
+            child: Icon(
+              Icons.person,
+              size: 35,
+            ),
           ),
-        ),
-        Container(
-          margin: EdgeInsets.only(left: 10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                name,
-                style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 20,
+          Container(
+            margin: EdgeInsets.only(left: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 20,
+                  ),
                 ),
-              ),
-              Text(
-                peekMessage,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.grey,
-                ),
-              )
-            ],
+                Text(
+                  peekMessage,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.grey,
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '2 min ago',
-                style: TextStyle(
-                  color: Colors.grey,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '2 min ago',
+                  style: TextStyle(
+                    color: Colors.grey,
+                  ),
                 ),
-              ),
-              Container(
-                child: CircleAvatar(
-                  backgroundColor: Colors.purple,
-                  radius: 13,
-                  child: Text(
-                    '4',
-                    style: TextStyle(
-                      color: Colors.white60,
+                Container(
+                  child: CircleAvatar(
+                    backgroundColor: Colors.purple,
+                    radius: 13,
+                    child: Text(
+                      '4',
+                      style: TextStyle(
+                        color: Colors.white60,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     ),
   );
 }

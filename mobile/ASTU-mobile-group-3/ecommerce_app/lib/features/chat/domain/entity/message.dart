@@ -1,4 +1,7 @@
 import 'package:equatable/equatable.dart';
+import '../../../auth/domain/entities/user_entity.dart';
+import 'chat.dart';
+
 
 class MessageEntity extends Equatable {
   final String messageId;
@@ -7,7 +10,7 @@ class MessageEntity extends Equatable {
   final String content;
 
 
-  const ChatEntity({
+   const MessageEntity({
     required this.messageId,
     required this.sender,
     required this.chat,
@@ -23,5 +26,4 @@ class MessageEntity extends Equatable {
         content
       ];
 }
-
 

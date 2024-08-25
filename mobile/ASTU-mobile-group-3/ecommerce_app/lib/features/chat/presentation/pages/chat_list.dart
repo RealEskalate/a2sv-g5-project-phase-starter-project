@@ -10,11 +10,11 @@ class ChatList extends StatefulWidget {
 
 class _ChatListState extends State<ChatList> {
   List imagesList = [
-    "assets/Memoji Boys 6-18.png",
-    "assets/42 11.png",
-    "assets/21 5.png"
+    'assets/images/Memoji Boys 6-18.png',
+    'assets/images/42 11.png',
+    'assets/images/21 5.png'
   ];
-  List nameList = ["My status", "Adil", "Marina", "Dean", "Max"];
+  List nameList = ['My status', 'Adil', 'Marina', 'Dean', 'Max'];
 
   List<Color> colorList = [
     const Color(0xffC5C5C5),
@@ -129,13 +129,13 @@ class _ChatListState extends State<ChatList> {
                                       child: Column(
                                         children: [
                                           Text(
-                                            "Alex Linderson",
+                                            'Alex Linderson',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 15),
                                           ),
                                           Text(
-                                            "How are you today?",
+                                            'How are you today?',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 12,
@@ -148,7 +148,7 @@ class _ChatListState extends State<ChatList> {
                                     const Column(
                                       children: [
                                         Text(
-                                          "2 min ago",
+                                          '2 min ago',
                                           style: TextStyle(
                                               fontWeight: FontWeight.w400,
                                               fontSize: 12,
@@ -162,7 +162,7 @@ class _ChatListState extends State<ChatList> {
                                             padding: EdgeInsets.all(8.0),
                                             child: Center(
                                                 child: Text(
-                                              "3",
+                                              '3',
                                               style: TextStyle(
                                                   color: Colors.white),
                                             )),

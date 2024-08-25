@@ -1,5 +1,3 @@
-import '../../features/auth/presentation/bloc/auth_bloc.dart';
-
 class AppData {
   //! Shared Preference list name
   static const String sharedProduct = 'my_shared_products';
@@ -9,6 +7,18 @@ class AppData {
       'https://g5-flutter-learning-path-be.onrender.com/api/v1';
   static const String baseUrlV2 =
       'https://g5-flutter-learning-path-be.onrender.com/api/v2';
+
+  // Version-3
+  static const String baseUrlV3 =
+      'https://g5-flutter-learning-path-be.onrender.com/api/v3';
+
+  static const String chat = '$baseUrlV3/chats';
+
+  static String getChat(String id) => '$baseUrlV3/chats/$id';
+  static String getMssages(String id) => '$baseUrlV3/chats/$id/messages';
+
+// End
+
   static const String registerUser = '$baseUrlV2/auth/register';
   static const String logInUser = '$baseUrlV2/auth/login';
   static const String allProductUrl = '$baseUrlV2/products';

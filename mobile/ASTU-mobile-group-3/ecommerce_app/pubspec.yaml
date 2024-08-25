@@ -47,6 +47,7 @@ dependencies:
   image_picker: ^1.1.2
   device_preview: ^1.2.0
   custom_clippers: ^2.0.0
+  socket_io: ^1.0.1
 
 dev_dependencies:
   flutter_test:

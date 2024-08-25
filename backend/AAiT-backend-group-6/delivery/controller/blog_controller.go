@@ -101,7 +101,7 @@ func (bc *BlogController) GetBlogs(c *gin.Context) {
 		}
 		blogM,err := json.Marshal(blogs)
 		// cache the blog for 5 minutes
-		err = bc.RedisClient.Set(c,cacheKey,blogs,300)
+		err = bc.RedisClient.Set(c,cacheKey,blogM,300)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError,gin.H{"message":"Internal Server Error"})
 		}

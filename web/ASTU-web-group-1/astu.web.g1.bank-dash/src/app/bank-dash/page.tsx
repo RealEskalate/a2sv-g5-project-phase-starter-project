@@ -45,8 +45,8 @@ export default function Home() {
         <WeeklyActivity />
         <ExpenseStatistics />
       </div>
-      <div className="lg:flex justify-between w-full">
-        <div className="lg:w-5/12 pe-6">
+      <div className="lg:flex justify-between w-full lg:space-x-5">
+        <div className="lg:w-5/12">
           <QuickTransfer />
         </div>
         <BalanceHistory />

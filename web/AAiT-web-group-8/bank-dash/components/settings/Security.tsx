@@ -44,7 +44,7 @@ const Security: React.FC = () => {
             type="password"
             id="currentPassword"
             name="currentPassword"
-            className="w-1/2 p-3 border rounded-2xl"
+            className="md:w-1/2 sm:w-full p-3 border rounded-2xl"
           />
         </div>
 
@@ -55,7 +55,7 @@ const Security: React.FC = () => {
             type="password"
             id="newPassword"
             name="newPassword"
-            className="w-1/2 p-3 border rounded-2xl"
+            className="md:w-1/2 sm:w-full  p-3 border rounded-2xl"
           />
         </div>
       </div>

@@ -2,6 +2,7 @@
 import { ActiveLoanDataType } from "@/types/active-loan.types";
 import TableButton from "../TableButton/TableButton";
 import { useGetAllActiveLoansQuery } from "@/lib/redux/slices/activeLoanSlice";
+import ActiveLoanSkeleton from "../AllSkeletons/ActiveLoansSkeleton/ActiveLoanSkeleton";
 
 const ActiveLoansOverviewTable = () => {
   const { data, isLoading } = useGetAllActiveLoansQuery();
@@ -21,6 +22,9 @@ const ActiveLoansOverviewTable = () => {
     (sum, data) => sum + data.installment,
     0
   );
+  if (isLoading) {
+    return <ActiveLoanSkeleton />;
+  }
 
   return (
     <div className="flex flex-col gap-4">

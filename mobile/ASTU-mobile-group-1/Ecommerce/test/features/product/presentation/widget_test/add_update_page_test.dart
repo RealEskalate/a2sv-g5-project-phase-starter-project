@@ -1,48 +1,70 @@
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:mockito/mockito.dart';
-// import 'package:product_6/features/auth/presentation/widgets/custom_outlined_button.dart';
-// import 'package:product_6/features/product/presentation/bloc/product_bloc.dart';
-// import 'package:product_6/features/product/presentation/pages/add_update_page.dart';
+import 'dart:io';
 
-// import '../../../../helpers/test_helper.mocks.dart';
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:product_6/core/cubit/user_cubit.dart';
+import 'package:product_6/features/auth/domain/entities/user_entity.dart';
+import 'package:product_6/features/product/presentation/bloc/product_bloc.dart';
+import 'package:product_6/features/product/presentation/pages/add_update_page.dart';
+import 'package:product_6/features/product/presentation/widgets/custom_textfiled.dart';
 
-// Future<void> main() async {
-//   late MockProductBloc productBloc;
+class MockProductBloc extends MockBloc<ProductEvent, ProductState>
+    implements ProductBloc {}
 
-//   setUp(() {
-//     productBloc = MockProductBloc();
-//   });
+class MockUserCubit extends MockBloc<UserCubit, UserEntity?>
+    implements UserCubit {}
 
-//   testWidgets('AddUpdatePage renders correctly', (WidgetTester tester) async {
-//     when(() => productBloc.state).thenReturn(
-//       () => ,
-//     );
+Future<void> main() async {
+  late MockProductBloc mockProductBloc;
+  late MockUserCubit mockUserCubit;
 
-//     await tester.pumpWidget(
-//       MaterialApp(
-//         home: BlocProvider<ProductBloc>.value(
-//           value: productBloc,
-//           child: const AddUpdatePage(),
-//         ),
-//       ),
-//     );
+  setUp(() {
+    mockProductBloc = MockProductBloc();
+    mockUserCubit = MockUserCubit();
+    HttpOverrides.global = null;
+  });
 
-//     // Check that the AddUpdatePage widgets are present
-//     expect(find.text('Add Product'), findsOneWidget);
-//     expect(
-//         find.byType(TextFormField), findsNWidgets(4)); // Assuming 4 TextFields
-//     expect(find.byType(CustomOutlinedButton), findsOneWidget);
+  tearDown(() {
+    mockProductBloc.close();
+    mockUserCubit.close();
+  });
 
-//     // Simulate text input
-//     await tester.enterText(find.byType(TextFormField).first, 'Sample Product');
-//     await tester.pump();
+  testWidgets(
+    'AddUpdatePage renders correctly',
+    (WidgetTester tester) async {
+      whenListen(
+        mockProductBloc,
+        Stream.fromIterable([
+          AddProuctState(),
+        ]),
+        initialState: InitalState(),
+      );
 
-//     // Verify button press
-//     await tester.tap(find.text('ADD'));
-//     await tester.pump();
-//     // Check if the Bloc event is added
-//     verify(() => productBloc.add(any)).called(1);
-//   });
-// }
+      await tester.pumpWidget(
+        MaterialApp(
+          home: BlocProvider<ProductBloc>.value(
+            value: mockProductBloc,
+            child: const AddUpdatePage(),
+          ),
+        ),
+      );
+
+      // Check that the AddUpdatePage widgets are present
+      expect(find.text('Add Product'), findsOneWidget);
+      expect(find.byType(CustomTextfiled), findsNWidgets(4));
+
+      await tester.enterText(
+          find.byType(CustomTextfiled).first, 'Sample Product');
+      await tester.pump();
+
+      // Verify button press
+      await tester.tap(find.text('ADD'));
+      await tester.pumpAndSettle();
+
+      // Check if snack bar show message
+      // expect(find.text('Invalid Price Input'), findsOneWidget);
+    },
+  );
+}

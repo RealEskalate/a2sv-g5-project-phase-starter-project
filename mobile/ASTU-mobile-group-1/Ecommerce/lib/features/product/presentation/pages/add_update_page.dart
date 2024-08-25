@@ -63,6 +63,7 @@ class _AddUpdatePageState extends State<AddUpdatePage> {
     final product = widget.product;
     return BlocListener<ProductBloc, ProductState>(
       listener: (context, state) {
+        log('add $state');
         if (state is ErrorState) {
           showCustomSnackBar(context, state.message);
         } else if (state is LoadedSingleProductState) {
@@ -79,7 +80,7 @@ class _AddUpdatePageState extends State<AddUpdatePage> {
           automaticallyImplyLeading: false,
           title: Row(
             children: [
-              backButton(
+              BackButtonWidget.backButtonWidget(
                 iconColor: const Color(
                   0xFF3F51F3,
                 ),

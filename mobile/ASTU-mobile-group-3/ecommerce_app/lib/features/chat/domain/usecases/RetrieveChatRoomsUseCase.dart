@@ -1,12 +1,12 @@
 import '../entity/chat.dart';
 import '../repository/chat_repository.dart';
 
-class GetChatsUseCase {
+class RetrieveChatRoomsUseCase {
   final ChatRepository repository;
 
-  GetChatsUseCase(this.repository);
+  RetrieveChatRoomsUseCase(this.repository);
 
   Future<List<ChatEntity>> call() async {
-    return await repository.getChats();
+    return await repository.retrieveChatRooms();
   }
 }

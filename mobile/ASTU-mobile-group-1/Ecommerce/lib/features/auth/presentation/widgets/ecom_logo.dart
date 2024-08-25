@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'custom_text.dart';
-
 class EcomLogo extends StatelessWidget {
   final double? width;
   final double? height;

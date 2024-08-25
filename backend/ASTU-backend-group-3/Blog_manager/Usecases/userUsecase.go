@@ -29,6 +29,7 @@ type UserUsecase interface {
 	PromoteTOAdmin(username string) error
 	Verify(token string) error
 	OAuthLogin(c *gin.Context, code string) (*Domain.User, string, error)
+	FindUser() ([]Domain.User, error)
 }
 
 type userUsecase struct {
@@ -474,4 +475,12 @@ func fetchUserInfo(client *http.Client) (map[string]interface{}, error) {
 	}
 
 	return userInfo, nil
+}
+
+func (u *userUsecase) FindUser() ([]Domain.User, error) {
+	users, err := u.userRepo.ShowUsers()
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }

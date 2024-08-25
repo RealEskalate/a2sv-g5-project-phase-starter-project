@@ -19,6 +19,7 @@ type UserRepository interface {
 	IsDbEmpty() (bool, error)
 	InsertToken(username string, accessToke string, refreshToken string) error
 	ExpireToken(token string) error
+	ShowUsers() ([]Domain.User, error)
 }
 
 type userRepository struct {
@@ -114,4 +115,25 @@ func (r *userRepository) ExpireToken(token string) error {
 	}
 
 	return nil
+}
+
+func (r *userRepository) ShowUsers() ([]Domain.User, error) {
+
+	filter := bson.M{"role": "user"}
+	cur, err := r.collection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(context.TODO())
+
+	var users []Domain.User
+	for cur.Next(context.TODO()) {
+		var User Domain.User
+		if err := cur.Decode(&User); err != nil {
+			return nil, err
+		}
+		users = append(users, User)
+	}
+
+	return users, nil
 }

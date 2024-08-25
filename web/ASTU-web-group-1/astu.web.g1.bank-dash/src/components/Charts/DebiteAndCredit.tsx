@@ -43,10 +43,10 @@ const DebiteAndCredit = () => {
               barGap={5}
               margin={{ top: 10, right: 0, left: 0, bottom: 30 }}
             >
-              <Bar dataKey="uv" fill="#1A16F3" barSize={30} radius={8}>
+              <Bar dataKey="uv" fill="#1A16F3" barSize={20} radius={8}>
                 <LabelList dataKey="name" position="bottom" fill="#718EBF" />
               </Bar>
-              <Bar dataKey="pv" fill="#FCAA0B" barSize={30} radius={8} />
+              <Bar dataKey="pv" fill="#FCAA0B" barSize={20} radius={8} />
             </BarChart>
           </ResponsiveContainer>
         </div>

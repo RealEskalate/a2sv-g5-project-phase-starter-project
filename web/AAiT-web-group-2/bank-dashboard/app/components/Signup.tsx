@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import Alert from "./Alert";
 
 interface Preference {
   currency: string;
@@ -33,6 +34,9 @@ interface FormData {
 const Signup = () => {
     const [step, setStep] = useState(1);
     const router = useRouter();
+    const [signupStatus, setSignupStatus] = useState('')
+    const [isError, setIsError] = useState(false)
+    const [isSuccess, setIsSuccess] = useState(false)
   
     const {
       register,
@@ -43,10 +47,29 @@ const Signup = () => {
         mode: "onChange", 
         shouldUnregister: false, 
     });
+
+    const reset = () => {
+      setIsSuccess(false)
+      setIsError(false)
+    }
   
-    const onSubmit: SubmitHandler<FormData> = (data) => {
+    
+    const onSubmit: SubmitHandler<FormData> = async (data) => {
       console.log(data);
-      signIn("sign-up", {...data, callbackUrl: '/settings'})
+      const result = await signIn("sign-up", {...data, redirect: false, callbackUrl: '/settings'})
+      if(result?.error){
+        setSignupStatus(result?.error as string)
+        setIsError(true)      
+      } 
+      if(result?.ok){
+        setSignupStatus('Successfully registered.')
+        setIsSuccess(true)
+  
+      }
+
+      if (result?.ok) {
+        router.push('/dashboard');
+      }
       
     };
 
@@ -336,7 +359,9 @@ const Signup = () => {
         </form>
         <p className='text-gray-600 font-normal text-base mt-6 mb-6'>Already have an account? <Link className='text-custom-purple font-semibold text-base' href='/auth/signin'>Login</Link></p>
         <p className='text-gray-600 font-normal text-sm'>By clicking 'Signup', you acknowledge that you have read and accepted our terms of <Link className='text-purple-tag'  href={'/terms-of-service'}>Terms of Service</Link> and <Link className='text-purple-tag '  href={'/privacy-policy'}>Privacy Policy</Link></p>
-       
+        {isSuccess && <Alert type='success' message={signupStatus} duration={2000} onClose={reset} />}
+        {isError && <Alert type='error' message={signupStatus} duration={2000} onClose={reset} />}
+
       </div>
     );
 }

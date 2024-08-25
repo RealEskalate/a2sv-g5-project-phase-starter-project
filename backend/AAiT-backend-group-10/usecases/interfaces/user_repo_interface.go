@@ -15,5 +15,6 @@ type IUserRepository interface {
 	PromoteUser(id uuid.UUID, isPromote bool) *domain.CustomError
 	GetAllUsersWithName(name string) ([]uuid.UUID, *domain.CustomError)
 	UpdateUserToken(user *domain.User) *domain.CustomError
+	Count() (int64, *domain.CustomError)
 }
 

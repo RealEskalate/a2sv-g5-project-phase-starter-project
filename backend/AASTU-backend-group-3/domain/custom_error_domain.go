@@ -72,7 +72,8 @@ var (
 	ErrInsufficientRights        = New("insufficient rights", http.StatusForbidden)
 	ErrAdminRoleRequired         = New("admin role required", http.StatusForbidden)
 	ErrUserRoleRequired          = New("user role required", http.StatusForbidden)
-
+	ErrFailedToGetUser 		 = New("failed to get user", http.StatusInternalServerError)
+	ErrUserNotVerified		   = New("user not verified", http.StatusForbidden)
 	// Comment-specific Errors
 	ErrFailedToCreateComment       = New("failed to create comment", http.StatusInternalServerError)
 	ErrFailedToUpdateComment       = New("failed to update comment", http.StatusInternalServerError)

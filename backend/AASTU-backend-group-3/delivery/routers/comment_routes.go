@@ -13,7 +13,9 @@ import (
 func SetUpComment(router *gin.Engine) {
 
 	commentRepo := repository.NewCommentRepository(db.CommentCollection)
-	commentUseCase := usecase.NewCommentUsecase(commentRepo)
+	userRepo := repository.NewUserRepositoryImpl(db.UserCollection)
+
+	commentUseCase := usecase.NewCommentUsecase(commentRepo, userRepo)
 	commentController := controllers.NewCommentController(commentUseCase)
 
 	comments := router.Group("/")

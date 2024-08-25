@@ -225,6 +225,60 @@ paths:
       summary: Verify account
       tags:
       - users
+  /users/demote/{username}:
+    post:
+      description: Demotes a user to regular user by username
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "406":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Demote user
+      tags:
+      - users
+  /users/demoteByEmail/{email}:
+    post:
+      description: Demotes a user to regular user by email
+      parameters:
+      - description: Email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "406":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Demote user by email
+      tags:
+      - users
   /users/forgetPassword:
     get:
       description: Sends a password reset token to the user's email
@@ -309,6 +363,60 @@ paths:
               type: string
             type: object
       summary: Login user
+      tags:
+      - users
+  /users/promote/{username}:
+    post:
+      description: Promotes a user to admin by username
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "406":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Promote user
+      tags:
+      - users
+  /users/promoteByEmail/{email}:
+    post:
+      description: Promotes a user to admin by email
+      parameters:
+      - description: Email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "406":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Promote user by email
       tags:
       - users
   /users/register:

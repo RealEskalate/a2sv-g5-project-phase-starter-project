@@ -271,7 +271,7 @@ func (s *SignUpController) FederatedSignup(c *gin.Context) {
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, domain.Response{
 			Success: false,
-			Message: utils.MapErrors(err),
+			Message: err.Error(),
 		})
 		return
 	}
@@ -283,7 +283,7 @@ func (s *SignUpController) FederatedSignup(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, domain.Response{
 				Success: false,
-				Message: utils.MapErrors(err),
+				Message: err.Error(),
 			})
 			return
 		}
@@ -296,7 +296,7 @@ func (s *SignUpController) FederatedSignup(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, domain.Response{
 				Success: false,
-				Message: utils.MapErrors(err),
+				Message: err.Error(),
 			})
 			return
 		}

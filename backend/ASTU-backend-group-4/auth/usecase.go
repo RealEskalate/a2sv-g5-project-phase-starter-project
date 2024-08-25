@@ -2,9 +2,7 @@ package auth
 
 import (
 	"context"
-	"crypto/sha256"
 	"encoding/base64"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"os"
@@ -211,20 +209,4 @@ func (au *AuthUserUsecase) DemoteUser(ctx context.Context, userID string) error 
 		return err
 	}
 	return nil
-}
-
-func (au *AuthUserUsecase) GenerateTokenForReset(ctx context.Context, email string) (string, string) {
-	timeStamp := fmt.Sprint(time.Now().Unix())
-	data := email + timeStamp + os.Getenv("SECRET_KEY")
-	hash := sha256.New()
-	hash.Write([]byte(data))
-	token := hex.EncodeToString(hash.Sum(nil))
-
-	return token, timeStamp
-}
-
-func (au *AuthUserUsecase) ForgetPassword(ctx context.Context, email string) {
-	token, timeStamp := au.GenerateTokenForReset()
-
-	// send the token to that email
 }

@@ -181,22 +181,22 @@ class _AddUpdateState extends State<AddUpdate> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      reusableTextpar("name", FontWeight.w500, 14),
+                      reusableTextpar("Name", FontWeight.w500, 14),
                       SizedBox(
                         height: 8,
                       ),
-                      SizedBox(
-                          height: 50,
-                          width: 360,
-                          child: TextField(
-                            controller: name_input,
-                            maxLines: 4,
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                filled: true,
-                                fillColor: Color.fromRGBO(243, 243, 243, 1)),
-                          )),
-                      reusableTextpar("category", FontWeight.w500, 14),
+                      // SizedBox(
+                      //     height: 50,
+                      //     width: 360,
+                          // child: TextField(
+                          //   controller: name_input,
+                          //   maxLines: 4,
+                          //   decoration: InputDecoration(
+                          //       border: InputBorder.none,
+                          //       filled: true,
+                          //       fillColor: Color.fromRGBO(243, 243, 243, 1)),
+                          // )),
+                      // reusableTextpar("category", FontWeight.w500, 14),
                       SizedBox(
                         height: 8,
                       ),

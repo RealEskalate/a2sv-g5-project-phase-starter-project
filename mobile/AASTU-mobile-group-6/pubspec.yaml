@@ -54,6 +54,14 @@ flutter:
     - assets/splash.jpg
     - assets/girls.png
     - assets/message.png
+    - assets/av1.png
+    - assets/av2.png
+    - assets/av3.png
+
+
+
+
+    
 
 fonts:
   - family: Poppins

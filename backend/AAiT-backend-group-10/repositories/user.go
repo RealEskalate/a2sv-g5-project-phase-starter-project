@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"net/http"
 	"time"
 
 	"aait.backend.g10/domain"
@@ -153,4 +154,16 @@ func (r *UserRepository) GetAllUsersWithName(name string) ([]uuid.UUID, *domain.
 	}
 
 	return userIDs, nil
+}
+
+func (ur *UserRepository) Count() (int64, *domain.CustomError) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	count, err := ur.collection.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		return 0, &domain.CustomError{Message: "Failed to count users", StatusCode: http.StatusInternalServerError}
+	}
+
+	return count, nil
 }

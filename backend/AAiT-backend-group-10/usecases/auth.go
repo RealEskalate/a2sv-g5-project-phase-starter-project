@@ -81,6 +81,15 @@ func (u *AuthUsecase) RegisterUser(User *dto.RegisterUserDTO) (interface{}, *dom
 		}, nil
 	}
 
+	count, err := u.userRepository.Count()
+	if err != nil {
+		return nil, err
+	}
+
+	if count == 0 {
+		user.IsAdmin = true
+	}
+
 	err = u.userRepository.CreateUser(user)
 	if err != nil {
 		return nil, domain.ErrUserCreationFailed

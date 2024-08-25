@@ -10,23 +10,34 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (r *MongoBlogRepository) GetCommentById(commentId string) (domain.Comment, error) {
+func (r *MongoBlogRepository) GetCommentById(blogId,commentId string) (domain.Comment, error) {
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return domain.Comment{}, err
+	}
 	cid, err := IsValidObjectID(commentId)
 	if err != nil {
 		return domain.Comment{}, err
 	}
 	filter := bson.M{
 		"comment_id": cid,
+		"blog_id": bid,
 	}
+	fmt.Println("this is the filter", filter)
 	var result domain.Comment
 	err = r.CommentCollection.FindOne(context.Background(), filter).Decode(&result)
 	if err != nil {
+		fmt.Println("this is the error", err)
 		return domain.Comment{}, err
 	}
 	return result, nil
 }
 
-func (r *MongoBlogRepository) LikeOrDislikeComment(commentId, userId string, like int) error {
+func (r *MongoBlogRepository) LikeOrDislikeComment(blogId,commentId, userId string, like int) error {
+	bid, err := IsValidObjectID(blogId)
+	if err != nil {
+		return err
+	}
 	cid, err := IsValidObjectID(commentId)
 	if err != nil {
 		return err
@@ -35,13 +46,13 @@ func (r *MongoBlogRepository) LikeOrDislikeComment(commentId, userId string, lik
 	if err != nil {
 		return err
 	}
-	filter := bson.M{"comment_id": cid}
+	filter := bson.M{"comment_id": cid,"blog_id":bid}
 	update := bson.M{}
 	if like == 1 {
 		result := bson.M{}
 		likeFinder := bson.M{"comment_id": cid, "dislikes": uid}
 		err := r.CommentCollection.FindOne(context.TODO(), likeFinder).Decode(&result)
-		update["$inc"] = bson.M{ "views": 1}
+		update["$inc"] = bson.M{"views": 1}
 		if err == nil {
 			_, err = r.CommentCollection.UpdateOne(context.TODO(), filter, bson.M{
 				"$pull": bson.M{
@@ -76,7 +87,7 @@ func (r *MongoBlogRepository) LikeOrDislikeComment(commentId, userId string, lik
 	return nil
 }
 
-func (r *MongoBlogRepository) GetAllComments() ([]domain.Comment, error) {
+func (r *MongoBlogRepository) GetAllComments(blogId string) ([]domain.Comment, error) {
 	cursor, err := r.CommentCollection.Find(context.Background(), bson.M{})
 	if err != nil {
 		return nil, err
@@ -101,7 +112,8 @@ func (r *MongoBlogRepository) GetAllComments() ([]domain.Comment, error) {
 func CreateCommentQuery(r domain.Comment) bson.M {
 
 	query := bson.M{}
-	query["comment_id"] = r.CommentId
+	id, _ := IsValidObjectID(r.CommentId)
+	query["comment_id"] = id
 	blogId, err := IsValidObjectID(r.BlogId)
 	if err == nil {
 		query["blog_id"] = blogId
@@ -121,36 +133,42 @@ func CreateCommentQuery(r domain.Comment) bson.M {
 	}
 	query["likes"] = []string{}
 	query["dislikes"] = []string{}
-	query["replies"] = []string{}
-	query["views"] = []string{}
+	query["replies"] = 0
+	query["views"] = 0
 	return query
 }
 func (r *MongoBlogRepository) AddComment(sblogId string, comment domain.Comment) error {
-    blogId, err := IsValidObjectID(sblogId)
-    if err != nil {
-        return fmt.Errorf("invalid blog ID: %w", err)
-    }
-    comment.BlogId = blogId.Hex()
+	blogId, err := IsValidObjectID(sblogId)
+	if err != nil {
+		return fmt.Errorf("invalid blog ID: %w", err)
+	}
+	comment.BlogId = blogId.Hex()
 	comment.CommentId = primitive.NewObjectID().Hex()
-	
-    _, err = r.CommentCollection.InsertOne(context.Background(), CreateCommentQuery(comment))
-    if err != nil {
-        return fmt.Errorf("failed to insert comment: %w", err)
-    }
+	comm := CreateCommentQuery(comment)
+	fmt.Println("this is the comment", comment)
+	fmt.Println("this is the comment bson", comm)
 
-    blogUpdate := bson.M{"$inc": bson.M{"comments": 1}}
-    _, err = r.BlogCollection.UpdateOne(context.Background(), bson.M{"blog_id": blogId}, blogUpdate)
-    if err != nil {
-        _, delErr := r.CommentCollection.DeleteOne(context.Background(), bson.M{"comment_id": comment.CommentId})
-        if delErr != nil {
-            return fmt.Errorf("failed to update blog and rollback comment insertion: %w", delErr)
-        }
-        return fmt.Errorf("failed to update blog: %w", err)
-    }
+	_, err = r.CommentCollection.InsertOne(context.Background(), comm)
+	if err != nil {
+		fmt.Println("this is the error", err)
+		return fmt.Errorf("failed to insert comment: %w", err)
+	}
 
-    return nil
+	blogUpdate := bson.M{"$inc": bson.M{"comments": 1}}
+	_, err = r.BlogCollection.UpdateOne(context.Background(), bson.M{"blog_id": blogId}, blogUpdate)
+	if err != nil {
+		fmt.Println("this is the error", err)
+		_, delErr := r.CommentCollection.DeleteOne(context.Background(), bson.M{"comment_id": comment.CommentId})
+		if delErr != nil {
+			fmt.Println("this is the error", delErr)
+
+			return fmt.Errorf("failed to update blog and rollback comment insertion: %w", delErr)
+		}
+		return fmt.Errorf("failed to update blog: %w", err)
+	}
+
+	return nil
 }
-
 
 func UpdateCommentQuery(b domain.Comment) bson.M {
 	update := bson.M{}
@@ -177,10 +195,10 @@ func (r *MongoBlogRepository) UpdateComment(strCommentId string, updateData doma
 }
 
 func (r *MongoBlogRepository) DeleteComment(authorId string, scommentId string) error {
-    commentId, err := IsValidObjectID(scommentId)
-    if err != nil {
-        return fmt.Errorf("invalid comment ID: %w", err)
-    }
+	commentId, err := IsValidObjectID(scommentId)
+	if err != nil {
+		return fmt.Errorf("invalid comment ID: %w", err)
+	}
 	filter := bson.M{"comment_id": commentId}
 	var comment domain.Comment
 	err = r.CommentCollection.FindOne(context.Background(), filter).Decode(&comment)
@@ -191,17 +209,17 @@ func (r *MongoBlogRepository) DeleteComment(authorId string, scommentId string) 
 		return errors.New("unauthorized to delete this comment")
 	}
 
-    _, err = r.CommentCollection.DeleteOne(context.Background(), filter)
-    if err != nil {
-        return fmt.Errorf("failed to delete comment: %w", err)
-    }else{
+	_, err = r.CommentCollection.DeleteOne(context.Background(), filter)
+	if err != nil {
+		return fmt.Errorf("failed to delete comment: %w", err)
+	} else {
 		commentUpdate := bson.M{"$inc": bson.M{"comments": -1}}
-		bid,_ := IsValidObjectID(comment.BlogId)
-		_, err = r.BlogCollection.UpdateOne(context.Background(), bson.M{"comment_id": bid }, commentUpdate)
+		bid, _ := IsValidObjectID(comment.BlogId)
+		_, err = r.BlogCollection.UpdateOne(context.Background(), bson.M{"comment_id": bid}, commentUpdate)
 		if err != nil {
 			return fmt.Errorf("failed to update comment after comment reply: %w", err)
 		}
 	}
 
-    return nil
+	return nil
 }

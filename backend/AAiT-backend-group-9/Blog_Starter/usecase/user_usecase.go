@@ -4,6 +4,7 @@ import (
 	"Blog_Starter/domain"
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -13,6 +14,7 @@ type UserUsecase struct {
 	userRepo       domain.UserRepository
 	contextTimeout time.Duration
 }
+
 
 func NewUserUsecase(userRepo domain.UserRepository, timeout time.Duration) domain.UserUsecase {
 	return &UserUsecase{
@@ -203,7 +205,7 @@ func (u *UserUsecase) UpdateProfilePicture(c context.Context, profilePicPath str
 	if err != nil {
 		return nil, err
 	}
-	
+
 	updatedUser, err := u.userRepo.UpdateProfilePicture(ctx, profilePicPath, userID)
 	if err != nil {
 		return nil, err
@@ -219,4 +221,22 @@ func (u *UserUsecase) UpdateProfilePicture(c context.Context, profilePicPath str
 		IsActivated:    updatedUser.IsActivated,
 		ProfilePicture: updatedUser.ProfilePicture,
 	}, nil
+}
+
+
+
+// StartExpiredUserCleanup implements domain.UserUsecase.
+func (u *UserUsecase) StartExpiredUserCleanup(interval time.Duration) {
+	ticker := time.NewTicker(interval)
+    go func() {
+        for {
+            select {
+            case <-ticker.C:
+                err := u.userRepo.DeleteExpiredUsers()
+                if err != nil {
+                    log.Printf("Error deleting expired users: %v", err)
+                }
+            }
+        }
+    }()
 }

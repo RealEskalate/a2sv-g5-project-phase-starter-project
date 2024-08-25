@@ -17,6 +17,7 @@ type UserRepository struct {
 	collection string
 }
 
+
 func NewUserRepository(db *mongo.Database, collection string) domain.UserRepository {
 	return &UserRepository{
 		database:   db,
@@ -245,3 +246,19 @@ func (u *UserRepository) UpdateRole(c context.Context, role string, userID strin
 
 	return u.GetUserByID(c, userID)
 }
+
+
+
+// DeleteExpiredUsers implements domain.UserRepository.
+func (u *UserRepository) DeleteExpiredUsers() error {
+	 now := time.Now()
+	 collection := u.database.Collection(u.collection)
+    filter := bson.M{
+        "is_verified": false,
+        "verification_expiry": bson.M{"$lt": now},
+    }
+
+    _, err := collection.DeleteMany(context.Background(), filter)
+    return err
+}
+

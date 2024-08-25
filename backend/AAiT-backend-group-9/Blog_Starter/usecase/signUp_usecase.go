@@ -47,6 +47,7 @@ func (s *SignupUsecase) CreateUser(c context.Context, user *domain.UserSignUp) (
 			Email:       user.Email,
 			CreatedAt:   time.Now(),
 			IsActivated: false,
+			VerificationExpiry: time.Now().Add(time.Hour * 24 * 7),
 		}
 
 		_, err = s.userRepo.CreateUser(ctx, userCreate)

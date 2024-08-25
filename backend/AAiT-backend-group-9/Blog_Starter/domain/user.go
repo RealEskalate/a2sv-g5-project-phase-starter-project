@@ -28,6 +28,7 @@ type User struct {
 	CreatedAt      time.Time          `json:"created_at" bson:"createtimestamp"`
 	UpdatedAt      time.Time          `json:"updated_at" bson:"updatetimestamp"`
 	ProfilePicture string             `json:"profile_picture" bson:"profile_picture"`
+	VerificationExpiry time.Time       `json:"verification_expiry" bson:"verification_expiry"`
 }
 
 type ContactInfo struct {
@@ -72,6 +73,7 @@ type UserRepository interface {
 	UpdateSignup(c context.Context, user *User) error
 	UpdateToken(c context.Context, accessToken, refreshToken, userID string) (*User, error)
 	DeleteUser(c context.Context, userID string) error
+	DeleteExpiredUsers() error 
 }
 
 type UserUsecase interface {
@@ -83,6 +85,8 @@ type UserUsecase interface {
 	DemoteUser(c context.Context, userID string) error                  
 	UpdateUser(c context.Context, user *UserUpdate, userID string) (*UserResponse, error)
 	UpdateProfilePicture(c context.Context, profilePicPath string, userID string) (*UserResponse, error)
+	StartExpiredUserCleanup(interval time.Duration)
+
 }
 
 

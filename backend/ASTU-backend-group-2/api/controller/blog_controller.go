@@ -152,14 +152,26 @@ func (bc *BlogController) BatchCreateBlog() gin.HandlerFunc {
 func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		blogID := c.Param("id")
+		userID := c.MustGet("x-user-id").(string)
+		role := c.MustGet("x-user-role").(string)
 		var updatedBlog forms.BlogForm
 		if err := c.ShouldBindJSON(&updatedBlog); err != nil {
 			c.JSON(400, gin.H{"error": err.Error()})
 			return
 		}
-		blog, err := bc.BlogUsecase.UpdateBlog(context.Background(), blogID, &updatedBlog)
+		existingBlog, err := bc.BlogUsecase.GetBlogByID(c, blogID)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+
+		if userID != existingBlog.AuthorID && role != "admin" {
+			c.JSON(http.StatusUnauthorized, entities.ErrorResponse{Message: "unauthorized"})
+			return
+		}
+		blog, err := bc.BlogUsecase.UpdateBlog(context.Background(), blogID, &updatedBlog)
+		if err != nil {
+			c.JSON(500, entities.ErrorResponse{Message: err.Error()})
 			return
 		}
 		c.JSON(200, blog)
@@ -169,7 +181,19 @@ func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		blogID := c.Param("id")
-		err := bc.BlogUsecase.DeleteBlog(context.TODO(), blogID)
+		userID := c.MustGet("x-user-id").(string)
+		role := c.MustGet("x-user-role").(string)
+
+		existingBlog, err := bc.BlogUsecase.GetBlogByID(c, blogID)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		if userID != existingBlog.AuthorID && role != "admin" {
+			c.JSON(http.StatusUnauthorized, entities.ErrorResponse{Message: "unauthorized"})
+			return
+		}
+		err = bc.BlogUsecase.DeleteBlog(context.TODO(), blogID)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
@@ -268,13 +292,26 @@ func (bc *BlogController) GetComment() gin.HandlerFunc {
 func (bc *BlogController) UpdateComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		commentID := c.Param("comment_id")
-
+		userID := c.MustGet("x-user-id").(string)
+		role := c.MustGet("x-user-role").(string)
 		var commentUpd entities.CommentUpdate
 
 		if err := c.BindJSON(&commentUpd); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+		existingComment, err := bc.CommentUsecase.GetComment(c, commentID)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		if existingComment.UserID.Hex() != userID && role != "admin" {
+			c.JSON(http.StatusUnauthorized, entities.ErrorResponse{Message: "unauthorized"})
+			return
+		}
+
 		comment, err := bc.CommentUsecase.UpdateComment(c.Request.Context(), commentID, &commentUpd)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -287,15 +324,16 @@ func (bc *BlogController) UpdateComment() gin.HandlerFunc {
 func (bc *BlogController) DeleteComment() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		commentID := c.Param("comment_id")
-		comment, err := bc.CommentUsecase.GetComment(c, commentID)
 		userID := c.MustGet("x-user-id").(string)
 		role := c.MustGet("x-user-role").(string)
+
+		comment, err := bc.CommentUsecase.GetComment(c, commentID)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 		if comment.UserID.Hex() != userID && role != "admin" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+			c.JSON(http.StatusUnauthorized, entities.ErrorResponse{Message: "unauthorized"})
 			return
 		}
 		err = bc.CommentUsecase.DeleteComment(c, commentID)

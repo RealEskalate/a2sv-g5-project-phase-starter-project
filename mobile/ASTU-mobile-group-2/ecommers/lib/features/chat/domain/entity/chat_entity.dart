@@ -1,5 +1,4 @@
 
-
 import 'message_entity.dart';
 
 class ChatEntity {
@@ -12,7 +11,7 @@ class ChatEntity {
 
   
 
-  const ChatEntity({
+  ChatEntity({
     required this.senderId,
     required this.senderName,
     required this.recieverId,

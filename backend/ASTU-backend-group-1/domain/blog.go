@@ -67,18 +67,13 @@ type BlogRepository interface {
 	GetBlogById(blogid string) (Blog, error)
 	LikeOrDislikeBlog(blogId, userId string, like int) (string, error)
 
-	// TODO: To like or dislike something you have to view it
-
-	// information: 1 for like -1,for dislike others,view
-
-	// TODO: to comment or reply to comment you have to view the blog then the comment
 	AddComment(blogid string, comment Comment) error
-	GetAllComments() ([]Comment, error)
-	GetCommentById(commentId string) (Comment, error)
-	LikeOrDislikeComment(commentId, userId string, like int) error
+	GetAllComments(blogId string) ([]Comment, error)
+	GetCommentById(blogId, commentId string) (Comment, error)
+	LikeOrDislikeComment(blogId, commentId, userId string, like int) error
 
 	AddReply(blogId, commentId string, reply Reply) error
-	GetAllReplies() ([]Reply, error)
-	GetReplyById(replyId string) (Reply, error)
-	LikeOrDislikeReply(replyId, userId string, like int) error
+	GetAllReplies(blogId,commentId string) ([]Reply, error)
+	GetReplyById(blogId,commentId,replyId string) (Reply, error)
+	LikeOrDislikeReply(blogId,commentId,replyId, userId string, like int) error
 }

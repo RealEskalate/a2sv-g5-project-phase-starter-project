@@ -3,20 +3,23 @@ package repository
 import (
 	"astu-backend-g1/domain"
 	"context"
-	"errors"
 	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (r *MongoBlogRepository) GetReplyById(replyId string) (domain.Reply, error) {
-	cid, err := IsValidObjectID(replyId)
+func (r *MongoBlogRepository) GetReplyById(blogId, commentId, replyId string) (domain.Reply, error) {
+	bid, err := IsValidObjectID(blogId)
+	cid, err := IsValidObjectID(commentId)
+	rid, err := IsValidObjectID(replyId)
 	if err != nil {
 		return domain.Reply{}, err
 	}
 	filter := bson.M{
-		"reply_id": cid,
+		"reply_id":   rid,
+		"blog_id":    bid,
+		"comment_id": cid,
 	}
 	var result domain.Reply
 	err = r.ReplyCollection.FindOne(context.Background(), filter).Decode(&result)
@@ -26,8 +29,10 @@ func (r *MongoBlogRepository) GetReplyById(replyId string) (domain.Reply, error)
 	return result, nil
 }
 
-func (r *MongoBlogRepository) LikeOrDislikeReply(replyId, userId string, like int) error {
-	cid, err := IsValidObjectID(replyId)
+func (r *MongoBlogRepository) LikeOrDislikeReply(blogId, commentId, replyId, userId string, like int) error {
+	bid, err := IsValidObjectID(blogId)
+	cid, err := IsValidObjectID(commentId)
+	rid, err := IsValidObjectID(replyId)
 	if err != nil {
 		return err
 	}
@@ -35,12 +40,12 @@ func (r *MongoBlogRepository) LikeOrDislikeReply(replyId, userId string, like in
 	if err != nil {
 		return err
 	}
-	filter := bson.M{"reply_id": cid}
+	filter := bson.M{"reply_id": rid, "comment_id": cid, "blog_id": bid}
 	update := bson.M{}
 	update["$inc"] = bson.M{"views": 1}
 	if like == 1 {
 		result := bson.M{}
-		likeFinder := bson.M{"reply_id": cid, "dislikes": uid}
+		likeFinder := bson.M{"reply_id": rid, "comment_id": cid, "blog_id": bid, "dislikes": uid}
 		err := r.ReplyCollection.FindOne(context.TODO(), likeFinder).Decode(&result)
 		if err == nil {
 			_, err = r.ReplyCollection.UpdateOne(context.TODO(), filter, bson.M{
@@ -55,7 +60,7 @@ func (r *MongoBlogRepository) LikeOrDislikeReply(replyId, userId string, like in
 		update["$addToSet"] = bson.M{"likes": uid}
 	} else if like == -1 {
 		result := bson.M{}
-		likeFinder := bson.M{"reply_id": cid, "likes": uid}
+		likeFinder := bson.M{"reply_id": rid, "comment_id": cid, "blog_id": bid, "likes": uid}
 		err := r.ReplyCollection.FindOne(context.TODO(), likeFinder).Decode(&result)
 		if err == nil {
 			_, err = r.ReplyCollection.UpdateOne(context.TODO(), filter, bson.M{
@@ -76,24 +81,30 @@ func (r *MongoBlogRepository) LikeOrDislikeReply(replyId, userId string, like in
 	return nil
 }
 
-func (r *MongoBlogRepository) GetAllReplies() ([]domain.Reply, error) {
+func (r *MongoBlogRepository) GetAllReplies(blogId, commentId string) ([]domain.Reply, error) {
+	bid, err := IsValidObjectID(blogId)
+	cid, err := IsValidObjectID(commentId)
 	var result []domain.Reply
-	cursor, err := r.ReplyCollection.Find(context.Background(), bson.M{})
+	cursor, err := r.ReplyCollection.Find(context.Background(), bson.M{"blog_id": bid, "comment_id": cid})
 	if err != nil {
+		fmt.Println("this is the error", err)
 		return nil, err
 	}
+
 	defer cursor.Close(context.Background())
 
 	for cursor.Next(context.Background()) {
 		var replies domain.Reply
 		if err := cursor.Decode(&replies); err != nil {
-			return nil, err
+			fmt.Println("this is the error", err)
+			return result, err
 		}
 		result = append(result, replies)
 	}
 
 	if err := cursor.Err(); err != nil {
-		return nil, err
+		fmt.Println("this is the error", err)
+		return result, err
 	}
 
 	return result, nil
@@ -102,7 +113,8 @@ func (r *MongoBlogRepository) GetAllReplies() ([]domain.Reply, error) {
 func CreatereplyQuery(r domain.Reply) bson.M {
 
 	query := bson.M{}
-	query["reply_id"] = r.ReplyId
+	id, _ := IsValidObjectID(r.ReplyId)
+	query["reply_id"] = id
 	if r.Content != "" {
 		query["content"] = r.Content
 	}
@@ -126,8 +138,7 @@ func CreatereplyQuery(r domain.Reply) bson.M {
 
 	query["likes"] = []string{}
 	query["dislikes"] = []string{}
-	query["replies"] = []string{}
-	query["views"] = []string{}
+	query["views"] = 0
 	return query
 }
 func (r *MongoBlogRepository) AddReply(sblogId, scommentId string, reply domain.Reply) error {
@@ -139,8 +150,8 @@ func (r *MongoBlogRepository) AddReply(sblogId, scommentId string, reply domain.
 	if err != nil {
 		return err
 	}
-	rid :=   primitive.NewObjectID()
-	reply.ReplyId =rid.Hex()
+	rid := primitive.NewObjectID()
+	reply.ReplyId = rid.Hex()
 	reply.BlogId = blogId.Hex()
 	reply.CommentId = commentId.Hex()
 	comm := CreatereplyQuery(reply)
@@ -150,9 +161,9 @@ func (r *MongoBlogRepository) AddReply(sblogId, scommentId string, reply domain.
 	}
 
 	commentUpdate := bson.M{"$inc": bson.M{"replies": 1}}
-	_, err = r.CommentCollection.UpdateOne(context.Background(), bson.M{"comment_id": commentId}, commentUpdate)
+	_, err = r.CommentCollection.UpdateOne(context.Background(), bson.M{"comment_id": commentId, "blog_id": blogId}, commentUpdate)
 	if err != nil {
-		_, delErr := r.ReplyCollection.DeleteOne(context.Background(), bson.M{"reply_id": rid})
+		_, delErr := r.ReplyCollection.DeleteOne(context.Background(), bson.M{"reply_id": rid, "comment_id": commentId, "blog_id": blogId})
 		if delErr != nil {
 			return fmt.Errorf("failed to update blog and rollback comment insertion: %w", delErr)
 		}
@@ -170,48 +181,48 @@ func UpdateReplyQuery(b domain.Reply) bson.M {
 	return update
 }
 
-func (r *MongoBlogRepository) UpdateReply(strReplyId string, updateData domain.Reply) (domain.Reply, error) {
-	ReplyId, err := IsValidObjectID(strReplyId)
-	if err != nil {
-		return domain.Reply{}, err
-	}
-	filter := bson.M{"reply_id": ReplyId}
-	update := bson.M{"$set": UpdateReplyQuery(updateData)}
+// func (r *MongoBlogRepository) UpdateReply(strReplyId string, updateData domain.Reply) (domain.Reply, error) {
+// 	ReplyId, err := IsValidObjectID(strReplyId)
+// 	if err != nil {
+// 		return domain.Reply{}, err
+// 	}
+// 	filter := bson.M{"reply_id": ReplyId,"comment_id": commentId,"blog_id":blogId}
+// 	update := bson.M{"$set": UpdateReplyQuery(updateData)}
 
-	result, err := r.ReplyCollection.UpdateOne(context.Background(), filter, update)
-	if err != nil || result.MatchedCount == 0 {
-		return domain.Reply{}, errors.New("Failed to update Reply with ID" + strReplyId + ":" + err.Error())
-	}
+// 	result, err := r.ReplyCollection.UpdateOne(context.Background(), filter, update)
+// 	if err != nil || result.MatchedCount == 0 {
+// 		return domain.Reply{}, errors.New("Failed to update Reply with ID" + strReplyId + ":" + err.Error())
+// 	}
 
-	return updateData, nil
-}
+// 	return updateData, nil
+// }
 
-func (r *MongoBlogRepository) DeleteReply(ReplyId, authorId string) error {
-	id, err := IsValidObjectID(ReplyId)
-	if err != nil {
-		return err
-	}
+// func (r *MongoBlogRepository) DeleteReply(ReplyId, authorId string) error {
+// 	id, err := IsValidObjectID(ReplyId)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	filter := bson.M{"reply_id": id}
-	var reply domain.Reply
-	err = r.ReplyCollection.FindOne(context.Background(), filter).Decode(&reply)
-	if err != nil {
-		return err
-	}
-	if reply.AuthorId != authorId {
-		return errors.New("unauthorized to delete this reply")
-	}
+// 	filter := bson.M{"reply_id": id}
+// 	var reply domain.Reply
+// 	err = r.ReplyCollection.FindOne(context.Background(), filter).Decode(&reply)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	if reply.AuthorId != authorId {
+// 		return errors.New("unauthorized to delete this reply")
+// 	}
 
-	result, err := r.ReplyCollection.DeleteOne(context.Background(), filter)
-	if err != nil || result.DeletedCount == 0 {
-		return errors.New("Failed to delete reply with ID" + ReplyId + ":" + err.Error())
-	}else{
-		commentUpdate := bson.M{"$inc": bson.M{"replies": -1}}
-		cid,_ := IsValidObjectID(reply.CommentId)
-		_, err = r.CommentCollection.UpdateOne(context.Background(), bson.M{"comment_id": cid }, commentUpdate)
-		if err != nil {
-			return fmt.Errorf("failed to update comment after comment reply: %w", err)
-		}
-	}
-	return nil
-}
+// 	result, err := r.ReplyCollection.DeleteOne(context.Background(), filter)
+// 	if err != nil || result.DeletedCount == 0 {
+// 		return errors.New("Failed to delete reply with ID" + ReplyId + ":" + err.Error())
+// 	} else {
+// 		commentUpdate := bson.M{"$inc": bson.M{"replies": -1}}
+// 		cid, _ := IsValidObjectID(reply.CommentId)
+// 		_, err = r.CommentCollection.UpdateOne(context.Background(), bson.M{"comment_id": cid}, commentUpdate)
+// 		if err != nil {
+// 			return fmt.Errorf("failed to update comment after comment reply: %w", err)
+// 		}
+// 	}
+// 	return nil
+// }

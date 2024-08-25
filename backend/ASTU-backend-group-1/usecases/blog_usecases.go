@@ -96,43 +96,44 @@ func (uc *BlogUsecase) AddComment(blogid string,comment domain.Comment) error {
 	return nil
 }
 
-func (uc *BlogUsecase) GetAllComments() ([]domain.Comment, error) {
-	comments, err := uc.blogRepository.GetAllComments()
+func (uc *BlogUsecase) GetAllComments(blogId string) ([]domain.Comment, error) {
+	comments, err := uc.blogRepository.GetAllComments(blogId)
 	if err != nil {
 		return []domain.Comment{}, err
 	}
 	return comments, nil
 }
 
-func (uc *BlogUsecase) GetCommentById(commentId string) (domain.Comment, error) {
-	comments, err := uc.blogRepository.GetCommentById(commentId)
+func (uc *BlogUsecase) GetCommentById(blogId,commentId string) (domain.Comment, error) {
+	comments, err := uc.blogRepository.GetCommentById(blogId,commentId)
 	if err != nil {
 		return domain.Comment{}, err
 	}
 	return comments, nil
 }
-func (uc *BlogUsecase) LikeComment(commentId, userId string) error {
-	err := uc.blogRepository.LikeOrDislikeComment(commentId, userId, 1)
+func (uc *BlogUsecase) LikeComment(blogId,commentId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeComment(blogId,commentId, userId, 1)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (uc *BlogUsecase) DislikeComment(commentId, userId string) error {
-	err := uc.blogRepository.LikeOrDislikeComment(commentId, userId, -1)
+func (uc *BlogUsecase) DislikeComment(blogId,commentId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeComment(blogId,commentId, userId, -1)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (uc *BlogUsecase) ViewComment(commentId, userId string) error {
-	err := uc.blogRepository.LikeOrDislikeComment(commentId, userId, 0)
+func (uc *BlogUsecase) ViewComment(blogId,commentId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeComment(blogId,commentId, userId, 0)
 	if err != nil {
 		return err
 	}
 	return nil
 }
+
 
 func (uc *BlogUsecase) ReplyToComment(blogid,commentid string,reply domain.Reply) error {
 	err := uc.blogRepository.AddReply(blogid,commentid,reply)
@@ -141,37 +142,37 @@ func (uc *BlogUsecase) ReplyToComment(blogid,commentid string,reply domain.Reply
 	}
 	return nil
 }
-func (uc *BlogUsecase) GetAllReplies() ([]domain.Reply, error) {
-	replies, err := uc.blogRepository.GetAllReplies()
+func (uc *BlogUsecase) GetAllReplies(blogId,commentId string) ([]domain.Reply, error) {
+	replies, err := uc.blogRepository.GetAllReplies(blogId,commentId)
 	if err != nil {
 		return []domain.Reply{}, err
 	}
 	return replies, nil
 }
-func (uc *BlogUsecase) GetReplyById(replyId string) (domain.Reply, error) {
-	reply, err := uc.blogRepository.GetReplyById(replyId)
+func (uc *BlogUsecase) GetReplyById(blogId,commentId,replyId string) (domain.Reply, error) {
+	reply, err := uc.blogRepository.GetReplyById(blogId,commentId,replyId)
 	if err != nil {
 		return domain.Reply{}, err
 	}
 	return reply, nil
 }
-func (uc *BlogUsecase) LikeReply(replyId, userId string) error {
-	err := uc.blogRepository.LikeOrDislikeReply(replyId, userId, 1)
+func (uc *BlogUsecase) LikeReply(blogId,commentId,replyId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeReply(blogId,commentId,replyId, userId, 1)
 	if err != nil {
 		return err
 	}
 	return nil
 }
-func (uc *BlogUsecase) DislikeReply(replyId, userId string) error {
-	err := uc.blogRepository.LikeOrDislikeReply(replyId, userId, -1)
+func (uc *BlogUsecase) DislikeReply(blogId,commentId,replyId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeReply(blogId,commentId,replyId, userId, -1)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (uc *BlogUsecase) ViewReply(replyId, userId string) error {
-	err := uc.blogRepository.LikeOrDislikeReply(replyId, userId, 0)
+func (uc *BlogUsecase) ViewReply(blogId,commentId,replyId, userId string) error {
+	err := uc.blogRepository.LikeOrDislikeReply(blogId,commentId,replyId, userId, 0)
 	if err != nil {
 		return err
 	}

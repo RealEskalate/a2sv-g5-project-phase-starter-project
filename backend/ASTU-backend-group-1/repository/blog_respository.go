@@ -14,15 +14,15 @@ import (
 )
 
 type MongoBlogRepository struct {
-	client  mongoifc.Client
+	client            mongoifc.Client
 	BlogCollection    mongoifc.Collection
 	CommentCollection mongoifc.Collection
 	ReplyCollection   mongoifc.Collection
 }
 
-func NewBlogRepository(client mongoifc.Client,Blog mongoifc.Collection, Comment mongoifc.Collection, Reply mongoifc.Collection) domain.BlogRepository {
+func NewBlogRepository(client mongoifc.Client, Blog mongoifc.Collection, Comment mongoifc.Collection, Reply mongoifc.Collection) domain.BlogRepository {
 	return &MongoBlogRepository{
-		client: client,
+		client:            client,
 		BlogCollection:    Blog,
 		CommentCollection: Comment,
 		ReplyCollection:   Reply,
@@ -53,8 +53,8 @@ func CreateBlogQuery(b domain.Blog) bson.M {
 	query["tags"] = b.Tags
 	query["likes"] = []string{}
 	query["dislikes"] = []string{}
-	query["comments"] = []string{}
-	query["views"] = []string{}
+	query["comments"] = 0
+	query["views"] = 0
 
 	return query
 }
@@ -354,10 +354,10 @@ func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int)
 			responseMessage = "already viewed this blog"
 		} else {
 			update = bson.M{
-			
-			"$inc": bson.M{
-				"view": 1,
-			},
+
+				"$inc": bson.M{
+					"view": 1,
+				},
 			}
 			responseMessage = "Added view"
 		}

@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/failure.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 import '../entities/product_entity.dart';
 import '../repositories/product_repository.dart';
 
@@ -15,13 +16,16 @@ class UpdateProductUsecase {
     required String description,
     required double price,
     required String imageUrl,
+    required UserEntity seller,
   }) async {
     final product = ProductEntity(
-        id: id,
-        name: name,
-        description: description,
-        price: price,
-        imageUrl: imageUrl);
+      id: id,
+      name: name,
+      description: description,
+      price: price,
+      imageUrl: imageUrl,
+      seller: seller,
+    );
 
     final res = await productRepository.updateProduct(product);
     return res;

@@ -81,13 +81,15 @@ const Page = () => {
                   </div>
                 ))
               ) : token ? (
-                <div className="flex flex-col items-center justify-center h-full text-red-500">
+                <div className="w-screen bg-white py-16 rounded-xl flex flex-col justify-center dark:bg-dark dark:border-[1px] dark:border-gray-700">
                   <TbFileSad
                     className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
                     strokeWidth={1}
                   />
-                  <div>Error fetching the recent transactions</div>
-                 </div>
+                  <span className="mx-auto my-auto md:text-xl text-sm text-red-500 mb-5">
+                    {error ? error : "There are no cards for now!"}
+                  </span>
+                </div>
               ) : (
                 <MyCardsLoad count={2} />
               )}

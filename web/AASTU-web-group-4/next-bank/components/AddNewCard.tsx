@@ -8,6 +8,7 @@ import { createCard } from "@/services/cardfetch";
 import { convertDateToISOString } from "@/lib/utils";
 import Image from "next/image";
 import { message } from 'antd';
+import { TbFileSad } from "react-icons/tb";
 
 type NewCardProps = {
   cardType: string;
@@ -83,37 +84,28 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
       <>
     {contextHolder}
       
-      <div className="mr-4 lg:w-[800px] w-[330px] md:w-[630px] p-6 border-[1px] m:h-[720px] md:h-[470px] rounded-xl md:px-20 md:py-40 mb-5 flex flex-col items-center justify-center">
+      <div className="mr-4 lg:w-[800px] w-[330px] md:w-[630px] p-6 border-[1px] m:h-[720px] md:h-[470px] rounded-xl md:px-20 md:py-40 mb-5 flex flex-col items-center justify-center dark:border-[1px] dark:border-gray-700">
         {error ? (
-          <Image
-            src="/icons/warning.png"
-            width={80}
-            height={80}
-            alt="null"
-            className="pb-2 block"
-          />
+          <></>
+          // HEY YO NATI BOY UP THE ERROR COMPONENT HERE 
         ) : (
-          <Image
-            src="/icons/check.png"
-            width={80}
-            height={80}
-            alt="null"
-            className="pb-2 block"
-          />
+          <>
+            <Image
+              src="/icons/check.png"
+              width={80}
+              height={80}
+              alt="null"
+              className="pb-2 block"
+            />
+            <p className="md:text-[20px] text-[14px] font-bold text-center text-black-1 dark:text-gray-400">
+              {submissionResult}
+            </p>
+          <button onClick={handleReset} className="mt-5 px-5 py-2 bg-blue-500 text-white rounded-lg">
+            Enter New Card
+          </button>
+          </>
         )}
-        <h2
-          className={`md:text-[20px] text-[14px] font-bold text-center ${
-            error ? "text-[#892e40]" : "text-black-1 dark:text-gray-400"
-          }`}
-        >
-          {submissionResult}
-        </h2>
-        <button
-          onClick={handleReset}
-          className="mt-5 px-5 py-2 bg-blue-500 text-white rounded-lg"
-        >
-          Enter New Card
-        </button>
+        
       </div>
       </>
     );

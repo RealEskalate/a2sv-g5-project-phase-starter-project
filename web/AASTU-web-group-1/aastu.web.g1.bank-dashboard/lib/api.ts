@@ -145,7 +145,6 @@ export async function getIncomes(page: number, size: number) {
   try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
-    console.log("get income",accessToken);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/transactions/incomes?page=${page}&size=${size}`,
       {

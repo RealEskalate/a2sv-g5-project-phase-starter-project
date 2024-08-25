@@ -4,6 +4,8 @@ import { CiSaveDown1, CiSaveUp1 } from "react-icons/ci";
 import { TransactionContent, UserData } from "@/types";
 import { getCurrentUser } from "@/lib/api";
 import { useUser } from "@/contexts/UserContext";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import Receipt from "./receipt";
 
 interface Props {
   transactions: TransactionContent[];
@@ -185,7 +187,24 @@ export const ExpenseTable: React.FC<Props> = ({ transactions, tab }: Props) => {
                 }`}
               >
                 <button className="bg-transparent hover:bg-gradient-to-r hover:from-blue-400 hover:to-blue-600 text-blue-700 font-semibold py-2 px-2 border border-blue-500 rounded-full shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1 truncate">
-                  Download
+                  <PDFDownloadLink
+                 
+                    document={
+                      <Receipt
+                        senderUserName={transaction.senderUserName}
+                        receiverUserName={transaction.receiverUserName}
+                        paymentDate={transaction.date}
+                        transactionId={transaction.transactionId}
+                        description={transaction.description}
+                        amount={transaction.amount}
+                      />
+                    }
+                    fileName="Transaction.pdf"
+                  >
+                    {({ blob, url, loading, error }) =>
+                      loading ? "Downloading..." : "Download "
+                    }
+                  </PDFDownloadLink>
                 </button>
               </td>
             </tr>

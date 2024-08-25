@@ -85,7 +85,7 @@ func (sc *SignupController) Signup(c *gin.Context) {
 		RefreshToken: refreshToken,
 	}
 
-	c.JSON(http.StatusOK, domain.SuccessResponse{Success: true, Message: "user created successfuly", Data: signupResponse})
+	c.JSON(http.StatusCreated, domain.SuccessResponse{Success: true, Message: "user created successfuly", Data: signupResponse})
 }
 
 func (sc *SignupController) VerifyEmail(c *gin.Context){

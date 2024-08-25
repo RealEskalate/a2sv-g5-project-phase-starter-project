@@ -19,7 +19,6 @@ func (pc *ProfileController) Fetch(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, profile)
 }
 

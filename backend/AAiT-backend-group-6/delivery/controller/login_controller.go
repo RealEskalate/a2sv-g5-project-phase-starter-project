@@ -11,14 +11,14 @@ import (
 
 
 type LoginController struct {
-	UserRepository domain.UserRepository
+	UserUsecase domain.UserUsecase
 	LoginUsecase domain.LoginUsecase
 	Env 		*bootstrap.Env
 }
 
-func NewLoginController(ur domain.UserRepository, lu domain.LoginUsecase, env *bootstrap.Env) *LoginController {
+func NewLoginController(uu domain.UserUsecase, lu domain.LoginUsecase, env *bootstrap.Env) *LoginController {
 	return &LoginController{
-		UserRepository: ur,
+		UserUsecase: uu,
 		LoginUsecase: lu,
 		Env: env,
 	}
@@ -31,7 +31,7 @@ func (lc *LoginController) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest,domain.ErrorResponse{Message:err.Error()})
 	}
 
-	user, err := lc.LoginUsecase.GetUserByEmail(c, request.Email)
+	user, err := lc.UserUsecase.GetUserByEmail(c, request.Email)
 	if err != nil {
 		c.JSON(http.StatusNotFound,domain.ErrorResponse{Message:err.Error()})
 	}
@@ -60,7 +60,7 @@ func (lc *LoginController) Login(c *gin.Context) {
 		Refresh_token: refreshToken,
 	}
 
-	err = lc.UserRepository.UpdateUser(c, updatedUser)
+	err = lc.UserUsecase.UpdateUser(c, updatedUser)
 
 	if err != nil{
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: err.Error()})

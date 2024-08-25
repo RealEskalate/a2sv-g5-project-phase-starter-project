@@ -10,13 +10,13 @@ import (
 
 type PromoteController struct {
 	promoteUsecase domain.PromoteUsecase
-	userRepository domain.UserRepository
+	userUsecase domain.UserUsecase
 }
 
-func NewPromoteController(ur domain.UserRepository,pu domain.PromoteUsecase, env *bootstrap.Env) *PromoteController {
+func NewPromoteController(uu domain.UserUsecase,pu domain.PromoteUsecase, env *bootstrap.Env) *PromoteController {
 	return &PromoteController{
 		promoteUsecase: pu,
-		userRepository: ur,
+		userUsecase: uu,
 	}
 }
 
@@ -28,7 +28,7 @@ func (pc *PromoteController) PromoteUser(c *gin.Context) {
 		return
 	}
 
-	admin, err := pc.userRepository.GetUserByEmail(c, email.(string))
+	admin, err := pc.userUsecase.GetUserByEmail(c, email.(string))
 	if err != nil || admin.User_type != "ADMIN"{
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Unauthorized"})
 		return
@@ -56,7 +56,7 @@ func (pc *PromoteController) DemoteUser(c *gin.Context) {
 		return
 	}
 
-	admin, err := pc.userRepository.GetUserByEmail(c, email.(string))
+	admin, err := pc.userUsecase.GetUserByEmail(c, email.(string))
 	if err != nil || admin.User_type != "ADMIN"{
 		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Unauthorized"})
 		return

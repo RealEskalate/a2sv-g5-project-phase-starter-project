@@ -13,15 +13,11 @@ import (
 )
 
 
-func NewLoginRouter(env *bootstrap.Env, timeout time.Duration, db mongo.Database, group *gin.RouterGroup){
+func NewRefreshTokenRouter(env *bootstrap.Env, timeout time.Duration, db mongo.Database, group *gin.RouterGroup){
 	ur := repository.NewUserRepository(db, domain.UserCollection)
-	su := usecase.NewLoginUsecase(ur, timeout)
+	ru := usecase.NewRefreshTokenUsecase(ur, timeout)
 	uu := usecase.NewUserUsecase(ur, timeout)
-	sc := controller.LoginController{
-		UserUsecase: uu,
-		LoginUsecase: su,
-		Env: env,
-	}
+	rc := controller.NewRefreshTokenController(uu, ru, env)
 
-	group.POST("/login", sc.Login)
+	group.POST("/refresh_token", rc.RefreshTokenRequest)
 }

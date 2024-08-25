@@ -3,11 +3,12 @@ package infrastructure
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/smtp"
 )
 
 type EmailService interface {
-	SendEmail(from, to, body string) error
+	SendEmail(from, to, body, subjectRelated string) error
 }
 
 type Email struct {
@@ -26,14 +27,18 @@ func NewEmail(username, password, host, port string) EmailService {
 	}
 }
 
-func (e *Email) SendEmail(from, to, body string) error {
+func (e *Email) SendEmail(from, to, body, subjectRelated string) error {
 	auth := smtp.PlainAuth("", e.Username, e.Password, e.Host)
-	message := []byte(fmt.Sprintf("This Message of From %s To %s", from, to) +
-		"Subject: Account Activation \r\n" +
-		fmt.Sprintf("%s\r\n", body))
+	fromMsg := fmt.Sprintf("From: <%s>\r\n", from)
+	toMSG := fmt.Sprintf("To: <%s>\r\n", to)
+	subject := fmt.Sprintf("Subject: %s\r\n", subjectRelated)
+
+	message := []byte(fromMsg + toMSG + subject + "\r\n" + body)
+
 	addr := fmt.Sprintf("%s:%s", e.Host, e.Port)
 	err := smtp.SendMail(addr, auth, from, []string{to}, message)
 	if err != nil {
+		log.Default().Println("Error while sending email", err)
 		return errors.New("failed to send an email")
 	}
 	return nil

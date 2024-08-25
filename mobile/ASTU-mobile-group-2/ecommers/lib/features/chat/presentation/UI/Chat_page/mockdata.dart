@@ -1,0 +1,111 @@
+import 'package:flutter/material.dart';
+
+import 'single_text.dart';
+
+final List<Widget> mock_chat_data = [
+  const SingleText(
+    isMe: false,
+    profile_pic: 'assets/image/avator.png',
+    name: 'Sabila Sayma',
+    text: 'Have a great working week!!',
+    time: '09:25 AM',
+  ),
+  const SingleText(
+    isMe: true,
+    profile_pic: 'assets/image/profileG.jpg',
+    name: 'Fahmi',
+    text: 'You too, thanks!',
+    time: '09:30 AM',
+  ),
+  const SingleText(
+    isMe: false,
+    profile_pic: 'assets/image/avator.png',
+    name: 'Sabila Sayma',
+    text: 'Any plans for the weekend?',
+    time: '09:35 AM',
+  ),
+  const SingleText(
+    isMe: true,
+    profile_pic: 'assets/image/profileG.jpg',
+    name: 'Fahmi',
+    text: 'Just relaxing, maybe catch up on some projects.',
+    time: '09:40 AM',
+  ),
+  const SingleText(
+    isMe: false,
+    profile_pic: 'assets/image/avator.png',
+    name: 'Sabila Sayma',
+    text: 'That sounds nice! I might go hiking.',
+    time: '09:45 AM',
+  ),
+  const SingleText(
+    isMe: true,
+    profile_pic: 'assets/image/profileG.jpg',
+    name: 'Fahmi',
+    text: 'Hiking is fun! I should do that more often.',
+    time: '09:50 AM',
+  ),
+  const SingleText(
+    isMe: false,
+    profile_pic: 'assets/image/avator.png',
+    name: 'Sabila Sayma',
+    text: 'Definitely! Fresh air and nature are the best.',
+    time: '09:55 AM',
+  ),
+  const SingleText(
+    isMe: true,
+    profile_pic: 'assets/image/profileG.jpg',
+    name: 'Fahmi',
+    text: 'Absolutely agree.',
+    time: '10:00 AM',
+  ),
+  const SingleText(
+    isMe: false,
+    profile_pic: 'assets/image/avator.png',
+    name: 'Sabila Sayma',
+    text: 'Here is the image',
+    time: '10:05 AM',
+  ),
+  const SingleText(
+    isMe: true,
+    profile_pic: 'assets/image/profileG.jpg',
+    name: 'Fahmi',
+    text: 'Wow, that view is stunning!',
+    time: '10:10 AM',
+  ),
+  const SingleText(
+    isMe: false,
+    profile_pic: 'assets/image/avator.png',
+    name: 'Sabila Sayma',
+    text: 'Right? Can’t wait to go!',
+    time: '10:15 AM',
+  ),
+  const SingleText(
+    isMe: true,
+    profile_pic: 'assets/image/profileG.jpg',
+    name: 'Fahmi',
+    text: 'Send more pics when you do!',
+    time: '10:20 AM',
+  ),
+  const SingleText(
+    isMe: false,
+    profile_pic: 'assets/image/avator.png',
+    name: 'Sabila Sayma',
+    text: 'Will do!',
+    time: '10:25 AM',
+  ),
+  const SingleText(
+    isMe: true,
+    profile_pic: 'assets/image/profileG.jpg',
+    name: 'Fahmi',
+    text: 'Take care!',
+    time: '10:30 AM',
+  ),
+  const SingleText(
+    isMe: false,
+    profile_pic: 'assets/image/avator.png',
+    name: 'Sabila Sayma',
+    text: 'You too!',
+    time: '10:35 AM',
+  ),
+];

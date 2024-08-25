@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:ecommerce_app/core/constants/constants.dart';
 import 'package:ecommerce_app/core/errors/exceptions/product_exceptions.dart';
 import 'package:ecommerce_app/features/auth/data/data_source/remote_auth_data_source.dart';
+import 'package:ecommerce_app/features/auth/data/model/user_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mockito/mockito.dart';
@@ -87,7 +90,8 @@ void main() {
       final result = await remoteAuthDataSourceImpl.signUp(AuthData.userEntity);
 
       /// assert
-      expect(result, AuthData.signedUpUserModel);
+      expect(
+          result, UserModel.fromJson(json.decode(AuthData.readJson())['data']));
     });
 
     test('Should return throw server exception when data is valid', () async {

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/page/login_page.dart';
+import '../bloc/cubit/input_validation_cubit.dart';
 import '../bloc/product_bloc.dart';
 import '../bloc/product_events.dart';
 import '../widgets/product_widgets.dart';
@@ -34,6 +35,7 @@ class ProductListPage extends StatelessWidget {
             borderRadius: BorderRadius.circular(100),
           ),
           onPressed: () {
+            BlocProvider.of<InputValidationCubit>(context).refresh();
             Navigator.pushNamed(context, AddProductPage.routes);
           },
           child: const Icon(

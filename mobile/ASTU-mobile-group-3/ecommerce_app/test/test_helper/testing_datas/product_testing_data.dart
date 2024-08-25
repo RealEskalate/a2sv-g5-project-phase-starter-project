@@ -5,37 +5,40 @@ import 'package:ecommerce_app/features/product/data/models/product_model.dart';
 import 'package:ecommerce_app/features/product/domain/entities/product.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../auth_test_data/testing_data.dart';
+
 class TestingDatas {
   /// Data for testing with id
-  static const String id = '6672752cbd218790438efdb0';
+  static const String id = '66c778ec10de84211de27fe1';
 
   /// Testing data for  prodcut Entity
-  static const testDataEntity = ProductEntity(
-    id: '6672752cbd218790438efdb0',
-    name: 'Anime website',
-    description: 'Explore anime characters.',
-    price: 123,
-    imageUrl:
-        'https://res.cloudinary.com/g5-mobile-track/image/upload/v1718777132/images/zxjhzrflkvsjutgbmr0f.jpg',
-  );
+  static ProductEntity testDataEntity = ProductEntity(
+      id: '66c778ec10de84211de27fe1',
+      name: 'PC',
+      description: 'long description',
+      price: 123,
+      imageUrl:
+          'https://res.cloudinary.com/g5-mobile-track/image/upload/v1724348651/images/pug5nl6gv14np2bqdofu.png',
+      seller: AuthData.sellerData.toEntity());
 
   /// Testing data for  product models
-  static const testDataModel = ProductModel(
-    id: '6672752cbd218790438efdb0',
-    name: 'Anime website',
-    description: 'Explore anime characters.',
+  static ProductModel testDataModel = ProductModel(
+    id: '66c778ec10de84211de27fe1',
+    name: 'PC',
+    description: 'long description',
     price: 123,
     imageUrl:
-        'https://res.cloudinary.com/g5-mobile-track/image/upload/v1718777132/images/zxjhzrflkvsjutgbmr0f.jpg',
+        'https://res.cloudinary.com/g5-mobile-track/image/upload/v1724348651/images/pug5nl6gv14np2bqdofu.png',
+    seller: AuthData.sellerData,
   );
 
   /// Testing data for list of ProductEntity
-  static const List<ProductEntity> productEntityList = [
+  static List<ProductEntity> productEntityList = [
     TestingDatas.testDataEntity,
   ];
 
   /// Testing data for product model
-  static const List<ProductModel> productModelList = [
+  static List<ProductModel> productModelList = [
     TestingDatas.testDataModel,
   ];
 
@@ -62,6 +65,17 @@ class TestingDatas {
     }
 
     dir = '$dir/test/test_helper/testing_datas/all_products_responce.json';
+
+    return File(dir).readAsStringSync();
+  }
+
+  static String readProductV3() {
+    String dir = Directory.current.path;
+    if (dir.contains('/test')) {
+      dir = dir.replaceAll('/test', '');
+    }
+
+    dir = '$dir/test/test_helper/testing_datas/all_products_responce_v3.json';
 
     return File(dir).readAsStringSync();
   }

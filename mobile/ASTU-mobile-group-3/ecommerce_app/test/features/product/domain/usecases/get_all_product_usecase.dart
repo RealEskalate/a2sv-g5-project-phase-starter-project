@@ -16,15 +16,15 @@ void main() {
     getAllProductUseCase = GetAllProductUseCase(mockProductRepository);
   });
 
-  const List<ProductEntity> testingProducts = [
+  List<ProductEntity> testingProducts = [
     TestingDatas.testDataEntity,
   ];
 
-  test('Testing the data flow inside the Repositrory of product list return', () async {
+  test('Testing the data flow inside the Repositrory of product list return',
+      () async {
     /// Rearranging the functionality
-    when(
-        mockProductRepository.getAllProducts()
-    ).thenAnswer((_) async => const Right(testingProducts));
+    when(mockProductRepository.getAllProducts())
+        .thenAnswer((_) async => Right(testingProducts));
 
     /// action
 
@@ -32,6 +32,6 @@ void main() {
 
     /// assertion
     ///
-    expect(result, const Right(testingProducts));
+    expect(result, Right(testingProducts));
   });
 }

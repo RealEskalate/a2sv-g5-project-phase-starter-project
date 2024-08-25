@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/constants.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/usecases/delete_product_usecase.dart';
 import '../../domain/usecases/get_all_products_usecase.dart';
@@ -53,6 +54,13 @@ class ProductBloc extends Bloc<ProductEvents, ProductStates> {
         description: event.description,
         price: int.parse(event.price),
         imageUrl: event.imageUrl.path,
+        seller: const UserEntity(
+          name: 'name',
+          email: 'email',
+          password: 'password',
+          id: 'id',
+          v: 0,
+        ),
       );
       final result = await insertProductUseCase.execute(entity);
 
@@ -72,6 +80,13 @@ class ProductBloc extends Bloc<ProductEvents, ProductStates> {
         description: event.description,
         price: int.parse(event.price),
         imageUrl: '',
+        seller: const UserEntity(
+          name: 'name',
+          email: 'email',
+          password: 'password',
+          id: 'id',
+          v: 0,
+        ),
       );
       final result = await updateProductUsecase.execute(entity);
 

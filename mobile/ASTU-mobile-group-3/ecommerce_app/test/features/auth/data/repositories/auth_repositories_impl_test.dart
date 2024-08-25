@@ -69,7 +69,7 @@ void main() {
     test('Should return Right true when eth go smooth register', () async {
       /// arrange
       when(mockRemoteAuthDataSource.signUp(any))
-          .thenAnswer((_) async => AuthData.signedUpUserModel);
+          .thenAnswer((_) async => AuthData.userModel);
 
       /// action
       final result = await authRepositoryImpl.signUp(AuthData.userEntity);

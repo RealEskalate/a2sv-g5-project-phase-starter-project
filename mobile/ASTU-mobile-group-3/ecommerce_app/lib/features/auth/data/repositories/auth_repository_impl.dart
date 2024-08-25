@@ -27,6 +27,8 @@ class AuthRepositoryImpl extends AuthRepository {
       return Left(LoginFailure(AppData.getMessage(AppData.loginFailed)));
     } on ServerException {
       return Left(ServerFailure(AppData.getMessage(AppData.serverError)));
+    } on Exception {
+      return Left(ServerFailure(AppData.getMessage(AppData.serverError)));
     }
   }
 
@@ -38,6 +40,8 @@ class AuthRepositoryImpl extends AuthRepository {
     } on UserConflictException {
       return Left(UserExistsFailure(AppData.getMessage(AppData.userExists)));
     } on ServerException {
+      return Left(ServerFailure(AppData.getMessage(AppData.serverError)));
+    } on Exception {
       return Left(ServerFailure(AppData.getMessage(AppData.serverError)));
     }
   }

@@ -24,7 +24,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       UserEntity myEnity = UserEntity(
         name: '',
         email: event.email,
+        password: event.password,
         id: '',
+        v: 0,
       );
       final result = await logInUsecase.execute(myEnity);
       result.fold((failure) {
@@ -38,7 +40,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       UserEntity myEnity = UserEntity(
         name: event.name,
         email: event.email,
+        password: event.password,
         id: '',
+        v: 0,
       );
       final result = await signUpUsecase.execute(myEnity);
 

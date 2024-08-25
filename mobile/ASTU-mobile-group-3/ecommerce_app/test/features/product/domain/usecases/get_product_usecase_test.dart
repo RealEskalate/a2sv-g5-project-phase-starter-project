@@ -15,12 +15,11 @@ void main() {
     getProductUseCase = GetProductUseCase(mockProductRepository);
   });
 
-
-  test('Testing the data flow inside the Repositrory of product list return', () async {
+  test('Testing the data flow inside the Repositrory of product list return',
+      () async {
     /// Rearranging the functionality
-    when(
-        mockProductRepository.getProduct(TestingDatas.id)
-    ).thenAnswer((_) async => const Right(TestingDatas.testDataEntity));
+    when(mockProductRepository.getProduct(TestingDatas.id))
+        .thenAnswer((_) async => Right(TestingDatas.testDataEntity));
 
     /// action
 
@@ -28,6 +27,6 @@ void main() {
 
     /// assertion
     ///
-    expect(result, const Right(TestingDatas.testDataEntity));
+    expect(result, Right(TestingDatas.testDataEntity));
   });
 }

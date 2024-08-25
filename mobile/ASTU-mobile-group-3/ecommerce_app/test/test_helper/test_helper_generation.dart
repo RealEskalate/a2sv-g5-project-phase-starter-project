@@ -7,6 +7,7 @@ import 'package:ecommerce_app/features/auth/domain/usecases/log_in_usecase.dart'
 import 'package:ecommerce_app/features/auth/domain/usecases/log_out_usecase.dart';
 import 'package:ecommerce_app/features/auth/domain/usecases/sign_up_usecase.dart';
 import 'package:ecommerce_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:ecommerce_app/features/auth/presentation/bloc/cubit/user_input_validation_cubit.dart';
 import 'package:ecommerce_app/features/product/data/data_resources/local_product_data_source.dart';
 import 'package:ecommerce_app/features/product/data/data_resources/remote_product_data_source.dart';
 import 'package:ecommerce_app/features/product/domain/repositories/product_repository.dart';
@@ -45,6 +46,7 @@ import 'package:shared_preferences/shared_preferences.dart';
     AuthBloc,
     ProductBloc,
     InputValidationCubit,
+    UserInputValidationCubit
   ],
   customMocks: [MockSpec<http.Client>(as: #MockHttpClient)],
 )

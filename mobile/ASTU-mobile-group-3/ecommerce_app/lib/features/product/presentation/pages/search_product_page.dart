@@ -6,6 +6,7 @@ import '../bloc/product_bloc.dart';
 import '../bloc/product_events.dart';
 import '../bloc/product_states.dart';
 import '../widgets/product_widgets.dart';
+import '../widgets/skeleton_loading.dart';
 
 class SearchProduct extends StatefulWidget {
   static String routes = '/search_product';
@@ -88,10 +89,11 @@ class _SearchProduct extends State<SearchProduct> with AppBars {
                   ),
                 );
               } else {
-                return const Expanded(
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                return ListView.builder(
+                  itemCount: 10,
+                  itemBuilder: (context, index) {
+                    return const SkeletonLoading();
+                  },
                 );
               }
             },

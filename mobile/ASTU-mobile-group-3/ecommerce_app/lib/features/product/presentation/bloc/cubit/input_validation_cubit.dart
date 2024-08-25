@@ -68,4 +68,8 @@ class InputValidationCubit extends Cubit<InputValidationState> {
       priceMessage: priceData[1],
     ));
   }
+
+  void refresh() {
+    emit(InputValidationInitial());
+  }
 }

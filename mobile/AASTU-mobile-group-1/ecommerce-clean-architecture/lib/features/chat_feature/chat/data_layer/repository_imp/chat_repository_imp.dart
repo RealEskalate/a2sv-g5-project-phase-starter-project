@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:ecommerce/core/error/exception.dart';
 import 'package:ecommerce/features/auth/data/data_sources/remote_data_source.dart';
 import 'package:ecommerce/features/chat_feature/chat/data_layer/model/message_model.dart';
@@ -38,10 +40,17 @@ class ChatRepositoryImp extends ChatRepository {
     return remoteAbstract.chatRoom(_token, receiverId);
   }
 
-  @override
-  Future<Either<Failure, void>> deleteMessage(String chatId) {
-    // TODO: implement deleteMessage
-    throw UnimplementedError();
+ @override
+  Future<Either<Failure, void>> deleteMessage(String chatId) async {
+      try {
+        await remoteAbstract.deleteMessage(chatId,_token);
+        return Right(null);
+      } on ServerException {
+        return Left(ServerFailure('An error has occurred'));
+      } on SocketException {
+        return Left(ConnectionFailure('Failed to connect to the network'));
+      }
+   
   }
 
   @override

@@ -34,22 +34,27 @@ class Chat extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Search Users',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            // color: Theme.of(context).colorScheme.surface,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
         ),
-        leading: const Icon(
+        leading: Icon(
           Icons.search,
           color: Colors.white,
+          // color: Theme.of(context).colorScheme.onSurface,
         ),
-        backgroundColor: const Color.fromARGB(255, 72, 168, 246),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Column(
         children: [
           Container(
             // margin: EdgeInsets.only(bottom: 10),
             height: 109, // Set a fixed height for the horizontal list
-            color: const Color.fromARGB(255, 72, 168, 246),
+            color: Theme.of(context).colorScheme.primary,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: activeUsers.length,
@@ -72,7 +77,8 @@ class Chat extends StatelessWidget {
                         const SizedBox(height: 8),
                         Text(
                           user['name']!,
-                          style: const TextStyle(color: Colors.white),
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface),
                         ),
                       ],
                     ),
@@ -84,7 +90,7 @@ class Chat extends StatelessWidget {
           Expanded(
             child: Container(
               width: MediaQuery.of(context).size.width,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onTertiaryFixed,
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -149,6 +155,7 @@ Widget _duplicate(
   String peekMessage,
 ) {
   return Container(
+    // color: Colors.blue,
     margin: EdgeInsets.only(bottom: 20, top: 5),
     width: MediaQuery.of(context).size.width * 0.95,
     height: MediaQuery.of(context).size.height * 0.08,
@@ -160,9 +167,20 @@ Widget _duplicate(
           child: Icon(
             Icons.person,
             size: 35,
+            color: Colors.black,
           ),
         ),
         Container(
+          //only used to display line at the bottom
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: const Color.fromARGB(255, 229, 229, 229),
+                width: 1.0,
+              ),
+            ),
+          ),
+
           margin: EdgeInsets.only(left: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,9 +189,9 @@ Widget _duplicate(
               Text(
                 name,
                 style: TextStyle(
-                  fontWeight: FontWeight.w800,
-                  fontSize: 20,
-                ),
+                    fontWeight: FontWeight.w500,
+                    fontSize: 20,
+                    color: Theme.of(context).colorScheme.onSurface),
               ),
               Text(
                 peekMessage,
@@ -186,29 +204,43 @@ Widget _duplicate(
           ),
         ),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '2 min ago',
-                style: TextStyle(
-                  color: Colors.grey,
+          child: Container(
+            //this container used only to display line on contaienr bottom
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: const Color.fromARGB(
+                      255, 229, 229, 229), // Set your desired color
+                  width: 1.0, // Adjust the thickness of the line
                 ),
               ),
-              Container(
-                child: CircleAvatar(
-                  backgroundColor: Colors.purple,
-                  radius: 13,
-                  child: Text(
-                    '4',
-                    style: TextStyle(
-                      color: Colors.white60,
+            ),
+
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '2 min ago',
+                  style: TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+                Container(
+                  child: CircleAvatar(
+                    backgroundColor: const Color.fromARGB(228, 104, 19, 119),
+                    radius: 11,
+                    child: Text(
+                      '4',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.white60,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],

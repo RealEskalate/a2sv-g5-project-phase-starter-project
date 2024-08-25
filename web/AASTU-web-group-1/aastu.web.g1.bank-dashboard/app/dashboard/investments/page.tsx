@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React from "react";
 import Card from "./investment_components/Card";
 import { investmentTypes } from "@/constants";
@@ -12,7 +12,11 @@ const Investments = () => {
   const { isDarkMode } = useUser();
 
   return (
-    <div className={`flex flex-col justify-center ${ isDarkMode ? "bg-gray-700" : "bg-[#F5F7FA]"} px-3`}>
+    <div
+      className={`flex flex-col justify-center ${
+        isDarkMode ? "bg-gray-700" : "bg-[#F5F7FA]"
+      } px-3`}
+    >
       <div className="flex flex-col md:flex-row gap-3 md:gap-10 justify-center pt-4 w-full">
         {investmentTypes.map((item) => (
           <Card {...item} key={item.name} />
@@ -20,13 +24,21 @@ const Investments = () => {
       </div>
       <div className="flex flex-col md:flex-row md:gap-40 gap-10 my-4 w-full justify-center">
         <div className="w-[90%] md:w-[35%] mx-auto md:mx-0">
-          <h1 className={`my-3 font-[600] text-[16px] md:text-[22px] text-nowrap ${isDarkMode ? "text-gray-200" : "text-[#333B69]"}`}>
+          <h1
+            className={`my-3 font-[600] text-[16px] md:text-[22px] text-nowrap ${
+              isDarkMode ? "text-gray-200" : "text-[#333B69]"
+            }`}
+          >
             Yearly Total Investment
           </h1>
           <LineChartComp />
         </div>
         <div className="w-[90%] md:w-[35%] mx-auto md:mx-0">
-          <h1 className={`my-3 font-[600] text-[16px] md:text-[22px] ${isDarkMode ? "text-gray-200" : "text-[#333B69]"}`}>
+          <h1
+            className={`my-3 font-[600] text-[16px] md:text-[22px] ${
+              isDarkMode ? "text-gray-200" : "text-[#333B69]"
+            }`}
+          >
             Monthly Revenue
           </h1>
           <Chart2 />

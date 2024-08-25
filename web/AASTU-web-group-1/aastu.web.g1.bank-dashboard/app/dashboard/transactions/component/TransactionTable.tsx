@@ -23,36 +23,34 @@ export const TransactionTable = ({
   const [dataFetched, setDataFetched] = useState(false);
   const rowsPerPage = 5;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      onLoadingComplete(true);
+useEffect(() => {
+  const fetchData = async () => {
+    setLoading(true);
+    onLoadingComplete(true);
 
-      try {
-        let data: TransactionData | undefined;
-        if (activeTab === "all") {
-          data = await getallTransactions(currentPage - 1, rowsPerPage);
-        } else if (activeTab === "income") {
-          data = await getIncomes(currentPage - 1, rowsPerPage);
-        } else {
-          data = await getExpenses(currentPage - 1, rowsPerPage);
-        }
-        setTransactions(data?.content || []);
-        setTotalPages(data?.totalPages || 7);
-        setDataFetched(true); // Mark data as fetched
-        onLoadingComplete(false);
-      } catch (error) {
-        console.error("Error fetching transactions:", error);
-      } finally {
-        setLoading(false);
+    try {
+      let data: TransactionData | undefined;
+      if (activeTab === "all") {
+        data = await getallTransactions(currentPage - 1, rowsPerPage);
+      } else if (activeTab === "income") {
+        data = await getIncomes(currentPage - 1, rowsPerPage);
+      } else {
+        data = await getExpenses(currentPage - 1, rowsPerPage);
       }
-    };
-
-    // Only fetch data if not already fetched
-    if (!dataFetched) {
-      fetchData();
+      setTransactions(data?.content || []);
+      setTotalPages(data?.totalPages || 1); 
+      onLoadingComplete(false);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+    } finally {
+      setLoading(false);
     }
-  }, [currentPage, activeTab, onLoadingComplete, dataFetched]);
+  };
+
+
+  fetchData();
+}, [currentPage, activeTab, onLoadingComplete]);
+
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -70,128 +68,152 @@ export const TransactionTable = ({
     }
   };
 
-  const renderPageButtons = () => {
-    const pageButtons = [];
-    const maxVisiblePages = 3; // Number of pages to show before the ellipsis
+ const renderPageButtons = () => {
+   const pageButtons = [];
+   const maxVisiblePages = 3;
 
-    // Determine the range of pages to show
-    const startPage = Math.max(currentPage - 1, 1);
-    const endPage = Math.min(startPage + maxVisiblePages - 1, totalPages - 1);
+   pageButtons.push(
+     <button
+       key={1}
+       onClick={() => handlePageChange(1)}
+       className={`hover:bg-blue-700 hover:text-white ${
+         currentPage === 1
+           ? "bg-blue-600 text-white"
+           : isDarkMode
+           ? "text-gray-300 bg-gray-900"
+           : "text-blue-600"
+       } 
+      focus:ring-4 ${
+        isDarkMode ? "focus:ring-gray-500" : "focus:ring-blue-300"
+      } font-medium rounded-lg text-xs md:text-sm px-2 md:px-4 py-2 me-1 mb-1 md:me-2 md:mb-2 `}
+     >
+       1
+     </button>
+   );
 
-    // Always show the first page when it's close enough
-    if (currentPage <= maxVisiblePages) {
-      for (let page = 1; page <= endPage; page++) {
-        pageButtons.push(
-          <button
-            key={page}
-            onClick={() => handlePageChange(page)}
-            className={`${
-              page !== currentPage
-                ? isDarkMode
-                  ? "text-gray-300 hover:bg-gray-700 hover:text-white bg-gray-900"
-                  : "text-blue-600 hover:bg-blue-700 hover:text-white bg-white"
-                : isDarkMode
-                ? "bg-blue-600 text-white"
-                : "bg-blue-600 text-white"
-            } 
-            focus:ring-4 ${
-              isDarkMode ? "focus:ring-gray-500" : "focus:ring-blue-300"
-            } font-medium rounded-lg text-sm px-4 py-2 me-2 mb-2 shadow-lg`}
-          >
-            {page}
-          </button>
-        );
-      }
-    } else {
-      for (let page = startPage; page <= endPage; page++) {
-        pageButtons.push(
-          <button
-            key={page}
-            onClick={() => handlePageChange(page)}
-            className={`${
-              page === currentPage
-                ? "bg-blue-600 text-white"
-                : isDarkMode
-                ? "text-gray-300 hover:bg-gray-700 hover:text-white"
-                : "text-blue-600 bg-white hover:bg-blue-700 hover:text-white"
-            }
-            focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 me-2 mb-2 shadow-lg`}
-          >
-            {page}
-          </button>
-        );
-      }
-    }
 
-    // Always show the last page
-    if (endPage < totalPages - 1) {
-      pageButtons.push(
-        <span key="dots-end" className="text-gray-500">
-          ...
-        </span>
-      );
-    }
+   const startPage = Math.max(currentPage - 1, 2);
+   const endPage = Math.min(startPage + maxVisiblePages - 1, totalPages - 1);
+   if (startPage > 2) {
+     pageButtons.push(
+       <span key="dots-start" className="text-gray-500 text-xs md:text-sm">
+         ...
+       </span>
+     );
+   }
 
-    pageButtons.push(
-      <button
-        key={totalPages}
-        onClick={() => handlePageChange(totalPages)}
-        className={`${
-          currentPage === totalPages
-            ? "bg-blue-600 text-white"
-            : "text-blue-600 hover:bg-blue-700 hover:text-white"
-        } ${isDarkMode ? "bg-gray-800" : "bg-white"} 
-        focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 me-2 mb-2 shadow-lg`}
-      >
-        {totalPages}
-      </button>
-    );
+   for (let page = startPage; page <= endPage; page++) {
+     pageButtons.push(
+       <button
+         key={page}
+         onClick={() => handlePageChange(page)}
+         className={`hover:bg-blue-700 hover:text-white ${
+           page === currentPage
+             ? "bg-blue-600 text-white"
+             : isDarkMode
+             ? "text-gray-300 bg-gray-900"
+             : "text-blue-600 "
+         } 
+        focus:ring-4 ${
+          isDarkMode ? "focus:ring-gray-500" : "focus:ring-blue-300"
+        } font-medium rounded-lg text-xs md:text-sm px-2 md:px-4 py-2 me-1 mb-1 md:me-2 md:mb-2 `}
+       >
+         {page}
+       </button>
+     );
+   }
 
-    return pageButtons;
-  };
+   if (endPage < totalPages - 1) {
+     pageButtons.push(
+       <span key="dots-end" className="text-gray-500 text-xs md:text-sm">
+         ...
+       </span>
+     );
+   }
+
+   if (totalPages > 1) {
+     pageButtons.push(
+       <button
+         key={totalPages}
+         onClick={() => handlePageChange(totalPages)}
+         className={`hover:bg-blue-700 hover:text-white ${
+           currentPage === totalPages
+             ? "bg-blue-600 text-white"
+             : isDarkMode
+             ? "text-gray-300 bg-gray-900"
+             : "text-blue-600 "
+         } 
+        focus:ring-4 ${
+          isDarkMode ? "focus:ring-gray-500" : "focus:ring-blue-300"
+        } font-medium rounded-lg text-xs md:text-sm px-2 md:px-4 py-2 me-1 mb-1 md:me-2 md:mb-2 `}
+       >
+         {totalPages}
+       </button>
+     );
+   }
+
+   return pageButtons;
+ };
+
+
 
   return (
     <>
-      <div className="space-y-5 w-[90%] items-center">
-        <div className="space-y-5">
-          <h4>Recent Transactions</h4>
-          <div className="space-x-5 flex">
+      <div className="space-y-5 w-[100%] items-center my-5">
+        <div className={`space-y-5 `}>
+          <h4 className="font-inter  font-semibold lg:text-[22px] md:text-lg text-base">
+            Recent Transactions
+          </h4>
+          <div
+            className={`md:space-x-20 space-x-5 flex flex-grow border-b-2 ${
+              isDarkMode ? "border-[#ebeef23a]" : "border-[#EBEEF2]"
+            }`}
+          >
             <button onClick={() => setActiveTab("all")}>
               <p
-                className={`border-b-2 text-xs ${
-                  activeTab === "all"
-                    ? "border-b-blue-600"
-                    : "border-b-transparent"
-                } ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}
+                className={`border-b-4  font-inter  font-medium lg:text-base text-xs
+                   ${
+                     activeTab === "all"
+                       ? isDarkMode
+                         ? "border-b-blue-600 text-gray-300"
+                         : "border-b-blue-600 text-[#1814F3]"
+                       : "border-b-transparent text-[#718EBF]"
+                   }
+                  
+                `}
               >
                 All Transactions
               </p>
             </button>
             <button onClick={() => setActiveTab("income")}>
               <p
-                className={`border-b-2 text-xs ${
+                className={`border-b-4 font-medium lg:text-base text-xs  ${
                   activeTab === "income"
-                    ? "border-b-blue-600"
-                    : "border-b-transparent"
-                } ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}
+                    ? isDarkMode
+                      ? "border-b-blue-600 text-gray-300"
+                      : "border-b-blue-600 text-[#1814F3]"
+                    : "border-b-transparent text-[#718EBF]"
+                }`}
               >
                 Income
               </p>
             </button>
             <button onClick={() => setActiveTab("expense")}>
               <p
-                className={`border-b-2 text-xs ${
+                className={`border-b-4 font-medium lg:text-base text-xs  ${
                   activeTab === "expense"
-                    ? "border-b-blue-600"
-                    : "border-b-transparent"
-                } ${isDarkMode ? "text-gray-300" : "text-gray-700"}`}
+                    ? isDarkMode
+                      ? "border-b-blue-600 text-gray-300"
+                      : "border-b-blue-600 text-[#1814F3]"
+                    : "border-b-transparent text-[#718EBF]"
+                } `}
               >
                 Expense
               </p>
             </button>
           </div>
         </div>
-        {loading && !dataFetched ? (
+        {loading ? (
           <div>
             {Array.from({ length: rowsPerPage }).map((_, index) => (
               <ShimmerRow key={index} />
@@ -201,52 +223,36 @@ export const TransactionTable = ({
           <ExpenseTable transactions={transactions} tab={activeTab} />
         )}
       </div>
-      <div className="flex justify-end items-center space-x-2 m-5">
+      <div className={`flex justify-end items-center space-x-2  `}>
         <button
           onClick={handlePreviousPage}
-          className={`flex items-center justify-center rounded-xl shadow-lg p-1 ${
+          className={`flex items-center justify-center rounded-xl px-1 md:px-2 md:py-1 mb-1 md:me-2 md:mb-2 text-xs md:text-sm ${
             currentPage === 1
               ? "text-gray-400"
               : isDarkMode
-              ? "text-gray-300 hover:bg-blue-600 hover:text-white"
-              : "text-blue-600 hover:bg-blue-400 hover:text-black"
-          } ${isDarkMode ? "bg-gray-800" : "bg-white"}`}
+              ? "text-gray-300  hover:text-white hover:bg-blue-600"
+              : "text-blue-600 hover:text-white hover:bg-blue-600"
+          } ${isDarkMode ? "bg-gray-800" : ""}`}
           disabled={currentPage === 1}
         >
           <GrFormPrevious size={30} />
-          <p
-            className={` ${
-              currentPage === 1
-                ? "text-gray-400"
-                : isDarkMode
-                ? "text-gray-300"
-                : "text-blue-600"
-            }`}
-          >
-            Previous
-          </p>
+          Previous
         </button>
 
         {renderPageButtons()}
 
         <button
           onClick={handleNextPage}
-          className={`flex items-center justify-center rounded-xl shadow-lg p-1 ${
+          className={`flex items-center justify-center rounded-xl  px-1 md:px-2 md:py-1 mb-1 md:me-2 md:mb-2 text-xs md:text-sm ${
             currentPage === totalPages
               ? "text-gray-400 "
               : isDarkMode
-              ? "text-gray-300 hover:bg-blue-600 hover:text-white"
-              : "text-blue-600 hover:bg-blue-400 hover:text-black"
-          } ${isDarkMode ? "bg-gray-800" : "bg-white"} hover:bg-blue-100`}
+              ? "text-gray-300  hover:text-white hover:bg-blue-600"
+              : "text-blue-600  hover:text-white hover:bg-blue-600"
+          } ${isDarkMode ? "bg-gray-800" : ""} hover:bg-blue-100`}
           disabled={currentPage === totalPages}
         >
-          <p
-            className={` ${
-              currentPage === totalPages ? "text-gray-400" : "text-blue-600"
-            } ${isDarkMode ? "text-gray-300" : "text-gray-900"}`}
-          >
-            Next
-          </p>
+          Next
           <MdNavigateNext size={30} />
         </button>
       </div>

@@ -11,7 +11,7 @@ const Shimmer = () => {
     <div className="animate-pulse space-y-4">
       <div className="h-6 bg-gray-300 rounded w-1/4"></div>{" "}
       {/* Simulate title */}
-      <div className="h-48 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 rounded-xl"></div>{" "}
+      <div className="h-52 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 rounded-xl"></div>{" "}
       {/* Simulate chart area */}
     </div>
   );
@@ -42,7 +42,7 @@ export const BalanceHistory = ({
   return (
     <div className="space-y-5">
       <div className="font-inter text-[16px] font-semibold">
-        <h4>Balance History</h4>
+        <h4 className="lg:text-[22px] md:text-lg text-base">Balance History</h4>
       </div>
       <div
         className={`

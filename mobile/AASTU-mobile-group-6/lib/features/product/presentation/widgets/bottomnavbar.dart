@@ -14,9 +14,9 @@ class _BottomnavbarState extends State<Bottomnavbar> {
   Widget build(BuildContext context) {
     return CurvedNavigationBar(
       height: MediaQuery.of(context).size.width * 0.17,
-      buttonBackgroundColor: Color.fromRGBO(63, 81, 243, 1),
+      buttonBackgroundColor: Color.fromARGB(255, 8, 85, 149),
       color: Theme.of(context).colorScheme.onTertiary,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
       animationCurve: Curves.easeInOut,
       animationDuration: const Duration(milliseconds: 5000),
       // RGBO(63, 81, 243,1)
@@ -30,13 +30,13 @@ class _BottomnavbarState extends State<Bottomnavbar> {
         });
         switch (_currentidx) {
           case 0:
-            // Navigator.pushNamed(context, '/home');
+            Navigator.pushNamed(context, '/home');
             break;
           case 1:
-            // Navigator.pushNamed(context, '/add');
+            Navigator.pushNamed(context, '/add');
             break;
           case 2:
-          // Navigator.pushNamed(context, '/search');
+            Navigator.pushNamed(context, '/search');
         }
       },
 

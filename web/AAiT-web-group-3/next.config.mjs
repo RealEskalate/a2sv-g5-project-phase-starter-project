@@ -15,7 +15,13 @@ const nextConfig = {
         port: "",
         pathname: "**",
       },
+      {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
+        pathname: '/v0/b/**',  // Wildcard pattern for any Firebase URL paths
+      },
     ],
+    domains: ['firebasestorage.googleapis.com'],
   },
 };
 

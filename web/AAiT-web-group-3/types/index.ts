@@ -40,3 +40,22 @@ export interface SecurityFormData {
   currentPassword: string;
   newPassword: string;
 }
+
+ export type BankService = {
+  id: string;
+  name: string;
+  details: string;
+  numberOfUsers: number;
+  status: string;
+  type: string;
+  icon: string;
+};
+
+ export type BankServiceResponse = {
+  success: boolean;
+  message: string;
+  data: {
+    content: BankService[];
+  };
+};
+

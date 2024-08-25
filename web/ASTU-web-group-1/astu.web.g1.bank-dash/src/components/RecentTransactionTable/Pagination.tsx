@@ -13,7 +13,7 @@ const Pagination = ({
   setCurrentPage,
 }: paginationProps) => {
   const handlePreviousPage = () => {
-    if (currentPage > 1) {
+    if (currentPage > 0) {
       setCurrentPage(currentPage - 1);
     }
   };
@@ -30,7 +30,7 @@ const Pagination = ({
         <li className="flex flex-row flex-wrap gap-3 items-center">
           <button
             onClick={handlePreviousPage}
-            disabled={currentPage === 1}
+            disabled={currentPage === 0}
             className="flex items-center justify-center px-3 h-8"
           >
             <ChevronLeft />
@@ -47,7 +47,7 @@ const Pagination = ({
         <li className="flex flex-row flex-wrap gap-3 items-center">
           <button
             onClick={handleNextPage}
-            disabled={currentPage === totalPages}
+            disabled={currentPage === totalPages - 1}
             className="flex items-center justify-center px-3 h-8"
           >
             Next

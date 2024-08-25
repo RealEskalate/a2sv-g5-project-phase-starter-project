@@ -14,6 +14,11 @@ type CommentRepository struct {
 	mock.Mock
 }
 
+// DeleteCommentByBlogID implements domain.CommentRepository.
+func (_m *CommentRepository) DeleteCommentByBlogID(c context.Context, blogID string) error {
+	panic("unimplemented")
+}
+
 // Create provides a mock function with given fields: c, comment
 func (_m *CommentRepository) Create(c context.Context, comment *domain.Comment) (*domain.Comment, error) {
 	ret := _m.Called(c, comment)

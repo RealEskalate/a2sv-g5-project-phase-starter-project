@@ -14,6 +14,11 @@ type LikeRepository struct {
 	mock.Mock
 }
 
+// DeleteLikeByBlogID implements domain.LikeRepository.
+func (_m *LikeRepository) DeleteLikeByBlogID(c context.Context, blogID string) error {
+	panic("unimplemented")
+}
+
 // GetByID provides a mock function with given fields: c, userID, blogID
 func (_m *LikeRepository) GetByID(c context.Context, userID string, blogID string) (*domain.Like, error) {
 	ret := _m.Called(c, userID, blogID)

@@ -21,7 +21,7 @@ func IsValidFileFormat(header *multipart.FileHeader, formats ...string) bool {
 }
 
 func SaveImage(file multipart.File, name string, cxt context.Context) (*uploader.UploadResult, error) {
-	cld, err := setupCloudinary()
+	cld, err := SetupCloudinary()
 	if err != nil {
 		return &uploader.UploadResult{}, err
 	}
@@ -37,7 +37,7 @@ func SaveImage(file multipart.File, name string, cxt context.Context) (*uploader
 }
 
 func DeleteImage(publicID string, cxt context.Context) error {
-	cld, err := setupCloudinary()
+	cld, err := SetupCloudinary()
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func DeleteImage(publicID string, cxt context.Context) error {
 	return nil
 }
 
-func setupCloudinary() (*cloudinary.Cloudinary, error) {
+func SetupCloudinary() (*cloudinary.Cloudinary, error) {
 	cld, errCld := cloudinary.NewFromURL(fmt.Sprintf("%v%v:%v@%v", os.Getenv("CLOUDINARY_URL"), os.Getenv("CLOUDINARY_API_KEY"), os.Getenv("CLOUDINARY_API_SECRET"), os.Getenv("CLOUDINARY_NAME")))
 	if errCld != nil {
 		return nil, errCld

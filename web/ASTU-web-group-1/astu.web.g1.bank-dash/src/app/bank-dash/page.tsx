@@ -10,7 +10,6 @@ import StoreProvider from "@/providers/StoreProvider";
 import TestNaol from "@/components/TestNaol";
 import MyCardLists from "@/components/MyCard/MyCardLists";
 import Link from "next/link";
-import ChartSkeleton from "@/components/AllSkeletons/chartSkeleton/chartSkeleton";
 
 export default function Home() {
   return (
@@ -37,7 +36,9 @@ export default function Home() {
           </div>
         </div>
         <div className="lg:w-1/3 w-full">
-          <RecentTransaction />
+          <StoreProvider>
+            <RecentTransaction />
+          </StoreProvider>
         </div>
       </div>
       <div className="md:flex my-5">

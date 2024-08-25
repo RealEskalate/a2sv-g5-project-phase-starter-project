@@ -24,7 +24,7 @@ const InvestmentItem = () => {
       <InvestmentCard
         image={"/assets/icons/moneyBag.svg"}
         name={"Total Invested Amount"}
-        amount={`$${Alldata?.totalInvestment}`}
+        amount={`$${Alldata?.totalInvestment.toFixed(2)}`}
       />
       <InvestmentCard
         image={"/assets/icons/numberof-investment.svg"}
@@ -34,7 +34,7 @@ const InvestmentItem = () => {
       <InvestmentCard
         image={"/assets/icons/rate-return.svg"}
         name={"Rate of Return"}
-        amount={`+${Alldata?.rateOfReturn}%`}
+        amount={`+${Alldata?.rateOfReturn.toFixed(2)}%`}
       />
     </div>
   );

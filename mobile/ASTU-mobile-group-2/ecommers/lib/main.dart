@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 import 'features/chat/presentation/Chat_page/IndividualChatPage.dart';
+import 'features/chat/presentation/ui/chatScreen/chatapp.dart';
 import 'features/ecommerce/presentation/UI/add_product/add_product.dart';
 import 'features/ecommerce/presentation/UI/home/Product_detail/detail_page.dart';
 import 'features/ecommerce/presentation/UI/home/home.dart';
@@ -63,6 +64,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const LoginHomePage(),
           '/registration': (context) => const RegisterBody(),
           '/chat-message': (context) => const IndividualChatPage(),
+          '/chat-screen': (context) =>  ChatListPage(),
         },
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

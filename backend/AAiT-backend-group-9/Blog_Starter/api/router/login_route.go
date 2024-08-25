@@ -34,5 +34,5 @@ func NewLoginRouter(env *config.Env, timeout time.Duration, db *mongo.Client, gr
     // Set up routes
     group.POST("/login", loginController.Login)
     group.POST("/forgotpassword", loginController.ForgotPassword)
-    group.POST("/updatepassword", loginController.UpdatePassword)
+    group.PATCH("/updatepassword", loginController.UpdatePassword)
 }

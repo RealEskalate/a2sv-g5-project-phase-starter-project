@@ -1,11 +1,11 @@
-package usecase_test
+package usecase
 
 import (
-	"Blog_Starter/domain/mocks"
 	"Blog_Starter/domain"
-	"Blog_Starter/usecase"
+	"Blog_Starter/domain/mocks"
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -24,7 +24,7 @@ type BlogUseCaseSuite struct {
 func (suite *BlogUseCaseSuite) SetupTest() {
 	suite.blogRepo = new(mocks.BlogRepository)
 	suite.userRepo = new(mocks.UserRepository)
-	suite.blogUseCase = usecase.NewBlogUseCase(suite.blogRepo, suite.userRepo, time.Second*5)
+	suite.blogUseCase = NewBlogUseCase(suite.blogRepo, suite.userRepo, time.Second*5)
 }
 
 func (suite *BlogUseCaseSuite) TestCreateBlog_Success() {
@@ -116,29 +116,44 @@ func (suite *BlogUseCaseSuite) TestGetBlogByID_NotFound() {
 }
 
 func (suite *BlogUseCaseSuite) TestUpdateBlog_Success() {
-	ctx := context.TODO()
-	blogID := primitive.NewObjectID().Hex()
-	userID := primitive.NewObjectID().Hex()
+    ctx := context.TODO()
+    blogID := primitive.NewObjectID().Hex()
+    userID := primitive.NewObjectID()
 
-	existingBlog := &domain.Blog{
-		UserID: primitive.NewObjectID(),
-	}
+    existingBlog := &domain.Blog{
+        UserID:  userID,
+        Title:   "Original Title",
+        Content: "Original Content",
+        Tags:    []string{"original", "tags"},
+    }
 
-	updatedBlog := &domain.BlogUpdate{
-		UserID:  userID,
-		Title:   "Updated Title",
-		Content: "Updated Content",
-		Tags:    []string{"updated", "tags"},
-	}
+    updatedBlog := &domain.BlogUpdate{
+        UserID:  userID.Hex(),
+        Title:   "Updated Title",
+        Content: "Updated Content",
+        Tags:    []string{"updated", "tags"},
+    }
 
-	suite.blogRepo.On("GetBlogByID", mock.Anything, blogID).Return(existingBlog, nil)
-	suite.blogRepo.On("UpdateBlog", mock.Anything, updatedBlog, blogID).Return(&domain.Blog{}, nil)
+	fmt.Println(updatedBlog.UserID)
 
-	blog, err := suite.blogUseCase.UpdateBlog(ctx, updatedBlog, blogID)
+    expectedBlog := &domain.Blog{
+        UserID:  userID,
+        Title:   "Updated Title",
+        Content: "Updated Content",
+        Tags:    []string{"updated", "tags"},
+    }
 
-	suite.NoError(err)
-	suite.NotNil(blog)
-	suite.blogRepo.AssertExpectations(suite.T())
+    suite.blogRepo.On("GetBlogByID", mock.Anything, blogID).Return(existingBlog, nil)
+    suite.blogRepo.On("UpdateBlog", mock.Anything, updatedBlog, blogID).Return(expectedBlog, nil)
+
+    blog, err := suite.blogUseCase.UpdateBlog(ctx, updatedBlog, blogID)
+
+    suite.NoError(err)
+    suite.NotNil(blog)
+    suite.Equal(expectedBlog.Title, blog.Title)
+    suite.Equal(expectedBlog.Content, blog.Content)
+    suite.Equal(expectedBlog.Tags, blog.Tags)
+    suite.blogRepo.AssertExpectations(suite.T())
 }
 
 func (suite *BlogUseCaseSuite) TestUpdateBlog_UserNotOwner() {

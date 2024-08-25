@@ -24,7 +24,7 @@ func NewBlogController(BlogUsecase domain.BlogUsecase, validator domain.Validate
 // ReactOnBlog implements domain.BlogUsecase.
 func (b BlogController) ReactOnBlog(c *gin.Context) {
 	blog_id := c.Param("id")
-	if blog_id == ":id" {
+	if blog_id == "" {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: "Blog ID required.",
 			Status:  http.StatusBadRequest,
@@ -332,9 +332,8 @@ func (b BlogController) GetMyBlogs(c *gin.Context) {
 		pageSize = "1"
 	}
 
-	// user_id, user_id_existes := c.Get("id")
 	user_id := c.GetString("user_id")
-	// role := c.GetString("role")
+	
 	if user_id == "" {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: "User id is required",
@@ -390,7 +389,6 @@ func (b BlogController) SearchBlogByTitleAndAuthor(c *gin.Context) {
 
 // UpdateBlogByID implements domain.BlogUsecase.
 func (b BlogController) UpdateBlogByID(c *gin.Context) {
-
 	blog_id := c.Param("id")
 	if blog_id == "" {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
@@ -400,8 +398,7 @@ func (b BlogController) UpdateBlogByID(c *gin.Context) {
 		c.Abort()
 	}
 	user_id := c.GetString("user_id")
-	role := c.GetString("role")
-	if user_id == "" || role == "" {
+	if user_id == ""{
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: "User id is required",
 			Status:  http.StatusBadRequest,
@@ -423,6 +420,10 @@ func (b BlogController) UpdateBlogByID(c *gin.Context) {
 			Status:  http.StatusInternalServerError,
 		})
 	} else {
-		c.JSON(http.StatusAccepted, gin.H{"updated_blog": updatedBlog})
+		c.JSON(http.StatusAccepted, domain.SuccessResponse{
+			Status:  http.StatusAccepted,
+			Message: "blog updated successfully",
+			Data:    updatedBlog,
+		})
 	}
 }

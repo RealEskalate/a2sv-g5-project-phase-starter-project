@@ -21,6 +21,7 @@ func main()  {
 	
 	defer app.CloseDBConnection()
 	defer app.CloseModelClient()
+	defer app.CloseRedisConnection()
 
 	tr := repository.NewTokenRepository(db, db.Collection("tokens"))
 	ur := repository.NewUserRepository(db.Collection("users"))
@@ -28,5 +29,5 @@ func main()  {
 	authMiddleware := middleware.NewAuthMiddleware(ts)
 
 	// Do something with the database
-	route.Setup(env, db, gin.Default(), authMiddleware, app.GenAi)
+	route.Setup(env, db, gin.Default(), authMiddleware, app.GenAi, app.Redis)
 }

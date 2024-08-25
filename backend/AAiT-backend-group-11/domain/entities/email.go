@@ -12,6 +12,6 @@ type SMTPConfig struct {
 }
 
 type EmailVerificationRequest struct {
-    Email string `json:"email" binding:"required"`
-    Code  string `json:"code" binding:"required"`
+    Email string `json:"email" binding:"required, email"`
+    Code  string `json:"code" binding:"required, min=5"`
 }

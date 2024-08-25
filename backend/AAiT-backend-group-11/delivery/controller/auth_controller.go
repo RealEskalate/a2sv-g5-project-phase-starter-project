@@ -24,7 +24,8 @@ func NewAuthController(authService interfaces.AuthenticationService, passwordRes
 
 func (controller *AuthController) RegisterUser(c *gin.Context) {
 
-	var userRequest entities.User
+	var userRequest dto.UserCreateRequestDTO
+
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -48,7 +49,15 @@ func (controller *AuthController) RegisterUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"data": createdUser})
+	userResponse := dto.UserResponse{
+		Username: createdUser.Username,
+		Email:    createdUser.Email,
+		Role:     createdUser.Role,
+	}
+
+
+	c.JSON(http.StatusCreated, gin.H{"data": userResponse})
+
 }
 
 func (controller *AuthController) Login(c *gin.Context) {

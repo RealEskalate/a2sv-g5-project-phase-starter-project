@@ -6,11 +6,12 @@ import (
 	"backend-starter-project/mongo"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
 	"github.com/google/generative-ai-go/genai"
 )
 
 
-func Setup(env *bootstrap.Env, db mongo.Database, gin *gin.Engine, auth middleware.AuthMiddleware, model *genai.GenerativeModel) {
+func Setup(env *bootstrap.Env, db mongo.Database, gin *gin.Engine, auth middleware.AuthMiddleware, model *genai.GenerativeModel, redis *redis.Client) {
 	
 	publicRouter := gin.Group("")
 
@@ -22,10 +23,11 @@ func Setup(env *bootstrap.Env, db mongo.Database, gin *gin.Engine, auth middlewa
 	_ = publicRouter
 
 
-	NewBlogRouter(&db, privateRouter.Group("/blogs"), model)
+	NewBlogRouter(&db, privateRouter.Group("/blogs"), model, redis)
 	NewCommmentRouter(&db, privateRouter.Group("/comments"))	
 	NewAuthRouter(env,db, publicRouter.Group("/auth"))
 	NewProfileRouter(&db, privateRouter.Group("/user"))
+	NewUserRouter(&db, adminRouter.Group("/user"))
 
 	gin.Run(":8080")
 }

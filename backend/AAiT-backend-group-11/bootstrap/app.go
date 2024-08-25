@@ -4,8 +4,10 @@ import (
 	"context"
 	"log"
 
-	"github.com/google/generative-ai-go/genai"
 	"backend-starter-project/mongo"
+
+	"github.com/go-redis/redis/v8"
+	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
 )
 
@@ -13,6 +15,7 @@ type Application struct {
 	Env           *Env
 	Mongo         *mongo.Client
 	GenAi         *genai.GenerativeModel
+	Redis 		  *redis.Client
 }
 
 func App() Application {
@@ -20,13 +23,8 @@ func App() Application {
 	app.Env = NewEnv()
 	app.Mongo = NewMongoDatabase(app.Env)
 
-	client, err := genai.NewClient(context.TODO(), option.WithAPIKey(app.Env.GeminiApiKey))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	model := client.GenerativeModel("gemini-1.5-flash")
-	app.GenAi = model
+	app.Redis = NewRedisClient(app.Env)
+	app.GenAi = NewAiModel(app.Env)
 
 	return *app
 }
@@ -38,4 +36,8 @@ func (app *Application) CloseDBConnection() {
 
 func (app *Application) CloseModelClient(){
 	//TODO: close the client for the ai model
+}
+
+func (app *Application) CloseRedisConnection() {
+	CloseRedisConnection(app.Redis)
 }

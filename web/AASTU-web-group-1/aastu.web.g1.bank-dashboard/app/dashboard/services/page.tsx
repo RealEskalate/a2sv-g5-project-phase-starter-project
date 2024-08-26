@@ -124,11 +124,11 @@ const Services = () => {
       </div>
 
       {/* Pagination Controls */}
-      <div className="flex justify-center gap-4 mt-4">
+      <div className="flex justify-center gap-2 mt-4">
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 0}
-          className={`px-4 py-2 rounded ${
+          className={`px-2 py-1 rounded ${
             isDarkMode
               ? "bg-gray-700 text-gray-300"
               : "bg-gray-200 text-gray-900"
@@ -136,12 +136,12 @@ const Services = () => {
         >
           Previous
         </button>
-        <span className="self-center">
+        <div className="flex gap-1 self-center ">
           {pages.map((page) => (
             <button
               key={page}
               onClick={() => handlePageChange(page)}
-              className={`px-4 py-2 rounded ${
+              className={`px-2 py-1 rounded ${
                 isDarkMode
                   ? "bg-gray-700 text-gray-300"
                   : "bg-gray-200 text-gray-900"
@@ -150,11 +150,11 @@ const Services = () => {
               {page}
             </button>
           ))}
-        </span>
+        </div>
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages - 1}
-          className={`px-4 py-2 rounded ${
+          className={`px-2 py-1 rounded ${
             isDarkMode
               ? "bg-gray-700 text-gray-300"
               : "bg-gray-200 text-gray-900"

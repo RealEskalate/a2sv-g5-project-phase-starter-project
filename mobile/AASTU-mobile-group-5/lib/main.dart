@@ -85,7 +85,7 @@ class MyApp extends StatelessWidget {
               '/signin': (context) => const SignInPage(),
               '/signup': (context) => const SignUpPage(),
               '/people': (context) => const Messages(),
-              '/text': (context) => TextPage(webSocketService: ),
+              // '/text': (context) => TextPage(webSocketService )
 
             },
             onGenerateRoute: (settings) {

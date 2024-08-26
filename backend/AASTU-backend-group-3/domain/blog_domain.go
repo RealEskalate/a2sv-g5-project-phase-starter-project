@@ -44,7 +44,9 @@ type BlogResponse struct {
 // when unmarshaling give blog response
 func (b *Blog) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&BlogResponse{
-		ID:            b.ID,
+
+		ID:			b.ID,
+
 		Title:         b.Title,
 		Content:       b.Content,
 		AuthorID:      b.AuthorID,
@@ -66,7 +68,7 @@ type BlogRepository interface {
 	CreateBlog(username, userID string,blog Blog) (Blog, error)
 	DeleteBlog( id string) (Blog, error)
 	UpdateBlog( blog Blog, blogId string) (Blog, error)
-	GetBlogByID( id string) (Blog, error)
+	GetBlogByID( id primitive.ObjectID) (Blog, error)
 	GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]Blog, int64, error)
 	GetUserBlogs(userID string) ([]Blog, error)
 

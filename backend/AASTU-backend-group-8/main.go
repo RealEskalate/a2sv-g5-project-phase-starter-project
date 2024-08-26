@@ -31,7 +31,7 @@ func main() {
 	otpCollection := client.Database("Blog").Collection("OTPs")
 	profileCollection := client.Database("Blog").Collection("profile")
 	commentCollection := repository.NewMongoCollection(client.Database("Blog").Collection("Comments"))
-	likeCollection := repository.NewMongoCollection(client.Database("Blog").Collection("Likes"))
+	// likeCollection := repository.NewMongoCollection(client.Database("Blog").Collection("Likes"))
 
 	userMockCollection := repository.NewMongoCollection(userCollection)
 	blogMockCollection := repository.NewMongoCollection(blogCollection)
@@ -45,12 +45,11 @@ func main() {
 	otpRepo := repository.NewOtpRepository(otpMockCollection)
 	profileRepo := repository.NewProfileRepository(profileMockCollection)
 	commentRepo := repository.NewCommentRepository(commentCollection)
-	likeRepo := repository.NewLikeRepository(likeCollection)
+	// likeRepo := repository.NewLikeRepository(likeCollection)
 
 	jwtService := infrastructure.NewJWTService(os.Getenv("JWT_SECRET"), "Kal", os.Getenv("JWT_REFRESH_SECRET"))
 
-
-	aiService := infrastructure.NewAIService() 
+	aiService := infrastructure.NewAIService()
 	aiUsecase := usecases.NewAIUsecase(aiService)
 
 	userUsecase := usecases.NewUserUsecase(userRepo, tokenRepo, jwtService)
@@ -59,22 +58,21 @@ func main() {
 	otpUsecase := usecases.NewOTPUsecase(otpRepo, userRepo)
 	profileUsecase := usecases.NewProfileUsecase(profileRepo)
 	commentUsecase := usecases.NewCommentUsecase(commentRepo)
-	likeUsecase := usecases.NewLikeUsecase(likeRepo)
+	// likeUsecase := usecases.NewLikeUsecase(likeRepo)
 
 	//controllers
 	aiHandler := controllers.NewAIHandler(aiUsecase)
 	profileHandler := controllers.NewProfileHandler(profileUsecase)
 	promoteDemoteHandler := controllers.NewPromoteDemoteController(userUsecase)
 
-
 	r := gin.Default()
 
-	routers.AIRouter(r, aiHandler,jwtService)
+	routers.AIRouter(r, aiHandler, jwtService)
 	routers.PromoteDemoteRouter(r, promoteDemoteHandler, jwtService)
 
 	profileRouter := routers.NewProfileRouter(profileHandler, r)
 	profileRouter.InitProfileRoutes(r.Group("/api/v1"))
-	routers.InitRoutes(r, blogUsecase, userUsecase, tokenUsecase, jwtService, likeUsecase, commentUsecase, tokenUsecase, otpUsecase)
+	routers.InitRoutes(r, blogUsecase, userUsecase, tokenUsecase, jwtService, commentUsecase, tokenUsecase, otpUsecase)
 	// routers.InitRoutes(r, blogUsecase, userUsecase, tokenUsecase, otpUsecase)
 
 	if err := r.Run(os.Getenv("PORT")); err != nil {

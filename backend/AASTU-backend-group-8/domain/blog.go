@@ -17,7 +17,6 @@ type BlogPost struct {
 	Veiws        int                `json:"views"`
 	LikeCount    int                `bson:"like_count"`
 	DislikeCount int                `bson:"dislike_count"`
-	Comments     []Comment          `bson:"comments"`
 }
 
 type SearchBlogPost struct {

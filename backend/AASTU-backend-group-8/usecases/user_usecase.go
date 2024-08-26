@@ -100,8 +100,9 @@ func (u *UserUsecase) LoginWithProvider(user *domain.User) (string, string, erro
 	if err != nil {
 		return "", "", err
 	}
+	userFetched, err := u.userRepo.GetUserByEmail(user.Email)
 
-	refreshToken, err := u.jwtSvc.GenerateRefreshToken(user.ID, user.Role)
+	refreshToken, err := u.jwtSvc.GenerateRefreshToken(userFetched.ID, userFetched.Role)
 	if err != nil {
 		return "", "", err
 	}
@@ -146,7 +147,6 @@ func (u *UserUsecase) DeleteUser(objectID primitive.ObjectID) error {
 	return u.userRepo.DeleteUser(objectID)
 }
 
-
 func (u *UserUsecase) PromoteToAdmin(username string) error {
 	user, err := u.userRepo.GetUserByUsername(username)
 	if err != nil {
@@ -160,7 +160,7 @@ func (u *UserUsecase) PromoteToAdmin(username string) error {
 	return u.userRepo.UpdateRole(username, "admin")
 }
 
-func (u *UserUsecase) DemoteToUser( username string) error {
+func (u *UserUsecase) DemoteToUser(username string) error {
 	user, err := u.userRepo.GetUserByUsername(username)
 	if err != nil {
 		return err
@@ -176,3 +176,4 @@ func (u *UserUsecase) DemoteToUser( username string) error {
 
 	return u.userRepo.UpdateRole(username, "user")
 }
+

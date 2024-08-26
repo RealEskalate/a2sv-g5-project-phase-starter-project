@@ -203,6 +203,7 @@ func (bc *MongoBlogRepository) GetBlogs(page, limit int64, sortBy, tag, authorNa
 
     findOptions.SetSort(sortFields)
 
+    totalNumberOfBlogs, err := bc.collection.CountDocuments(context.Background(), filter)
     // Set the limit and skip options for pagination
     if limit > 0 {
         findOptions.SetLimit(limit)
@@ -258,7 +259,7 @@ func (bc *MongoBlogRepository) GetBlogs(page, limit int64, sortBy, tag, authorNa
         blog.DislikesCount = dislikes
     }
 
-    return blogs, int64(len(blogs)), nil
+    return blogs, totalNumberOfBlogs, nil
 }
 
 // Helper function to sort exact matches to the top

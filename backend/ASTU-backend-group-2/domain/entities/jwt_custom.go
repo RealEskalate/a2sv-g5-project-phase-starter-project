@@ -8,6 +8,14 @@ type JwtCustomClaims struct {
 	Role    string `json:"role"`
 	IsOwner bool   `json:"is_owner"`
 	ID      string `json:"id"`
+	RefreshDataId string `json:"refresh_data_id"`
+	jwt.RegisteredClaims
+}
+
+type JwtCustomVerifyClaims struct {
+	Role    string `json:"role"`
+	IsOwner bool   `json:"is_owner"`
+	ID      string `json:"id"`
 	jwt.RegisteredClaims
 }
 
@@ -18,6 +26,7 @@ func (j *JwtCustomClaims) Valid() error {
 
 type JwtCustomRefreshClaims struct {
 	ID string `json:"id"`
+	RefreshDataId string `json:"refresh_data_id"`
 	jwt.RegisteredClaims
 }
 

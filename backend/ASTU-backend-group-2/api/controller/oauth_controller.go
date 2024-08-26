@@ -9,6 +9,7 @@ import (
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth/gothic"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type OpenAuthController interface {
@@ -75,21 +76,32 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 
 		}
 
-		accessToken, err := oc.LoginUsecase.CreateAccessToken(dbUser, oc.Env.AccessTokenSecret, oc.Env.AccessTokenExpiryHour)
 
-		if err != nil {
-			c.Error(err)
-			return
-		}
+	var refreshData entities.RefreshData
+	refreshData.Id =  primitive.NewObjectID()
+	refreshData.UserId = dbUser.ID.Hex()
+	
+	refreshData.Revoked = false
+	refreshData.Expire_date = refreshData.Expire_date
 
-		refreshToken, err := oc.LoginUsecase.CreateRefreshToken(dbUser, oc.Env.RefreshTokenSecret, oc.Env.RefreshTokenExpiryHour)
+	accessToken, err := oc.LoginUsecase.CreateAccessToken(dbUser, oc.Env.AccessTokenSecret, oc.Env.AccessTokenExpiryHour,refreshData.Id.Hex())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
+		return
+	}
 
-		if err != nil {
-			c.Error(err)
-			return
-		}
 
-		err = oc.LoginUsecase.UpdateRefreshToken(c.Request.Context(), dbUser.ID.Hex(), refreshToken)
+	refreshToken, err := oc.LoginUsecase.CreateRefreshToken(dbUser, oc.Env.RefreshTokenSecret, oc.Env.RefreshTokenExpiryHour,refreshData.Id.Hex())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
+		return
+	}
+	refreshData.RefreshToken = refreshToken
+	err = oc.LoginUsecase.CreateRefreshData(c, refreshData)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
+		return
+	}
 
 		loginResponse := entities.LoginResponse{
 			AccessToken:  accessToken,

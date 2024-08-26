@@ -25,7 +25,5 @@ type SignupUsecase interface {
 	GetUserById(c context.Context, userId string) (*User, error)
 	GetUserByEmail(c context.Context, email string) (User, error)
 	CreateVerificationToken(user *User, secret string, expiry int) (accessToken string, err error)
-	CreateAccessToken(user *User, secret string, expiry int) (accessToken string, err error)
-	CreateRefreshToken(user *User, secret string, expiry int) (refreshToken string, err error)
 	SendVerificationEmail(recipientEmail string, encodedToken string, env *bootstrap.Env) (err error)
 }

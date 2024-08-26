@@ -24,7 +24,6 @@ type User struct {
 	Password   string             `json:"password,omitempty" bson:"password" binding:"required,min=4,max=30,StrongPassword"`
 	IsOwner    bool               `json:"is_owner,omitempty" bson:"is_owner"`
 	Role       string             `json:"role,omitempty" bson:"role"`
-	Tokens     []string           `json:"tokens,omitempty" bson:"tokens"`
 	VerToken   string             `json:"verify_token,omitempty" bson:"verfiy_token"`
 	CreatedAt  primitive.DateTime `json:"created_at,omitempty" bson:"created_at"`
 	UpdatedAt  primitive.DateTime `json:"updated_at,omitempty" bson:"updated_at"`
@@ -122,7 +121,9 @@ type UserUsecase interface {
 type UserRepository interface {
 	CreateUser(c context.Context, user *User) (*User, error)
 	IsOwner(c context.Context) (bool, error)
-	UpdateRefreshToken(c context.Context, userID string, refreshToken string) error
+	CreateRefreshToken(c context.Context, refreshData RefreshData) error 
+	DeleteRefreshToken(c context.Context, id string) error 
+	GetRefreshToken(c context.Context, id string) (*RefreshData, error) 
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
 	GetUsers(c context.Context, filter bson.M, userFilter UserFilter) (*[]User, mongopagination.PaginationData, error)

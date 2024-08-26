@@ -24,7 +24,7 @@ func (uc *BlogUsecaseImpl) CreateBlog(username, userID string, blog domain.Blog)
 	}
 
 	// Return the ID of the newly created blog post
-	return newBlog, nil
+	return newBlog, &domain.CustomError{}
 }
 
 func (uc *BlogUsecaseImpl) DeleteBlog(role, userId, id string) (domain.Blog, *domain.CustomError) {
@@ -42,7 +42,7 @@ func (uc *BlogUsecaseImpl) DeleteBlog(role, userId, id string) (domain.Blog, *do
 	if err != nil {
 		return domain.Blog{}, domain.ErrFailedToDeleteBlog
 	}
-	return blog, nil
+	return blog, &domain.CustomError{}
 }
 
 func (uc *BlogUsecaseImpl) UpdateBlog(blog domain.Blog, role string, blogId string) (domain.Blog, *domain.CustomError) {
@@ -57,7 +57,7 @@ func (uc *BlogUsecaseImpl) UpdateBlog(blog domain.Blog, role string, blogId stri
 	if err != nil {
 		return domain.Blog{}, domain.ErrFailedToUpdateBlog
 	}
-	return blog, nil
+	return blog, &domain.CustomError{}
 }
 
 func (uc *BlogUsecaseImpl) GetBlogByID(id string) (domain.Blog, *domain.CustomError) {
@@ -68,12 +68,12 @@ func (uc *BlogUsecaseImpl) GetBlogByID(id string) (domain.Blog, *domain.CustomEr
 	return blog, nil
 }
 
-func (uc *BlogUsecaseImpl) GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]domain.Blog, *domain.CustomError) {
-	blogs, err := uc.blogRepo.GetBlogs(page, limit, sortBy, tag, authorName)
+func (uc *BlogUsecaseImpl) GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]domain.Blog, int64, *domain.CustomError) {
+	blogs, total, err := uc.blogRepo.GetBlogs(page, limit, sortBy, tag, authorName)
 	if err != nil {
-		return nil, domain.ErrFailedToRetrieveBlogs
+		return nil, 0, domain.ErrFailedToRetrieveBlogs
 	}
-	return blogs, nil
+	return blogs, total, &domain.CustomError{}
 }
 
 func (uc *BlogUsecaseImpl) GetUserBlogs(userID string) ([]domain.Blog, *domain.CustomError) {
@@ -81,5 +81,5 @@ func (uc *BlogUsecaseImpl) GetUserBlogs(userID string) ([]domain.Blog, *domain.C
 	if err != nil {
 		return nil, domain.ErrFailedToRetrieveUserBlogs
 	}
-	return blogs, nil
+	return blogs, &domain.CustomError{}
 }

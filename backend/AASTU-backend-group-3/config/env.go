@@ -28,6 +28,8 @@ type envConfigs struct {
 	Scopes 	   string `mapstructure:"Google_SCOPES"`
 	Endpoint 	string `mapstructure:"Google_ENDPOINT"`
 	OauthStateString string `mapstructure:"Google_OAUTH_STATE_STRING"`
+	RateLimitMaxRequest int `mapstructure:"RATE_LIMIT_MAX_REQUEST"`
+	RateLimitExpiration int `mapstructure:"RATE_LIMIT_EXPIRATION"`
 
 	
 

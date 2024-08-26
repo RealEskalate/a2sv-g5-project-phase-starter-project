@@ -174,7 +174,7 @@ func (bc *MongoBlogRepository) GetBlogByID(id string) (domain.Blog, error) {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-func (bc *MongoBlogRepository) GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]domain.Blog, error) {
+func (bc *MongoBlogRepository) GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]domain.Blog, int64, error) {
     var blogs []domain.Blog
 
     // Create a filter map
@@ -212,13 +212,13 @@ func (bc *MongoBlogRepository) GetBlogs(page, limit int64, sortBy, tag, authorNa
     // Execute the query
     cursor, err := bc.collection.Find(context.Background(), filter, findOptions)
     if err != nil {
-        return nil, err
+        return nil, 0, err
     }
     defer cursor.Close(context.Background())
 
     // Decode all matching documents into the blogs slice
     if err = cursor.All(context.Background(), &blogs); err != nil {
-        return nil, err
+        return nil, 0, err
     }
 
     // Sort exact matches to the top
@@ -238,12 +238,12 @@ func (bc *MongoBlogRepository) GetBlogs(page, limit int64, sortBy, tag, authorNa
 
         cursor, err := LikeCollection.Find(ctx, reactionFilter)
         if err != nil {
-            return nil, err
+            return nil, 0, err
         }
         defer cursor.Close(ctx)
 
         if err = cursor.All(ctx, &totalPostReactions); err != nil {
-            return nil, err
+            return nil, 0, err
         }
 
         for _, reaction := range totalPostReactions {
@@ -258,7 +258,7 @@ func (bc *MongoBlogRepository) GetBlogs(page, limit int64, sortBy, tag, authorNa
         blog.DislikesCount = dislikes
     }
 
-    return blogs, nil
+    return blogs, int64(len(blogs)), nil
 }
 
 // Helper function to sort exact matches to the top

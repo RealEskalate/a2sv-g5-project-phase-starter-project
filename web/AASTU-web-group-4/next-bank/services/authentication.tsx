@@ -55,27 +55,24 @@ export const refreshToken = async (tokenData: any) => {
 // Login User - POST Request
 export const loginUser = async (loginData: any) => {
   try {
-    const response = await fetch(
-      "https://next-bank.onrender.com/auth/login",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginData),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to login');
-      }
-  
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
+    const response = await fetch("https://next-bank.onrender.com/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(loginData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to login");
     }
 
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
 };
 
 // Change Password - POST Request

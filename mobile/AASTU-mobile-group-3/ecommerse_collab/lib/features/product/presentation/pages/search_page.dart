@@ -37,13 +37,27 @@ class _SearchPageState extends State<SearchPage> {
               ..add(GetAllProductEvent()),
       child: Scaffold(
         appBar: AppBar(
-          title: const Align(
-              alignment: Alignment.center, child: Text("Search Product")),
+          title: const Text(
+            "Search Product",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          centerTitle: true,
+        
           leading: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: const Icon(Icons.arrow_back_ios)),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color:  Color(0xFF3E50F3),
+              size: 20,
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
         body: Column(
           children: [
@@ -68,7 +82,7 @@ class _SearchPageState extends State<SearchPage> {
                                   color: Colors.grey, width: 1.0)),
                           focusedBorder: const OutlineInputBorder(
                               borderSide: BorderSide(
-                                  color: Color.fromARGB(255, 212, 224, 208),
+                                  color:  Color(0xFF3E50F3),
                                   width: 1))),
                     ),
                     Positioned(
@@ -78,7 +92,7 @@ class _SearchPageState extends State<SearchPage> {
                             onPressed: () {},
                             icon: const Icon(
                               Icons.arrow_forward,
-                              color: Colors.blue,
+                              color:  Color(0xFF3E50F3),
                             )))
                   ]),
                 ),
@@ -88,8 +102,10 @@ class _SearchPageState extends State<SearchPage> {
                     color: const Color(0xFF3F51F3), // Set the background color
                     shape: RoundedRectangleBorder(
                       borderRadius:
-                          BorderRadius.circular(12), // Rounded rectangle shape
+                          BorderRadius.circular(10), // Rounded rectangle shape
                     ),
+
+                    
                     child: IconButton(
                       onPressed: () {
                         setState(() {
@@ -143,7 +159,7 @@ class _SearchPageState extends State<SearchPage> {
                                       currentRange.end.round().toString(),
                                     ),
                                     divisions: 10,
-                                    activeColor: const Color(0xFF3F51F3),
+                                    activeColor:   const Color(0xFF3E50F3),
                                     inactiveColor: const Color(0xFFD9D9D9),
                                     values: currentRange,
                                     onChanged: (RangeValues values) {
@@ -158,7 +174,7 @@ class _SearchPageState extends State<SearchPage> {
                                   const EdgeInsets.symmetric(horizontal: 8.0),
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue[800],
+                                    backgroundColor:   const Color(0xFF3E50F3),
                                     minimumSize: const Size(366, 50),
                                     shape: RoundedRectangleBorder(
                                         borderRadius:
@@ -189,3 +205,5 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 }
+
+

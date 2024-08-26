@@ -10,7 +10,7 @@ class BigTitle extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(text, 
         style: const TextStyle(
-          height: 5,
+          height: 3,
           fontFamily: 'Poppins',
           fontWeight: FontWeight.w800,
           fontSize: 27,

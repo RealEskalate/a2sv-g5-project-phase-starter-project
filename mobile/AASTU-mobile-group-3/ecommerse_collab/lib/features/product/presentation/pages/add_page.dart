@@ -38,17 +38,24 @@ class _AddProductState extends State<AddProduct> {
     });
   }
 
+  void _clearForm() {
+    setState(() {
+      name.clear();
+      category.clear();
+      price.clear();
+      description.clear();
+      _image = null;
+    });
+  }
+
   Widget banner() {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _pickImage(ImageSource.gallery);
-          debugPrint("Imagachen ${_image.toString()}");
-        });
+        _pickImage(ImageSource.gallery);
       },
       child: Container(
         width: 366,
-        height: 160,
+        height: 180,
         padding: const EdgeInsets.all(50),
         decoration: BoxDecoration(
           color: const Color(0xFFF3F3F3),
@@ -95,7 +102,14 @@ class _AddProductState extends State<AddProduct> {
         appBar: AppBar(
           title: const Align(
             alignment: Alignment.center,
-            child: Text("Add Product"),
+            child: Text(
+              "Add Product",
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'poppins'),
+            ),
           ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
@@ -109,100 +123,103 @@ class _AddProductState extends State<AddProduct> {
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: BlocBuilder<ProductBloc, ProductState>(
               builder: (context, state) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    banner(),
-                    TextFieldCard("name", text: name),
-                    TextFieldCard("category", text: category),
-                    TextFieldCard("price", dollar: true, text: price),
-                    TextFieldCard("description", area: true, text: description),
-                    Container(
-                      margin: const EdgeInsets.all(6),
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue[800],
-                          minimumSize: const Size(366, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        onPressed: () {
-                          context.read<ProductBloc>().add(
-                            AddProductEvent(
-                              product: Product(
-                                id: '',
-                                name: name.text,
-                                category: category.text,
-                                price: double.parse(price.text),
-                                description: description.text,
-                                image: _image?.path ?? "",
-                                seller: widget.user,
-                              ),
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      banner(),
+                      const SizedBox(height: 10),
+                      TextFieldCard("name", text: name),
+                      const SizedBox(height: 10),
+                      TextFieldCard("category", text: category),
+                      const SizedBox(height: 10),
+                      TextFieldCard("price", dollar: true, text: price),
+                      const SizedBox(height: 10),
+                      TextFieldCard("description", area: true, text: description),
+                      const SizedBox(height: 10),
+                      Container(
+                        margin: const EdgeInsets.all(6),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[800],
+                            minimumSize: const Size(366, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                          );
-                          print(state);
-                          if (state is InitialState) {
-                            print('loading Mihret');
-                          } else if (state is AddProductState) {
-                            print("Kiki ${state.product}");
-                            SnackBar(
-                              content: Text(state.product.name),
-                            );
-                          } else if (state is ErrorState) {
-                            SnackBar(
-                              content: Text(state.message),
-                            );
-                          } else {
-                            print("Error");
-                          }
-                          // delay
-                          Future.delayed(const Duration(seconds: 2), () {
-                            Navigator.of(context).pop();
-                          });
-                        },
-                        child: const Text(
-                          "ADD",
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 210, 206, 206),
                           ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(6),
-                      child: BlocBuilder<ProductBloc, ProductState>(
-                        builder: (context, state) {
-                          return OutlinedButton(
-                            style: ButtonStyle(
-                              minimumSize: WidgetStateProperty.all<Size>(
-                                const Size(366, 50),
-                              ),
-                              side: WidgetStateProperty.all<BorderSide>(
-                                const BorderSide(
-                                  color: Colors.red,
-                                  width: 1,
+                          onPressed: () {
+                            context.read<ProductBloc>().add(
+                              AddProductEvent(
+                                product: Product(
+                                  id: '',
+                                  name: name.text,
+                                  category: category.text,
+                                  price: double.parse(price.text),
+                                  description: description.text,
+                                  image: _image?.path ?? "",
+                                  seller: widget.user,
                                 ),
                               ),
-                              shape: WidgetStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
-                            onPressed: () {
+                            );
+                            print(state);
+                            if (state is InitialState) {
+                              print('loading Mihret');
+                            } else if (state is AddProductState) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(state.product.name)),
+                              );
+                            } else if (state is ErrorState) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(state.message)),
+                              );
+                            } else {
+                              print("Error");
+                            }
+                            // delay
+                            Future.delayed(const Duration(seconds: 2), () {
                               Navigator.of(context).pop();
-                            },
-                            child: const Text(
-                              "DELETE",
-                              style: TextStyle(color: Colors.red),
+                            });
+                          },
+                          child: const Text(
+                            "ADD",
+                            style: TextStyle(
+                              color: Colors.white,
                             ),
-                          );
-                        },
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                      Container(
+                        margin: const EdgeInsets.all(6),
+                        child: OutlinedButton(
+                          style: ButtonStyle(
+                            minimumSize: MaterialStateProperty.all<Size>(
+                              const Size(366, 50),
+                            ),
+                            side: MaterialStateProperty.all<BorderSide>(
+                              const BorderSide(
+                                color: Colors.red,
+                                width: 1,
+                              ),
+                            ),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                          onPressed: () {
+                            _clearForm();
+                          },
+                          child: const Text(
+                            "CLEAR",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),

@@ -20,8 +20,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState>{
 
   Future<void> _onLoadChats(LoadChatsEvent event, Emitter<ChatState> emit) async {
     emit(ChatLoadingState());
-
-   
   }
 
   Future<void> _onLoadMessagesEvent(LoadChatsEvent event, Emitter<ChatState> emit) async {

@@ -27,6 +27,7 @@ class _OnboardingState extends State<Onboarding>
     Future.delayed(Duration(seconds: 5), () async {
       final cache = await SharedPreferences.getInstance();
       final isLoggedIn = cache.getString('token') != null;
+
       print(isLoggedIn);
       if (isLoggedIn) {
         SharedPreferences sharedPreferences =
@@ -50,9 +51,10 @@ class _OnboardingState extends State<Onboarding>
       }
     });
   }
-    @override
-    Widget build(BuildContext context) {
-      return Scaffold(
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
       body: Stack(
         children: [
           Container(
@@ -69,8 +71,8 @@ class _OnboardingState extends State<Onboarding>
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  const Color(0XFF3F51F3).withOpacity(0.5),
-                  const Color(0XFF3F51F3),
+                  const Color(0xFF3F51F3).withOpacity(0.5),
+                  const Color(0xFF3F51F3),
                 ],
               ),
             ),
@@ -79,29 +81,30 @@ class _OnboardingState extends State<Onboarding>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Logo(),
-                  SizedBox(
-                    width: 312,
-                    height: 38,
-                    child: Align(
-                      alignment: Alignment.center,
-                child: Text(
-                  'ECOMMERCE APP',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 35,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                Logo(width : 190, height : 80),
+                SizedBox(height: 20),
+                SizedBox(
+                  width: 312,
+                  height: 38,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'ECOMMERCE APP',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 35,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Poppins',
+                      ),
+                  
                     ),
-                  )
+                  ),
+                )
               ],
             ),
           ),
         ],
       ),
     );
-    }
-
-
+  }
 }

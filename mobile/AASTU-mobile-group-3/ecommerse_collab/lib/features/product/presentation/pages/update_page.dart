@@ -144,7 +144,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                       margin: const EdgeInsets.all(6),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[800],
+                            backgroundColor:  const Color(0xFF3E50F3),
                             minimumSize: const Size(366, 50),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8))),

@@ -62,7 +62,6 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return BlocConsumer<UserBloc, UserState>(
       listener: (context, state) {
-        print(state);
         if (state is LoginLoadingState) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -73,7 +72,7 @@ class _SignInState extends State<SignIn> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: Colors.red,
+              backgroundColor: const Color.fromARGB(255, 248, 92, 81),
             ),
           );
         } else if (state is UserLoggedState) {
@@ -86,7 +85,6 @@ class _SignInState extends State<SignIn> {
               backgroundColor: Colors.green,
             ),
           );
-          print("state in sign in ${state.user}");
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => HomePage(user: state.user)),
@@ -95,8 +93,10 @@ class _SignInState extends State<SignIn> {
       },
       builder: (context, state) {
         return Scaffold(
-            backgroundColor: Colors.white,
-            body: SingleChildScrollView(
+          backgroundColor: Colors.white,
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -112,14 +112,14 @@ class _SignInState extends State<SignIn> {
                                   controller: emailController,
                                   hintText: "ex: jon.smith@email.com",
                                   validator: validateEmail,
-                                  ispassword: false,
+                                  isPassword: false,
                                 ),
                                 CustomTextField(
                                   name: "Password",
                                   controller: passwordController,
                                   hintText: "********",
                                   validator: validatePassword,
-                                  ispassword: true,
+                                  isPassword: true,
                                 ),
                                 CustomButton(
                                   name: 'SIGN IN',
@@ -127,7 +127,9 @@ class _SignInState extends State<SignIn> {
                                     emailController,
                                     passwordController
                                   ],
+                                  formKey: _formKey,
                                   login: true,
+                                  // isPassword: true,
                                   onPressed: () {
                                     _submitForm(context);
                                   },
@@ -144,7 +146,7 @@ class _SignInState extends State<SignIn> {
                         ],
                       ),
                     
-            ));
+            )));
       },
     );
   }

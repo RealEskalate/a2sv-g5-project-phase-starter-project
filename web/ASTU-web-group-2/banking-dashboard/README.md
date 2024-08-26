@@ -17,6 +17,7 @@
 
 The Banking Dashboard project focuses on building a user-friendly front end for an already established banking API. Using the provided Figma design and API documentation, our goal is to create a responsive and intuitive dashboard where users can manage their financial accounts seamlessly.
 This project involves developing a front end with Next.js, Tailwind CSS, and TypeScript. By following a structured approach, we start by analyzing the Figma design to break down the UI into manageable components and review the API documentation to understand data flows and integration points.
+-Here is the documentation link for more:`https://docs.google.com/document/d/1EntyXKtc6tCm_5YGnYRJRahtWe9cCs1K_8jZpGWNHYA/edit`
 
 # Demo
 
@@ -51,10 +52,11 @@ git clone https://github.com/RealEskalate/a2sv-g5-project-phase-starter-project.
 
 2. change the branch to astu.web.g2.main
    `git checkout astu.web.g2.main`
-   3.Navigate to the directory
-   `cd a2sv-g5-project-phase-starter-project/web/ASTU-web-group-2/banking-dashboard`
-   4.Install dependencies
-   ` npm install ```5.Run the project `npm run dev`
+
+3.Navigate to the directory
+`cd a2sv-g5-project-phase-starter-project/web/ASTU-web-group-2/banking-dashboard`
+4.Install dependencies
+` npm install ```5.Run the project  `npm run dev`
 
 # Usage
 

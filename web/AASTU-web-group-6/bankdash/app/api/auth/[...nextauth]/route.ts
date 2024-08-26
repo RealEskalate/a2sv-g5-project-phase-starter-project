@@ -1,6 +1,4 @@
 import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import AuthService from "@/app/Services/api/authService";
 import { options } from "./options";
 
 export interface User {

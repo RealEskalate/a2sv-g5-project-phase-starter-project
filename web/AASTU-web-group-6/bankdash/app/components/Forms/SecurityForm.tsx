@@ -20,10 +20,13 @@ const SecurityForm = () => {
     event.preventDefault();
 
     try {
-      const response = await AuthService.changePassword({
-        password: currentPassword,
-        newPassword: newPassword,
-      },"accessToken");
+      const response = await AuthService.changePassword(
+        {
+          password: currentPassword,
+          newPassword: newPassword,
+        },
+        "accessToken"
+      );
       console.log("Password changed:", response);
     } catch (error) {
       console.error("Error changing password:", error);
@@ -31,7 +34,7 @@ const SecurityForm = () => {
   };
 
   return (
-    <form className="mt-6 space-y-6 px-3 py-4" onSubmit={handleSubmit}>
+    <form className="w-full mt-3 space-y-6 px-3 py-4" onSubmit={handleSubmit}>
       <div className="mt-6">
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Two-factor Authentication
@@ -52,7 +55,7 @@ const SecurityForm = () => {
           Change Password
         </label>
         <div className="mt-4 space-y-4">
-          <div className="w-[400px] min-w-72 flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Current Password
             </label>
@@ -64,7 +67,7 @@ const SecurityForm = () => {
             />
           </div>
 
-          <div className="w-[400px] min-w-72 flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               New Password
             </label>
@@ -78,12 +81,12 @@ const SecurityForm = () => {
         </div>
       </div>
 
-      <div className="flex lg:justify-end mt-3 sm:w-full sm:justify-end">
+      <div className="flex justify-end mt-3 w-full ">
         <button
+          className="px-4 py-2 bg-[#1814F3] text-white rounded-md hover:bg-[#0702db] transition-all duration-300"
           type="submit"
-          className="xs:w-full xs:mx-2 sm:w-[192px] py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
         >
-          Save
+          Save Changes
         </button>
       </div>
     </form>

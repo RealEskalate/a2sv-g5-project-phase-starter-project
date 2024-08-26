@@ -85,7 +85,7 @@ const Sidebar = ({
     },
     {
       label: "Settings",
-      url: "/settings/editprofile",
+      url: "/settings",
       icon: "icon-setting",
       additionalActivePaths: [
         "/settings/editprofile",
@@ -186,7 +186,7 @@ const Sidebar = ({
                   <div
                     className={`${
                       isActive(item.url) ? "visible" : "hidden"
-                    } flex z-20 w-6 h-[45px] rounded-[32px] bg-[#1814F3] absolute md:left-[-40px]`}
+                    } flex z-20 w-6 h-[45px] rounded-[32px] bg-[#1814F3] absolute left-[-40px]`}
                   ></div>
                   <i
                     className={item.icon}

@@ -1,9 +1,28 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import AuthService from "@/app/Services/api/authService";
-import { User } from "./route";
+import LoginValue from "@/types/LoginValue";
+
+// Define or import your UserValue and Token types
+interface UserValue {
+  refreshToken: string;
+  accessToken: string;
+}
+
+interface Token {
+  accessToken?: string;
+  refreshToken?: string;
+}
+
+interface Session {
+  accessToken?: string;
+  refreshToken?: string;
+}
+
+
 
 export const options: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },
@@ -15,22 +34,23 @@ export const options: NextAuthOptions = {
     CredentialsProvider({
       type: "credentials",
       credentials: {},
-      async authorize(credentials) {
+      async authorize(credentials): Promise<any> {
         if (!credentials) {
           return null;
         }
-        const response = await AuthService.login(credentials);
+        const data =  credentials as LoginValue;
+        const response = await AuthService.login(data);
         if (response.success) {
           const data: any = response.data;
+          // console.log("Response",data)
 
-          // Define the user object with the required fields
-          const userData: User = {
+          const userData: UserValue = {
             refreshToken: data.refresh_token,
             accessToken: data.access_token,
           };
+          // console.log("UserValue AUTH",userData)
 
-          // Return the user object with tokens
-          return userData;
+          return userData as UserValue;
         } else {
           return null;
         }
@@ -39,15 +59,15 @@ export const options: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // If a user was returned by the `authorize` function, merge tokens
+      console.log("USER",user)
       if (user) {
-        token.accessToken = user.accessToken;
-        token.refreshToken = user.refreshToken;
+        // Cast user to the UserValue type
+        token.accessToken = user.accessToken as string;
+        token.refreshToken = user.refreshToken as string;
       }
       return token;
     },
     async session({ session, token }) {
-      // Add tokens to session object
       session.accessToken = token.accessToken;
       session.refreshToken = token.refreshToken;
       return session;

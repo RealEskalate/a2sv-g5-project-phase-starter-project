@@ -10,8 +10,8 @@ Widget story(String name, String imagePath) {
             radius: 30,
             backgroundImage: AssetImage(imagePath),
           ),
-          SizedBox(height: 8),
-          Text(name, style: TextStyle(color: Colors.white)),
+          const SizedBox(height: 8),
+          Text(name, style: const TextStyle(color: Colors.white)),
         ],
       ),
     );

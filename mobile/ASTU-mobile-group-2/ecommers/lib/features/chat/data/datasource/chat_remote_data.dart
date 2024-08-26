@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/Error/failure.dart';
 import '../../../../core/const/const.dart';
+import '../../../../core/utility/global_message_part.dart';
 import '../../domain/entity/chat_entity.dart';
 import '../../domain/entity/message_entity.dart';
 import '../model/chat_model.dart';
@@ -99,24 +100,30 @@ class ChatRemoteDataImpl implements ChatRemoteData {
   @override
   Future<List<ChatEntity>> getMychats() async {
     try {
+   
       final response =
           await client.get(Uri.parse(ChatApi.getChatsApi()), headers: {
         'Authorization': 'Bearer ${sharedPreferences.getString('key')}',
       });
-
       List<ChatEntity> allChats = [];
       if (response.statusCode == 200) {
         final jsonDecode = json.decode(response.body);
         dynamic chats = jsonDecode['data'];
+       
         for (dynamic chat in chats) {
-          final data = await client
+         
+          final dataMessage = await client
               .get(Uri.parse(ChatApi.getMessagesApi(chat['_id'])), headers: {
             'Authorization': 'Bearer ${sharedPreferences.getString('key')}',
           });
-          if (data.statusCode == 200) {
+          
+          
+          if (dataMessage.statusCode == 200) {
+            
             List<Map<String, String>> chatData = [];
-            final jsonDecode = json.decode(data.body);
+            final jsonDecode = json.decode(dataMessage.body);
             dynamic messages = jsonDecode['data'];
+           
             for (dynamic message in messages) {
               Map<String, String> temp = {
                 'senderId': message['sender']['_id'],
@@ -128,28 +135,35 @@ class ChatRemoteDataImpl implements ChatRemoteData {
               'messageId': chat['_id'],
               'messages': chatData
             };
+            
             final MessageModel result = MessageModel.fromJson(toEntity);
             final MessageEntity messageEntity = result.toEntity();
-            final dynamic mainData = json.decode(response.body);
+           
+            
             final Map<String, dynamic> jsonData = {
-              'senderId': mainData['data']['user2']['_id'],
-              'senderName': mainData['data']['user2']['name'],
-              'recieverId': mainData['data']['user1']['id'],
-              'recieverName': mainData['data']['user1']['name'],
+              'senderId': chat['user2']['_id'],
+              'senderName': chat['user2']['name'],
+              'recieverId': chat['user1']['_id'],
+              'recieverName': chat['user1']['name'],
               'chatId': chat['_id'],
               'messages': messageEntity
             };
+           
             final ChatModel datas = ChatModel.fromJson(jsonData);
             final ChatEntity chatEntity = datas.toEntity();
-
-            chats.add(chatEntity);
+            
+            GlobalMessagePart.gloablMessage[chat['_id']] = messageEntity.messages;
+            allChats.add(chatEntity);
           }
         }
       }
+      
       return allChats;
     } on ConnectionFailur catch (e) {
+      
       throw ConnectionFailur(message: e.toString());
     } catch (e) {
+      
       throw ServerFailure(message: e.toString());
     }
   }
@@ -168,8 +182,10 @@ class ChatRemoteDataImpl implements ChatRemoteData {
       }
       return Future.value(false);
     } on ConnectionFailur catch (e) {
+    
       throw ConnectionFailur(message: e.toString());
     } catch (e) {
+    
       throw ServerFailure(message: e.toString());
     }
   }

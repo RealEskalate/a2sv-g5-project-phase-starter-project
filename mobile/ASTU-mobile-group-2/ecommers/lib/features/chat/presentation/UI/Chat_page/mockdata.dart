@@ -77,7 +77,7 @@ final List<Widget> mock_chat_data = [
     isMe: false,
     profile_pic: 'assets/image/avator.png',
     name: 'Sabila Sayma',
-    text: 'Right? Can’t wait to go!',
+    text: 'Right? Can\'t wait to go!',
     time: '10:15 AM',
   ),
   const SingleText(

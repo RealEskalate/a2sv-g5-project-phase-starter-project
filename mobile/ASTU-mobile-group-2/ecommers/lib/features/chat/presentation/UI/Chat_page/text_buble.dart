@@ -7,18 +7,20 @@ class TextBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 300),
+      constraints: const BoxConstraints(maxWidth: 300),
       child: Container(
+        width: width * 0.5,
         decoration: BoxDecoration(
             color: isMe
-                ? Color.fromRGBO(63, 81, 243, 1)
-                : Color.fromRGBO(242, 247, 251, 1),
+                ? const Color.fromRGBO(63, 81, 243, 1)
+                : const Color.fromRGBO(242, 247, 251, 1),
             borderRadius: BorderRadius.only(
-                topLeft: isMe ? Radius.circular(30) : Radius.zero,
-                topRight: isMe ? Radius.zero : Radius.circular(30),
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30))),
+                topLeft: isMe ? const Radius.circular(30) : Radius.zero,
+                topRight: isMe ? Radius.zero : const Radius.circular(30),
+                bottomLeft: const Radius.circular(30),
+                bottomRight: const Radius.circular(30))),
         child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: Text(

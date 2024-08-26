@@ -6,6 +6,8 @@ import '../../../../../../core/Colors/colors.dart';
 import '../../../../../../core/Icons/back_icons.dart';
 import '../../../../../../core/Icons/star.dart';
 import '../../../../../../core/Text_Style/text_style.dart';
+import '../../../../../chat/presentation/bloc/chat_bloc.dart';
+import '../../../../../chat/presentation/bloc/chat_event.dart';
 import '../../../state/product_bloc/product_bloc.dart';
 import '../../../state/product_bloc/product_event.dart';
 import '../../../state/product_bloc/product_state.dart';
@@ -32,8 +34,26 @@ class DetailPage extends StatelessWidget {
                 decoration: BoxDecoration(
                     image: DecorationImage(
                         image: NetworkImage(data['imageUrl']), fit: BoxFit.fill)),
+                
               ),
-              const BackIcons()
+              const BackIcons(),
+              Positioned(
+                right:  10,
+                bottom: 10,
+                child: TextButton(
+                            style: const ButtonStyle(
+                              backgroundColor: WidgetStatePropertyAll(Color.fromARGB(255, 33, 150, 243))
+                              
+                            ),
+                            onPressed: (){
+                              context.read<ChatBloc>().add(OnInitiatChat(userId: data['senderId']));
+                            }, 
+                            child: TextStyles(
+                              fontColor: Colors.black,
+                              fontSizes: 18,
+                              text: 'Chat with seller',
+                            )),
+              ),
             ],
           ),
         ),
@@ -65,9 +85,10 @@ class DetailPage extends StatelessWidget {
             child: Container(
               color: Colors.white,
               padding: const EdgeInsets.all(15),
-              child: Column(
+              child:  Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                   
                   // short description about the product price, rating and name of brand= ====================
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -79,6 +100,7 @@ class DetailPage extends StatelessWidget {
                           const SizedBox(
                             height: 10,
                           ),
+                         
                           SizedBox(
                             width: MediaQuery.of(context).size.width * 0.4,
                             child: TextStyles(
@@ -119,6 +141,7 @@ class DetailPage extends StatelessWidget {
                   const SizedBox(
                     height: 15,
                   ),
+                  
                   // size of product if avilable
                   const SizedBox(
                     height: 10,

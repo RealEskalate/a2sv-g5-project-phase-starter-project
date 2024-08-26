@@ -16,6 +16,8 @@ class CurrentUser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+ 
     return Row(
       children: [
         Stack(
@@ -35,7 +37,7 @@ class CurrentUser extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: Colors.white,
-                    width: 2,
+                    width: 1,
                   ),
                 ),
               ),
@@ -46,12 +48,17 @@ class CurrentUser extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              name,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+            Container(
+             
+              width: width * 0.4,
+              child:  Text(
+                name,
+                overflow: TextOverflow.ellipsis,
+                style: const  TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ),
             Text(

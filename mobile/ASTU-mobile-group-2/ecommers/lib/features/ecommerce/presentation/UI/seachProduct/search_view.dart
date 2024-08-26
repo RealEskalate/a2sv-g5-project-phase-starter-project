@@ -34,6 +34,8 @@ class SearchView extends StatelessWidget {
                   price: product.price,
                   title: product.name,
                   id: product.id,
+                  senderId:  '',
+                  senderName: '',
                 );
               }
               return null;

@@ -29,7 +29,7 @@ class SingleText extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
+                  const Text(
                     'You',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
@@ -41,7 +41,7 @@ class SingleText extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 15.0),
                     child: Text(
                       time,
-                      style: TextStyle(color: Colors.grey),
+                      style: const TextStyle(color: Colors.grey),
                     ),
                   )
                 ],
@@ -66,7 +66,7 @@ class SingleText extends StatelessWidget {
                 children: [
                   Text(
                     name,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
                   _buildChatContent(
@@ -76,7 +76,7 @@ class SingleText extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 15.0),
                     child: Text(
                       time,
-                      style: TextStyle(color: Colors.grey),
+                      style: const TextStyle(color: Colors.grey),
                     ),
                   )
                 ],
@@ -98,7 +98,7 @@ class _buildChatContent extends StatelessWidget {
   Widget build(BuildContext context) {
     if (image_content != null) {
       return ConstrainedBox(
-        constraints: BoxConstraints(
+        constraints: const BoxConstraints(
           maxWidth: 300,
           maxHeight: 300,
         ),

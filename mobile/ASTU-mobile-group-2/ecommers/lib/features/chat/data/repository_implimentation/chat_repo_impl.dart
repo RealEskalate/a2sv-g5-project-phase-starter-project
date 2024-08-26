@@ -22,9 +22,9 @@ class ChatRepoImpl implements ChatRepositories {
       final result = await chatRemoteData.deleteChats(id);
       return Right(result);
     } on ConnectionFailur catch (e) {
-      throw ConnectionFailur(message: e.toString());
+      return  Left(ConnectionFailur(message: e.toString()));
     } catch (e) {
-      throw ServerFailure(message: e.toString());
+       return  Left(ServerFailure(message: e.toString()));
     }
   }
 
@@ -34,21 +34,23 @@ class ChatRepoImpl implements ChatRepositories {
       final result = await chatRemoteData.getChatById(chatId);
       return Right(result);
     } on ConnectionFailur catch (e) {
-      throw ConnectionFailur(message: e.toString());
+      return  Left(ConnectionFailur(message: e.toString()));
     } catch (e) {
-      throw ServerFailure(message: e.toString());
+       return  Left(ServerFailure(message: e.toString()));
     }
   }
 
   @override
   Future<Either<Failure, List<ChatEntity>>> getMyChat() async {
+
     try {
       final result = await chatRemoteData.getMychats();
       return Right(result);
     } on ConnectionFailur catch (e) {
-      throw ConnectionFailur(message: e.toString());
+      return  Left(ConnectionFailur(message: e.toString()));
     } catch (e) {
-      throw ServerFailure(message: e.toString());
+
+      return  const Left(ServerFailure(message: 'try again plea'));
     }
   }
 
@@ -58,9 +60,9 @@ class ChatRepoImpl implements ChatRepositories {
       final result = await chatRemoteData.initiate(userId);
       return Right(result);
     } on ConnectionFailur catch (e) {
-      throw ConnectionFailur(message: e.toString());
+      return  Left(ConnectionFailur(message: e.toString()));
     } catch (e) {
-      throw ServerFailure(message: e.toString());
+       return  Left(ServerFailure(message: e.toString()));
     }
   }
 }

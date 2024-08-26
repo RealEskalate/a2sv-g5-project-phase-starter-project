@@ -1,5 +1,15 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../../../core/utility/global_message_part.dart';
+import '../../../../../core/utility/socket_impl.dart';
+import '../../../domain/entity/chat_entity.dart';
+import '../../bloc/chat_bloc.dart';
+import '../../bloc/chat_event.dart';
+import '../../bloc/chat_state.dart';
 
 class ChatListPage extends StatefulWidget {
   @override
@@ -7,16 +17,72 @@ class ChatListPage extends StatefulWidget {
 }
 
 class _ChatListPageState extends State<ChatListPage> {
- List<String> names = ['Aschalew Abayneh','Sari Amin','Samuel Tollosa','sdds','sdsdsdsa','sdsaas','dsd','sssds','sdds','sdsdsdsa','sdsaas','dsd','sssds','sdds','sdsdsdsa','sdsaas','dsd','sssds','sdds','sdsdsdsa'];
-List<String> Messages = ['hello, how are you? ','aa','sssds','sdds','sdsdsdsa','sdsaas','dsd','sssds','sdds','sdsdsdsa','aa','aa','sssds','sdds','sdsdsdsa','sdsaas','dsd','sssds','sdds','sdsdsdsa'];
-
+  String? userId;
   final List<String> profilePhotos = [
-    'assets/image/pro1.jpg', 'assets/image/pro2.jpg','assets/image/pro3.jpg',   'assets/image/pro4.jpg',   
-    'assets/image/grouppro.png','assets/image/grouppro2.png', 'assets/image/pro5.png',  'assets/image/pro6.jpg','assets/image/pro7.jpg',
-    ];
+    'assets/image/pro1.jpg',
+    'assets/image/pro2.jpg',
+    'assets/image/pro3.jpg',
+    'assets/image/pro4.jpg',
+    'assets/image/grouppro.png',
+    'assets/image/grouppro2.png',
+    'assets/image/pro5.png',
+    'assets/image/pro6.jpg',
+    'assets/image/pro7.jpg',
+  ];
+  List<ChatEntity> chatEntity = [];
+  late SocketService _socketProvider;
+  @override
+  void initState() {
+    super.initState();
+    _socketProvider = GetIt.instance<SocketService>();
+
+    _loadUserId();
+  }
+
+  void _initializeSocketService() async {
+    // Ensure socket connection
+    await _socketProvider.connect();
+    print('=============================================');
+    print(_socketProvider);
+    // Listen for incoming messages
+    _socketProvider.listen('message:received', (data) {
+   
+      setState(() {
+  
+        
+      });
+    });
+  }
+
+  Future<void> _loadUserId() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      userId = sharedPreferences.getString('user_id');
+    });
+  }
+    @override
+    void dispose() {
+     
+      // Dispose of any subscriptions or listeners here
+      // Add this if your SocketService has a dispose method
+      super.dispose();
+    }
 
   @override
   Widget build(BuildContext context) {
+     _socketProvider.listen('message:received', (data) {
+      // print(data);
+      // print('Message received:');
+      // print('=============================================================================');
+    
+       GlobalMessagePart.gloablMessage[data['_id']]?.add({
+        'senderId': data['sender']['_id'],
+        'content': data['content']
+ 
+        
+        
+      });
+    });
     return Scaffold(
       backgroundColor: Colors.blue,
       appBar: AppBar(
@@ -29,70 +95,104 @@ List<String> Messages = ['hello, how are you? ','aa','sssds','sdds','sdsdsdsa','
           },
         ),
       ),
-      body: Column(
-        children: [
-         Container(
-           padding: const EdgeInsets.symmetric(horizontal: 3),
-           width: MediaQuery.of(context).size.width,
-           height: 150,
-           color: Colors.blue,
-           child: ListView(
-             scrollDirection: Axis.horizontal,
-             children: [
-               Mystory('My status', 'assets/image/pro.png'),
-               story('Marina', 'assets/image/pro1.jpg'),
-               story('Dean', 'assets/image/pro2.jpg'),
-               story('Max', 'assets/image/pro3.jpg'),
-               story('My status', 'assets/image/pro4.jpg'),
-               story('Adil', 'assets/image/pro5.png'),
-               story('Marina', 'assets/image/pro6.jpg'),
-               story('Dean', 'assets/image/pro7.jpg'),
-               story('My status', 'assets/image/pro.jpg'),
-               story('Adil', 'assets/image/grouppro.png'),
-               story('Marina', 'assets/image/grouppro2.png'),
-             ],
-           ),
-         ),
+      body: RefreshIndicator(
+        onRefresh: () {
+          context.read<ChatBloc>().add(OnGetAllChat());
+          return Future.delayed(const Duration(seconds: 1));
+        },
+        child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 3),
+                  width: MediaQuery.of(context).size.width,
+                  height: 150,
+                  color: Colors.blue,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      Mystory('My status', 'assets/image/pro.png'),
+                      story('Marina', 'assets/image/pro1.jpg'),
+                      story('Dean', 'assets/image/pro2.jpg'),
+                      story('Max', 'assets/image/pro3.jpg'),
+                      story('My status', 'assets/image/pro4.jpg'),
+                      story('Adil', 'assets/image/pro5.png'),
+                      story('Marina', 'assets/image/pro6.jpg'),
+                      story('Dean', 'assets/image/pro7.jpg'),
+                      story('My status', 'assets/image/pro.jpg'),
+                      story('Adil', 'assets/image/grouppro.png'),
+                      story('Marina', 'assets/image/grouppro2.png'),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30),
+                            topRight: Radius.circular(30))),
+                    child: BlocBuilder<ChatBloc, ChatState>(
+                      builder: (context, state) {
+                        if (state is ChatMessageGetSuccess) {
+                          chatEntity = state.chatEntity;
+                        }
+                        return ListView.builder(
+                          itemCount: chatEntity.length,
+                          itemBuilder: (context, index) {
+                            final current = chatEntity[index];
 
+                            final String nameOfUser =
+                                userId == current.recieverId
+                                    ? current.senderName
+                                    : current.recieverName;
 
+                            final List<dynamic> messages =
+                                GlobalMessagePart.gloablMessage[current.chatId] ??
+                                    [];
+                            final text = messages.isNotEmpty && messages.last['content'] != null
+                                        ? messages.last['content']
+                                        : 'say hi to $nameOfUser';
 
-          
-          Expanded(
-            child: Container(
-             
-              decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30)
-            ),
-              child: ListView.builder(
-                itemCount: names.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: (){
-                      Navigator.pushNamed(context, '/chat-message');
-                    },
-                    child: chatTileWithReadMessages(
-                      names[index],
-                      Messages[index],
-                      '02:20',
-                      index,
+                              
+                            return GestureDetector(
+                              onTap: () {
+                                print(userId);
+                                Navigator.pushNamed(context, '/chat-message',
+                                    arguments: {
+                                      'chatId': current.chatId,
+                                      'name': nameOfUser,
+                                      'itMe': userId
+                                    });
+                              },
+                              child: chatTileWithReadMessages(
+                                nameOfUser,
+                                text,
+                                '02:20',
+                                index,
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
+                  ),
+                ),
+              ],
+            )
+
       ),
     );
   }
 
-  Widget chatTileWithReadMessages(String name, String message, String time, int index) {
+  Widget chatTileWithReadMessages(
+      String name, String message, String time, int index) {
+    
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundImage: AssetImage(profilePhotos[index % profilePhotos.length]),
+          backgroundImage:
+              AssetImage(profilePhotos[index % profilePhotos.length]),
           radius: 30,
         ),
         title: Text(
@@ -102,12 +202,14 @@ List<String> Messages = ['hello, how are you? ','aa','sssds','sdds','sdsdsdsa','
           ),
         ),
         subtitle: Text(message),
-        trailing: Text(time, style: TextStyle(fontSize: 12, color: Colors.grey)),
+        trailing: Text(time,
+            style: const TextStyle(fontSize: 12, color: Colors.grey)),
       ),
     );
   }
 
   Widget Mystory(String name, String image) {
+    
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(

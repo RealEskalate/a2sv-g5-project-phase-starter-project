@@ -198,8 +198,6 @@ class _ChatRoomState extends State<ChatRoom> {
               Expanded(
                 child: ReusableTextField(
                   onsubmit: () {
-                    // print("object");
-
                     final chatBloc = BlocProvider.of<ChatBloc>(context);
 
                     chatBloc.add(SendMessage(

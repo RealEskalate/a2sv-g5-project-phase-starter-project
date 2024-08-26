@@ -8,6 +8,7 @@ import 'core/constants/constants.dart';
 import 'core/themes/themes.dart';
 import 'dependency_injection.dart';
 import 'features/auth/presentation/page/login_page.dart';
+import 'features/chat/data/data_resources/socket_io_sesrvice.dart';
 import 'landing_page.dart';
 
 class SplashPage extends StatefulWidget {
@@ -35,6 +36,7 @@ class _SplashPageState extends State<SplashPage>
             .pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));
       } else {
         // ignore: use_build_context_synchronously
+        locator<SocketIOService>().connect();
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (_) => const LandingPage()));
       }

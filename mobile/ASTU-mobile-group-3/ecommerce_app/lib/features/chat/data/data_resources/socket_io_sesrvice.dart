@@ -21,18 +21,17 @@ class SocketIOServiceImpl implements SocketIOService {
   final StreamController<MessageEntity> _messageStreamController =
       StreamController<MessageEntity>.broadcast();
 
-  SocketIOServiceImpl({required this.authLocalDataSource}) {
-    socket = IO.io(AppData.chatserver, <String, dynamic>{
-      'transports': ['websocket'],
-      'autoConnect': false,
-      'extraHeaders': {
-        'Authorization': 'Bearer ${authLocalDataSource.getToken()}'
-      }
-    });
-  }
+  SocketIOServiceImpl({required this.authLocalDataSource}) {}
 
   @override
-  void connect() {
+  void connect() async {
+    final token = await authLocalDataSource.getToken();
+    log(token.token);
+    socket = IO.io(AppData.chatserver, <String, dynamic>{
+      'transports': ['websocket'],
+      // 'autoConnect': false,
+      'extraHeaders': {'Authorization': 'Bearer ${token.token}'}
+    });
     socket.connect();
   }
 
@@ -41,7 +40,14 @@ class SocketIOServiceImpl implements SocketIOService {
   @override
   Future<void> emitSendMessage(
       String chatId, String content, String type) async {
-    final messagePayload = {'chatId': chatId, 'content': content, 'type': type};
+    final token = await authLocalDataSource.getToken();
+    print(token.token);
+
+    final messagePayload = {
+      'chatId': chatId,
+      'content': content,
+      'type': "text"
+    };
 
     socket.emit('message:send', messagePayload);
 

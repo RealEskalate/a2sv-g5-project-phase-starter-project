@@ -1,7 +1,6 @@
 import 'package:ecommerce_app/features/auth/domain/entities/user_entity.dart';
 import 'package:ecommerce_app/features/chat/domain/entity/chat.dart';
 import 'package:ecommerce_app/features/chat/domain/entity/message.dart';
-import 'package:ecommerce_app/features/chat/domain/repository/chat_repository.dart';
 import 'package:ecommerce_app/features/chat/domain/usecases/AcknowledgeMessageDeliveryUseCase.dart';
 import 'package:ecommerce_app/features/chat/domain/usecases/CreateChatRoomUseCase.dart';
 import 'package:ecommerce_app/features/chat/domain/usecases/RetrieveChatRoomsUseCase.dart';
@@ -9,11 +8,8 @@ import 'package:ecommerce_app/features/chat/domain/usecases/RetrieveMessagesUseC
 import 'package:ecommerce_app/features/chat/domain/usecases/SendMessageUseCase.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import '../../../../test_helper/auth_test_data/testing_data.dart';
-import '../../../../test_helper/test_helper_generation.mocks.dart';
 
-// Mock class for ChatRepository
-// class MockChatRepository extends Mock implements ChatRepository {}
+import '../../../../test_helper/test_helper_generation.mocks.dart';
 
 void main() {
   late MockChatRepository mockChatRepository;
@@ -34,11 +30,12 @@ void main() {
   });
 
   group('AcknowledgeMessageDeliveryUseCase', () {
-    test('should acknowledge message delivery', () async {
+    final messageId = 'testMessageId';
+
+    test('should call acknowledgeMessageDelivery on repository', () async {
       // Arrange
-      const messageId = 'test-message-id';
-      when(mockChatRepository.acknowledgeMessageDelivery(any))
-          .thenAnswer((_) async => {});
+      when(mockChatRepository.acknowledgeMessageDelivery(messageId))
+          .thenAnswer((_) async => Future.value());
 
       // Act
       await acknowledgeMessageDeliveryUseCase.call(messageId);
@@ -50,49 +47,42 @@ void main() {
   });
 
   group('CreateChatRoomUseCase', () {
-    test('should create a chat room', () async {
+    final userId = 'testUserId';
+
+    test('should call createChatRoom on repository', () async {
       // Arrange
-      final user1 = UserEntity(
-          id: 'user1',
-          name: 'User One',
-          email: 'user1@example.com',
-          password: 'password',
-          v: 1);
-      final user2 = UserEntity(
-          id: 'user2',
-          name: 'User Two',
-          email: 'user2@example.com',
-          password: 'password',
-          v: 1);
-      final chat = ChatEntity(chatId: 'chat1', user1: user1, user2: user2);
-      when(mockChatRepository.createChatRoom(any)).thenAnswer((_) async => {});
+      when(mockChatRepository.createChatRoom(userId))
+          .thenAnswer((_) async => Future.value());
 
       // Act
-      await createChatRoomUseCase.call(chat);
+      await createChatRoomUseCase.call(userId);
 
       // Assert
-      verify(mockChatRepository.createChatRoom()).called(1);
+      verify(mockChatRepository.createChatRoom(userId)).called(1);
     });
   });
 
   group('RetrieveChatRoomsUseCase', () {
-    test('should retrieve chat rooms', () async {
+    final chatRooms = [
+      const ChatEntity(
+        chatId: 'chat1',
+        user1: UserEntity(
+            name: 'User1',
+            email: 'user1@test.com',
+            password: 'pass1',
+            id: '1',
+            v: 1),
+        user2: UserEntity(
+            name: 'User2',
+            email: 'user2@test.com',
+            password: 'pass2',
+            id: '2',
+            v: 2),
+      ),
+    ];
+
+    test('should return a list of chat rooms from the repository', () async {
       // Arrange
-      final user1 = UserEntity(
-          id: 'user1',
-          name: 'User One',
-          email: 'user1@example.com',
-          password: 'password',
-          v: 1);
-      final user2 = UserEntity(
-          id: 'user2',
-          name: 'User Two',
-          email: 'user2@example.com',
-          password: 'password',
-          v: 1);
-      final chatRooms = [
-        ChatEntity(chatId: 'chat1', user1: user1, user2: user2)
-      ];
       when(mockChatRepository.retrieveChatRooms())
           .thenAnswer((_) async => chatRooms);
 
@@ -102,6 +92,68 @@ void main() {
       // Assert
       expect(result, chatRooms);
       verify(mockChatRepository.retrieveChatRooms()).called(1);
+    });
+  });
+
+  group('RetrieveMessagesUseCase', () {
+    final chatId = 'chat1';
+    final messages = [
+      const MessageEntity(
+        messageId: 'msg1',
+        sender: UserEntity(
+            name: 'User1',
+            email: 'user1@test.com',
+            password: 'pass1',
+            id: '1',
+            v: 1),
+        chat: ChatEntity(
+          chatId: 'chat1',
+          user1: UserEntity(
+              name: 'User1',
+              email: 'user1@test.com',
+              password: 'pass1',
+              id: '1',
+              v: 1),
+          user2: UserEntity(
+              name: 'User2',
+              email: 'user2@test.com',
+              password: 'pass2',
+              id: '2',
+              v: 2),
+        ),
+        content: 'Hello!',
+      ),
+    ];
+
+    test('should return a list of messages from the repository', () async {
+      // Arrange
+      when(mockChatRepository.retrieveMessages(chatId))
+          .thenAnswer((_) async => messages);
+
+      // Act
+      final result = await retrieveMessagesUseCase.call(chatId);
+
+      // Assert
+      expect(result, messages);
+      verify(mockChatRepository.retrieveMessages(chatId)).called(1);
+    });
+  });
+
+  group('SendMessageUseCase', () {
+    final chatId = 'chat1';
+    final content = 'Hello!';
+    final type = 'text';
+
+    test('should call sendMessage on repository', () async {
+      // Arrange
+      when(mockChatRepository.sendMessage(chatId, content, type))
+          .thenAnswer((_) async => Future.value());
+
+      // Act
+      await sendMessageUseCase.call(chatId, content, type);
+
+      // Assert
+      verify(mockChatRepository.sendMessage(chatId, content, type)).called(1);
     });
   });
 }

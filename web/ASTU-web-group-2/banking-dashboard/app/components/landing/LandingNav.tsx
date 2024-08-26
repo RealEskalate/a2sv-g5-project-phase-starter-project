@@ -45,7 +45,7 @@ const LandingNav: React.FC<LandingNavProps> = ({
      
 
 
-      className={`bg-[#083E9E] text-white flex justify-center items-center sm:justify-between p-2 sm:p-4 relative z-50`}
+      className={`bg-[#083E9E] text-white flex justify-center items-center sm:justify-between p-2 sm:p-4 relative z-[800]`}
     >
       <Link href="/" className="font-extrabold text-[25px] cursor-pointer">BankDash</Link>
 

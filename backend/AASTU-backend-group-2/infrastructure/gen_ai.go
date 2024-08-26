@@ -4,7 +4,6 @@ import (
 	"blog_g2/domain"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"strings"
@@ -27,17 +26,24 @@ type ContentResponse struct {
 }
 
 // NewGeminiAIService creates a new instance of GeminiAIService
-func NewGeminiAIService() (*GeminiAIService, error) {
-
+func NewGeminiAIService() (domain.AIService, *domain.AppError) {
 	apiKey := DotEnvLoader("GEMINI_API_KEY")
+
+	if apiKey == "" {
+		return nil, domain.ErrGeminiAPIKeyMissing
+	}
 
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrGeminiClientCreation
 	}
 
 	model := client.GenerativeModel("gemini-1.5-flash")
+	if model == nil {
+		return nil, domain.ErrGeminiModelNotAvailable
+	}
+
 	return &GeminiAIService{
 		client: client,
 		model:  model,
@@ -45,22 +51,21 @@ func NewGeminiAIService() (*GeminiAIService, error) {
 }
 
 // GeneratePost generates a blog post using the Gemini AI
-func (s *GeminiAIService) GeneratePost(title, description string) (*domain.PostResponse, error) {
+func (s *GeminiAIService) GeneratePost(title, description string) (*domain.PostResponse, *domain.AppError) {
 	prompt := []genai.Part{
 		genai.Text(fmt.Sprintf("Title: %s\n\nDescription: %s\n\nWrite a blog post based on the above title and description:", title, description)),
 	}
 
 	resp, err := s.model.GenerateContent(context.Background(), prompt...)
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrGeminiContentGeneration
 	}
 
 	// Marshal and unmarshal response to process the content
 	marshalResponse, _ := json.MarshalIndent(resp, "", "  ")
-	fmt.Println(string(marshalResponse))
 	var generateResponse ContentResponse
 	if err := json.Unmarshal(marshalResponse, &generateResponse); err != nil {
-		log.Fatal(err)
+		return nil, domain.ErrGeminiResponseParsing
 	}
 
 	var generatedContent string
@@ -89,15 +94,15 @@ func (s *GeminiAIService) GeneratePost(title, description string) (*domain.PostR
 	}, nil
 }
 
-func (s *GeminiAIService) Validate_Comment(comment string) error {
+// Validate_Comment checks if a comment contains offensive language
+func (s *GeminiAIService) Validate_Comment(comment string) *domain.AppError {
 	prompt := []genai.Part{
 		genai.Text(fmt.Sprintf("Is the following comment offensive or contains offensive languages? Respond with Yes or No: \"%s\"", comment)),
 	}
-	log.Println(prompt)
 
 	resp, err := s.model.GenerateContent(context.Background(), prompt...)
 	if err != nil {
-		return err
+		return domain.ErrGeminiContentGeneration
 	}
 
 	marshalResponse, _ := json.MarshalIndent(resp, "", "  ")
@@ -119,27 +124,25 @@ func (s *GeminiAIService) Validate_Comment(comment string) error {
 
 	fmt.Println(string(generatedContent))
 
-	if string(generatedContent)[:3] == "Yes" {
-		return errors.New("the comment contains offensive language")
+	if strings.HasPrefix(generatedContent, "Yes") {
+		return domain.ErrOffensiveComment
 	}
 
 	return nil
 }
 
-func (s *GeminiAIService) Validate_Blog(blog string) error {
-	fmt.Println(blog)
+// Validate_Blog checks if a blog post contains offensive language
+func (s *GeminiAIService) Validate_Blog(blog string) *domain.AppError {
 	prompt := []genai.Part{
 		genai.Text(fmt.Sprintf("Is the following blog post offensive or contains offensive languages? Respond with Yes or No: \"%s\"", blog)),
 	}
-	log.Println(prompt)
 
 	resp, err := s.model.GenerateContent(context.Background(), prompt...)
-
 	if err != nil {
-		if err.Error() == "blocked: candidate: FinishReasonSafety" {
-			return errors.New("the content was blocked due to safety concerns")
+		if strings.Contains(err.Error(), "FinishReasonSafety") {
+			return domain.ErrGeminiSafetyBlock
 		}
-		return err
+		return domain.ErrGeminiContentGeneration
 	}
 
 	marshalResponse, _ := json.MarshalIndent(resp, "", "  ")
@@ -161,8 +164,8 @@ func (s *GeminiAIService) Validate_Blog(blog string) error {
 
 	fmt.Println(string(generatedContent))
 
-	if string(generatedContent)[:3] == "Yes" {
-		return errors.New("the blog post contains offensive language")
+	if strings.HasPrefix(generatedContent, "Yes") {
+		return domain.ErrOffensiveBlogContent
 	}
 
 	return nil

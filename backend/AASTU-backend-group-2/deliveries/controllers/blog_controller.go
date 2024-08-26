@@ -59,8 +59,8 @@ func (controller *BlogController) CreateBlog(c *gin.Context) {
 
 	err := controller.Blogusecase.CreateBlog(c, &blog)
 	if err != nil {
-		c.JSON(400, gin.H{
-			"error": err.Error(),
+		c.JSON(err.Status(), gin.H{
+			"error": err.Message(),
 		})
 		return
 	}
@@ -75,8 +75,8 @@ func (controller *BlogController) RetrieveBlog(c *gin.Context) {
 	sortdire := c.DefaultQuery("sortdir", "")
 	blogs, count, err := controller.Blogusecase.RetrieveBlog(c, pages, sortby, sortdire)
 	if err != nil {
-		c.JSON(400, gin.H{
-			"error": err.Error(),
+		c.JSON(err.Status(), gin.H{
+			"error": err.Message(),
 		})
 		return
 	}
@@ -105,7 +105,7 @@ func (controller *BlogController) UpdateBlog(c *gin.Context) {
 
 	err := controller.Blogusecase.UpdateBlog(c, blog, getID, admin, userid)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.IndentedJSON(err.Status(), gin.H{"error": err.Message()})
 		return
 	}
 
@@ -124,7 +124,7 @@ func (controller *BlogController) DeleteBlog(c *gin.Context) {
 
 	err := controller.Blogusecase.DeleteBlog(c, getID, admin, userid)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.IndentedJSON(err.Status(), gin.H{"error": err.Message()})
 		return
 	}
 
@@ -137,7 +137,7 @@ func (controller *BlogController) SearchBlog(c *gin.Context) {
 	blogs, err := controller.Blogusecase.SearchBlog(c, name, author)
 
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
 		return
 	}
 
@@ -158,14 +158,14 @@ func (controller *BlogController) FilterBlog(c *gin.Context) {
 	blogs, err := controller.Blogusecase.FilterBlog(c, tags, convDate)
 
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
 		return
 	}
 
 	c.IndentedJSON(http.StatusOK, gin.H{"blogs": blogs})
 }
 
-func (h *BlogController) GeneratePost(c *gin.Context) {
+func (controller *BlogController) GeneratePost(c *gin.Context) {
 	var req domain.PostRequest
 
 	if err := c.BindJSON(&req); err != nil {
@@ -173,9 +173,9 @@ func (h *BlogController) GeneratePost(c *gin.Context) {
 		return
 	}
 
-	post, err := h.Aiservice.GeneratePost(req.Title, req.Content)
+	post, err := controller.Aiservice.GeneratePost(req.Title, req.Content)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
 		return
 	}
 

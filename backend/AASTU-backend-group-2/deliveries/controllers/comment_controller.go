@@ -35,7 +35,7 @@ func (cc *CommentController) CreateComment(c *gin.Context) {
 
 	err := cc.CommentUsecase.CreateComment(c, blogID, userID, comment)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
 		return
 	}
 
@@ -47,7 +47,7 @@ func (cc *CommentController) GetComment(c *gin.Context) {
 
 	comments, err := cc.CommentUsecase.GetComments(c, blogID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
 		return
 	}
 
@@ -65,7 +65,7 @@ func (cc *CommentController) UpdateComment(c *gin.Context) {
 
 	err := cc.CommentUsecase.UpdateComment(c, commentID, comment)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
 		return
 	}
 
@@ -77,7 +77,7 @@ func (cc *CommentController) DeleteComment(c *gin.Context) {
 
 	err := cc.CommentUsecase.DeleteComment(c, commentID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
 		return
 	}
 

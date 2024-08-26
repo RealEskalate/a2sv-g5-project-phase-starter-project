@@ -40,7 +40,7 @@ func (s *UserUseCasetestSuite) TestRegisterUser() {
 
 	err := s.UserUsecase.RegisterUser(context.Background(), &user)
 
-	s.NoError(err)
+	s.Nil(err)
 }
 
 // TestLoginUser tests the LoginUser method
@@ -55,7 +55,7 @@ func (s *UserUseCasetestSuite) TestLoginUser() {
 
 	_, err := s.UserUsecase.LoginUser(context.Background(), user)
 
-	s.NoError(err)
+	s.Nil(err)
 }
 
 // TestForgotPassword tests the ForgotPassword method
@@ -66,7 +66,7 @@ func (s *UserUseCasetestSuite) TestForgotPassword() {
 
 	err := s.UserUsecase.ForgotPassword(context.Background(), email)
 
-	s.NoError(err)
+	s.Nil(err)
 }
 
 // TestLogoutUser tests the LogoutUser method
@@ -77,7 +77,7 @@ func (s *UserUseCasetestSuite) TestLogoutUser() {
 
 	err := s.UserUsecase.LogoutUser(context.Background(), uid)
 
-	s.NoError(err)
+	s.Nil(err)
 }
 
 // TestPromoteDemoteUser tests the PromoteDemoteUser method
@@ -89,7 +89,7 @@ func (s *UserUseCasetestSuite) TestPromoteDemoteUser() {
 
 	err := s.UserUsecase.PromoteDemoteUser(context.Background(), userid, isAdmin)
 
-	s.NoError(err)
+	s.Nil(err)
 }
 
 // TestResetPassword tests the ResetPassword method
@@ -101,5 +101,5 @@ func (s *UserUseCasetestSuite) TestResetPassword() {
 
 	err := s.UserUsecase.ResetPassword(context.Background(), token, newPassword)
 
-	s.NoError(err)
+	s.Nil(err)
 }

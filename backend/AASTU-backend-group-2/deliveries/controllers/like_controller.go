@@ -26,8 +26,8 @@ func (lc LikeController) CreateLike(c *gin.Context) {
 	}
 	err := lc.likeusecase.CreateLike(context.TODO(), userIDString, postID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to like the post",
+		c.JSON(err.Status(), gin.H{
+			"error": err.Message(),
 		})
 		return
 	}
@@ -47,8 +47,8 @@ func (lc LikeController) DeleteLike(c *gin.Context) {
 	}
 	err := lc.likeusecase.DeleteLike(context.TODO(), likeidstr)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to unlike the post",
+		c.JSON(err.Status(), gin.H{
+			"error": err.Message(),
 		})
 		return
 	}
@@ -61,8 +61,8 @@ func (lc LikeController) GetLikes(c *gin.Context) {
 	postID := c.Param("postID")
 	likes, err := lc.likeusecase.GetLikes(context.TODO(), postID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to retrieve likes",
+		c.JSON(err.Status(), gin.H{
+			"error": err.Message(),
 		})
 		return
 	}

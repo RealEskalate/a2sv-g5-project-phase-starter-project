@@ -14,43 +14,47 @@ type LikeRepository struct {
 }
 
 // CreateLike provides a mock function with given fields: user_id, post_id
-func (_m *LikeRepository) CreateLike(user_id string, post_id string) error {
+func (_m *LikeRepository) CreateLike(user_id string, post_id string) *domain.AppError {
 	ret := _m.Called(user_id, post_id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateLike")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string, string) *domain.AppError); ok {
 		r0 = rf(user_id, post_id)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // DeleteLike provides a mock function with given fields: like_id
-func (_m *LikeRepository) DeleteLike(like_id string) error {
+func (_m *LikeRepository) DeleteLike(like_id string) *domain.AppError {
 	ret := _m.Called(like_id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteLike")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string) *domain.AppError); ok {
 		r0 = rf(like_id)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // GetLikes provides a mock function with given fields: post_id
-func (_m *LikeRepository) GetLikes(post_id string) ([]domain.Like, error) {
+func (_m *LikeRepository) GetLikes(post_id string) ([]domain.Like, *domain.AppError) {
 	ret := _m.Called(post_id)
 
 	if len(ret) == 0 {
@@ -58,8 +62,8 @@ func (_m *LikeRepository) GetLikes(post_id string) ([]domain.Like, error) {
 	}
 
 	var r0 []domain.Like
-	var r1 error
-	if rf, ok := ret.Get(0).(func(string) ([]domain.Like, error)); ok {
+	var r1 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string) ([]domain.Like, *domain.AppError)); ok {
 		return rf(post_id)
 	}
 	if rf, ok := ret.Get(0).(func(string) []domain.Like); ok {
@@ -70,10 +74,12 @@ func (_m *LikeRepository) GetLikes(post_id string) ([]domain.Like, error) {
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(string) error); ok {
+	if rf, ok := ret.Get(1).(func(string) *domain.AppError); ok {
 		r1 = rf(post_id)
 	} else {
-		r1 = ret.Error(1)
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*domain.AppError)
+		}
 	}
 
 	return r0, r1

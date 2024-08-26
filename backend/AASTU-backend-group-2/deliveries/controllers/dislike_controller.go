@@ -26,8 +26,8 @@ func (dc DisLikeController) CreateDisLike(c *gin.Context) {
 	}
 	err := dc.dislikeusecase.CreateDisLike(context.TODO(), userIDString, postID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to dislike the post",
+		c.JSON(err.Status(), gin.H{
+			"error": err.Message(),
 		})
 		return
 	}
@@ -47,8 +47,8 @@ func (dc DisLikeController) DeleteDisLike(c *gin.Context) {
 	}
 	err := dc.dislikeusecase.DeleteDisLike(context.TODO(), dislikeidstr)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to undislike the post",
+		c.JSON(err.Status(), gin.H{
+			"error": err.Message(),
 		})
 		return
 	}
@@ -61,8 +61,8 @@ func (dc DisLikeController) GetDisLikes(c *gin.Context) {
 	postID := c.Param("postID")
 	dislikes, err := dc.dislikeusecase.GetDisLikes(context.TODO(), postID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to retrieve dislikes",
+		c.JSON(err.Status(), gin.H{
+			"error": err.Message(),
 		})
 		return
 	}

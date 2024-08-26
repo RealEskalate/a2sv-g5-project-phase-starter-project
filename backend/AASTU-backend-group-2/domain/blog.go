@@ -21,19 +21,19 @@ type Blog struct {
 }
 
 type BlogUsecase interface {
-	CreateBlog(c context.Context, blog *Blog) error
-	SearchBlog(c context.Context, postName string, authorName string) ([]Blog, error)
-	FilterBlog(c context.Context, tag []string, date time.Time) ([]Blog, error)
-	RetrieveBlog(c context.Context, page int, sortby string, dir string) ([]Blog, int, error)
-	UpdateBlog(c context.Context, updatedblog Blog, blogID string, isadmin bool, userid string) error
-	DeleteBlog(c context.Context, blogID string, isadmin bool, userid string) error
+	CreateBlog(c context.Context, blog *Blog) *AppError
+	SearchBlog(c context.Context, postName string, authorName string) ([]Blog, *AppError)
+	FilterBlog(c context.Context, tag []string, date time.Time) ([]Blog, *AppError)
+	RetrieveBlog(c context.Context, page int, sortby string, dir string) ([]Blog, int, *AppError)
+	UpdateBlog(c context.Context, updatedblog Blog, blogID string, isadmin bool, userid string) *AppError
+	DeleteBlog(c context.Context, blogID string, isadmin bool, userid string) *AppError
 }
 
 type BlogRepository interface {
-	CreateBlog(blog *Blog) error
-	RetrieveBlog(pgnum int, sortby string, dir string) ([]Blog, int, error)
-	UpdateBlog(updatedblog Blog, blogID string, isadmin bool, userid string) error
-	DeleteBlog(blogID string, isadmin bool, userid string) error
-	SearchBlog(postName string, authorName string) ([]Blog, error)
-	FilterBlog(tag []string, date time.Time) ([]Blog, error)
+	CreateBlog(blog *Blog) *AppError
+	RetrieveBlog(pgnum int, sortby string, dir string) ([]Blog, int, *AppError)
+	UpdateBlog(updatedblog Blog, blogID string, isadmin bool, userid string) *AppError
+	DeleteBlog(blogID string, isadmin bool, userid string) *AppError
+	SearchBlog(postName string, authorName string) ([]Blog, *AppError)
+	FilterBlog(tag []string, date time.Time) ([]Blog, *AppError)
 }

@@ -28,23 +28,23 @@ type RestRequest struct {
 }
 
 type UserUsecase interface {
-	UpdateUserDetails(c context.Context, user *User) error
-	RegisterUser(c context.Context, user *User) error
-	LoginUser(c context.Context, user User) (string, error)
-	ForgotPassword(c context.Context, email string) error
-	LogoutUser(c context.Context, uid string) error
-	PromoteDemoteUser(c context.Context, userid string, isAdmin bool) error
-	ResetPassword(c context.Context, token string, newPassword string) error
-	VerifyUserEmail(c context.Context, token string) error
+	UpdateUserDetails(c context.Context, user *User) *AppError
+	RegisterUser(c context.Context, user *User) *AppError
+	LoginUser(c context.Context, user User) (string, *AppError)
+	ForgotPassword(c context.Context, email string) *AppError
+	LogoutUser(c context.Context, uid string) *AppError
+	PromoteDemoteUser(c context.Context, userid string, isAdmin bool) *AppError
+	ResetPassword(c context.Context, token string, newPassword string) *AppError
+	VerifyUserEmail(c context.Context, token string) *AppError
 }
 
 type UserRepository interface {
-	UpdateUserDetails(user *User) error
-	RegisterUser(user *User) error
-	LoginUser(user User) (string, error)
-	ForgotPassword(email string) error
-	LogoutUser(uid string) error
-	PromoteDemoteUser(userid string, isAdmin bool) error
-	ResetPassword(token string, newPassword string) error
-	VerifyUserEmail(token string) error
+	UpdateUserDetails(user *User) *AppError
+	RegisterUser(user *User) *AppError
+	LoginUser(user User) (string, *AppError)
+	ForgotPassword(email string) *AppError
+	LogoutUser(uid string) *AppError
+	PromoteDemoteUser(userid string, isAdmin bool) *AppError
+	ResetPassword(token string, newPassword string) *AppError
+	VerifyUserEmail(token string) *AppError
 }

@@ -20,19 +20,19 @@ func NewDislikeUsecase(DisLikerepo domain.DisLikeRepository, timeout time.Durati
 
 }
 
-func (luse *DisLikeUsecase) GetDisLikes(c context.Context, post_id string) ([]domain.DisLike, error) {
+func (luse *DisLikeUsecase) GetDisLikes(c context.Context, post_id string) ([]domain.DisLike, *domain.AppError) {
 	_, cancel := context.WithTimeout(c, luse.contextTimeout)
 	defer cancel()
 	return luse.DisLikeRepo.GetDisLikes(post_id)
 }
 
-func (luse *DisLikeUsecase) CreateDisLike(c context.Context, user_id string, post_id string) error {
+func (luse *DisLikeUsecase) CreateDisLike(c context.Context, user_id string, post_id string) *domain.AppError {
 	_, cancel := context.WithTimeout(c, luse.contextTimeout)
 	defer cancel()
 	return luse.DisLikeRepo.CreateDisLike(user_id, post_id)
 }
 
-func (luse *DisLikeUsecase) DeleteDisLike(c context.Context, Dislike_id string) error {
+func (luse *DisLikeUsecase) DeleteDisLike(c context.Context, Dislike_id string) *domain.AppError {
 	_, cancel := context.WithTimeout(c, luse.contextTimeout)
 	defer cancel()
 	return luse.DisLikeRepo.DeleteDisLike(Dislike_id)

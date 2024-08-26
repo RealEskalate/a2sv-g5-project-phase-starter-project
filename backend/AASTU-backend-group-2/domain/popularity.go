@@ -30,39 +30,39 @@ type Comment struct {
 
 // Popularity interfaces
 type LikeUsecase interface {
-	GetLikes(context context.Context, post_id string) ([]Like, error)
-	CreateLike(context context.Context, user_id string, post_id string) error
-	DeleteLike(context context.Context, like_id string) error
+	GetLikes(context context.Context, post_id string) ([]Like, *AppError)
+	CreateLike(context context.Context, user_id string, post_id string) *AppError
+	DeleteLike(context context.Context, like_id string) *AppError
 }
 
 type LikeRepository interface {
-	GetLikes(post_id string) ([]Like, error)
-	CreateLike(user_id string, post_id string) error
-	DeleteLike(like_id string) error
+	GetLikes(post_id string) ([]Like, *AppError)
+	CreateLike(user_id string, post_id string) *AppError
+	DeleteLike(like_id string) *AppError
 }
 
 type DisLikeUsecase interface {
-	GetDisLikes(context context.Context, post_id string) ([]DisLike, error)
-	CreateDisLike(context context.Context, user_id string, post_id string) error
-	DeleteDisLike(context context.Context, like_id string) error
+	GetDisLikes(context context.Context, post_id string) ([]DisLike, *AppError)
+	CreateDisLike(context context.Context, user_id string, post_id string) *AppError
+	DeleteDisLike(context context.Context, like_id string) *AppError
 }
 
 type DisLikeRepository interface {
-	GetDisLikes(post_id string) ([]DisLike, error)
-	CreateDisLike(user_id string, post_id string) error
-	DeleteDisLike(like_id string) error
+	GetDisLikes(post_id string) ([]DisLike, *AppError)
+	CreateDisLike(user_id string, post_id string) *AppError
+	DeleteDisLike(like_id string) *AppError
 }
 
 type CommentUsecase interface {
-	GetComments(ctx context.Context, BlogID string) ([]Comment, error)
-	CreateComment(ctx context.Context, BlogID string, userID string, comment Comment) error
-	UpdateComment(ctx context.Context, commentID string, comment Comment) error
-	DeleteComment(ctx context.Context, commentID string) error
+	GetComments(ctx context.Context, BlogID string) ([]Comment, *AppError)
+	CreateComment(ctx context.Context, BlogID string, userID string, comment Comment) *AppError
+	UpdateComment(ctx context.Context, commentID string, comment Comment) *AppError
+	DeleteComment(ctx context.Context, commentID string) *AppError
 }
 
 type CommentRepository interface {
-	GetComments(BlogID string) ([]Comment, error)
-	CreateComment(BlogID, userID string, comment Comment) error
-	UpdateComment(commentID string, comment Comment) error
-	DeleteComment(commentID string) error
+	GetComments(BlogID string) ([]Comment, *AppError)
+	CreateComment(BlogID, userID string, comment Comment) *AppError
+	UpdateComment(commentID string, comment Comment) *AppError
+	DeleteComment(commentID string) *AppError
 }

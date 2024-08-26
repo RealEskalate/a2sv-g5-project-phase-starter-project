@@ -3,8 +3,6 @@ package repositories
 import (
 	"blog_g2/domain"
 	"context"
-	"errors"
-	"log"
 	"sync"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -31,56 +29,61 @@ func NewLikeRepository(mongoClient *mongo.Client) domain.LikeRepository {
 
 }
 
-func (lrep *LikeRepository) GetLikes(post_id string) ([]domain.Like, error) {
-
+func (lrep *LikeRepository) GetLikes(post_id string) ([]domain.Like, *domain.AppError) {
 	var likes []domain.Like
-	postid, _ := primitive.ObjectIDFromHex(post_id)
-	log.Println("postid", postid)
-	cursor, err := lrep.likecollection.Find(context.TODO(), bson.M{"post_id": postid})
-
+	postid, err := primitive.ObjectIDFromHex(post_id)
 	if err != nil {
-		return []domain.Like{}, err
+		return []domain.Like{}, domain.ErrInvalidObjectID
+	}
+
+	cursor, err := lrep.likecollection.Find(context.TODO(), bson.M{"post_id": postid})
+	if err != nil {
+		return []domain.Like{}, domain.ErrLikeRetrievalFailed
 	}
 
 	for cursor.Next(context.Background()) {
 		var like domain.Like
-		cursor.Decode(&like)
+		if err := cursor.Decode(&like); err != nil {
+			return []domain.Like{}, domain.ErrLikeRetrievalFailed
+		}
 		likes = append(likes, like)
 	}
 
 	return likes, nil
 }
 
-func (lrep *LikeRepository) CreateLike(user_id string, post_id string) error {
-
+func (lrep *LikeRepository) CreateLike(user_id string, post_id string) *domain.AppError {
 	var like domain.Like
 	like.UserID, _ = primitive.ObjectIDFromHex(user_id)
+
 	like.BlogID, _ = primitive.ObjectIDFromHex(post_id)
+
 	like.ID = primitive.NewObjectID()
 
-	// check if user has already liked the post
+	// Check if the user has already liked the post
 	var checklike domain.Like
 	erro := lrep.likecollection.FindOne(context.TODO(), bson.M{"user_id": like.UserID, "post_id": like.BlogID}).Decode(&checklike)
 	if erro == nil {
-		return errors.New("User has already liked this post")
+		return domain.ErrLikeAlreadyExists
 	}
 
 	var wg sync.WaitGroup
-	errChan := make(chan error, 3)
+	errChan := make(chan *domain.AppError, 3)
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		lrep.deleteDisLike(user_id, post_id)
+		if err := lrep.deleteDisLike(user_id, post_id); err != nil {
+			errChan <- domain.ErrDislikeRemovalFailed
+		}
 	}()
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		_, err := lrep.likecollection.InsertOne(context.TODO(), like)
-
 		if err != nil {
-			errChan <- err
+			errChan <- domain.ErrLikeInsertionFailed
 		}
 	}()
 
@@ -88,9 +91,8 @@ func (lrep *LikeRepository) CreateLike(user_id string, post_id string) error {
 	go func() {
 		defer wg.Done()
 		_, err := lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": like.BlogID}, bson.M{"$inc": bson.M{"likes": 1}})
-
 		if err != nil {
-			errChan <- err
+			errChan <- domain.ErrLikeBlogUpdateFailed
 		}
 	}()
 
@@ -107,34 +109,36 @@ func (lrep *LikeRepository) CreateLike(user_id string, post_id string) error {
 	return nil
 }
 
-func (lrep *LikeRepository) DeleteLike(like_id string) error {
-
-	likeID, _ := primitive.ObjectIDFromHex(like_id)
-	var like domain.Like
-	err := lrep.likecollection.FindOne(context.TODO(), bson.M{"user_id": likeID}).Decode(&like)
+func (lrep *LikeRepository) DeleteLike(like_id string) *domain.AppError {
+	likeID, err := primitive.ObjectIDFromHex(like_id)
 	if err != nil {
-		return err
+		return domain.ErrInvalidObjectID
+	}
+
+	var like domain.Like
+	err = lrep.likecollection.FindOne(context.TODO(), bson.M{"_id": likeID}).Decode(&like)
+	if err != nil {
+		return domain.ErrLikeRetrievalFailed
 	}
 
 	var wg sync.WaitGroup
-	errChan := make(chan error, 2)
+	errChan := make(chan *domain.AppError, 2)
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		_, err := lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": like.BlogID}, bson.M{"$inc": bson.M{"likes": -1}})
-
 		if err != nil {
-			errChan <- err
+			errChan <- domain.ErrLikeUpdateFailed
 		}
 	}()
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		_, err := lrep.likecollection.DeleteOne(context.TODO(), bson.M{"user_id": likeID})
+		_, err := lrep.likecollection.DeleteOne(context.TODO(), bson.M{"_id": likeID})
 		if err != nil {
-			errChan <- err
+			errChan <- domain.ErrLikeDeletionFailed
 		}
 	}()
 
@@ -151,26 +155,31 @@ func (lrep *LikeRepository) DeleteLike(like_id string) error {
 	return nil
 }
 
-func (lrep *LikeRepository) deleteDisLike(user_id string, post_id string) error {
-	userID, _ := primitive.ObjectIDFromHex(user_id)
-	postID, _ := primitive.ObjectIDFromHex(post_id)
+func (lrep *LikeRepository) deleteDisLike(user_id string, post_id string) *domain.AppError {
+	userID, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil {
+		return domain.ErrInvalidObjectID
+	}
+	postID, err := primitive.ObjectIDFromHex(post_id)
+	if err != nil {
+		return domain.ErrInvalidObjectID
+	}
 
 	var dislike domain.DisLike
-	err := lrep.dislikecollection.FindOne(context.TODO(), bson.M{"user_id": userID, "post_id": postID}).Decode(&dislike)
+	err = lrep.dislikecollection.FindOne(context.TODO(), bson.M{"user_id": userID, "post_id": postID}).Decode(&dislike)
 	if err != nil {
-		return err
+		return domain.ErrDislikeRemovalFailed
 	}
 
 	var wg sync.WaitGroup
-	errChan := make(chan error, 2)
+	errChan := make(chan *domain.AppError, 2)
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		_, err := lrep.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": dislike.BlogID}, bson.M{"$inc": bson.M{"likes": -1}})
-
 		if err != nil {
-			errChan <- err
+			errChan <- domain.ErrLikeBlogUpdateFailed
 		}
 	}()
 
@@ -179,7 +188,7 @@ func (lrep *LikeRepository) deleteDisLike(user_id string, post_id string) error 
 		defer wg.Done()
 		_, err = lrep.dislikecollection.DeleteOne(context.TODO(), bson.M{"user_id": userID, "post_id": postID})
 		if err != nil {
-			errChan <- err
+			errChan <- domain.ErrDislikeRemovalFailed
 		}
 	}()
 

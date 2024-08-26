@@ -27,11 +27,17 @@ export default function page() {
           <CardAndExpenceStatisticsSkeleton />
         </div>
         <div className='w-full lg:w-2/3  '>
-          <Skeleton className='bg-slate-200 w-48 h-6 mb-2 ' />
+          <>
+            <p className='text-[#333B69] pb-2 font-semibold'>Card List</p>
 
-          {[...Array(4)].map((_, index) => (
-            <CardListCardSkeleton key={index} />
-          ))}
+            <div className='rounded-3xl'>
+              {[...Array(4)].map((_, index) => (
+                <div className='p-5 bg-white my-3 rounded-2xl' key={index}>
+                  <Skeleton className='w-full h-8' />
+                </div>
+              ))}
+            </div>
+          </>
         </div>
       </div>
       <div className='space-y-5 md:space-y-0 md:flex md:gap-6'>

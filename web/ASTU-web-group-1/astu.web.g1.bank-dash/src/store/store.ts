@@ -1,12 +1,12 @@
-import { profileAPI } from "@/lib/redux/api/profileAPI";
-import { activeLoanApi } from "@/lib/redux/slices/activeLoanSlice";
-import { bankServiceApi } from "@/lib/redux/slices/bankService";
-import { cardApi } from "@/lib/redux/slices/cardSlice";
-import { investmentApi } from "@/lib/redux/slices/investmentSlice";
-import profileSlice from "@/lib/redux/slices/profileSlice";
-import { transactionApi } from "@/lib/redux/slices/transactionSlice";
-import uiSlice from "@/lib/redux/slices/uiSlice";
-import { configureStore } from "@reduxjs/toolkit";
+import { profileAPI } from '@/lib/redux/api/profileAPI';
+import { activeLoanApi } from '@/lib/redux/slices/activeLoanSlice';
+import { bankServiceApi } from '@/lib/redux/slices/bankService';
+import { cardApi } from '@/lib/redux/slices/cardSlice';
+import { investmentApi } from '@/lib/redux/slices/investmentSlice';
+import profileSlice from '@/lib/redux/slices/profileSlice';
+import { transactionApi } from '@/lib/redux/api/transactionSlice';
+import uiSlice from '@/lib/redux/slices/uiSlice';
+import { configureStore } from '@reduxjs/toolkit';
 
 export const store = configureStore({
   reducer: {

@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import RecentTransactionCard from './RecentTransactionCard';
-import { useGetAllTransactionsQuery } from '@/lib/redux/slices/transactionSlice';
+import { useGetAllTransactionsQuery } from '@/lib/redux/api/transactionSlice';
 import { Skeleton } from '../ui/skeleton';
 
 const RecentTransaction = () => {

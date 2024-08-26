@@ -7,7 +7,7 @@ import {
   useGetAllTransactionsQuery,
   useGetTransactionExpenseQuery,
   useGetTransactionIncomeQuery,
-} from "@/lib/redux/slices/transactionSlice";
+} from "@/lib/redux/api/transactionSlice";
 import Pagination from "./Pagination";
 import RecentTransctionSkeleton from "../AllSkeletons/RecentTransactionSkeleton/recentTransactionSkeleton";
 

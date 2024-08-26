@@ -114,7 +114,7 @@ const CreditCard = ({
         initialValue={initialValue}
         card={card}
       />
-      <div className="flex justify-around items-center bg-white p-3 lg:p-4 rounded-2xl shadow-sm dark:bg-[#050914] dark:border dark:border-[#333B69]">
+      <div className="flex justify-around items-center bg-white p-3 lg:p-4 rounded-2xl shadow-sm dark:bg-[#020817] dark:border dark:border-[#333B69]">
         {icon}
         <div className="flex gap-9">
           {data.map((data, index) => {

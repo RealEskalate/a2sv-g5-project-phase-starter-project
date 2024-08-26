@@ -276,8 +276,8 @@ export default function Home() {
                         : "text-[#1814F3] font-semibold dark:text-[#9faaeb]"
                     }
                   >
-                    {/* repay */}
-                    <New invoice={invoice} />
+                    repay
+                    {/* <New invoice={invoice} /> */}
                   </button>{" "}
                 </div>
               </TableCell>

@@ -5,37 +5,45 @@ import { BsExclamationCircle } from "react-icons/bs";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+
 type FormValues = {
   username: string;
   password: string;
 };
 
 const Contact = () => {
+  const [loading, setLoading] = useState(false);
   const form = useForm<FormValues>();
   const { register, control, handleSubmit, formState } = form;
   const { errors } = formState;
-  const router = useRouter()
-  
+  const router = useRouter();
+
   const onSubmit = async (data: FormValues) => {
-    await signIn("credentials", {
-      redirect: true,
-      // callbackUrl: "/dashboard",
-      userName: data.username,
-      password: data.password,
-    });
+    setLoading(true);
+    try {
+      await signIn("credentials", {
+        redirect: true,
+        userName: data.username,
+        password: data.password,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-
   const route = () => {
-    router.push("/api/auth/signup")
-  }
+    router.push("/api/auth/signup");
+  };
 
   return (
     <div className="flex justify-center min-h-screen dark:bg-[#1e1e2e]">
       <div className="flex flex-col items-center justify-center w-1/2 gap-10">
         <div className="flex justify-center">
           <span className="text-4xl mt-4 font-black text-[#202430] dark:text-[#cdd6f4]">
-            Welcome Back,
+            Welcome
           </span>
         </div>
         <div className="flex justify-between w-2/3">
@@ -92,9 +100,31 @@ const Contact = () => {
               <div className="">
                 <button
                   type="submit"
-                  className="border border-gray-400 bg-[#4640DE] hover:bg-[#2721dd] text-white font-bold rounded-3xl py-2 px-5 w-full dark:border-gray-600 dark:bg-[#5857ED] dark:hover:bg-[#4640DE] dark:text-white"
+                  className="border border-gray-400 bg-[#4640DE] hover:bg-[#2721dd] text-white font-bold rounded-3xl py-2 px-5 w-full dark:border-gray-600 dark:bg-[#5857ED] dark:hover:bg-[#4640DE] dark:text-white flex justify-center items-center"
+                  disabled={loading}
                 >
-                  Login
+                  {loading ? (
+                    <svg
+                      className="animate-spin h-5 w-5 mr-3"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    "Login"
+                  )}
                 </button>
               </div>
             </form>

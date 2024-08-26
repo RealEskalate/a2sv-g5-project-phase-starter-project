@@ -192,7 +192,7 @@ export default function Home() {
       </div>
 
       {/* Web Version */}
-      <div className="hidden md:flex flex-col  px-6 py-4 bg-[#f5f7fa] h-[130vh] dark:bg-[#090b0e]">
+      <div className="hidden md:flex flex-col  px-1 py-4 bg-[#f5f7fa] h-[170vh] dark:bg-[#090b0e]">
            {/* <div className="flex items-center justify-between">
               <h1 className="mx-4 my-4 font-bold text-[#343C6A] text-2xl">My Cards</h1>
               <h1 className="mx-4 my-4 font-bold text-[#343C6A] text-lg">See All</h1>

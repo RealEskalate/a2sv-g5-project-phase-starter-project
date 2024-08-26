@@ -67,8 +67,8 @@ const PageThree = () => {
       {/* Profile Picture Upload */}
       <div className="relative mt-4 w-24 h-24 mx-auto">
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-opacity-75 bg-black rounded-full">
-            <div className="loader">Uploading...</div>
+          <div className="absolute inset-0 flex items-center justify-center bg-opacity-75 rounded-full ">
+            <div className="loader min-w-fit flex-nowrap text-blue-500">Uploading...</div>
           </div>
         )}
         <Image

@@ -96,7 +96,7 @@ const CreditCards = () => {
     );
   }
   return (
-    <div className="bg-[#f5f7fb] w-full p-5 gap-5 flex flex-col dark:bg-[#020817]">
+    <div className="bg-[#f5f7fb] w-full p-5 gap-5 flex flex-col dark:bg-[#090b0e]">
       <div className="flex-col gap-5">
         <HeadingTitle title="My Cards" />
 

@@ -57,7 +57,6 @@ const Transactions: React.FC = () => {
     }
   };
 
-<<<<<<< HEAD
   const fetchRecentData = async () => {
     if (!accessToken) {
       setError("No access token available");
@@ -118,15 +117,6 @@ const Transactions: React.FC = () => {
       setLoading(false);
     }
   };
-=======
-  useEffect(() => {
-    console.log("Updated expenseData:", expenseData);
-  }, [expenseData]);
-
-  useEffect(() => {
-    fetchExpenseData();
-  }, [accessToken]);
->>>>>>> aastu.web.g5.main
 
   const fetchCardData = async (page: number) => {
     if (!accessToken) {
@@ -158,37 +148,6 @@ const Transactions: React.FC = () => {
     }
   };
 
-<<<<<<< HEAD
-=======
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        `https://bank-dashboard-rsf1.onrender.com/transactions?page=${0}&size${5}`,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      const transformedData = response.data.data.content.map((item: any) => ({
-        column1: item.description,
-        column2: item.transactionId,
-        column3: item.type,
-        column4: "N/A", // Update this if you have card info
-        column5: new Date(item.date).toLocaleDateString(),
-        column6: `$${item.amount.toFixed(2)}`, // Format amount as currency
-        column7: "N/A", // Update this if you have receipt info
-      }));
-
-      setData(transformedData);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-      setError("Failed to fetch data. Please check the console for more details.");
-    }
-  };
-
->>>>>>> aastu.web.g5.main
   useEffect(() => {
     fetchCardData(0);
     fetchExpenseData(); // Always fetch expense data for BarChartComponent
@@ -206,15 +165,12 @@ const Transactions: React.FC = () => {
       default:
         break;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeLink, accessToken]);
 
   const handleLinkClick = (linkName: string) => {
     setActiveLink(linkName);
   };
-<<<<<<< HEAD
-=======
-
->>>>>>> aastu.web.g5.main
 
   return (
     <div className="bg-[#F5F7FA] space-y-8 w-[95%] pt-3 overflow-hidden mx-auto">
@@ -292,4 +248,3 @@ const Transactions: React.FC = () => {
 };
 
 export default Transactions;
-``

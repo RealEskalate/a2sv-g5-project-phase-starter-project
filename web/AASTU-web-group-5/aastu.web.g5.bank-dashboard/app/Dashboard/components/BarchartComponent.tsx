@@ -27,6 +27,12 @@ const chartConfig = {
   },
 };
 
+interface ExtendedUser {
+	name?: string;
+	email?: string;
+	image?: string;
+	accessToken?: string;
+}
 // Helper function to get day of the week from a date
 const getDayName = (dateString) => {
   const date = new Date(dateString);
@@ -44,9 +50,10 @@ export default function Component() {
     { day: "Sat", debited: 0, credited: 0 },
     { day: "Sun", debited: 0, credited: 0 },
   ]);
+  const user = session.user as ExtendedUser
 
   useEffect(() => {
-    const token = `Bearer ${session?.user?.accessToken}`;
+    const token = `Bearer ${user?.accessToken}`;
 
     const fetchData = async () => {
       try {
@@ -113,7 +120,7 @@ export default function Component() {
     };
 
     fetchData();
-  }, [session]);
+  }, [session, user?.accessToken]);
 
 
   return (

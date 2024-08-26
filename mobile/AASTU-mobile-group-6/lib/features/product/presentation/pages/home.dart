@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:async';
+
 import 'package:ecommerce_app_ca_tdd/features/chat/socket_n/chatbox.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/models/product_models.dart';
-import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/HomeChat.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/pages/HomeChat.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/bottomnavbar.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/data/models/user_access.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/data/models/user_model.dart';
@@ -42,13 +44,18 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    Future<void> _refresh() {
+    Future<void> _refresh() async {
       context.read<HomeBloc>().add(GetProductsEvent());
       context.read<GetUserBloc>().add(GetUserInfoEvent());
+      var shared_preferences= await SharedPreferences.getInstance();
 
       return Future.delayed(Duration(seconds: 3));
     }
 
+    Future<void> save_id(String id) async {
+      var shared_preferences= await SharedPreferences.getInstance();
+      var save_id = shared_preferences.setString('id',id);
+    }
     const maxNum = 10.0;
     return Scaffold(
       // bottomNavigationBar: NavigationBar(destinations: [
@@ -120,7 +127,8 @@ class _HomePageState extends State<HomePage> {
                                       return Text("Fetching User...",
                                           style: GoogleFonts.sora(
                                               fontWeight: FontWeight.w600));
-                                    } else if (state is GetUserLoaded) {
+                                    } else if (state is GetUserLoaded)  {
+                                      save_id(state.user.id);
                                       return Text("${state.user.name}",
                                           style: GoogleFonts.sora(
                                               fontWeight: FontWeight.w600));
@@ -188,7 +196,6 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(9)),
                         child: GestureDetector(
                           onTap: () {
-                            SocketService().connectToServer();
                             Navigator.pushNamed(context, '/HomeChat');
                           },
                           child: Image(

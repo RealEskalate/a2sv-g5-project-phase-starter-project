@@ -53,6 +53,16 @@ class TransactionService {
       false
     );
   }
+
+  public static applyLoan(accessToken: string): Promise<LoanDetail> {
+    return handleRequest(
+      "POST",
+      `${API_URL}`,
+      undefined,
+      accessToken,
+      false
+    );
+  }
 }
 
 export default TransactionService;

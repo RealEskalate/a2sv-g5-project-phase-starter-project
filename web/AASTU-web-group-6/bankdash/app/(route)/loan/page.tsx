@@ -5,6 +5,7 @@ import { ApiResponse, LoanType } from "@/types/LoanValue";
 import Card from "../../components/Accounts/account";
 import loanApi from "@/app/Services/api/loanApi";
 import { useSession } from "next-auth/react";
+import ApplyLoan from "@/app/components/Loan/ApplyForLoan";
 
 const Loan = () => {
   const { data: session } = useSession();
@@ -62,6 +63,7 @@ const Loan = () => {
           />
         </div>
       </div>
+
       <LoanTable />
     </div>
   );

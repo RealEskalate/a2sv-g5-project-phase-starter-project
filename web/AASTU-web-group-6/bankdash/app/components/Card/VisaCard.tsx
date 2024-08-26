@@ -27,7 +27,7 @@ const VisaCard: React.FC<CardType> = ({
   isSimGray,
   className,
 }) => {
-  // console.log(data, "Data");
+  console.log(data, "Data");
   const cardNo = `${data.semiCardNumber.slice(
     0,
     4

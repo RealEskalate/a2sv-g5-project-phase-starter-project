@@ -227,6 +227,9 @@
 .table-button {
   @apply border py-2 px-4 text-[#143ba5] rounded-[50px] border-[#123288] dark:text-[#153fb1] text-center w-fit text-[15px];
 }
+.status-button {
+  @apply border py-2 px-4 rounded-[50px] dark:text-[#153fb1] text-center w-fit text-[15px];
+}
 .table-button:hover {
   background: rgba(0, 0, 255, 0.143);
 }

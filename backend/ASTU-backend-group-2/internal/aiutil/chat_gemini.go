@@ -16,15 +16,11 @@ import (
 	"google.golang.org/api/option"
 )
 
-type AIUtil interface {
-	GenerateContentFromGemini(title string, description string, env bootstrap.Env) (string, error)
-}
-
 type AI struct {
 	model *genai.GenerativeModel
 }
 
-func NewAIUtil(env *bootstrap.Env) AIUtil {
+func NewAIUtil(env *bootstrap.Env) *AI {
 	ctx := context.Background()
 
 	client, err := genai.NewClient(ctx, option.WithAPIKey(env.GeminiAPIKey))
@@ -147,26 +143,62 @@ func (ai *AI) ReviewContent(blogContent string) (string, error) {
 	return suggestions, nil
 }
 
+// func (aiService *AI) SendMessage(ctx context.Context, history []entities.Message, message entities.Message) (entities.Message, error) {
+// 	var chatSessionHistory []*genai.Content
+// 	for _, message := range history {
+// 		content := genai.Content{
+// 			Parts: []genai.Part{
+// 				genai.Text(message.Text),
+// 			},
+
+// 			Role: message.Role,
+// 		}
+
+// 		chatSessionHistory = append(chatSessionHistory, &content)
+// 	}
+
+// 	chatSession := aiService.model.StartChat()
+// 	chatSession.History = chatSessionHistory
+
+// 	response, err := chatSession.SendMessage(ctx, genai.Text(message.Text))
+// 	if err != nil {
+// 		return entities.Message{}, err
+// 	}
+
+// 	candidate := response.Candidates[0]
+// 	return entities.Message{
+// 		Text:      fmt.Sprintf("%s", candidate.Content.Parts[0]),
+// 		Role:      candidate.Content.Role,
+// 		CreatedAt: time.Now(),
+// 	}, nil
+// }
+
 func (aiService *AI) SendMessage(ctx context.Context, history []entities.Message, message entities.Message) (entities.Message, error) {
 	var chatSessionHistory []*genai.Content
-	for _, message := range history {
+	for _, msg := range history {
 		content := genai.Content{
 			Parts: []genai.Part{
-				genai.Text(message.Text),
+				genai.Text(msg.Text),
 			},
-
-			Role: message.Role,
+			Role: msg.Role,
 		}
 
 		chatSessionHistory = append(chatSessionHistory, &content)
 	}
 
 	chatSession := aiService.model.StartChat()
+	if chatSession == nil {
+		return entities.Message{}, fmt.Errorf("failed to start chat session")
+	}
 	chatSession.History = chatSessionHistory
 
 	response, err := chatSession.SendMessage(ctx, genai.Text(message.Text))
 	if err != nil {
 		return entities.Message{}, err
+	}
+
+	if len(response.Candidates) == 0 {
+		return entities.Message{}, fmt.Errorf("no candidates found in response")
 	}
 
 	candidate := response.Candidates[0]

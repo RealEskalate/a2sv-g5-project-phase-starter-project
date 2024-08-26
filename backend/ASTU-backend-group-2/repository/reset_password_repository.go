@@ -12,21 +12,21 @@ import (
 )
 
 type resetPasswordRepository struct {
-	database        mongo.Database
-	usersCollection string
-	resetCollection string
+	database            mongo.Database
+	usersCollectionName string
+	resetCollectionName string
 }
 
 func NewResetPasswordRepository(db mongo.Database, userCollection string, resetCollection string) entities.ResetPasswordRepository {
 	return &resetPasswordRepository{
-		database:        db,
-		usersCollection: userCollection,
-		resetCollection: resetCollection,
+		database:            db,
+		usersCollectionName: userCollection,
+		resetCollectionName: resetCollection,
 	}
 }
 
 func (rp *resetPasswordRepository) GetUserByEmail(c context.Context, email string) (*entities.User, error) {
-	collection := rp.database.Collection(rp.usersCollection)
+	collection := rp.database.Collection(rp.usersCollectionName)
 	var user entities.User
 	err := collection.FindOne(c, bson.M{"email": email}).Decode(&user)
 	if err != nil {
@@ -36,7 +36,7 @@ func (rp *resetPasswordRepository) GetUserByEmail(c context.Context, email strin
 }
 func (rp *resetPasswordRepository) ResetPassword(c context.Context, userID string, resetPassword *entities.ResetPasswordRequest) error {
 
-	collection := rp.database.Collection(rp.usersCollection)
+	collection := rp.database.Collection(rp.usersCollectionName)
 	ObjID, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return custom_error.ErrInvalidID
@@ -52,7 +52,7 @@ func (rp *resetPasswordRepository) ResetPassword(c context.Context, userID strin
 }
 
 func (rp *resetPasswordRepository) SaveOtp(c context.Context, otp *entities.OtpSave) error {
-	collection := rp.database.Collection(rp.resetCollection)
+	collection := rp.database.Collection(rp.resetCollectionName)
 
 	_, err := collection.InsertOne(c, otp)
 
@@ -65,7 +65,7 @@ func (rp *resetPasswordRepository) SaveOtp(c context.Context, otp *entities.OtpS
 
 func (rp *resetPasswordRepository) GetOTPByEmail(c context.Context, email string) (*entities.OtpSave, error) {
 
-	collection := rp.database.Collection(rp.resetCollection)
+	collection := rp.database.Collection(rp.resetCollectionName)
 	var otp entities.OtpSave
 
 	err := collection.FindOne(c, bson.M{"email": email}).Decode(&otp)
@@ -83,7 +83,7 @@ func (rp *resetPasswordRepository) GetOTPByEmail(c context.Context, email string
 
 func (rp *resetPasswordRepository) DeleteOtp(c context.Context, email string) error {
 
-	collection := rp.database.Collection(rp.resetCollection)
+	collection := rp.database.Collection(rp.resetCollectionName)
 
 	_, err := collection.DeleteOne(c, bson.M{"email": email})
 

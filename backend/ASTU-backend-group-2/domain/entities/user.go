@@ -142,5 +142,8 @@ type UserRepository interface {
 
 	PromoteUserToAdmin(c context.Context, userID string) error
 	DemoteAdminToUser(c context.Context, userID string) error
+
+	GetInactiveUsersForReactivation(c context.Context, emailTreshold primitive.DateTime, deleteTreshold primitive.DateTime) (*[]User, error)
+	DeleteInActiveUser(c context.Context, deleteTreshold primitive.DateTime) error
 	RefreshTokenExist(c context.Context, userID, refreshToken string) (bool, error)
 }

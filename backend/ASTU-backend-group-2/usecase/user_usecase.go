@@ -6,7 +6,9 @@ import (
 	"log"
 	"time"
 
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/internal/emailutil"
 	mongopagination "github.com/gobeam/mongo-go-pagination"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -15,6 +17,7 @@ import (
 type userUsecase struct {
 	userRepository entities.UserRepository
 	contextTimeout time.Duration
+	Env            *bootstrap.Env
 }
 
 func NewUserUsecase(userRepository entities.UserRepository, timeout time.Duration) entities.UserUsecase {
@@ -196,4 +199,63 @@ func UserFilterOption(filter entities.UserFilter) bson.M {
 	log.Println(query)
 	return query
 
+}
+
+func (uu *userUsecase) SendReminderEmail(c context.Context) error {
+	ctx, cancel := context.WithTimeout(c, time.Second*10)
+	defer cancel()
+
+	emailTreshold := primitive.NewDateTimeFromTime(time.Now().AddDate(0, 0, -3))
+	deleteTreshold := primitive.NewDateTimeFromTime(time.Now().AddDate(0, 0, -10))
+
+	users, err := uu.userRepository.GetInactiveUsersForReactivation(ctx, emailTreshold, deleteTreshold)
+
+	if err != nil {
+		return err
+	}
+
+	for _, user := range *users {
+		// Send activation email
+		err := emailutil.SendVerificationEmail(user.Email, user.VerToken, uu.Env)
+		if err != nil {
+			log.Println("Error sending reminder email to user:", user.Email)
+			continue
+		}
+	}
+
+	return nil
+}
+
+func (uu *userUsecase) DeleteInActiveUsers(c context.Context) error {
+	ctx, cancel := context.WithTimeout(c, time.Second*10)
+	defer cancel()
+
+	deleteTreshold := primitive.NewDateTimeFromTime(time.Now().AddDate(0, 0, -10))
+
+	err := uu.userRepository.DeleteInActiveUser(ctx, deleteTreshold)
+
+	return err
+}
+
+// Schedule the process to send reminders and delete inactive users
+func (uu *userUsecase) ScheduleDeleteAndReminderForInActiveUser(c context.Context) {
+	ctx, cancel := context.WithTimeout(c, time.Second*10)
+	defer cancel()
+
+	ticker := time.NewTicker(24 * time.Hour)
+	go func() {
+		for range ticker.C {
+			// Send reminder emails to users who haven't activated within 3 days
+			err := uu.SendReminderEmail(ctx)
+			if err != nil {
+				log.Println("Error sending reminder emails:", err)
+			}
+
+			// Delete users who have been inactive for more than 7 days
+			err = uu.DeleteInActiveUsers(c)
+			if err != nil {
+				log.Println("Error deleting inactive users:", err)
+			}
+		}
+	}()
 }

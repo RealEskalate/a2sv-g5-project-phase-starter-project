@@ -15,6 +15,10 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, gin *g
 	// Error handling
 	gin.Use(middleware.ErrorHandlerMiddleware())
 
+	// RateLimit handling
+	rateLimit := middleware.NewRateLimitterMiddleware(env)
+	gin.Use(rateLimit.RateLimitter)
+
 	publicRouter := gin.Group("")
 
 	// All Public APIs
@@ -34,5 +38,5 @@ func Setup(env *bootstrap.Env, timeout time.Duration, db *mongo.Database, gin *g
 	// All Protected APIs
 	NewProtectedBlogsRouter(env, timeout, db, protectedRouter)
 	NewProfileRouter(env, timeout, db, protectedRouter, cloudinary)
-	NewChatRouter(env, timeout, protectedRouter)
+	NewChatRouter(env, timeout, db, protectedRouter)
 }

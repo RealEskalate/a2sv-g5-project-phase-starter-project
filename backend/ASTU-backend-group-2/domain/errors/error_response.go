@@ -51,6 +51,9 @@ var (
 	ErrErrorSendingVerificationEmail = errors.New("Error sending verification email")
 	ErrInvalidEmailFormat            = errors.New("Invalid email format")
 	EreInvalidRequestBody            = errors.New("Request body cannot be empty")
+
+	ErrRateLimitExceeded         = errors.New("Rate limit exceeded")
+	ErrErrorSendingReminderEmail = errors.New("Error sending reminder email")
 )
 
 // Token Errors
@@ -117,8 +120,15 @@ var (
 	ErrErrorCountingBlogViews    = errors.New("Error counting blog views")
 	ErrErrorCountingUserPosts    = errors.New("Error counting user blogs")
 	ErrFilteringBlogs            = errors.New("Error filtering blogs")
+	ErrFilteringChats            = errors.New("Error filtering chats")
+	ErrCreatingChat              = errors.New("Error creating chat")
 	ErrFilteringComments         = errors.New("Error filtering comments")
 	ErrUpdatingLikeCount         = errors.New("Error updating like count")
+)
+
+// Chat Errors
+var (
+	ErrChatNotFound = errors.New("Chat not found")
 )
 
 var errorStatusMap = map[error]int{

@@ -10,34 +10,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-// Define the schema using Zod
-const schema = z
-  .object({
-    name: z.string().min(1, "Name is required"),
-    email: z.string().email("Invalid email address"),
-    dateOfBirth: z.string().min(1, "Date of Birth is required"),
-    permanentAddress: z.string(),
-    postalCode: z.string(),
-    username: z.string().min(1, "Username is required"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(6, "Confirm Password is required"),
-    presentAddress: z.string(),
-    city: z.string(),
-    country: z.string(),
-    profilePicture: z.string().url("Invalid URL"),
-    preference: z.object({
-      currency: z.string(),
-      sentOrReceiveDigitalCurrency: z.boolean().optional(),
-      receiveMerchantOrder: z.boolean().optional(),
-      accountRecommendations: z.boolean().optional(),
-      timeZone: z.string(),
-      twoFactorAuthentication: z.boolean().optional(),
-    }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Passwords do not match",
-  });
 
 type FormData = Omit<UserValue, "password"> & {
   password: string;
@@ -45,27 +17,37 @@ type FormData = Omit<UserValue, "password"> & {
 };
 
 const SignUpForm = () => {
+  
+  const offsetInMinutes = new Date().getTimezoneOffset();
+  const offsetInHours = Math.floor(Math.abs(offsetInMinutes) / 60);
+  const offsetMinutes = Math.abs(offsetInMinutes) % 60;
+  const sign = offsetInMinutes > 0 ? "-" : "+";
+  const gmtTimeZone = `GMT${sign}${String(offsetInHours).padStart(2, '0')}:${String(offsetMinutes).padStart(2, '0')}`;
+
+
+
   const [step, setStep] = useState(1);
-  const {
-    register,
-    handleSubmit,
-    trigger,
-    formState: { errors },
-    watch,
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
+  const { register, handleSubmit, formState: { errors }, watch ,trigger } = useForm<FormData>();
+
   const confirmData = watch("password");
   const route = useRouter();
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLFormElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault(); // Prevent form submission on Enter
+      // handleSubmit(onSubmit)(); // Manually trigger validation
+    }
+  };
+  
   const onSubmit = async (data: FormData) => {
-    console.log(data);
     const { confirmPassword, ...userData } = data;
-    console.log("Signup successful:", userData);
+    console.log("DATA",data)
     userData.profilePicture = "/assets/profile.png";
-    route.push("/login");
+    userData.preference.timeZone = gmtTimeZone;
+    userData.preference.twoFactorAuthentication = false;
+    
     try {
       const responseData = await AuthService.register(userData);
-      // console.log(responseData);
       if (responseData.success) {
         console.log("Signup successful:", responseData.message);
         route.push("/login");
@@ -77,10 +59,15 @@ const SignUpForm = () => {
     }
   };
 
-  const nextStep = () => {
-    setStep((prev) => prev + 1);
-    console.log(step, "step");
+  const nextStep = async () => {
+    const valid = await trigger(); // Validates all fields in the current step
+    if (valid) {
+      setStep((prev) => prev + 1);
+    } else {
+      console.error("Validation failed. Fix the errors before proceeding.");
+    }
   };
+  
 
   const prevStep = () => setStep((prev) => prev - 1);
 
@@ -123,10 +110,8 @@ const SignUpForm = () => {
           <button className="login-btn text-white ml-1"> Login</button>
         </div>
       </div>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="w-[55%] flex flex-col justify-center items-center"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} onKeyPress={handleKeyPress} className="w-[55%] flex flex-col justify-center items-center">
+
         {step === 1 && (
           <div key={1} className="flex flex-col w-full px-6 py-3 gap-2">
             <div className="flex gap-3 items-center w-full justify-center py-6">
@@ -391,23 +376,26 @@ const SignUpForm = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="mb-1 text-slate-500" htmlFor="currency">
-                Currency
-              </label>
-              <input
-                {...register("preference.currency")}
-                id="currency"
-                placeholder="USD"
-                className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]"
-                type="text"
-              />
-              {errors.preference?.currency && (
-                <p className="text-[#1814F3]">
-                  {errors.preference.currency.message}
-                </p>
-              )}
-            </div>
-
+  <label className="mb-1 text-slate-500" htmlFor="currency">
+    Currency
+  </label>
+  <select
+    {...register("preference.currency")}
+    id="currency"
+    className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE] mt-1 block w-full text-sm"
+  >
+    <option value="USD">USD - US Dollar</option>
+    <option value="EUR">EUR - Euro</option>
+    <option value="GBP">GBP - British Pound</option>
+    <option value="JPY">JPY - Japanese Yen</option>
+    <option value="CNY">CNY - Chinese Yuan</option>
+    <option value="INR">INR - Indian Rupee</option>
+    <option value="ETB">ETB - Ethiopian Birr</option>
+  </select>
+  {errors.preference?.currency && (
+    <p className="text-[#1814F3]">{errors.preference.currency.message}</p>
+  )}
+</div>
             <div className="flex gap-2">
               <input
                 {...register("preference.sentOrReceiveDigitalCurrency")}

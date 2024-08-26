@@ -2,7 +2,7 @@ import axios from "axios";
 import {jwtDecode} from "jwt-decode"; // Assuming you're using the jwt-decode library
 import { checkAndRefreshToken } from "./hooks/useRefresh";
 
-const API_URL = "https://bank-dashboard-rsf1.onrender.com/cards";
+const API_URL = "https://bank-dashboard-irse.onrender.com/cards";
 
 interface Card {
   id?: string;

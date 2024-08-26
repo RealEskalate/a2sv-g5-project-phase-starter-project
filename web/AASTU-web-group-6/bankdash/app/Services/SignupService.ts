@@ -6,7 +6,7 @@ import SignupResponseValue from "@/types/SignupResponseValue";
 const SignupService = async (formData: UserValue): Promise<ResponseValue> => {
   try {
     const response = await axios.post<SignupResponseValue>(
-      "https://bank-dashboard-rsf1.onrender.com/auth/register",
+      "https://bank-dashboard-irse.onrender.com/auth/register",
       formData,
       {
         headers: {

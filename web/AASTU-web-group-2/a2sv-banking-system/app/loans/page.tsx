@@ -321,7 +321,11 @@ export default function Home() {
             </button>
           ))}
           <button
-            onClick={() => handlePage(page + 1)}
+            onClick={() => {
+              if (page < total - 1) {
+                handlePage(page + 1);
+              }
+            }}
             className={
               page < total - 1
                 ? "mx-3 text-slate-400 hover:text-slate-700 dark:text-[#9faaeb] font-bold text-xl"

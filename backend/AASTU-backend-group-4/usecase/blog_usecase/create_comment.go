@@ -9,8 +9,8 @@ import (
 )
 
 func (bu *BlogUsecase) CreateComment(ctx context.Context, comment *domain.CommentRequest) (*domain.Comment, error) {
-	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
+	// defer cancel()
 
 	var newComment domain.Comment
 

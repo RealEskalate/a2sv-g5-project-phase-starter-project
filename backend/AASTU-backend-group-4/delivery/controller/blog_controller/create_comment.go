@@ -2,6 +2,7 @@ package blog_controller
 
 import (
 	"blog-api/domain"
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,7 +26,7 @@ func (bc *BlogController) CreateComment(c *gin.Context) {
 	}
 
 	comment.UserID = ID
-	createdComment, err := bc.usecase.CreateComment(c, &comment)
+	createdComment, err := bc.usecase.CreateComment(context.Background(), &comment)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

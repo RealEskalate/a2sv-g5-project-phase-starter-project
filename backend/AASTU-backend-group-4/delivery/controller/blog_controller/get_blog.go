@@ -1,6 +1,7 @@
 package blog_controller
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,7 @@ func (bc *BlogController) GetBlogByID(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
-	post, err := bc.usecase.GetBlogByID(c, blogID)
+	post, err := bc.usecase.GetBlogByID(context.Background(), blogID)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Blog not found"})

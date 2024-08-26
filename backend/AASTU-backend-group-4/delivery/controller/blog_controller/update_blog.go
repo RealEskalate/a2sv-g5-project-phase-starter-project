@@ -2,6 +2,7 @@ package blog_controller
 
 import (
 	"blog-api/domain"
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -24,7 +25,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 		return
 	}
 
-	err = bc.usecase.UpdateBlog(c, blogID, updatedBlog, authorID)
+	err = bc.usecase.UpdateBlog(context.Background(), blogID, updatedBlog, authorID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update blog post"})
 		return

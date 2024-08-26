@@ -6,8 +6,8 @@ import (
 )
 
 func (bu *BlogUsecase) FilterBlog(ctx context.Context, filter domain.FilterRequest) ([]*domain.Blog, error) {
-	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
+	// defer cancel()
 
 	blogs, err := bu.blogRepo.FilterBlog(ctx, filter)
 	if err != nil {

@@ -8,8 +8,8 @@ import (
 )
 
 func (bu *BlogUsecase) GetBlogByID(ctx context.Context, blogID primitive.ObjectID) (*domain.BlogResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
+	// defer cancel()
 
 	var post domain.BlogResponse
 

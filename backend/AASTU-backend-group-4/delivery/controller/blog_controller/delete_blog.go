@@ -1,6 +1,7 @@
 package blog_controller
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +19,7 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 		return
 	}
 
-	err = bc.usecase.DeleteBlog(c, userID, blogID, isAdmin)
+	err = bc.usecase.DeleteBlog(context.Background(), userID, blogID, isAdmin)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

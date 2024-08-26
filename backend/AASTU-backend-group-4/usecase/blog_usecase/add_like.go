@@ -9,8 +9,8 @@ import (
 )
 
 func (bu *BlogUsecase) AddLike(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID) error {
-	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
+	// defer cancel()
 
 	var newLike domain.Like
 

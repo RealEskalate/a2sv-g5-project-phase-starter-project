@@ -10,8 +10,8 @@ import (
 )
 
 func (bu *BlogUsecase) CreateBlog(ctx context.Context, data *domain.BlogRequest, authorID primitive.ObjectID) (*domain.Blog, error) {
-	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
+	// defer cancel()
 
 	if data.Title == "" || data.Content == "" || data.Author == "" || len(data.Tags) == 0 {
 		return nil, errors.New("tiltle, content, author name and list of tags are required")

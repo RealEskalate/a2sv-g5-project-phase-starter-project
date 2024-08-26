@@ -7,6 +7,7 @@ import (
 	"blog-api/infrastructure"
 	"blog-api/infrastructure/auth"
 	"blog-api/infrastructure/bootstrap"
+	infrastructures "blog-api/infrastructure/cloudinary"
 	"blog-api/infrastructure/email"
 	"blog-api/repository/blog_repository"
 	"blog-api/repository/comment_repository"
@@ -48,9 +49,10 @@ func main() {
 	commRepo := comment_repository.NewCommentRepository(db.Collection("comments"))
 	likeRepo := like_repository.NewLikeRepository(db.Collection("likes"))
 	aiService := infrastructure.NewGenAIService()
+	medup := infrastructures.NewMediaUpload()
 
 	blogUsecase := blog_usecase.NewBlogUsecase(blogRepo, commRepo, likeRepo, aiService, *env, time.Duration(env.ContextTimeout))
-	blogController := blog_controller.NewBlogController(blogUsecase)
+	blogController := blog_controller.NewBlogController(blogUsecase, medup)
 
 	r := gin.Default()
 	router.SetRouter(r, blogController, userController, env)

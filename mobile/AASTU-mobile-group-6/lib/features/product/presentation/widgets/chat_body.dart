@@ -1,9 +1,10 @@
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/message.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/chat_container.dart';
 import 'package:flutter/material.dart';
 
 
 class ChatBody extends StatelessWidget {
-  final List<String> chats;
+  final List<MessageType> chats;
   final String ownerId;
   final List<String> senderIds;
 
@@ -32,7 +33,7 @@ class ChatBody extends StatelessWidget {
                     color: isOwner ? Colors.blue : Colors.grey[300],
                     borderRadius: BorderRadius.circular(12.0),
                   ),
-                  child: SingleText(chat: chats[index], parentColor: isOwner ? 'blue' : 'grey'),
+                  child: SingleText(chat: chats[index].content, parentColor: isOwner ? 'blue' : 'grey'),
                 ),
               );
             },

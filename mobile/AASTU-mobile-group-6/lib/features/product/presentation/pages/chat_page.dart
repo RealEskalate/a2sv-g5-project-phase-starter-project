@@ -59,7 +59,6 @@ class ChatPage extends StatelessWidget{
                   chats: chats,
                 ),
               ),
-
               ChatBottomAppBar( 
                 messageController: _messageController,
                 onSend: () {
@@ -85,3 +84,4 @@ class ChatPage extends StatelessWidget{
     );
   }
  }
+

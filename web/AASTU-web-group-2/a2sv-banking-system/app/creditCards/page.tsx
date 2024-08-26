@@ -16,6 +16,7 @@ import {
   ShimmerMainCreditCard,
   ShimmerPieChartPage,
 } from "./Shimmer";
+
 const HeadingTitle = ({ title }: { title: string }) => {
   return (
     <h1 className="text-[#343C6A] font-semibold lg:text-xl md:text-lg dark:text-[#9faaeb]">
@@ -30,13 +31,16 @@ const CreditCards = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const filteredCards = cards.filter(
     (card) =>
       card.cardType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      card.balance.toString().includes(searchTerm)
+      card.semiCardNumber.toString().includes(searchTerm)
   );
-
+  const handleDialogToogle = (value: boolean) => {
+    setDialogOpen(value);
+  };
   const convertToDate = (date: string) => {
     const year = date.slice(2, 4);
     const month = date.slice(5, 7);
@@ -115,7 +119,7 @@ const CreditCards = () => {
                     balance={card.balance.toString()}
                     cardHolder={card.cardHolder}
                     validThru={convertToDate(card.expiryDate)}
-                    cardNumber={card.id}
+                    cardNumber={"**** **** ****" + card.semiCardNumber}
                     filterClass=""
                     bgColor={bgColor}
                     textColor={textColor}
@@ -130,7 +134,7 @@ const CreditCards = () => {
         </div>
       </div>
       <div className="flex flex-col gap-6 md:flex-row">
-        <div className="flex flex-col gap-5 basis-5/12 ">
+        <div className="flex flex-col gap-5 basis-5/12">
           <HeadingTitle title="Card Expense Statistics" />
           {loading ? <ShimmerPieChartPage /> : <PieChart />}
         </div>
@@ -160,13 +164,15 @@ const CreditCards = () => {
               filteredCards.map((card, index) => (
                 <CreditCard
                   icon={<img src="card1.svg" alt="Card Icon" />}
-                  linkUrl=""
+                  handleDetail={handleDialogToogle}
                   data={[
                     ["Card Type", card.cardType],
                     ["Balance", card.balance.toString()],
-                    ["Card Number", card.id],
+                    ["Card Number", card.semiCardNumber],
                     ["Card Expiry", convertToDate(card.expiryDate)],
                   ]}
+                  card={card}
+                  initialValue={dialogOpen}
                   key={index}
                 />
               ))

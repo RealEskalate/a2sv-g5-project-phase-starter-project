@@ -36,7 +36,7 @@ func (s *NewUserController) UpdateUser(c *gin.Context) {
 
 func (s *NewUserController) PromoteUser(c *gin.Context) {
 
-	role := c.GetString("role")
+	role := c.GetString("user_id")
 
 	var promotion domain.UserPromotionRequest
 
@@ -48,11 +48,18 @@ func (s *NewUserController) PromoteUser(c *gin.Context) {
 	}
 
 	userid := c.Param("id")
-	response := s.UserUsecase.PromoteandDemoteUser(c, userid , promotion , role)
+
+	rolecheck , err := s.UserUsecase.FindUserByID(c, role)
+
+	if rolecheck.Role != "admin" {
+		c.JSON(401, gin.H{"error": "Unauthorized to promote user"})
+		return
+	}
+
+	response := s.UserUsecase.PromoteandDemoteUser(c, userid , promotion)
 
 	HandleResponse(c, response)
 
-	
 }
 
 

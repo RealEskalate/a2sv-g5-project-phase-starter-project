@@ -53,7 +53,7 @@ type SignupRepository interface {
 
 type SignupUseCase interface {
 	Create(c context.Context, user User) interface{}
-	VerifyOTP(c context.Context, otp OtpToken) interface{}
+	VerifyOTP(c context.Context, otp OtpToken ,  ip string) interface{}
 	ForgotPassword(c context.Context, email ForgotPasswordRequest) interface{}
 	ResetPassword(c context.Context, password ResetPasswordRequest, token string) interface{}
 	HandleUnverifiedUser(c context.Context, email Email) interface{}
@@ -65,7 +65,8 @@ type UserUseCase interface {
 	// FindUserByID(ctx context.Context, id string) interface{}
 	UpdateUser(ctx context.Context, user UserUpdateRequest) interface{}
 	// DeleteUser(ctx context.Context, id string) interface{}
-	PromoteandDemoteUser(ctx context.Context, id string, promotion UserPromotionRequest, role string) interface{}
+	PromoteandDemoteUser(ctx context.Context, id string, promotion UserPromotionRequest) interface{}
+	FindUserByID(ctx context.Context, id string) (User, error)
 }
 
 type UserResponse struct {

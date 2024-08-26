@@ -17,14 +17,16 @@ type SignupUseCase struct {
 	UnverifiedUserRepository domain.UnverifiedUserRepository
 	contextTimeout           time.Duration
 	passwordService          domain.PasswordService
+	ratelimiter  			domain.RateLimiter
 }
 
-func NewSignupUseCase(SignupRepository domain.SignupRepository, uvu domain.UnverifiedUserRepository, timeout time.Duration, passwordService domain.PasswordService) domain.SignupUseCase {
+func NewSignupUseCase(SignupRepository domain.SignupRepository, uvu domain.UnverifiedUserRepository, timeout time.Duration, passwordService domain.PasswordService , ratelimiter domain.RateLimiter) domain.SignupUseCase {
 	return &SignupUseCase{
 		SignupRepository:         SignupRepository,
 		UnverifiedUserRepository: uvu,
 		contextTimeout:           timeout,
-		passwordService:          passwordService}
+		passwordService:          passwordService,
+		ratelimiter:               ratelimiter,}
 }
 
 func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} {
@@ -107,7 +109,7 @@ func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} 
 	return &domain.SuccessResponse{Message: "Registerd Sucessfully Verify your account", Data: "", Status: 201}
 }
 
-func (u *SignupUseCase) VerifyOTP(c context.Context, otp domain.OtpToken) interface{} {
+func (u *SignupUseCase) VerifyOTP(c context.Context, otp domain.OtpToken , ip string) interface{} {
 
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
@@ -146,6 +148,9 @@ func (u *SignupUseCase) VerifyOTP(c context.Context, otp domain.OtpToken) interf
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error verifying user", Status: 500}
 	}
+
+	// flush from redis server once the user is verified
+	err = u.ratelimiter.FlushAfterSuccess(ip)
 
 	return &domain.SuccessResponse{Message: "Account verified successfully", Data: verifiedUser, Status: 200}
 

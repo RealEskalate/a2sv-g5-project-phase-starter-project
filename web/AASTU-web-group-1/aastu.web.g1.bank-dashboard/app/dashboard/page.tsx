@@ -43,38 +43,36 @@ const MainDashboard = () => {
   return (
     <div
       className={`min-h-screen 
-        md:p-10 p-5 space-y-5 ${isDarkMode ? "bg-gray-700 text-white" : "bg-[#F5F7FA] text-black"}`}
+        md:p-10 p-5 space-y-5 ${
+          isDarkMode ? "bg-gray-700 text-white" : "bg-[#F5F7FA] text-black"
+        }`}
     >
-        {/* First Row: My Cards and Recent Transactions */}
-        <div className="md:flex sm:grid-cols-2 md:gap-5 md:space-y-0 space-y-5 ">
-          <Cards onLoadingComplete={() => setCardLoaded(true)} />
-          <RecentTransaction
-            onLoadingComplete={() => setRecentTransactionLoaded(true)}
-          />
-        </div>
-
-        {/* Second Row: Weekly Activity and Expense Statistics */}
-        <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
-          <WeeklyActivity
-            onLoadingComplete={() => setWeeklyActivityLoaded(true)}
-          />
-          <ExpenseStatistics
-            onLoadingComplete={() => setExpenseStatisticsLoaded(true)}
-          />
-        </div>
-
-        {/* Third Row: Quick Transfer and Balance History */}
-        <div className="md:grid md:grid-cols-[1fr,2fr] md:gap-10 space-y-5 md:space-y-0">
-          <QuickTransfer
-            onLoadingComplete={() => setQuickTransferLoaded(true)}
-          />
-          <BalanceHistory
-            onLoadingComplete={() => setBalanceHistoryLoaded(true)}
-          />
-        </div>
+      {/* First Row: My Cards and Recent Transactions */}
+      <div className="md:flex sm:grid-cols-2 md:gap-5 md:space-y-0 space-y-5 ">
+        <Cards onLoadingComplete={() => setCardLoaded(true)} />
+        <RecentTransaction
+          onLoadingComplete={() => setRecentTransactionLoaded(true)}
+        />
       </div>
 
- 
+      {/* Second Row: Weekly Activity and Expense Statistics */}
+      <div className="md:flex sm:grid-cols-2 md:gap-5 space-y-5 md:space-y-0">
+        <WeeklyActivity
+          onLoadingComplete={() => setWeeklyActivityLoaded(true)}
+        />
+        <ExpenseStatistics
+          onLoadingComplete={() => setExpenseStatisticsLoaded(true)}
+        />
+      </div>
+
+      {/* Third Row: Quick Transfer and Balance History */}
+      <div className="md:grid md:grid-cols-[1fr,2fr] md:gap-10 space-y-5 md:space-y-0">
+        <QuickTransfer onLoadingComplete={() => setQuickTransferLoaded(true)} />
+        <BalanceHistory
+          onLoadingComplete={() => setBalanceHistoryLoaded(true)}
+        />
+      </div>
+    </div>
   );
 };
 

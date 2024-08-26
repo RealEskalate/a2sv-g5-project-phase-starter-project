@@ -121,18 +121,21 @@ export const bankServices =[
 export const investmentTypes =[
     {
         name: 'Total Invested Amount',
+        id:"totalInvestment",
         route: "",
         icon: '/icons/Investment1.svg',
         description:'$150,000'
     },
     {
         name: 'Corporate Investments',
+        id:'',
         route:'',
         icon: '/icons/Investment2.svg',
         description:'1250'
     },
     {
-        name: 'Business Investments',
+        name: 'Rate of Return',
+        id:'rateOfReturn',
         route: '',
         icon: '/icons/Investment3.svg',
         description:'+5.80%'

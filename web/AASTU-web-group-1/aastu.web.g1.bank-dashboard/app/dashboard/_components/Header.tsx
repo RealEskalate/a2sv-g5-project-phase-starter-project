@@ -61,21 +61,20 @@ const Header = ({ title }: { title: string }) => {
         isDarkMode ? "border-gray-700 bg-gray-800" : "bg-white"
       }`}
     >
-      <div className="flex justify-between px-10 py-4">
+      <div className="flex items-center justify-between px-10 pt-1">
         <h1
-          className={`text-3xl font-[600] ${
+          className={`pt-2 text-3xl font-[600] ${
             isDarkMode ? "text-white" : "text-primaryBlack"
           }`}
         >
           {title}
         </h1>
 
+        {/* Search */}
         <div className={`flex gap-5 items-center `}>
           {/* Search */}
           <div
-            className={`flex gap-3 p-3 rounded-full ${
-              !isDarkMode ? "" : ""
-            } `}
+            className={`flex gap-3 p-3 rounded-full ${!isDarkMode ? "" : ""} `}
           >
             <Image
               src="/icons/Search.svg"
@@ -91,30 +90,35 @@ const Header = ({ title }: { title: string }) => {
               placeholder="Search for something"
             />
           </div>
-          <button onClick={() => setIsDarkMode(!isDarkMode)}>
+          <button
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className="hover:scale-105 transition-all duration-150"
+          >
             {isDarkMode ? (
-              <CiDark color="white" size={30} />
+              <CiLight size={30} color="white" />
             ) : (
-              <CiLight size={30} />
+              <CiDark size={30} />
             )}
           </button>
 
           {/* Settings */}
           <div
-            className={`p-2 rounded-full cursor-pointer ${
+            className={`hover:scale-105 transition-all duration-150 p-2 rounded-full cursor-pointer ${
               isDarkMode ? "bg-gray-800" : "bg-[#F5F7FA]"
             }`}
           >
-            <Image
-              src="/icons/Settings.svg"
-              width={22}
-              height={22}
-              alt="Settings"
-            />
+            <Link href="/dashboard/setting">
+              <Image
+                src="/icons/Settings.svg"
+                width={22}
+                height={22}
+                alt="Settings"
+              />
+            </Link>
           </div>
 
           <div
-            className={`p-2 rounded-full cursor-pointer ${
+            className={`p-2 rounded-full cursor-pointer hover:scale-105 transition-all duration-150 ${
               isDarkMode ? "bg-gray-800" : "bg-[#F5F7FA]"
             }`}
           >
@@ -129,7 +133,7 @@ const Header = ({ title }: { title: string }) => {
           {/* Avatar */}
           <Popover>
             <PopoverTrigger>
-              <Avatar>
+              <Avatar className="hover:scale-105 transition-all duration-150">
                 <AvatarImage src={profileUrl} />
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>

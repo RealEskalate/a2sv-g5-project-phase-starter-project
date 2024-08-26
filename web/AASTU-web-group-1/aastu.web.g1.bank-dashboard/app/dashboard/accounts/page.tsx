@@ -17,12 +17,10 @@ import getRandomBalance, {
 import { setLogger } from "react-query";
 import { Loading } from "../_components/Loading";
 
-
-
 const Accounts = () => {
   const { isDarkMode } = useUser();
   const [recentTransactions, setRecentTransactions] = useState<
-  TransactionContent[]
+    TransactionContent[]
   >([]);
   const [creditCards, setCreditCards] = useState<CardDetails[]>([]);
   const [balance, setBalanceHistory] = useState<BalanceData[]>([]);
@@ -46,10 +44,8 @@ const Accounts = () => {
     fetchData();
   }, []);
 
-  if (loading){
-    return (
-      <Loading />
-    );
+  if (loading) {
+    return <Loading />;
   }
 
   return (
@@ -165,7 +161,7 @@ const Accounts = () => {
             </h4>
           </div>
           <div className="mb-4">
-          {creditCards.map((card) => (
+            {creditCards.map((card) => (
               <CreditCard
                 key={card.id}
                 id={card.id}

@@ -1,4 +1,4 @@
-package infrastructure
+package gemini
 
 import (
 	"astu-backend-g1/infrastructure"
@@ -10,18 +10,9 @@ import (
 	"google.golang.org/api/option"
 )
 
-type Prompts struct {
-	Validate           string `json:"validate"`
-	Refine             string `json:"refine"`
-	RecommendTitle     string `json:"recommend_title"`
-	RecommendContent   string `json:"recommend_content"`
-	RecommendTags      string `json:"recommend_tags"`
-	CheckPromptContent string `json:"check_prompt_content"`
-	Summarize          string `json:"summarize"`
-}
 type GeminiModel struct {
 	model   *genai.GenerativeModel
-	prompts Prompts
+	prompts infrastructure.Prompts
 }
 
 func connectToGemini(apiKey, modelName string, ctx context.Context) (*genai.GenerativeModel, error) {
@@ -32,7 +23,7 @@ func connectToGemini(apiKey, modelName string, ctx context.Context) (*genai.Gene
 	return client.GenerativeModel(modelName), nil
 }
 
-func NewGeminiModel(apiKey, modelName string, prompts Prompts) (*GeminiModel, error) {
+func NewGeminiModel(apiKey, modelName string, prompts infrastructure.Prompts) (*GeminiModel, error) {
 	model, err := connectToGemini(apiKey, modelName, context.Background())
 	if err != nil {
 		return &GeminiModel{}, err
@@ -74,31 +65,30 @@ func (g *GeminiModel) Refine(content string) (string, error) {
 	return refinedContent, nil
 }
 
-func (g *GeminiModel) Validate(content string) error {
-	prompt := fmt.Sprintf(g.prompts.Validate, content)
+func (g *GeminiModel) Validate(data infrastructure.Data) error {
+	prompt := fmt.Sprintf(g.prompts.Validate, data.Content)
 	validation, err := g.SendPrompt(prompt)
 	if err != nil {
 		return err
 	}
 	if validation != "yes" {
-		return fmt.Errorf(validation)
+		return fmt.Errorf("%v", validation)
 	}
 	return nil
 }
 
-func (g *GeminiModel) Recommend(data infrastructure.Data, opt string) (infrastructure.RecommendationResponse, error) {
+func (g *GeminiModel) Recommend(data infrastructure.Data, opt string) (interface{}, error) {
 	switch opt {
 	case "content":
 		content, err := g.recommendContent(data.Title, data.Tags)
-		return infrastructure.RecommendationResponse{Content: content}, err
+		return map[string]string{"content": content}, err
 	case "title":
-		recommendedTitle, err := g.recommendTitle(data.Content)
-		return infrastructure.RecommendationResponse{Title: recommendedTitle}, err
+		return g.recommendTitle(data.Content, data.Tags)
 	case "tag":
 		tags, err := g.recommendTags(data.Title, data.Content)
-		return infrastructure.RecommendationResponse{Tags: tags}, err
+		return tags, err
 	}
-	return infrastructure.RecommendationResponse{}, nil
+	return []string{}, nil
 }
 
 func (g *GeminiModel) Summarize(data infrastructure.Data) (string, error) {
@@ -108,16 +98,17 @@ func (g *GeminiModel) Summarize(data infrastructure.Data) (string, error) {
 	return summary, err
 }
 
-func (g *GeminiModel) recommendTitle(content string) (string, error) {
-	prompt := fmt.Sprintf(g.prompts.RecommendTitle, content)
+func (g *GeminiModel) recommendTitle(content string, tags []string) ([]string, error) {
+	prompt := fmt.Sprintf(g.prompts.RecommendTitle, content, strings.Join(tags, ", "))
 	if err := g.CheckPromptContent(prompt); err != nil {
-		return "", err
+		return []string{}, err
 	}
-	recommendedTitles, err := g.SendPrompt(prompt)
+	resp, err := g.SendPrompt(prompt)
+	titles := strings.Split(resp, "\n")
 	if err != nil {
-		return "", err
+		return []string{}, err
 	}
-	return recommendedTitles, nil
+	return titles[:len(titles)-1], nil
 }
 
 func (g *GeminiModel) Chat(content string) (string, error) {

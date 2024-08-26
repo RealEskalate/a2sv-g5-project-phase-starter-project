@@ -228,19 +228,6 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
                       </div>
                         <span onClick={toggleNotification} className="ml-2 text-sm">Notifications</span>
                     </div>
-                    <button
-                      onClick={() => signOut({ callbackUrl: "/" })}
-                      className="flex bg-[#F5F7FA] rounded-full gap-4 items-center pl-2"
-                    >
-                      <Image
-                        src="/assets/transaction/deposit.svg"
-                        width={16}
-                        height={16}
-                        alt="Logout"
-                        className="flex-shrink-0 rotate-90 md:w-[30px] md:h-[30px]"
-                      />
-                      <span className="ml-2 text-sm">Logout</span>
-                    </button>
                   </div>
                 </div>
               )}

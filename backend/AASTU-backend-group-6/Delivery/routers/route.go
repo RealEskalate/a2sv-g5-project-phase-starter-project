@@ -22,8 +22,9 @@ func Router(server *gin.RouterGroup, config *infrastructure.Config, DB mongo.Dat
 	blog_controller := controllers.NewBlogController(blog_usecase, validator)
 	blogRouter := server.Group("blogs")
 	authHandler := infrastructure.NewAuthMiddleware(*config).AuthenticationMiddleware()
+	redisClient :=infrastructure.NewCacheService(*config)
 
-	NewBlogrouter(blogRouter, blog_controller, authHandler)
+	NewBlogrouter(blogRouter, blog_controller, authHandler, redisClient)
 	authRoute := server.Group("auth")
 	// NewUserrouter(config, DB , userRouter)
 	exp := time.Duration(time.Now().Add(time.Duration(config.RefreshTokenExpiryHour)).Unix())

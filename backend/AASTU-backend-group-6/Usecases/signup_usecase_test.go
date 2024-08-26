@@ -36,8 +36,9 @@ func (suite *SignupUsecaseTestSuite) TestCreate() {
 			Password: "@123asdDdfsd",
 		}
 		suite.mockSignupRepo.On("FindUserByEmail", mock.Anything, user.Email).Return(domain.User{}, errors.New("no user")).Once()
+		suite.mockUnverified.On("FindUnverifiedUser", mock.Anything, user.Email).Return(domain.UnverifiedUser{}, errors.New("no user")).Once()
 		suite.mockSignupRepo.On("Create", mock.Anything, mock.AnythingOfType("domain.User")).Return(domain.User{}, nil).Once()
-		suite.mockSignupRepo.On("SetOTP", mock.Anything, user.Email, mock.AnythingOfType("string")).Return(nil).Once()
+		suite.mockUnverified.On("StoreUnverifiedUser", mock.Anything,mock.AnythingOfType("doman.UnverifiedUser")).Return(nil).Once()
 		result := suite.SignupUsecaseTestSuite.Create(context.TODO(), user)
 		suite.Equal(result, &domain.SuccessResponse{Message: "Registerd Sucessfully Verify your account", Data: "", Status: 201})
 		suite.mockSignupRepo.AssertExpectations(suite.T())

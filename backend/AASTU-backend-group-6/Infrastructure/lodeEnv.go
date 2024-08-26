@@ -10,6 +10,7 @@ import (
 
 type Config struct {
 	DatabaseUrl              string
+	RedisURL                 string
 	Port                     int
 	DbName                   string
 	UserCollection           string

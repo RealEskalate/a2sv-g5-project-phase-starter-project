@@ -34,6 +34,26 @@ func (_m *SignupUseCase) Create(c context.Context, user domain.User) interface{}
 	return r0
 }
 
+// DeleteOldUnverifiedUsers provides a mock function with given fields: c, days
+func (_m *SignupUseCase) DeleteOldUnverifiedUsers(c context.Context, days int) interface{} {
+	ret := _m.Called(c, days)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteOldUnverifiedUsers")
+	}
+
+	var r0 interface{}
+	if rf, ok := ret.Get(0).(func(context.Context, int) interface{}); ok {
+		r0 = rf(c, days)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(interface{})
+		}
+	}
+
+	return r0
+}
+
 // ForgotPassword provides a mock function with given fields: c, email
 func (_m *SignupUseCase) ForgotPassword(c context.Context, email domain.ForgotPasswordRequest) interface{} {
 	ret := _m.Called(c, email)

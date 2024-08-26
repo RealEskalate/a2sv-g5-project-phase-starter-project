@@ -2,11 +2,12 @@ package routers
 
 import (
 	"blogs/Delivery/controllers"
+	domain "blogs/Domain" // Add this line to import the "domain" package
 
 	"github.com/gin-gonic/gin"
 )
 
-func NewBlogrouter(blogRouter *gin.RouterGroup, controller controllers.BlogController, authHandler gin.HandlerFunc) {
+func NewBlogrouter(blogRouter *gin.RouterGroup, controller controllers.BlogController, authHandler gin.HandlerFunc, redisClient *domain.CacheService) {
 	// unprotected
 	//blogRouter.Use(infrastructure.NewAuthMiddleware(*config).AuthenticationMiddleware())
 	blogRouter.GET("/", controller.GetBlogs)

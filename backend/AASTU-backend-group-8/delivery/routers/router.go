@@ -1,100 +1,65 @@
 package routers
 
 import (
-	"meleket/delivery/controllers"
-	"meleket/delivery/external"
 	"meleket/infrastructure"
+	"meleket/repository"
 	"meleket/usecases"
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/sessions"
-	"github.com/markbates/goth"
-	"github.com/markbates/goth/gothic"
-	"github.com/markbates/goth/providers/google"
+	"go.mongodb.org/mongo-driver/mongo"
 )
+func InitRoutes(r *gin.Engine, client *mongo.Client) {
 
-func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, refreshTokenUsecase *usecases.TokenUsecase, jwtService infrastructure.JWTService, commentUsecase *usecases.CommentUsecase, tokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase) {
-	r.MaxMultipartMemory = 8 << 20 // 8 MB
-	r.Static("/public", "./uploads")
+	r.MaxMultipartMemory = 8 << 20
 
-	// Initialize controllers
-	signupController := controllers.NewSignupController(userUsecase, otpUsecase)
-	blogController := controllers.NewBlogController(blogUsecase)
-	userController := controllers.NewUserController(userUsecase)
+	jwtService := infrastructure.NewJWTService(os.Getenv("JWT_SECRET"), "Kal", os.Getenv("JWT_REFRESH_SECRET"))
 
-	refreshTokenController := controllers.NewRefreshTokenController(userUsecase, refreshTokenUsecase, jwtService)
-	forgotPasswordController := controllers.NewForgotPasswordController(userUsecase, otpUsecase)
-	logoutController := controllers.NewLogoutController(refreshTokenUsecase)
+	aiService := infrastructure.NewAIService()
+	aiUsecase := usecases.NewAIUsecase(aiService)
+	AIRouter(r, aiUsecase, jwtService)
 
-	commentController := controllers.NewCommentController(commentUsecase)
-	// likeController := controllers.NewLikeController(likeUsecase)
+	userCollection := client.Database("Blog").Collection("Users")
+	blogCollection := client.Database("Blog").Collection("Blogs")
+	tokenCollection := client.Database("Blog").Collection("Tokens")
+	otpCollection := client.Database("Blog").Collection("OTPs")
+	profileCollection := client.Database("Blog").Collection("profile")
+	commentCollection := repository.NewMongoCollection(client.Database("Blog").Collection("Comments"))
+	likeCollection := repository.NewMongoCollection(client.Database("Blog").Collection("Likes"))
 
-	// Admin middleware
-	// adminMiddleware := infrastructure.AdminMiddleware(jwtService)
-	adminMiddleware := infrastructure.AdminMiddleware(jwtService)
+	userMockCollection := repository.NewMongoCollection(userCollection)
+	blogMockCollection := repository.NewMongoCollection(blogCollection)
+	tokenMockCollection := repository.NewMongoCollection(tokenCollection)
+	otpMockCollection := repository.NewMongoCollection(otpCollection)
+	profileMockCollection := repository.NewMongoCollection(profileCollection)
 
-	// Public routes
-	r.POST("/signup", signupController.Signup)
-	r.POST("/verify", signupController.VerifyOTP)
-	r.POST("/login", userController.Login)
-	r.POST("/refreshtoken", refreshTokenController.RefreshToken)
-	r.POST("/forgotpassword", forgotPasswordController.ForgotPassword)
-	r.POST("/verfiyforgotpassword", forgotPasswordController.VerifyForgotOTP)
+	userRepo := repository.NewUserRepository(userMockCollection)
+	blogRepo := repository.NewBlogRepository(blogMockCollection)
+	tokenRepo := repository.NewTokenRepository(tokenMockCollection)
+	otpRepo := repository.NewOtpRepository(otpMockCollection)
+	profileRepo := repository.NewProfileRepository(profileMockCollection)
+	commentRepo := repository.NewCommentRepository(commentCollection)
+	likeRepo := repository.NewLikeRepository(likeCollection)
 
-	r.GET("/blogs/:id", blogController.GetBlogByID)
-	r.GET("/blogs", blogController.GetAllBlogPosts)
+	userUsecase := usecases.NewUserUsecase(userRepo, tokenRepo, jwtService)
+	otpUsecase := usecases.NewOTPUsecase(otpRepo, userRepo)
 
-	// Authenticated routes
-	auth := r.Group("/api")
-	auth.Use(infrastructure.AuthMiddleware(jwtService))
-	{
-		// Blog routes
-		auth.POST("/blogs", blogController.CreateBlogPost)
-		auth.PUT("/blogs/:id", blogController.UpdateBlogPost)
+	NewUserRouter(r, userUsecase, jwtService, otpUsecase)
 
-		auth.POST("/logout", logoutController.Logout)
+	tokenUsecase := usecases.NewTokenUsecase(tokenRepo, jwtService)
+	NewRefreshTokenRouter(r, userUsecase, tokenUsecase, jwtService)
 
-		// auth.POST("/blogsearch", blogController.SearchBlogPost)
-		auth.DELETE("/blogs/:id", blogController.DeleteBlogPost)
-		auth.POST("/blogs/:id/dislike", blogController.DislikeBlogPost)
-		auth.POST("/blogs/:id/comments", commentController.AddComment)
-		auth.GET("/blogs/:id/comments", commentController.GetCommentsByBlogID)
-		auth.PUT("/blogs/comments/:id", commentController.UpdateComment)
-		auth.DELETE("/blogs/comments/:id", commentController.DeleteComment)
-		// Reply routes
-		auth.POST("/comments/:id/replies", commentController.AddReply)                      // Add a reply to a comment
-		auth.PUT("/comments/:commentID/replies/:replyID", commentController.UpdateReply)    // Update a reply
-		auth.DELETE("/comments/:commentID/replies/:replyID", commentController.DeleteReply) // Delete a reply
+	blogUsecase := usecases.NewBlogUsecase(blogRepo)
+	NewBlogRouter(r, blogUsecase, jwtService)
 
-		auth.POST("/blogs/:id/like", blogController.LikeBlogPost)
-		// auth.GET("/blogs/:id/likes", likeController.GetLikesByBlogID)
+	profileUsecase := usecases.NewProfileUsecase(profileRepo)
+	NewProfileRoutes(r, profileUsecase, jwtService)
 
-		// Admin-specific routes
-		auth.GET("/getallusers", adminMiddleware, userController.GetAllUsers)
-		auth.DELETE("/deleteuser/:id", adminMiddleware, userController.DeleteUser)
-	}
+	commentUsecase := usecases.NewCommentUsecase(commentRepo)
+	NewCommentRouter(r, commentUsecase, otpUsecase, jwtService)
 
-	goth.UseProviders(
-		google.New(os.Getenv("OAUTH_CLIENT_ID"), os.Getenv("OAUTH_CLIENT_SECRET"), os.Getenv("OAUTH_CALLBACK_URL")),
-	)
+	likeUsecase := usecases.NewLikeUsecase(likeRepo)
+	NewLikeRouter(r, likeUsecase, otpUsecase, jwtService)
 
-	oauthHandler := external.NewOauthHandler(userUsecase)
 
-	gothic.Store = sessions.NewCookieStore([]byte("secret"))
-	r.GET("/auth/:provider", oauthHandler.SignInWithProvider)
-	r.GET("/auth/:provider/callback", oauthHandler.CallbackHandler)
-
-	// Comment routes
-	// auth.POST("/blogs/:id/comments", commentController.AddComment)
-
-	// Like routes
-
-	// auth.DELETE("/likes/:id", likeController.RemoveLike)
-
-	// Admin-specific routes
-	// auth.POST("/getallusers", adminMiddleware, userController.GetAllUsers)
-	// auth.PUT("/deleteusers/:id", adminMiddleware, userController.DeleteUser)
-
-	// }
 }

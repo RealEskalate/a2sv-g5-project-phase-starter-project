@@ -198,7 +198,6 @@ const Recent = () => {
                         <Download
                           transactionId={transaction.transactionId}
                           transaction={transaction}
-                          accessToken={accessToken}
                         />
                       </td>
                     </tr>

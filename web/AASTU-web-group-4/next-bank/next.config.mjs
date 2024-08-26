@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Your existing Next.js config
+  images: {
+    domains: ['cdn.freelogovectors.net'], // Add the external image domain here
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // SVG loader configuration for client-side

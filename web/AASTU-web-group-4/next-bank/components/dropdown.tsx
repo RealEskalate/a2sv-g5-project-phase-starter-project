@@ -11,7 +11,7 @@ import NotificationBell from './NotificationBell';
 import { DialogDemo } from "./modal";
 import { useNotifications } from '@/services/NotificationContext';
 import { MdDoneAll } from 'react-icons/md'; 
-import { UserData } from "@/types";
+import { UserData } from "@/types/index";
 import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
 import { currentuser } from "@/services/userupdate";
 import ThemeSwitch from "./ThemeSwitch";
@@ -20,7 +20,7 @@ export function DropdownMenuDemo() {
   const router = useRouter();
   const handleSignOut = async () => {
     Cookies.remove("accessToken");
-    router.push("/signin"); // Redirect after sign-out
+    router.push("/home"); // Redirect after sign-out
   };
 
   const [info, setinfo] = useState<UserData>();

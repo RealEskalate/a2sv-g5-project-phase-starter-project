@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'dart:math';
 import 'dart:io';
 import 'package:ecommerce_app_ca_tdd/extra/icon_img.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/domain/entities/product_entity.dart';
@@ -8,6 +7,7 @@ import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/add/add_
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/add/add_state.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/home_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/home_event.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/bottomnavbar.dart';
 import "package:flutter/material.dart";
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/details.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,22 +29,18 @@ class AddUpdate extends StatefulWidget {
 
 class _AddUpdateState extends State<AddUpdate> {
   TextEditingController name_input = TextEditingController();
-
   TextEditingController category_input = TextEditingController();
-
   TextEditingController description_input = TextEditingController();
-
   TextEditingController price_input = TextEditingController();
 
   File? newImage;
   String pathofimg = '';
 
-  //
   final ImagePicker picker = ImagePicker();
 
   Future chooseImage() async {
     final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+        await picker.pickImage(source: ImageSource.gallery);
     if (pickedImage == null) return;
     setState(() {
       pathofimg = pickedImage.path;
@@ -55,6 +51,7 @@ class _AddUpdateState extends State<AddUpdate> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: Container(child: Bottomnavbar()),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Row(
@@ -69,51 +66,68 @@ class _AddUpdateState extends State<AddUpdate> {
                   color: Color.fromARGB(255, 63, 81, 243),
                   size: 20,
                 )),
-            const Center(
-              child: Text("Add Product"),
+            Center(
+              child: Text("Add Product", style: GoogleFonts.poppins()),
             ),
-            const SizedBox(
-              height: 60,
+            SizedBox(
               width: 60,
+              height: 60,
             )
           ],
         ),
       ),
 
       body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
             // Upload Image Part Start
             Container(
-              margin: EdgeInsets.only(left: 32, right: 32, top: 23),
+              margin: EdgeInsets.only(top: 16),
               decoration: BoxDecoration(
                   color: Color.fromRGBO(243, 243, 243, 1),
                   border: Border.all(
                       color: Color.fromRGBO(221, 221, 221, 1), width: 2),
                   borderRadius: BorderRadius.circular(16)),
               child: SizedBox(
-                width: 360,
+                width: double.infinity,
                 height: 190,
                 child: GestureDetector(
                   onTap: chooseImage,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Stack(
                     children: [
+                      if (newImage != null)
+                        Center(
+                          child: Image.file(
+                            newImage!,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                        ),
                       if (newImage == null)
-                        IconButton(
-                            onPressed: () {},
-                            icon: newImage == null
-                                ? Icon(
-                                    Icons.image_outlined,
-                                    size: 50,
-                                  )
-                                : ImagePickerIconButton()),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Center(
-                          child: reusableTextpar(
-                              "upload image", FontWeight.w500, 14)),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.image_outlined,
+                                  size: 50,
+                                  color: Colors.grey,
+                                ),
+                                SizedBox(height: 16), // Gap between icon and text
+                                Text(
+                                  "Upload Image",
+                                  style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w500, fontSize: 14),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -124,124 +138,118 @@ class _AddUpdateState extends State<AddUpdate> {
               height: 22,
             ),
 
-            // Name Entry Field Start
+            // Input Fields
             BlocConsumer<addBloc, ProductState>(
               listener: (context, state) {
-                  if (state is ProductLoading){
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: Colors.white,
-                          content: Row(
-                            children: [
-                              Text('Please Wait...',style: GoogleFonts.poppins(color: Colors.black),),
-                            ],
+                if (state is ProductLoading) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.white,
+                      content: Row(
+                        children: [
+                          Text(
+                            'Please Wait...',
+                            style: GoogleFonts.poppins(color: Colors.black),
                           ),
-                          duration: Duration(seconds: 5),
-                        ),
-                      );
-            
-                  }
-                  if (state is ProductAddedFailure){
-                              
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Error:' + state.error),
-                            duration: Duration(seconds: 3),
-                          ),
-                        );
-                      
-                  }
-                  if(state is ProductAddedSuccess){
-                    
-                    ScaffoldMessenger.of(context).showSnackBar(
+                        ],
+                      ),
+                      duration: Duration(seconds: 5),
+                    ),
+                  );
+                }
+                if (state is ProductAddedFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error: ' + state.error),
+                      duration: Duration(seconds: 3),
+                    ),
+                  );
+                }
+                if (state is ProductAddedSuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       backgroundColor: Colors.black,
-                  content: Row(
-                    // 
-                    children: [
-                      Icon(Icons.thumb_up_rounded,color: Colors.yellow,),
-                      SizedBox(width: 10,),
-                      Text("Succesfully Added !!!!",style: TextStyle(color: Colors.white),),
-                    ],
-                  ),
-                      
-                    ));
-                    context.read<HomeBloc>().add(GetProductsEvent());
-
-                    Navigator.pushNamed(context,'/home');
-                  }
-                
-                                  
-                                    
+                      content: Row(
+                        children: [
+                          Icon(Icons.thumb_up_rounded, color: Colors.yellow),
+                          SizedBox(width: 10),
+                          Text(
+                            "Successfully Added!",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                  context.read<HomeBloc>().add(GetProductsEvent());
+                  Navigator.pushNamed(context, '/home');
+                }
               },
               builder: (context, state) {
-                return SingleChildScrollView(
-                  child: Container(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      reusableTextpar("name", FontWeight.w500, 14),
-                      SizedBox(
-                        height: 8,
+                      reusableTextpar("Name", FontWeight.w500, 14),
+                      SizedBox(height: 8),
+                      TextField(
+                        controller: name_input,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Color.fromRGBO(243, 243, 243, 1),
+                        ),
                       ),
-                      SizedBox(
-                          height: 50,
-                          width: 360,
-                          child: TextField(
-                            controller: name_input,
-                            maxLines: 4,
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                filled: true,
-                                fillColor: Color.fromRGBO(243, 243, 243, 1)),
-                          )),
-                      reusableTextpar("category", FontWeight.w500, 14),
-                      SizedBox(
-                        height: 8,
+                      SizedBox(height: 16),
+                      reusableTextpar("Category", FontWeight.w500, 14),
+                      SizedBox(height: 8),
+                      TextField(
+                        controller: category_input,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Color.fromRGBO(243, 243, 243, 1),
+                        ),
                       ),
-                      SizedBox(
-                          height: 50,
-                          width: 360,
-                          child: TextField(
-                            controller: category_input,
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                filled: true,
-                                fillColor: Color.fromRGBO(243, 243, 243, 1)),
-                          )),
-                      reusableTextpar("price", FontWeight.w500, 14),
-                      SizedBox(
-                        height: 8,
+                      SizedBox(height: 16),
+                      reusableTextpar("Price", FontWeight.w500, 14),
+                      SizedBox(height: 8),
+                      TextField(
+                        controller: price_input,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          suffixIcon: Icon(Icons.attach_money),
+                          filled: true,
+                          fillColor: Color.fromRGBO(243, 243, 243, 1),
+                        ),
                       ),
-                      SizedBox(
-                          height: 50,
-                          width: 360,
-                          child: TextField(
-                            controller: price_input,
-                            decoration: InputDecoration(
-                              suffixIcon: Icon(Icons.attach_money),
-                                border: InputBorder.none,
-                                hintText: "",
-                                filled: true,
-                                fillColor: Color.fromRGBO(243, 243, 243, 1)),
-                          )),
-                      reusableTextpar("description", FontWeight.w500, 14),
-                      SizedBox(
-                        height: 8,
+                      SizedBox(height: 16),
+                      reusableTextpar("Description", FontWeight.w500, 14),
+                      SizedBox(height: 8),
+                      TextField(
+                        controller: description_input,
+                        maxLines: 4,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Color.fromRGBO(243, 243, 243, 1),
+                        ),
                       ),
-                      SizedBox(
-                          height: 150,
-                          width: 360,
-                          child: TextField(
-                            controller: description_input,
-                            maxLines: 4,
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                filled: true,
-                                fillColor: Color.fromRGBO(243, 243, 243, 1)),
-                          )),
-                      // End of Input Fields
+                      SizedBox(height: 22),
 
                       // Buttons
                       Container(
@@ -257,7 +265,6 @@ class _AddUpdateState extends State<AddUpdate> {
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(10))),
                                     side: BorderSide(color: Color(0xff3F51F3)),
-                                    // overlayColor: Colors.red,
                                     foregroundColor: Colors.white,
                                     backgroundColor: Color(0xff3F51F3),
                                   ),
@@ -265,12 +272,11 @@ class _AddUpdateState extends State<AddUpdate> {
                                     final createProduct = ProductEntity(
                                         name: name_input.text,
                                         description: description_input.text,
-                                        price: double.parse(price_input.text),
+                                        price: double.tryParse(price_input.text) ?? 0.0,
                                         imagePath: pathofimg);
                                     
                                     var addbloc = BlocProvider.of<addBloc>(context);
-                                    addbloc.add(AddProductEvent(
-                                        product: createProduct));
+                                    addbloc.add(AddProductEvent(product: createProduct));
                                   },
                                   child: Text(
                                     "ADD",
@@ -291,29 +297,30 @@ class _AddUpdateState extends State<AddUpdate> {
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(10))),
                                     side: BorderSide(color: Colors.red),
-                                    overlayColor: Colors.red,
                                     foregroundColor: Colors.red,
                                   ),
                                   onPressed: () {
                                     Navigator.pushNamed(context, '/home');
                                   },
-                                  child: Text("Cancel",
-                                      style: GoogleFonts.poppins(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500))),
+                                  child: Text(
+                                    "Cancel",
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500),
+                                  )),
                             ),
+                        SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
                           ],
                         ),
                       ),
                     ],
-                  )),
+                  ),
                 );
               },
             )
           ],
         ),
       ),
-      // body: Text()
     );
   }
-} // End of AddUpdate Class
+}

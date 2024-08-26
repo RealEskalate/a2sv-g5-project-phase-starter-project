@@ -15,7 +15,7 @@ class _BottomnavbarState extends State<Bottomnavbar> {
     return CurvedNavigationBar(
         height: MediaQuery.of(context).size.width * 0.17,
         buttonBackgroundColor: Color.fromRGBO(63, 81, 243,1),
-        color: const Color.fromARGB(255, 223, 223, 223),
+        color: const Color.fromARGB(255, 245, 244, 244),
         backgroundColor:  Colors.white,
         animationCurve: Curves.easeInOut,
         animationDuration: const Duration(milliseconds: 300),

@@ -39,6 +39,8 @@ type BlogUsecase interface {
 	GetComments(ctx context.Context, post_id primitive.ObjectID) ([]Comment, error)
 	DeleteComment(ctx context.Context, postID primitive.ObjectID, commentID primitive.ObjectID, userID primitive.ObjectID) error
 	UpdateComment(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID, comment *Comment) error
+	AddReply(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID, reply *Comment) error
+	TrackCommentPopularity(ctx context.Context, postID, commentID, userID primitive.ObjectID,metric string) error
 }
 
 type PopularityRepository interface {

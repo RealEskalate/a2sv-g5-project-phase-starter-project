@@ -28,6 +28,10 @@ type Comment struct {
 	AuthorID  primitive.ObjectID `bson:"author_id" json:"author_id" `
 	Content   string             `bson:"content" json:"content" `
 	CreatedAt time.Time          `bson:"created_at" json:"created_at"`
+	ParentID  primitive.ObjectID `bson:"parent_id" json:"parent_id"`
+	Likes     int                `bson:"likes" json:"likes"`
+	Dislikes  int                `bson:"dislikes" json:"dislikes"`
+	Comments  int                `bson:"comments" json:"comments"`
 }
 
 // BlogCreationRequest is used when creating a new blog post.

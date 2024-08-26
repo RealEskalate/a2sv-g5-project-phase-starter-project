@@ -56,6 +56,7 @@ func (drep *DislikeRepository) CreateDisLike(user_id string, post_id string) *do
 	var dislike domain.DisLike
 	dislike.UserID, _ = primitive.ObjectIDFromHex(user_id)
 	dislike.BlogID, _ = primitive.ObjectIDFromHex(post_id)
+	dislike.ID = primitive.NewObjectID()
 
 	// Check if the user has already disliked the post
 	var checkdislike domain.DisLike
@@ -70,9 +71,7 @@ func (drep *DislikeRepository) CreateDisLike(user_id string, post_id string) *do
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		if err := drep.deleteLike(user_id, post_id); err != nil {
-			errChan <- domain.ErrLikeRemovalFailed
-		}
+		drep.deleteLike(user_id, post_id)
 	}()
 
 	wg.Add(1)

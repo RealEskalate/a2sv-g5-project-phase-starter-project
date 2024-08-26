@@ -72,7 +72,7 @@ func (suite *BlogControllerSuite) TestRetrieveBlog() {
 		{Title: "Blog 2", Content: "Content 2", Date: time.Now()},
 	}
 
-	suite.MockBlogUsecase.On("RetrieveBlog", mock.Anything, 1).Return(mockBlogs, nil)
+	suite.MockBlogUsecase.On("RetrieveBlog", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(mockBlogs, 1, nil)
 
 	suite.BlogController.RetrieveBlog(c)
 
@@ -91,7 +91,7 @@ func (suite *BlogControllerSuite) TestUpdateBlog() {
 	c.Request, _ = http.NewRequest(http.MethodPut, "/blogs/"+getID, strings.NewReader(requestBody))
 	c.Request.Header.Set("Content-Type", "application/json")
 
-	suite.MockBlogUsecase.On("UpdateBlog", mock.Anything, mock.AnythingOfType("domain.Blog"), getID).Return(nil)
+	suite.MockBlogUsecase.On("UpdateBlog", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 
 	suite.BlogController.UpdateBlog(c)
 
@@ -108,7 +108,7 @@ func (suite *BlogControllerSuite) TestDeleteBlog() {
 
 	c.Request, _ = http.NewRequest(http.MethodDelete, "/blogs/"+getID, nil)
 
-	suite.MockBlogUsecase.On("DeleteBlog", mock.Anything, getID).Return(nil)
+	suite.MockBlogUsecase.On("DeleteBlog", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 
 	suite.BlogController.DeleteBlog(c)
 
@@ -167,7 +167,7 @@ func (suite *BlogControllerSuite) TestGeneratePost() {
 
 	mockPost := domain.PostRequest{Title: "Generated Title", Content: "Generated Content"}
 
-	suite.MockAIService.On("GeneratePost", mockPost.Title, mockPost.Content).Return(mockPost, nil)
+	suite.MockAIService.On("GeneratePost", mockPost.Title, mockPost.Content).Return(&domain.PostResponse{Title: "sdfghjk", Content: "sdfghjkll"}, nil)
 
 	suite.BlogController.GeneratePost(c)
 

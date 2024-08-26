@@ -86,7 +86,7 @@ func (suite *CommentControllerTestSuite) TestUpdateComment_Success() {
 	suite.mockContext.Request = httptest.NewRequest(http.MethodPut, "/comments/"+commentID, strings.NewReader(commentJSON))
 	suite.mockContext.Request.Header.Set("Content-Type", "application/json")
 
-	suite.mockUsecase.On("UpdateComment", mock.Anything, commentID, mock.AnythingOfType("domain.Comment")).Return(nil)
+	suite.mockUsecase.On("UpdateComment", mock.Anything, mock.Anything, mock.Anything).Return(nil)
 
 	suite.controller.UpdateComment(suite.mockContext)
 
@@ -100,7 +100,7 @@ func (suite *CommentControllerTestSuite) TestDeleteComment_Success() {
 
 	suite.mockContext.Params = gin.Params{gin.Param{Key: "id", Value: commentID}}
 
-	suite.mockUsecase.On("DeleteComment", mock.Anything, commentID).Return(nil)
+	suite.mockUsecase.On("DeleteComment", mock.Anything, mock.Anything).Return(nil)
 
 	suite.controller.DeleteComment(suite.mockContext)
 

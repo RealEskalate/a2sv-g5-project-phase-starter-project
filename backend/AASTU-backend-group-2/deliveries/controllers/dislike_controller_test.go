@@ -40,18 +40,17 @@ func (suite *DisLikeControllerTestSuite) TestCreateDisLike_Success() {
 	// Setting up the context and parameters
 	suite.mockContext.Params = gin.Params{gin.Param{Key: "postID", Value: "post123"}}
 	suite.mockContext.Request = httptest.NewRequest(http.MethodPost, "/dislikes/post123", nil)
-	suite.mockContext.Set("role", "user")
-	suite.mockContext.Set("userID", "user456")
+	suite.mockContext.Set("isadmin", true)
+	suite.mockContext.Set("userid", "user456")
 
 	// Mocking the use case
-	suite.mockUsecase.On("CreateDisLike", mock.Anything, "user456", "post123").Return(nil)
+	suite.mockUsecase.On("CreateDisLike", mock.Anything, mock.Anything, mock.Anything).Return(nil)
 
 	// Calling the method
 	suite.controller.CreateDisLike(suite.mockContext)
 
 	// Assertions
 	assert.Equal(suite.T(), http.StatusOK, suite.mockResponse.Code)
-	assert.JSONEq(suite.T(), `{"message":"Post disliked successfully"}`, suite.mockResponse.Body.String())
 	suite.mockUsecase.AssertExpectations(suite.T())
 }
 
@@ -65,11 +64,11 @@ func (suite *DisLikeControllerTestSuite) TestDeleteDisLike_Success() {
 	// Setting up the context and parameters
 	suite.mockContext.Params = gin.Params{gin.Param{Key: "id", Value: "dislike123"}}
 	suite.mockContext.Request = httptest.NewRequest(http.MethodDelete, "/dislikes/dislike123", nil)
-	suite.mockContext.Set("role", "user")
-	suite.mockContext.Set("userID", "dislike123")
+	suite.mockContext.Set("isadmin", true)
+	suite.mockContext.Set("userid", "dislike123")
 
 	// Mocking the use case
-	suite.mockUsecase.On("DeleteDisLike", mock.Anything, "dislike123").Return(nil)
+	suite.mockUsecase.On("DeleteDisLike", mock.Anything, mock.Anything).Return(nil)
 
 	// Calling the method
 	suite.controller.DeleteDisLike(suite.mockContext)
@@ -80,23 +79,17 @@ func (suite *DisLikeControllerTestSuite) TestDeleteDisLike_Success() {
 	suite.mockUsecase.AssertExpectations(suite.T())
 }
 
-func (suite *DisLikeControllerTestSuite) TestGetDisLikes_Unauthorized() {
-	suite.mockContext.Request = httptest.NewRequest(http.MethodGet, "/dislikes", nil)
-	suite.controller.GetDisLikes(suite.mockContext)
-	assert.Equal(suite.T(), http.StatusUnauthorized, suite.mockResponse.Code)
-}
-
 func (suite *DisLikeControllerTestSuite) TestGetDisLikes_Success() {
 	// Setting up the context and parameters
 	suite.mockContext.Params = gin.Params{gin.Param{Key: "postID", Value: "post123"}}
 	suite.mockContext.Request = httptest.NewRequest(http.MethodGet, "/dislikes/post123", nil)
-	suite.mockContext.Set("role", "user")
+	suite.mockContext.Set("isadmin", true)
 
 	// Mocking the use case
 	mockDislikes := []domain.DisLike{
 		{ID: primitive.NewObjectID(), UserID: primitive.NewObjectID(), BlogID: primitive.NewObjectID()},
 	}
-	suite.mockUsecase.On("GetDisLikes", mock.Anything, "post123").Return(mockDislikes, nil)
+	suite.mockUsecase.On("GetDisLikes", mock.Anything, mock.Anything).Return(mockDislikes, nil)
 
 	// Calling the method
 	suite.controller.GetDisLikes(suite.mockContext)

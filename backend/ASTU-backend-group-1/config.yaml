@@ -1,0 +1,13 @@
+database:
+  username: <your-database-username> 
+  password: <your-database-password> 
+  # uri: "mongodb+srv://Legend:AmIHDrlwCqmxgjy2@pycluster.ajv4lb8.mongodb.net/?retryWrites=true&w=majority&appName=pycluster"
+  uri: "mongodb://localhost:27017"
+email:
+  key: "nenbydebhwkqanpf"
+port: "http://localhost:8000/"
+jwt:
+  jwtKey: "starterproject"
+gemini:
+  api_key: "AIzaSyCowc1BcSloWsrFoh03sVXqWOIHKV2Hx9E"
+  model: "gemini-1.5-flash"

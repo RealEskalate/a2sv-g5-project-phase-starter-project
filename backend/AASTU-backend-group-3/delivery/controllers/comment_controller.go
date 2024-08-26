@@ -109,6 +109,7 @@ func (c *CommentController) GetCommentByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, comment)
 }
 
+
 func (cc *CommentController) GetComments(c *gin.Context) {
     postID := c.Param("postID")
     page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
@@ -129,7 +130,9 @@ func (cc *CommentController) GetComments(c *gin.Context) {
     }
 
     c.JSON(http.StatusOK, comments)
+
 }
+
 
 func (c *CommentController) CreateReply(ctx *gin.Context) {
 	var reply domain.Reply

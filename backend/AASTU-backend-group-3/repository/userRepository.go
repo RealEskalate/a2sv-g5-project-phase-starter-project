@@ -102,6 +102,7 @@ func (ur *UserRepositoryImpl) GetUserByUsernameOrEmail(username, email string) (
 
 
 func (ur *UserRepositoryImpl) AccountActivation(token string, email string) error {
+	
 	var user domain.User
 	err := ur.collection.FindOne(context.Background(), map[string]string{"activation_token": token}).Decode(&user)
 	if err != nil {

@@ -57,6 +57,7 @@ func SendActivationEmail(email, token string) error {
 
 	m.SetBody("text/html", fmt.Sprintf("Your OTP code is %s", token))
 
+
 	d := gomail.NewDialer("smtp.gmail.com", 587, "bereket.meng@gmail.com", "xjbs vduu hkjd lqlf")
 
 	

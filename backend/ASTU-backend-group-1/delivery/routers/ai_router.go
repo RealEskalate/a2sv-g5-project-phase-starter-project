@@ -18,7 +18,7 @@ func AddAIRoutes(r *gin.Engine, config config.Config, prompts infrastructure.Pro
 	aiController := controllers.NewAIController(model)
 	aiRouteGroup := r.Group("/ai")
 	{
-		aiRouteGroup.POST("/recommendTitle", aiController.RecommendTitle)
+		aiRouteGroup.POST("/recommendTitles", aiController.RecommendTitle)
 		aiRouteGroup.POST("/recommendContent", aiController.RecommendContent)
 		aiRouteGroup.POST("/recommendTags", aiController.Recommendtags)
 		aiRouteGroup.POST("/summarize", aiController.Sumarize)

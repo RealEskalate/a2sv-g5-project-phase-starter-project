@@ -14,7 +14,7 @@ type Prompts struct {
 	RecommendContent   string `json:"recommend_content"`
 	RecommendTags      string `json:"recommend_tags"`
 	CheckPromptContent string `json:"check_prompt_content"`
-	Summarize          string `json:"summarize"`
+	Summarize          string `json:"summarize_blog"`
 }
 
 func LoadPrompt(path string) (Prompts, error) {

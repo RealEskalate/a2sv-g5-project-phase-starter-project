@@ -50,7 +50,7 @@ func (g *GeminiModel) CheckPromptContent(content string) error {
 	if err != nil {
 		return fmt.Errorf("getting response error: %v", err.Error())
 	}
-	if strings.ToLower(resp) == "no" {
+	if strings.ToLower(resp[:len(resp)-2]) == "no" {
 		return fmt.Errorf("prompt not about blogging")
 	}
 	return nil
@@ -84,7 +84,7 @@ func (g *GeminiModel) Recommend(data infrastructure.Data, opt string) (interface
 		return map[string]string{"content": content}, err
 	case "title":
 		return g.recommendTitle(data.Content, data.Tags)
-	case "tag":
+	case "tags":
 		tags, err := g.recommendTags(data.Title, data.Content)
 		return tags, err
 	}
@@ -95,7 +95,7 @@ func (g *GeminiModel) Summarize(data infrastructure.Data) (string, error) {
 	blog := fmt.Sprintf("Title: %v, Content %v, Tags %v", data.Title, data.Content, data.Tags)
 	prompt := fmt.Sprintf(g.prompts.Summarize, blog)
 	summary, err := g.SendPrompt(prompt)
-	return summary, err
+	return summary[:len(summary)-2], err
 }
 
 func (g *GeminiModel) recommendTitle(content string, tags []string) ([]string, error) {
@@ -135,12 +135,12 @@ func (g *GeminiModel) recommendContent(title string, tags []string) (string, err
 }
 
 func (g *GeminiModel) recommendTags(title string, content string) ([]string, error) {
-	prompt := fmt.Sprintf(g.prompts.RecommendContent, title, content)
+	prompt := fmt.Sprintf(g.prompts.RecommendTags, title, content)
 	if err := g.CheckPromptContent(prompt); err != nil {
 		return []string{}, err
 	}
 	t, err := g.SendPrompt(prompt)
-	tags := strings.Split(t, ",")
+	tags := strings.Split(t[:len(t)-2], ", ")
 	if err != nil {
 		return []string{}, err
 	}

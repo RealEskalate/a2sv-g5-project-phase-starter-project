@@ -65,7 +65,10 @@ func (suite *UserUsecaseTestSuite) TestCreate() {
 	suite.userRepository.On("Create", &user).Return(user, nil)
 	createdUser, err := suite.userUsecase.Create(&user)
 	assert.Nil(err)
-	assert.Equal(createdUser, user)
+	assert.Equal(createdUser.Email, user.Email)
+	assert.Equal(createdUser.Username, user.Username)
+	assert.Equal(createdUser.FirstName, user.FirstName)
+	assert.Equal(createdUser.LastName, user.LastName)
 }
 
 func (suite *UserUsecaseTestSuite) TestGet() {

@@ -30,7 +30,7 @@ const LayoutProvider = ({ children }: { children: ReactNode }) => {
         <section className={`w-full flex relative dark:bg-[#2D2E36] `}>
           {/* Sidebar */}
           <div
-            className={`fixed z-20 h-screen xxs:w-[264px] lg:w-[22%] lg:max-w-[220px] bg-white dark:bg-[#242428] pr-1 top-0 transition-transform duration-300 ease-in-out transform ${
+            className={`fixed z-20 h-screen xxs:w-[264px] lg:w-[22%] lg:max-w-[220px] bg-white dark:bg-[#242428] top-0 transition-transform duration-300 ease-in-out transform ${
               isOpen
                 ? "translate-x-0 opacity-100"
                 : "-translate-x-full opacity-0 sm:opacity-100"
@@ -48,7 +48,7 @@ const LayoutProvider = ({ children }: { children: ReactNode }) => {
           )}
 
           {/* Main Content */}
-          <div className="relative flex flex-col w-full sm:pl-0 lg:pl-[216px] dark:bg-[#2D2E36]">
+          <div className="relative w-full sm:pl-0 lg:pl-[216px] dark:bg-[#2D2E36]">
             <NavBar openSidebar={toggle} />
             <section className="content flex w-full z-0 xxs:pt-28 md:pt-20">
               {children}

@@ -1,10 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
 import UserService from "@/app/Services/api/userService";
+import { useAppSelector } from "@/app/Redux/store/store";
+import UserValue from "@/types/UserValue"; // Make sure to import UserValue type
 
 type FormData = {
   name: string;
@@ -22,14 +24,50 @@ type FormData = {
 };
 
 const EditProfileForm = () => {
-  const { register, handleSubmit } = useForm<FormData>();
+  const userData: UserValue | null = useAppSelector((state) => state.user.user); // Assuming state.user.user contains the UserValue type
+  const { register, handleSubmit, reset } = useForm<FormData>({
+    defaultValues: {
+      name: "",
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+      dateOfBirth: "",
+      permanentAddress: "",
+      postalCode: "",
+      presentAddress: "",
+      city: "",
+      country: "",
+      profilePicture: "",
+    },
+  });
+
+  useEffect(() => {
+    if (userData) {
+      reset({
+        name: userData.name,
+        email: userData.email,
+        username: userData.username,
+        dateOfBirth: userData.dateOfBirth,
+        permanentAddress: userData.permanentAddress,
+        postalCode: userData.postalCode,
+        presentAddress: userData.presentAddress,
+        city: userData.city,
+        country: userData.country,
+        profilePicture: userData.profilePicture,
+      });
+    }
+  }, [userData, reset]);
 
   const onSubmit = async (data: FormData) => {
-    const { confirmPassword, ...userData } = data;
-    console.log("Updating user profile:", userData);
+    const { confirmPassword, ...updatedUserData } = data;
+    console.log("Updating user profile:", updatedUserData);
 
     try {
-      const responseData = await UserService.update(userData, "accessToken"); // Call the update method
+      const responseData = await UserService.update(
+        updatedUserData,
+        "accessToken"
+      ); // Call the update method
       if (responseData.success) {
         console.log("Profile update successful:", responseData.message);
       } else {
@@ -41,11 +79,11 @@ const EditProfileForm = () => {
   };
 
   return (
-    <div className="w-full py-8 flex gap-3 xs:flex-wrap md:flex-nowrap">
+    <div className="w-full py-8 flex gap-3 xss:mb-2 sm:mb-0 xxs:flex-wrap xxs:justify-center sm:justify-normal md:flex-nowrap md:px-6 md:justify-around lg:justify-between ">
       <div className="flex justify-center xs:w-full md:w-fit md:pl-5">
         <div className="relative h-fit flex justify-center">
           <Image
-            src="/assets/profile-1.png"
+            src={userData?.profilePicture || "/assets/profile-1.png"}
             width={132}
             height={130}
             alt="Profile"
@@ -58,11 +96,11 @@ const EditProfileForm = () => {
       </div>
 
       <form
-        className="w-flex flex-col md:justify-around lg:w-[800px] py-2 xs:px-2 sm:px-0 "
+        className="w-flex flex-col xxs:justify-center xxs:px-3 sm:px-0 sm:justify-normal md:justify-around lg:w-[800px] py-2   "
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="name"
@@ -77,7 +115,7 @@ const EditProfileForm = () => {
               placeholder="Charlene Reed"
             />
           </div>
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="username"
@@ -95,7 +133,7 @@ const EditProfileForm = () => {
         </div>
 
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="email"
@@ -110,7 +148,7 @@ const EditProfileForm = () => {
               placeholder="charlenereed@gmail.com"
             />
           </div>
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="password"
@@ -128,7 +166,7 @@ const EditProfileForm = () => {
         </div>
 
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="dob"
@@ -143,7 +181,7 @@ const EditProfileForm = () => {
               placeholder="25 January 1990"
             />
           </div>
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="present-address"
@@ -161,7 +199,7 @@ const EditProfileForm = () => {
         </div>
 
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="permanent-address"
@@ -176,7 +214,7 @@ const EditProfileForm = () => {
               placeholder="San Jose, California, USA"
             />
           </div>
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="city"
@@ -194,7 +232,7 @@ const EditProfileForm = () => {
         </div>
 
         <div className="gap-y-3 flex gap-x-2 justify-between flex-wrap">
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="postal-code"
@@ -209,7 +247,7 @@ const EditProfileForm = () => {
               placeholder="45962"
             />
           </div>
-          <div className="xs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
+          <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
             <label
               className="mb-1 text-slate-800 dark:text-gray-300"
               htmlFor="country"
@@ -228,7 +266,7 @@ const EditProfileForm = () => {
           </div>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-6 flex justify-end">
           <button
             className="px-4 py-2 bg-[#1814F3] text-white rounded-md hover:bg-[#0702db] transition-all duration-300"
             type="submit"

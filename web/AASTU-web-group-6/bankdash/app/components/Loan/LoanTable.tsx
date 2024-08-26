@@ -92,7 +92,7 @@ const LoanTable = () => {
     (sum, loan) => sum + loan.installment,
     0
   );
-  const updatePage = (newPage: number) => {
+  const updatePage = (newPage: number = 0) => {
     setCurrentPage(newPage);
   };
 

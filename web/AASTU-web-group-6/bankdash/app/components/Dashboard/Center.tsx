@@ -15,6 +15,7 @@ import {
   TransactionType,
 } from "@/app/Redux/slices/TransactionSlice";
 import { ShimmerVisaCard } from "../Shimmer/ShimmerVisa";
+import useUserDataDispatch from "@/app/Redux/Dispacher/useUserDataDispatch";
 
 const Center = () => {
   const { data: session } = useSession();
@@ -24,11 +25,16 @@ const Center = () => {
   // Update initial card and tran data using the custom hook
   useCardDispatch(accessToken);
   useTranDispatch(accessToken);
+  useUserDataDispatch(accessToken);
+  const income = useAppSelector((state) => state.transactions.income )
+    console.log(income , "hell")
 
   const CardData: Card[] = useAppSelector((state) => state.cards.cards);
   const TranData: TransactionType[] = useAppSelector(
     (state) => state.transactions.transactions
+
   );
+  // console.log(TranData , "yyyyyyyyyyy")
   const cardColor = [false, true];
 
   return (

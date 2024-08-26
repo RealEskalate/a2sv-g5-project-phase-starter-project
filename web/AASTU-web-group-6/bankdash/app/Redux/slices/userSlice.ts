@@ -43,6 +43,12 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    setUserData(state, action: PayloadAction<UserValue>) {
+      state.user = action.payload;
+    },
+    setPreferences(state, action: PayloadAction<UserPreferenceValue>) {
+      state.preferences = action.payload;
+    },
     setInvestment(state, action: PayloadAction<InvestmentData>) {
       state.investment = action.payload;
     },
@@ -52,16 +58,17 @@ const userSlice = createSlice({
     setError(state, action: PayloadAction<string | null>) {
       state.error = action.payload;
     },
-    // Reducers can handle synchronous logic
     clearUserState(state) {
       state.user = null;
       state.preferences = null;
+      state.status = "idle";
       state.error = null;
     },
   },
 });
 
-export const { setInvestment, setStatus, setError, clearUserState } =
+export const { setUserData, setPreferences, setInvestment, setStatus, setError, clearUserState } =
   userSlice.actions;
 
 export default userSlice.reducer;
+

@@ -163,7 +163,6 @@ const ModalService = ({ isOpen, onClose }: props) => {
             </span>
           )}
         </div>
-        {/* </div> */}
 
         <div>
           <label

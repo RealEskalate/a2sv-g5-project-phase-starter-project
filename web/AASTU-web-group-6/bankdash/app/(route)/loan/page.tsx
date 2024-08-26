@@ -1,7 +1,7 @@
 "use client";
 import LoanTable from "@/app/components/Loan/LoanTable";
 import React, { useEffect, useState } from "react";
-import { ApiResponse, LoanType } from "@/types/LoanValue";
+import { ApiResponse, LoanDetail, LoanType } from "@/types/LoanValue";
 import Card from "../../components/Accounts/account";
 import loanApi from "@/app/Services/api/loanApi";
 import { useSession } from "next-auth/react";
@@ -11,15 +11,15 @@ const Loan = () => {
   const { data: session } = useSession();
   const accessToken = session?.accessToken as string;
   const [loading, setLoading] = useState(true);
-  const [getLoan, setGetLoan] = useState<ApiResponse | null>(null);
+  const [getLoan, setGetLoan] = useState<LoanDetail | null>(null);
 
   const fetchLoan = async () => {
     while (!accessToken) {
-      await new Promise((resolve) => setTimeout(resolve, 150)); // Delay to wait for the token
+      await new Promise((resolve) => setTimeout(resolve, 150));
     }
     const loanData = await loanApi.detailData(accessToken);
     // console.log(loanData);
-    setGetLoan(loanData);
+    setGetLoan(loanData.content);
 
     setLoading(false);
   };

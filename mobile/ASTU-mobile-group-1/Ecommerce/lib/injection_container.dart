@@ -51,16 +51,14 @@ Future<void> init() async {
         getMessagesUseCase: sl(),
         sendMessageUseCase: sl(),
         myChatUsecase: sl(),
-        getChatMessagesUseCase:sl(),
-
+        getChatMessagesUseCase: sl(),
       ));
   // usecase
   sl.registerFactory(() => GetMessageUsecase(chatRepository: sl()));
   sl.registerFactory(() => SendMessageUsecase(chatRepository: sl()));
   sl.registerLazySingleton(() => MyChatUsecase(chatRepository: sl()));
   //
-  sl.registerFactory(() => GetChatMessageUsecase(chatRepository:sl()));
-
+  sl.registerFactory(() => GetChatMessageUsecase(chatRepository: sl()));
 
   // repository
   sl.registerLazySingleton<ChatRepository>(
@@ -82,7 +80,6 @@ Future<void> init() async {
       logOutUsecase: sl(),
       checkSignedInUsecase: sl(),
       getUserUsecase: sl(),
-      
     ),
   );
 
@@ -92,8 +89,6 @@ Future<void> init() async {
   sl.registerFactory(() => LogOutUsecase(repository: sl()));
   sl.registerFactory(() => CheckSignedInUsecase(repository: sl()));
   sl.registerFactory(() => GetUserUsecase(repository: sl()));
-
-  
 
   // repository
 

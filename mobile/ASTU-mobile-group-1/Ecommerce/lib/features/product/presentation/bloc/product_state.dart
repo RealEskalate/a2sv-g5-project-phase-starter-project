@@ -40,6 +40,8 @@ class UpdatedProductState extends ProductState {}
 
 class DeletedProductState extends ProductState {}
 
+class DeletingProductState extends ProductState {}
+
 class AddedProductState extends ProductState {}
 
 class AddProuctState extends ProductState {}

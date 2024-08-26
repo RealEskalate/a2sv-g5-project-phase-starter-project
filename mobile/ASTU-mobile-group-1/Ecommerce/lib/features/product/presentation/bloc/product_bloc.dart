@@ -49,7 +49,11 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<UpdateProductEvent>(_onUpdateProduct);
     on<CreateProductEvent>(_onCreateProduct);
     on<DeleteProductEvent>(_onDeleteProduct);
+
     on<ResetMessageStateEvent>((event, emit) {
+      emit(AddProuctState());
+    });
+    on<AddProductEvent>((event, emit) {
       emit(NeutralState());
     });
   }
@@ -156,7 +160,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   Future<void> _onDeleteProduct(
       DeleteProductEvent event, Emitter<ProductState> emit) async {
-    emit(LoadingState());
+    emit(DeletingProductState());
     final result = await _deleteProductUsecase(event.id);
     result.fold(
       (failure) {

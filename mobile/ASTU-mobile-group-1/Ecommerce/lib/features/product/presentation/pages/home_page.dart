@@ -21,14 +21,15 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return BlocListener<ProductBloc, ProductState>(
       listener: (context, state) {
-        if (state is AddProuctState) {
-          Navigator.pushNamed(context, route.addUpdatePage);
-        }
+        // if (state is AddProuctState) {
+        //   log('i was here');
+        //   Navigator.pushNamed(context, route.addUpdatePage);
+        // }
       },
       child: Scaffold(
         floatingActionButton: GestureDetector(
           onTap: () {
-            context.read<ProductBloc>().add(AddProductEvent());
+            Navigator.pushNamed(context, route.addUpdatePage);
           },
           child: Container(
             width: 72,

@@ -30,7 +30,7 @@ class App extends StatelessWidget {
           fontFamily: 'Poppins',
         ),
         onGenerateRoute: route.controller,
-        initialRoute: route.chatHomeScreen,
+        initialRoute: route.splashPage,
       ),
     );
   }

@@ -20,6 +20,7 @@ import { createTransaction } from "@/services/transactionfetch";
 import { access } from "fs";
 import { message } from "antd";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import Pagination from "@/components/Pagination";
 interface LoanCard {
   icon: (props: any) => JSX.Element;
   title: string;
@@ -50,18 +51,21 @@ const LoansPage: React.FC = () => {
   const [loans, setLoans] = useState([]);
   const [loansLoading, setLoansLoading] = useState(true);
   const [loansError, setLoansError] = useState<string | null>(null);
-
+  const ITEMS_PER_PAGE = 5;
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   useEffect(() => {
     const fetchLoans = async () => {
       setLoansLoading(true);
       setLoansError(null);
 
       try {
-        const response = await getMyLoans();
+        const response = await getMyLoans(currentPage, ITEMS_PER_PAGE);
         if (response.data.content.length === 0) {
           setLoansError("No active loans found.");
         } else {
           setLoans(response.data.content);
+          setTotalPages(response.data.totalPages);
         }
       } catch (error) {
         setLoansError("Error fetching the loans.");
@@ -70,7 +74,7 @@ const LoansPage: React.FC = () => {
       }
     };
     fetchLoans();
-  }, []);
+  }, [currentPage]);
   const [messageApi, contextHolder] = message.useMessage();
   const success = (amount: string, username: string) => {
     messageApi.open({
@@ -133,7 +137,7 @@ const LoansPage: React.FC = () => {
     setIsLoading(false);
     setselecteIndex(-1)
   };
-
+  
   useEffect(() => {
     const fetchLoanCard = async () => {
       setLoanCardsLoading(true);
@@ -352,6 +356,10 @@ const LoansPage: React.FC = () => {
               </table>
             </div>
           )}
+           <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}/>
         </div>
       </div>
 
@@ -540,6 +548,12 @@ const LoansPage: React.FC = () => {
               </table>
             </div>
           )}
+           <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
+          
         </div>
       </div>
     </div>

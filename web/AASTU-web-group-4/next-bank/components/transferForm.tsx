@@ -8,7 +8,7 @@ import Cookies from 'js-cookie';
 
 const TransferPage: React.FC = () => {
   const [visible, setVisible] = useState(false); 
-  const { register, reset, handleSubmit, formState: { errors } } = useForm();
+  const { register, reset, handleSubmit, formState: { errors  } } = useForm();
   let account = 5000;
 
   const onSubmit = async (data: any) => {

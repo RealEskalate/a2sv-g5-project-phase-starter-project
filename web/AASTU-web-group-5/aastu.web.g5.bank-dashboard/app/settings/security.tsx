@@ -7,7 +7,17 @@ import axios from "axios";
 import Error from "../error";
 import { useSelector } from "react-redux";
 import { RootState } from "../redux/store";
+import { LoaderProvider } from "react-loader-ts";
 
+import { useLoader, Loader } from "react-loader-ts";
+
+ function Spinner() {
+  return (
+    <LoaderProvider>
+      <Loader />
+    </LoaderProvider>
+  );
+}
 interface ExtendedUser {
 	name?: string;
 	email?: string;
@@ -25,11 +35,13 @@ export default function Security() {
 	const [newPassword, setNewPassword] = useState("");
 	const { data: session } = useSession();
 	const user = session.user as ExtendedUser;
+	const [loading, setLoading] = useState(false);
 	const [successMessage, setSuccessMessage] = useState("");
 	const darkMode = useSelector((state: RootState) => state.theme.darkMode);
 
 	const key: string = user.accessToken || "";
 	const handleSubmit = async (e) => {
+		setLoading(true);
 		e.preventDefault();
 		setSuccessMessage("");
 		setApiError("");
@@ -65,6 +77,7 @@ export default function Security() {
 			);
 			console.error("Error changing password:", error);
 		}
+		setLoading(false)
 	};
 
 	return (
@@ -152,12 +165,18 @@ export default function Security() {
 				</div>
 
 				<div className="flex justify-end mt-16 md:mt-18">
-					<button
-						type="submit"
-						className="border-none bg-blue-700 text-white w-full h-12 rounded-full md:w-[12rem] text-[13px] md:text-base"
-					>
-						Save
-					</button>
+				<button
+        type="submit"
+        className={`border-none w-full h-12 rounded-full md:w-[12rem] text-[13px] md:text-base ${
+          darkMode ? "bg-blue-500 text-white" : "bg-blue-700 text-white"
+        }`}
+        disabled={loading} 
+      >
+        {loading ? (
+			    <Spinner/>  ) : (
+          'Save'
+        )}
+      </button>
 				</div>
 			</form>
 		</div>

@@ -36,7 +36,7 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
   );
   const user = session?.user as ExtendedUser;
   const dispatch = useDispatch();
-
+  const pathname = usePathname() || "Dashboard";
   useEffect(() => {
     if (status === "authenticated" && user?.accessToken && !reduxUser?.name) {
       dispatch({
@@ -60,6 +60,11 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
   if (status !== "authenticated") {
     return null; // Do not render NavBar if not authenticated
   }
+
+
+	if (pathname.startsWith("/auth")) {
+		return <></>
+	}
 
   return (
     <div className={`shadow-md bg-white dark:bg-gray-900 `}>

@@ -1,9 +1,11 @@
 package controller
 
 import (
-    "blog/domain"
-    "net/http"
-    "github.com/gin-gonic/gin"
+	"blog/domain"
+	"blog/internal/userutil"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type LogoutController struct {
@@ -17,9 +19,12 @@ func (lc *LogoutController) Logout(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
+    ipAddress := c.ClientIP()
+	userAgent := c.Request.UserAgent()
+	deviceFingerprint := userutil.GenerateDeviceFingerprint(ipAddress, userAgent)
 
     // Pass only the refresh token to the usecase
-    err := lc.LogoutUsecase.Logout(c, request.RefreshToken)
+    err := lc.LogoutUsecase.Logout(c, request.RefreshToken, deviceFingerprint)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return

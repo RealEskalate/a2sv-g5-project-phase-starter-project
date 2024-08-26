@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"blog/domain"
+	
 	"context"
 	"errors"
 	"time"
@@ -21,15 +22,24 @@ func NewLogoutUsecase(tokenRepository domain.TokenRepository, timeout time.Durat
 	}
 }
 
-func (lu *LogoutUsecase) Logout(cxt context.Context, refreshToken string) error {
-	token, err := lu.tokenRepository.FindTokenByRefreshToken(cxt, refreshToken)
+func (lu *LogoutUsecase) Logout(cxt context.Context, refreshToken string, deviceFingerprint string) error {
+	ctx, cancel := context.WithTimeout(cxt, lu.contextTimeout)
+	defer cancel()
+
+	token, err := lu.tokenRepository.FindTokenByRefreshToken(ctx, refreshToken)
 	if err != nil {
 		return errors.New("token not found")
 	}
 
-	err = lu.tokenRepository.DeleteToken(cxt, token.ID)
+	// Check if the device fingerprint matches
+	if token.DeviceFingerprint != deviceFingerprint {
+		return errors.New("device fingerprint does not match")
+	}
+
+	err = lu.tokenRepository.DeleteToken(ctx, token.ID)
 	if err != nil {
 		return errors.New("failed to delete token")
 	}
+
 	return nil
 }

@@ -22,21 +22,21 @@ type Blog struct {
 
 type Comment struct {
 	ID      int       `json:"id"`
-	UserID  int       `json:"user_id"`
+	User    string    `json:"user"`
 	Content string    `json:"content"`
 	Date    time.Time `json:"date"`
 }
 
 type Like struct {
-	ID     int       `json:"id"`
-	UserID int       `json:"user_id"`
-	Date   time.Time `json:"date"`
+	ID   int       `json:"id"`
+	User string    `json:"user"`
+	Date time.Time `json:"date"`
 }
 
 type Dislike struct {
-	ID     int       `json:"id"`
-	UserID int       `json:"user_id"`
-	Date   time.Time `json:"date"`
+	ID   int       `json:"id"`
+	User string    `json:"user"`
+	Date time.Time `json:"date"`
 }
 
 type IBlogRepository interface {
@@ -58,9 +58,9 @@ type IBlogUsecase interface {
 	CreateBlog(ctx context.Context, blog Blog) (Blog, error)
 	UpdateBlog(ctx context.Context, id int, blog Blog) (Blog, error)
 	DeleteBlog(ctx context.Context, id int) error
-	AddComent(ctx context.Context, blogID int, authorID int, content string) (Blog, error)
-	LikeBlog(ctx context.Context, blogID int, authorID int) (Blog, error)
-	DislikeBlog(ctx context.Context, blogID int, authorID int) (Blog, error)
+	AddComment(ctx context.Context, blogID int, content string) (Blog, error)
+	LikeBlog(ctx context.Context, blogID int) (Blog, error)
+	DislikeBlog(ctx context.Context, blogID int) (Blog, error)
 	Search(ctx context.Context, author string, tags []string, title string) ([]Blog, error)
 	AiRecommendation(ctx context.Context, content string) (string, error)
 }

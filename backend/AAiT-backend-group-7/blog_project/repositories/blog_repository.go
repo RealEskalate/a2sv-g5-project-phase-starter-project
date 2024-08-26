@@ -15,19 +15,19 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type blogRepository struct {
+type BlogRepository struct {
 	collection *mongo.Collection
 	cache      domain.Cache
 }
 
 func NewBlogRepository(collection *mongo.Collection, cache domain.Cache) domain.IBlogRepository {
-	return &blogRepository{
+	return &BlogRepository{
 		collection: collection,
 		cache:      cache,
 	}
 }
 
-func (blogRepo *blogRepository) GetAllBlogs(ctx context.Context) ([]domain.Blog, error) {
+func (blogRepo *BlogRepository) GetAllBlogs(ctx context.Context) ([]domain.Blog, error) {
 	cacheKey := "blogs:all"
 	var blogs []domain.Blog
 
@@ -64,7 +64,7 @@ func (blogRepo *blogRepository) GetAllBlogs(ctx context.Context) ([]domain.Blog,
 	return blogs, nil
 }
 
-func (blogRepo *blogRepository) GetBlogsByPage(ctx context.Context, offset, limit int) ([]domain.Blog, error) {
+func (blogRepo *BlogRepository) GetBlogsByPage(ctx context.Context, offset, limit int) ([]domain.Blog, error) {
 	cacheKey := fmt.Sprintf("blogs:page:%d:%d", offset, limit)
 	var blogs []domain.Blog
 
@@ -102,7 +102,7 @@ func (blogRepo *blogRepository) GetBlogsByPage(ctx context.Context, offset, limi
 	return blogs, nil
 }
 
-func (blogRepo *blogRepository) GetBlogByID(ctx context.Context, id int) (domain.Blog, error) {
+func (blogRepo *BlogRepository) GetBlogByID(ctx context.Context, id int) (domain.Blog, error) {
 	cacheKey := fmt.Sprintf("blog:%d", id)
 	var blog domain.Blog
 
@@ -126,7 +126,7 @@ func (blogRepo *blogRepository) GetBlogByID(ctx context.Context, id int) (domain
 	return blog, nil
 }
 
-func (blogRepo *blogRepository) CreateBlog(ctx context.Context, blog domain.Blog) (domain.Blog, error) {
+func (blogRepo *BlogRepository) CreateBlog(ctx context.Context, blog domain.Blog) (domain.Blog, error) {
 	blog.Date = time.Now() // Set the current time for the blog's creation date
 	_, err := blogRepo.collection.InsertOne(ctx, blog)
 	if err != nil {
@@ -145,7 +145,7 @@ func (blogRepo *blogRepository) CreateBlog(ctx context.Context, blog domain.Blog
 	return blog, nil
 }
 
-func (blogRepo *blogRepository) UpdateBlog(ctx context.Context, id int, blog domain.Blog) (domain.Blog, error) {
+func (blogRepo *BlogRepository) UpdateBlog(ctx context.Context, id int, blog domain.Blog) (domain.Blog, error) {
 	var updatedBlog domain.Blog
 
 	// Update in DB
@@ -176,7 +176,7 @@ func (blogRepo *blogRepository) UpdateBlog(ctx context.Context, id int, blog dom
 	return updatedBlog, nil
 }
 
-func (blogRepo *blogRepository) DeleteBlog(ctx context.Context, id int) error {
+func (blogRepo *BlogRepository) DeleteBlog(ctx context.Context, id int) error {
 	result, err := blogRepo.collection.DeleteOne(ctx, bson.M{"id": id})
 	if err != nil {
 		return err
@@ -198,7 +198,7 @@ func (blogRepo *blogRepository) DeleteBlog(ctx context.Context, id int) error {
 	return nil
 }
 
-func (blogRepo *blogRepository) SearchByTitle(ctx context.Context, title string) ([]domain.Blog, error) {
+func (blogRepo *BlogRepository) SearchByTitle(ctx context.Context, title string) ([]domain.Blog, error) {
 	cacheKey := fmt.Sprintf("blogs:search:title:%s", title)
 	var blogs []domain.Blog
 
@@ -236,7 +236,7 @@ func (blogRepo *blogRepository) SearchByTitle(ctx context.Context, title string)
 	return blogs, nil
 }
 
-func (blogRepo *blogRepository) SearchByTags(ctx context.Context, tags []string) ([]domain.Blog, error) {
+func (blogRepo *BlogRepository) SearchByTags(ctx context.Context, tags []string) ([]domain.Blog, error) {
 	cacheKey := fmt.Sprintf("blogs:search:tags:%v", tags)
 	var blogs []domain.Blog
 
@@ -274,7 +274,7 @@ func (blogRepo *blogRepository) SearchByTags(ctx context.Context, tags []string)
 	return blogs, nil
 }
 
-func (blogRepo *blogRepository) SearchByAuthor(ctx context.Context, author string) ([]domain.Blog, error) {
+func (blogRepo *BlogRepository) SearchByAuthor(ctx context.Context, author string) ([]domain.Blog, error) {
 	cacheKey := fmt.Sprintf("blogs:search:author:%s", author)
 	var blogs []domain.Blog
 
@@ -312,7 +312,7 @@ func (blogRepo *blogRepository) SearchByAuthor(ctx context.Context, author strin
 }
 
 // Helper function to invalidate pagination and search caches
-func (blogRepo *blogRepository) invalidatePaginationAndSearchCaches(ctx context.Context) {
+func (blogRepo *BlogRepository) invalidatePaginationAndSearchCaches(ctx context.Context) {
 	// Invalidate all pagination caches
 	blogRepo.cache.DelByPattern(ctx, "blogs:page:*")
 
@@ -320,11 +320,37 @@ func (blogRepo *blogRepository) invalidatePaginationAndSearchCaches(ctx context.
 	blogRepo.cache.DelByPattern(ctx, "blogs:search:*")
 }
 
-func (blogRepo *blogRepository) UpdateAuthorName(ctx context.Context, oldName, newName string) error {
+func (blogRepo *BlogRepository) UpdateAuthorName(ctx context.Context, oldName, newName string) error {
 	println("Updating author name from", oldName, "to", newName)
+
+	// Update the author's name in the blog posts
 	filter := bson.M{"author": oldName}
 	update := bson.M{"$set": bson.M{"author": newName}}
 	_, err := blogRepo.collection.UpdateMany(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	// Update the author's name in the comments inside blog posts
+	commentFilter := bson.M{"comments.user": oldName}
+	commentUpdate := bson.M{"$set": bson.M{"comments.$[].user": newName}}
+	_, err = blogRepo.collection.UpdateMany(ctx, commentFilter, commentUpdate)
+	if err != nil {
+		return err
+	}
+
+	// Update the author's name in the likes inside blog posts
+	likeFilter := bson.M{"likes.user": oldName}
+	likeUpdate := bson.M{"$set": bson.M{"likes.$[].user": newName}}
+	_, err = blogRepo.collection.UpdateMany(ctx, likeFilter, likeUpdate)
+	if err != nil {
+		return err
+	}
+
+	// Update the author's name in the dislikes inside blog posts
+	dislikeFilter := bson.M{"dislikes.user": oldName}
+	dislikeUpdate := bson.M{"$set": bson.M{"dislikes.$[].user": newName}}
+	_, err = blogRepo.collection.UpdateMany(ctx, dislikeFilter, dislikeUpdate)
 	if err != nil {
 		return err
 	}

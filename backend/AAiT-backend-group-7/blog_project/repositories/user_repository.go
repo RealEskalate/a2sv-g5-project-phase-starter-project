@@ -12,27 +12,27 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type userRepository struct {
+type UserRepository struct {
 	collection *mongo.Collection
 	cache      domain.Cache
 }
 
 func NewUserRepository(collection *mongo.Collection, cache domain.Cache) domain.IUserRepository {
-	return &userRepository{
+	return &UserRepository{
 		collection: collection,
 		cache:      cache,
 	}
 }
 
-func (userRepo *userRepository) GetAllUsers(ctx context.Context) ([]domain.User, error) {
+func (repo *UserRepository) GetAllUsers(ctx context.Context) ([]domain.User, error) {
 	cacheKey := "users:all"
 	var users []domain.User
-	err := userRepo.cache.Get(ctx, cacheKey, &users)
-	if err == nil {
+
+	if err := repo.cache.Get(ctx, cacheKey, &users); err == nil {
 		return users, nil
 	}
 
-	cursor, err := userRepo.collection.Find(ctx, bson.M{})
+	cursor, err := repo.collection.Find(ctx, bson.M{})
 	if err != nil {
 		return nil, err
 	}
@@ -47,53 +47,49 @@ func (userRepo *userRepository) GetAllUsers(ctx context.Context) ([]domain.User,
 	}
 
 	if len(users) > 0 {
-		userRepo.cache.Set(ctx, cacheKey, users, 1*time.Hour)
+		repo.cache.Set(ctx, cacheKey, users, 1*time.Hour)
 	}
 
 	return users, nil
 }
 
-func (userRepo *userRepository) GetUserByID(ctx context.Context, id int) (domain.User, error) {
+func (repo *UserRepository) GetUserByID(ctx context.Context, id int) (domain.User, error) {
 	var user domain.User
 	cacheKey := fmt.Sprintf("user:%d", id)
-	err := userRepo.cache.Get(ctx, cacheKey, &user)
 
-	if err == nil {
+	if err := repo.cache.Get(ctx, cacheKey, &user); err == nil {
 		return user, nil
 	}
-	result := userRepo.collection.FindOne(ctx, bson.M{"id": id})
 
+	result := repo.collection.FindOne(ctx, bson.M{"id": id})
 	if err := result.Decode(&user); err != nil {
-		if err == mongo.ErrNoDocuments {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return domain.User{}, errors.New("user not found")
 		}
 		return domain.User{}, err
 	}
 
-	userRepo.cache.Set(ctx, cacheKey, user, 1*time.Hour)
+	repo.cache.Set(ctx, cacheKey, user, 1*time.Hour)
 	return user, nil
 }
 
-func (userRepo *userRepository) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
-	users, _ := userRepo.GetAllUsers(ctx)
+func (repo *UserRepository) CreateUser(ctx context.Context, user domain.User) (domain.User, error) {
+	users, _ := repo.GetAllUsers(ctx)
 	if len(users) == 0 {
 		user.Role = "admin"
 	}
 
-	_, err := userRepo.collection.InsertOne(ctx, user)
-	if err != nil {
+	if _, err := repo.collection.InsertOne(ctx, user); err != nil {
 		return domain.User{}, err
 	}
 
-	// Invalidate the cache for all users
-	userRepo.cache.Del(ctx, "users:all")
-
+	repo.cache.Del(ctx, "users:all")
 	return user, nil
 }
 
-func (userRepo *userRepository) UpdateUser(ctx context.Context, id int, user domain.User) (domain.User, error) {
+func (repo *UserRepository) UpdateUser(ctx context.Context, id int, user domain.User) (domain.User, error) {
 	var updatedUser domain.User
-	result := userRepo.collection.FindOneAndUpdate(
+	result := repo.collection.FindOneAndUpdate(
 		ctx,
 		bson.M{"id": id},
 		bson.M{"$set": user},
@@ -101,34 +97,18 @@ func (userRepo *userRepository) UpdateUser(ctx context.Context, id int, user dom
 	)
 
 	if err := result.Decode(&updatedUser); err != nil {
-		if err == mongo.ErrNoDocuments {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return domain.User{}, errors.New("user not found")
 		}
 		return domain.User{}, err
 	}
 
-	// Invalidate the cache for the updated user and related cache entries
-	cacheKey := fmt.Sprintf("user:%d", id)
-	userRepo.cache.Del(ctx, cacheKey)
-
-	// Invalidate cache entries by username and email if those fields were updated
-	if user.Username != "" {
-		cacheKeyByUsername := fmt.Sprintf("user:username:%s", user.Username)
-		userRepo.cache.Del(ctx, cacheKeyByUsername)
-	}
-	if user.Email != "" {
-		cacheKeyByEmail := fmt.Sprintf("user:email:%s", user.Email)
-		userRepo.cache.Del(ctx, cacheKeyByEmail)
-	}
-
-	// Invalidate the cache for all users
-	userRepo.cache.Del(ctx, "users:all")
-
+	repo.invalidateUserCache(ctx, id, user)
 	return updatedUser, nil
 }
 
-func (userRepo *userRepository) DeleteUser(ctx context.Context, id int) error {
-	result, err := userRepo.collection.DeleteOne(ctx, bson.M{"id": id})
+func (repo *UserRepository) DeleteUser(ctx context.Context, id int) error {
+	result, err := repo.collection.DeleteOne(ctx, bson.M{"id": id})
 	if err != nil {
 		return err
 	}
@@ -137,103 +117,77 @@ func (userRepo *userRepository) DeleteUser(ctx context.Context, id int) error {
 		return errors.New("user not found")
 	}
 
-	// Invalidate the cache for the deleted user and related cache entries
-	cacheKey := fmt.Sprintf("user:%d", id)
-	userRepo.cache.Del(ctx, cacheKey)
-
-	// Also invalidate cache by username and email
-	var user domain.User
-	err = userRepo.collection.FindOne(ctx, bson.M{"id": id}).Decode(&user)
-	if err == nil {
-		cacheKeyByUsername := fmt.Sprintf("user:username:%s", user.Username)
-		userRepo.cache.Del(ctx, cacheKeyByUsername)
-
-		cacheKeyByEmail := fmt.Sprintf("user:email:%s", user.Email)
-		userRepo.cache.Del(ctx, cacheKeyByEmail)
-	}
-
-	// Invalidate the cache for all users
-	userRepo.cache.Del(ctx, "users:all")
-
+	repo.invalidateUserCache(ctx, id, domain.User{})
 	return nil
 }
 
-func (userRepo *userRepository) SearchByUsername(ctx context.Context, username string) (domain.User, error) {
+func (repo *UserRepository) SearchByUsername(ctx context.Context, username string) (domain.User, error) {
 	cacheKey := fmt.Sprintf("user:username:%s", username)
 	var user domain.User
-	err := userRepo.cache.Get(ctx, cacheKey, &user)
-	if err == nil {
+
+	if err := repo.cache.Get(ctx, cacheKey, &user); err == nil {
 		return user, nil
 	}
 
-	err = userRepo.collection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
+	if err := repo.collection.FindOne(ctx, bson.M{"username": username}).Decode(&user); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return domain.User{}, errors.New("user not found")
 		}
 		return domain.User{}, err
 	}
 
-	userRepo.cache.Set(ctx, cacheKey, user, 1*time.Hour)
+	repo.cache.Set(ctx, cacheKey, user, 1*time.Hour)
 	return user, nil
 }
 
-func (userRepo *userRepository) SearchByEmail(ctx context.Context, email string) (domain.User, error) {
+func (repo *UserRepository) SearchByEmail(ctx context.Context, email string) (domain.User, error) {
 	cacheKey := fmt.Sprintf("user:email:%s", email)
 	var user domain.User
-	err := userRepo.cache.Get(ctx, cacheKey, &user)
-	if err == nil {
+
+	if err := repo.cache.Get(ctx, cacheKey, &user); err == nil {
 		return user, nil
 	}
 
-	err = userRepo.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
+	if err := repo.collection.FindOne(ctx, bson.M{"email": email}).Decode(&user); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return domain.User{}, errors.New("user not found")
 		}
 		return domain.User{}, err
 	}
 
-	userRepo.cache.Set(ctx, cacheKey, user, 1*time.Hour)
+	repo.cache.Set(ctx, cacheKey, user, 1*time.Hour)
 	return user, nil
 }
 
-func (userRepo *userRepository) AddBlog(ctx context.Context, userID int, blog domain.Blog) (domain.User, error) {
+func (repo *UserRepository) AddBlog(ctx context.Context, userID int, blog domain.Blog) (domain.User, error) {
 	var user domain.User
-	err := userRepo.collection.FindOne(ctx, bson.M{"id": userID}).Decode(&user)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
+	if err := repo.collection.FindOne(ctx, bson.M{"id": userID}).Decode(&user); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return domain.User{}, errors.New("user not found")
 		}
 		return domain.User{}, err
 	}
 
 	user.Blogs = append(user.Blogs, blog.ID)
-	_, err = userRepo.collection.UpdateOne(ctx, bson.M{"id": userID}, bson.M{"$set": bson.M{"blogs": user.Blogs}})
-	if err != nil {
+	if _, err := repo.collection.UpdateOne(ctx, bson.M{"id": userID}, bson.M{"$set": bson.M{"blogs": user.Blogs}}); err != nil {
 		return domain.User{}, err
 	}
 
-	// Invalidate the cache for this user and related cache keys
-	cacheKey := fmt.Sprintf("user:%d", userID)
-	userRepo.cache.Del(ctx, cacheKey)
-
-	// Invalidate the cache for all users if relevant
-	userRepo.cache.Del(ctx, "users:all")
-
+	repo.invalidateUserCache(ctx, userID, user)
 	return user, nil
 }
-func (userRepo *userRepository) StoreRefreshToken(ctx context.Context, userID int, refreshToken string) error {
-	_, err := userRepo.collection.UpdateOne(ctx, bson.M{"id": userID}, bson.M{"$set": bson.M{"refresh_token": refreshToken}})
+
+func (repo *UserRepository) StoreRefreshToken(ctx context.Context, userID int, refreshToken string) error {
+	_, err := repo.collection.UpdateOne(ctx, bson.M{"id": userID}, bson.M{"$set": bson.M{"refresh_token": refreshToken}})
 	return err
 }
 
-func (userRepo *userRepository) ValidateRefreshToken(ctx context.Context, userID int, refreshToken string) (bool, error) {
+func (repo *UserRepository) ValidateRefreshToken(ctx context.Context, userID int, refreshToken string) (bool, error) {
 	var user domain.User
-	err := userRepo.collection.FindOne(ctx, bson.M{"id": userID, "refresh_token": refreshToken}).Decode(&user)
+	err := repo.collection.FindOne(ctx, bson.M{"id": userID, "refresh_token": refreshToken}).Decode(&user)
 
 	if err != nil {
-		if err == mongo.ErrNoDocuments {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return false, nil
 		}
 		return false, err
@@ -242,23 +196,33 @@ func (userRepo *userRepository) ValidateRefreshToken(ctx context.Context, userID
 	return true, nil
 }
 
-func (userRepo *userRepository) GetRefreshToken(ctx context.Context, userID int) (string, error) {
+func (repo *UserRepository) GetRefreshToken(ctx context.Context, userID int) (string, error) {
 	var user map[string]interface{}
 
-	// Find the user document with the given ID and decode it into a map
-	err := userRepo.collection.FindOne(ctx, bson.M{"id": userID}).Decode(&user)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
+	if err := repo.collection.FindOne(ctx, bson.M{"id": userID}).Decode(&user); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
 			return "", errors.New("user not found")
 		}
 		return "", err
 	}
 
-	// Extract the refresh token from the user document
 	refreshToken, ok := user["refresh_token"].(string)
 	if !ok {
 		return "", errors.New("refresh token not found or invalid")
 	}
 
 	return refreshToken, nil
+}
+
+func (repo *UserRepository) invalidateUserCache(ctx context.Context, userID int, user domain.User) {
+	repo.cache.Del(ctx, fmt.Sprintf("user:%d", userID))
+
+	if user.Username != "" {
+		repo.cache.Del(ctx, fmt.Sprintf("user:username:%s", user.Username))
+	}
+	if user.Email != "" {
+		repo.cache.Del(ctx, fmt.Sprintf("user:email:%s", user.Email))
+	}
+
+	repo.cache.Del(ctx, "users:all")
 }

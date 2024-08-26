@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -120,7 +121,8 @@ func (bc *BlogController) CreateBlog() gin.HandlerFunc {
 			c.Error(err)
 			return
 		}
-
+		log.Printf("[ctrl] create blog %#v", user.ID.Hex())
+		newBlog.AuthorID = (*user).ID //assaign the author id of the blog
 		blog, err := bc.BlogUsecase.CreateBlog(context.Background(), &newBlog, user)
 		if err != nil {
 			c.Error(err)
@@ -182,7 +184,7 @@ func (bc *BlogController) UpdateBlog() gin.HandlerFunc {
 			return
 		}
 
-		if userID != existingBlog.AuthorID && role != "admin" {
+		if userID != existingBlog.AuthorID.Hex() && role != "admin" {
 			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
 			return
 		}
@@ -206,7 +208,9 @@ func (bc *BlogController) DeleteBlog() gin.HandlerFunc {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
-		if userID != existingBlog.AuthorID && role != "admin" {
+
+		fmt.Printf("[ctrl] existing blog to delete: userID %#v, blogID: %#v ", userID, existingBlog.AuthorID.Hex())
+		if userID != existingBlog.AuthorID.Hex() && role != "admin" {
 			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
 			return
 		}

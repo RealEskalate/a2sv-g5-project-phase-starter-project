@@ -10,12 +10,14 @@ import (
 type BlogUsecase struct {
 	BlogRepo       domain.BlogRepository
 	contextTimeout time.Duration
+	Aiservice      domain.AIService
 }
 
-func NewBlogUsecase(blogrepo domain.BlogRepository, timeout time.Duration) domain.BlogUsecase {
+func NewBlogUsecase(blogrepo domain.BlogRepository, aiserv domain.AIService, timeout time.Duration) domain.BlogUsecase {
 	return &BlogUsecase{
 		BlogRepo:       blogrepo,
 		contextTimeout: timeout,
+		Aiservice:      aiserv,
 	}
 
 }
@@ -23,6 +25,10 @@ func NewBlogUsecase(blogrepo domain.BlogRepository, timeout time.Duration) domai
 func (br *BlogUsecase) CreateBlog(c context.Context, blog *domain.Blog) error {
 	_, cancel := context.WithTimeout(c, br.contextTimeout)
 	defer cancel()
+	if err := br.Aiservice.Validate_Blog(blog.Content); err != nil {
+		return err
+	}
+
 	return br.BlogRepo.CreateBlog(blog)
 }
 

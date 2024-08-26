@@ -4,9 +4,6 @@ import (
 	"blog_g2/deliveries/controllers"
 	"blog_g2/domain"
 	"blog_g2/mocks"
-	"bytes"
-	"io"
-	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -27,7 +24,6 @@ type BlogControllerSuite struct {
 	MockCommentUsecase *mocks.CommentUsecase
 	MockDislikeUsecase *mocks.DisLikeUsecase
 	MockAIService      *mocks.AIService
-	mockMediaUpload    *mocks.MediaUpload
 }
 
 func (suite *BlogControllerSuite) SetupTest() {
@@ -36,14 +32,12 @@ func (suite *BlogControllerSuite) SetupTest() {
 	suite.MockCommentUsecase = new(mocks.CommentUsecase)
 	suite.MockDislikeUsecase = new(mocks.DisLikeUsecase)
 	suite.MockAIService = new(mocks.AIService)
-	suite.mockMediaUpload = new(mocks.MediaUpload)
 	suite.BlogController = controllers.NewBlogController(
 		suite.MockBlogUsecase,
 		suite.MockLikeUsecase,
 		suite.MockCommentUsecase,
 		suite.MockDislikeUsecase,
 		suite.MockAIService,
-		suite.mockMediaUpload,
 	)
 	gin.SetMode(gin.TestMode)
 }
@@ -75,7 +69,7 @@ func (suite *BlogControllerSuite) TestRetrieveBlog() {
 		{Title: "Blog 2", Content: "Content 2", Date: time.Now()},
 	}
 
-	suite.MockBlogUsecase.On("RetrieveBlog", mock.Anything, 1, mock.Anything, mock.Anything).Return(mockBlogs, nil)
+	suite.MockBlogUsecase.On("RetrieveBlog", mock.Anything, 1).Return(mockBlogs, nil)
 
 	suite.BlogController.RetrieveBlog(c)
 
@@ -94,7 +88,7 @@ func (suite *BlogControllerSuite) TestUpdateBlog() {
 	c.Request, _ = http.NewRequest(http.MethodPut, "/blogs/"+getID, strings.NewReader(requestBody))
 	c.Request.Header.Set("Content-Type", "application/json")
 
-	suite.MockBlogUsecase.On("UpdateBlog", mock.Anything, mock.AnythingOfType("domain.Blog"), getID, mock.Anything, mock.Anything).Return(nil)
+	suite.MockBlogUsecase.On("UpdateBlog", mock.Anything, mock.AnythingOfType("domain.Blog"), getID).Return(nil)
 
 	suite.BlogController.UpdateBlog(c)
 
@@ -111,7 +105,7 @@ func (suite *BlogControllerSuite) TestDeleteBlog() {
 
 	c.Request, _ = http.NewRequest(http.MethodDelete, "/blogs/"+getID, nil)
 
-	suite.MockBlogUsecase.On("DeleteBlog", mock.Anything, getID, mock.Anything, mock.Anything).Return(nil)
+	suite.MockBlogUsecase.On("DeleteBlog", mock.Anything, getID).Return(nil)
 
 	suite.BlogController.DeleteBlog(c)
 
@@ -168,43 +162,14 @@ func (suite *BlogControllerSuite) TestGeneratePost() {
 	c.Request, _ = http.NewRequest(http.MethodPost, "/blogs/generate", strings.NewReader(requestBody))
 	c.Request.Header.Set("Content-Type", "application/json")
 
-	mockPost := &domain.PostRequest{Title: "Generated Title", Content: "Generated Content"}
-	mockPosto := &domain.PostResponse{Title: "Generated Title", Content: "Generated Content"}
+	mockPost := domain.PostRequest{Title: "Generated Title", Content: "Generated Content"}
 
-	suite.MockAIService.On("GeneratePost", mockPost.Title, mockPost.Content).Return(mockPosto, nil)
+	suite.MockAIService.On("GeneratePost", mockPost.Title, mockPost.Content).Return(mockPost, nil)
 
 	suite.BlogController.GeneratePost(c)
 
 	assert.Equal(suite.T(), http.StatusOK, recorder.Code)
 	suite.MockAIService.AssertExpectations(suite.T())
-}
-
-func (t *BlogControllerSuite) TestFileUpload() {
-	gin.SetMode(gin.TestMode)
-
-	// Setup
-	recorder := httptest.NewRecorder()
-	context, _ := gin.CreateTestContext(recorder)
-
-	// Create a file to upload
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	part, _ := writer.CreateFormFile("file", "test.jpg")
-	io.Copy(part, bytes.NewReader([]byte("dummy content")))
-	writer.Close()
-
-	request, _ := http.NewRequest(http.MethodPost, "/file", body)
-	request.Header.Set("Content-Type", writer.FormDataContentType())
-	context.Request = request
-
-	// Mock
-	t.mockMediaUpload.On("FileUpload", mock.Anything).Return("http://<url_of_uploaded_file>", nil)
-
-	// Execute
-	t.BlogController.FileUpload(context)
-
-	// Assert
-	assert.Equal(t.T(), http.StatusOK, recorder.Code)
 }
 
 func TestBlogControllerSuite(t *testing.T) {

@@ -22,10 +22,10 @@ type DisLike struct {
 
 type Comment struct {
 	ID      primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	UserID  primitive.ObjectID `json:"user_id,omitempty" bson:"user_id,omitempty"`
-	BlogID  primitive.ObjectID `json:"post_id,omitempty" bson:"post_id,omitempty"`
-	Comment string             `json:"comment,omitempty" bson:"comment,omitempty"`
-	Date    time.Time          `json:"date,omitempty" bson:"date,omitempty"`
+	UserID  primitive.ObjectID `json:"user_id" bson:"user_id"`
+	BlogID  primitive.ObjectID `json:"post_id" bson:"post_id"`
+	Comment string             `json:"comment" bson:"comment"`
+	Date    time.Time          `json:"date" bson:"date"`
 }
 
 // Popularity interfaces

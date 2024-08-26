@@ -1,15 +1,5 @@
 package controllers
 
-// import (
-// 	"blog_g2/domain"
-// 	"blog_g2/infrastructure"
-// 	"context"
-// 	"net/http"
-
-// 	"github.com/gin-gonic/gin"
-// 	"golang.org/x/oauth2"
-// )
-
 import (
 	"blog_g2/domain"
 	"blog_g2/infrastructure"

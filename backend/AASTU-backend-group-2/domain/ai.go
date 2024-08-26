@@ -12,4 +12,6 @@ type PostRequest struct {
 
 type AIService interface {
 	GeneratePost(title, description string) (*PostResponse, error)
+	Validate_Comment(comment string) error
+	Validate_Blog(blog string) error
 }

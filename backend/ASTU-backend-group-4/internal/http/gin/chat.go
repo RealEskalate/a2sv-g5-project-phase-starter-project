@@ -22,12 +22,6 @@ func NewChatHandler(chatUsecase chat.Usecase) *ChatHandler {
 }
 
 func (chatHandler *ChatHandler) CreateChatHandler(c *gin.Context) {
-	var textForm chat.TextForm
-	if err := c.ShouldBindJSON(&textForm); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
 	userIDForm := chat.UserIDForm{
 		UserID: c.Value("user_id").(string),
 	}
@@ -205,7 +199,7 @@ func (chatHandler *ChatHandler) DeleteChatHandler(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
 		return
-	}	
+	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "chat deleted successfully"})
 }

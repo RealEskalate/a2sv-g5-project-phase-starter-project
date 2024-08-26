@@ -4,6 +4,9 @@ import {getLoansAll} from '@/lib/loanApies';
 import { useState, useEffect } from "react";
 import { useUser } from "@/contexts/UserContext";
 import TableShimmer  from "./TableShimmer";
+import { Button } from "@/components/ui/button"
+import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
 import {
   Pagination,
   PaginationContent,
@@ -20,7 +23,7 @@ export function TableDemo() {
     const [loading, setLoading] = useState(true)
     const [totalPages, setTotalPages] = useState<number>(5);
     const [currentPage, setCurrentPage] = useState(1);
-
+    const { toast } = useToast()
 
     const handlePageChange = (page: number) => {
       setCurrentPage(page);
@@ -82,8 +85,8 @@ export function TableDemo() {
     return (
       loading ? (<TableShimmer/>): 
         (
-        <div className="flex flex-col justify-center rounded-2xl bg-transparent scrollbar-hidden">
-          <Table className={`w-[80%] md:w-full mx-auto rounded-2xl my-4 ${isDarkMode? "bg-gray-950 text-white":"bg-white"}`} >
+        <div className="flex flex-col justify-center rounded-2xl bg-transparent w-full">
+          <Table className={`mx-auto rounded-2xl my-4 shadow-md ${isDarkMode? "bg-gray-950 text-white shadow-blue-900":"bg-white shadow-gray-300"} w-full shadow-md`} >
             <TableHeader className={`${isDarkMode?"border-gray-700":""} p-10`}>
               <TableRow className="text-[#243a61] font-[600] p-10">
                 <TableHead className={`hidden md:table-cell text-center ${isDarkMode? "text-white":"text-gray-900"}`} >SL No</TableHead>
@@ -106,9 +109,12 @@ export function TableDemo() {
                   <TableCell className="hidden md:table-cell text-center">{Invoice.interestRate}</TableCell>
                   <TableCell className="hidden md:table-cell text-center">{Invoice.installment}</TableCell>
                   <TableCell className="text-center">
-                    <button className="border border-1 border-gray-800 rounded-full m-auto hover:text-blue-700 hover:border-blue-700 text-[10px] md:text-[15px] p-2 w-[65px] md:w-[75px]">
-                      Repay
-                    </button>
+                  <Button variant="outline" onClick={() => {toast({
+                    title: "Not avaliable",
+                    description: "Currently this feature is not available!",
+                    variant: "warning",
+                  });
+                  }} className={`${isDarkMode?"bg-slate-900 text-white":"bg-white text-black "} rounded-full border-[1.5px] border-blue-800 hover:shadow-md hover:shadow-blue-500 hover:border-0`}>Repay</Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -128,7 +134,7 @@ export function TableDemo() {
               </TableRow>
             </TableFooter>
           </Table>
-          <Pagination className="mx-auto">
+          <Pagination className="mx-auto mt-5">
             <PaginationContent className="hover:cursor-pointer mx-auto">
               <PaginationItem className={`${ isDarkMode ? "bg-gray-950 text-gray-50" : "bg-gray-200"} rounded-xl`} >
                 <PaginationPrevious onClick={handlePreviousPage} aria-disabled={currentPage === 1}/>

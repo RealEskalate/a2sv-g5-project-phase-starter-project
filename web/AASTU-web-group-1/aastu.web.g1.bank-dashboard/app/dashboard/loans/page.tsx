@@ -37,13 +37,13 @@ const Loans = () => {
   }, []);
 
   return (
-    <div className={isDarkMode ? "bg-gray-700" : "bg-transparent"}>
+    <div className={`pt-5`}>
       {loading ? (
         <CardShimmer/>
       ) : (
-        <div className="flex gap-2 overflow-x-scroll scrollbar-hidden my-3 scroll md:w-[98%] md:mx-auto">
+        <div className="flex gap-2 overflow-x-scroll scrollbar-hidden my-3 scroll md:w-[80%] md:mx-auto rounded-full md:h-28">
           {loanTypes.map((item) => (
-            <div className="my-2" key={item.name}>
+            <div className="p-0 m-0 my-auto" key={item.name}>
               {data && (
                 <Card
                   name={item.name}
@@ -55,8 +55,8 @@ const Loans = () => {
           ))}
         </div>
       )}
-      <div className="mt-5 px-2 scrollbar-hidden">
-        <h1 className={`text-md font-[500] md:font-[600]  ${isDarkMode ? "text-white" : "text-[#333B69]"} md:text-left md:pl-20 md:text-[35px] pl-4 my-3`}>
+      <div className="mt-5 scrollbar-hidden md:w-[80%] mx-auto">
+        <h1 className={`text-md font-[500] md:font-[600]  ${isDarkMode ? "text-white" : "text-[#333B69]"} md:text-left px-2 md:text-[30px] my-3 w-[80%] `}>
           Active Loans Overview
         </h1>
         <TableDemo />

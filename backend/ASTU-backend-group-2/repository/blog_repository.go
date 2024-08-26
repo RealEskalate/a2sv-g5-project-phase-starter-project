@@ -215,7 +215,7 @@ func (br *blogRepository) CreateBlog(c context.Context, newBlog *entities.Blog) 
 	collection := br.database.Collection(br.collection)
 	blog := entities.Blog{}
 	blog.ID = primitive.NewObjectID()
-
+	blog.AuthorID = newBlog.AuthorID
 	blog.Title = newBlog.Title
 	blog.Tags = newBlog.Tags
 	blog.Content = newBlog.Content

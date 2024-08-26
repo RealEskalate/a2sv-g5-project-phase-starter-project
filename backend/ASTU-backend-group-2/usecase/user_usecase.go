@@ -9,6 +9,7 @@ import (
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
 	mongopagination "github.com/gobeam/mongo-go-pagination"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type userUsecase struct {
@@ -59,10 +60,13 @@ func (uu *userUsecase) GetUsers(c context.Context, userFilter entities.UserFilte
 
 	return &res, meta, nil
 }
-
+func (uu *userUsecase) GetAllUsers(c context.Context) ([]entities.UserOut, error) {
+	return uu.userRepository.GetAllUsers(c)
+}
 func (uu *userUsecase) UpdateUser(c context.Context, userID string, updatedUser *entities.UserUpdate) (*entities.User, error) {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
+	updatedUser.UpdatedAt = primitive.NewDateTimeFromTime(time.Now())
 
 	return uu.userRepository.UpdateUser(ctx, userID, updatedUser)
 }

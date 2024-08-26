@@ -14,7 +14,7 @@ const (
 )
 
 type User struct {
-	ID         primitive.ObjectID `json:"id,omitempty" bson:"_id"`
+	ID         primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	FirstName  string             `json:"first_name,omitempty" bson:"first_name" binding:"required,min=3,max=30"`
 	LastName   string             `json:"last_name,omitempty" bson:"last_name" binding:"max=30"`
 	Email      string             `json:"email,omitempty" bson:"email" binding:"required,email"`
@@ -24,7 +24,7 @@ type User struct {
 	Password   string             `json:"password,omitempty" bson:"password" binding:"required,min=4,max=30,StrongPassword"`
 	IsOwner    bool               `json:"is_owner,omitempty" bson:"is_owner"`
 	Role       string             `json:"role,omitempty" bson:"role"`
-	Tokens     []string           `json:"tokens,omitempty" bson:"tokens"`
+	Tokens     []string           `json:"tokens,omitempty" bson:"tokens,omitempty"`
 	VerToken   string             `json:"verify_token,omitempty" bson:"verfiy_token"`
 	CreatedAt  primitive.DateTime `json:"created_at,omitempty" bson:"created_at"`
 	UpdatedAt  primitive.DateTime `json:"updated_at,omitempty" bson:"updated_at"`
@@ -65,9 +65,10 @@ func (u *User) ToUserOut() *UserOut {
 }
 
 type UserUpdate struct {
-	FirstName string `json:"first_name" bson:"first_name"`
-	LastName  string `json:"last_name" bson:"last_name"`
-	Bio       string `json:"bio" bson:"bio"`
+	FirstName string             `json:"first_name" bson:"first_name"`
+	LastName  string             `json:"last_name" bson:"last_name"`
+	Bio       string             `json:"bio" bson:"bio"`
+	UpdatedAt primitive.DateTime `json:"updated_at,omitempty" bson:"updated_at"`
 }
 
 func (u *UserUpdate) ToUser() *User {
@@ -99,7 +100,7 @@ type UserFilter struct {
 	IsOwner   string
 	Active    string
 	Bio       string
-	sort      string
+	Sort      string
 }
 
 type UserUsecase interface {
@@ -108,6 +109,7 @@ type UserUsecase interface {
 	GetUserById(c context.Context, userId string) (*User, error)
 
 	GetUsers(c context.Context, filter UserFilter) (*[]UserOut, mongopagination.PaginationData, error)
+	GetAllUsers(c context.Context) ([]UserOut, error)
 	UpdateUser(c context.Context, userID string, updatedUser *UserUpdate) (*User, error)
 	ActivateUser(c context.Context, userID string) error
 	DeleteUser(c context.Context, userID string) error
@@ -123,6 +125,7 @@ type UserRepository interface {
 	CreateUser(c context.Context, user *User) (*User, error)
 	IsOwner(c context.Context) (bool, error)
 	UpdateRefreshToken(c context.Context, userID string, refreshToken string) error
+	GetAllUsers(c context.Context) ([]UserOut, error)
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
 	GetUsers(c context.Context, filter bson.M, userFilter UserFilter) (*[]User, mongopagination.PaginationData, error)
@@ -139,4 +142,5 @@ type UserRepository interface {
 
 	PromoteUserToAdmin(c context.Context, userID string) error
 	DemoteAdminToUser(c context.Context, userID string) error
+	RefreshTokenExist(c context.Context, userID, refreshToken string) (bool, error)
 }

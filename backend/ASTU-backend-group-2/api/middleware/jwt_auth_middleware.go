@@ -36,3 +36,14 @@ func JwtAuthMiddleware(secret string) gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func AdminMiddleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		role := ctx.MustGet("x-user-role")
+		if role != "admin" {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
+			ctx.Abort()
+		}
+		ctx.Next()
+	}
+}

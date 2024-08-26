@@ -10,6 +10,7 @@ import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/d
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/detail_state.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/home_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/home_event.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/bottomnavbar.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_state.dart';
@@ -41,7 +42,8 @@ class _DetailsState extends State<DetailsPage> {
     return BlocProvider(
       create: (context) => sl.get<DetailBloc>(),
       child: Scaffold(
-        backgroundColor: Colors.white,
+      bottomNavigationBar: Bottomnavbar(),
+        backgroundColor: Theme.of(context).colorScheme.surface,
         floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop,
         floatingActionButton: Container(
           margin: EdgeInsets.only(left: 20, top: 20),
@@ -49,7 +51,7 @@ class _DetailsState extends State<DetailsPage> {
           width: 40,
           child: FloatingActionButton(
             shape: CircleBorder(),
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.white70,
             child: Center(
               child: Icon(
                 Icons.arrow_back_ios_new,
@@ -203,7 +205,6 @@ class _DetailsState extends State<DetailsPage> {
                             ),
                           ),
                           SizedBox(height: 20),
-                          
                           BlocBuilder<GetUserBloc, GetUserState>(
                             builder: (context, state) {
                               if (state is GetUserLoaded && state.user.id==widget.item.sellerId.id){
@@ -304,10 +305,12 @@ class _DetailsState extends State<DetailsPage> {
                                 return Column(
                                   children: [
                                     SizedBox(
-                                          height: MediaQuery.of(context).size.height*0.15,
-                                        ),
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.15,
+                                    ),
                                     Center(
-                                      child:SizedBox(
+                                        child: SizedBox(
                                       width: 366,
                                       height: 45,
                                       child: ElevatedButton(
@@ -336,24 +339,35 @@ class _DetailsState extends State<DetailsPage> {
                                         },
                                         child: Row(
                                           children: [
-                                            SizedBox(width: MediaQuery.of(context).size.width*0.17,),
-                                            Icon(Icons.phone, color: Colors.white),
-                                            SizedBox(width: MediaQuery.of(context).size.width*0.02,),
+                                            SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.17,
+                                            ),
+                                            Icon(Icons.phone,
+                                                color: Colors.white),
+                                            SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.02,
+                                            ),
                                             Text(
-                                            "Contact Seller",
-                                            style: GoogleFonts.poppins(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500),
-                                                                              ),
+                                              "Contact Seller",
+                                              style: GoogleFonts.poppins(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w500),
+                                            ),
                                           ],
                                         ),
                                       ),
                                     )),
                                   ],
-                                );}
-                                else{
-                                  return SizedBox();
-                                }
+                                );
+                              } else {
+                                return SizedBox();
+                              }
                             },
                           ),
                         ],

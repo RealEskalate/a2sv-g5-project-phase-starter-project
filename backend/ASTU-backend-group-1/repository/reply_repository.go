@@ -146,7 +146,7 @@ func (r *MongoBlogRepository) LikeOrDislikeReply(blogId, commentId, replyId, use
 		}
 	} else if like == -1 {
 		// Toggle dislike
-		dislikeFinder := bson.M{"reply_id": rid, "comment_id": cid, "blog_id": bid, "likes": uid}
+		dislikeFinder := bson.M{"reply_id": rid, "comment_id": cid, "blog_id": bid, "dislikes": uid}
 		dislikeResult := bson.M{}
 		err := r.ReplyCollection.FindOne(context.TODO(), dislikeFinder).Decode(&dislikeResult)
 		if err == nil {

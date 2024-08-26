@@ -22,7 +22,7 @@ func GenerateToken(user *domain.User, pwd string) (string, string, error) {
 		return "", "", errors.New("invalid username or password")
 	}
 
-	expirationTime := time.Now().Add(10 * time.Minute)
+	expirationTime := time.Now().Add(30 * time.Minute)
 	claims := &domain.Claims{
 		ID:       user.ID,
 		Email:    user.Email,
@@ -40,7 +40,7 @@ func GenerateToken(user *domain.User, pwd string) (string, string, error) {
 		return "", "", err
 	}
 
-	expirationTime = time.Now().Add(1 * time.Hour)
+	expirationTime = time.Now().Add(3 * time.Hour)
 	claims.ExpiresAt = expirationTime.Unix()
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	refreshTokenString, err := refreshToken.SignedString(jwtSecret)

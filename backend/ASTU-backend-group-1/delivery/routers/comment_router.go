@@ -11,8 +11,8 @@ func (gr *MainRouter) addCommentRouter(blogRouter *gin.RouterGroup)  *gin.Router
 		commentRouter.GET("/:commentId", gr.blogController.HandleGetCommentById)
 		commentRouter.POST("/:commentId/:type", gr.blogController.HandleCommentLikeOrDislike)
 		
-		// commentRouter.DELETE("/:commentId", gr.blogController.HandleGetCommentById)
-		// commentRouter.PATCH("/:commentId", gr.blogController.HandleGetCommentById)
+		commentRouter.DELETE("/:commentId", gr.blogController.HandleGetCommentById)
+		commentRouter.PATCH("/:commentId", gr.blogController.HandleGetCommentById)
 	}
 	return commentRouter
 }

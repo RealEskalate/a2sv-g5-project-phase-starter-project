@@ -136,8 +136,14 @@ func (u *SignupUseCase) VerifyOTP(c context.Context, otp domain.OtpToken , ip st
 	}
 
 	// create Verified user
+	user.PostsID = utils.MakePrimitiveList(0)
+	user.Role = "user"
+	user.CommentsID = utils.MakePrimitiveList(0)
+	user.LikedPostsID = utils.MakePrimitiveList(0)
+	user.DisLikePostsID = utils.MakePrimitiveList(0)
 	verifiedUser, err := u.SignupRepository.Create(ctx, user)
 	verifiedUser.Password = ""
+	
 	
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error verifying user", Status: 500}

@@ -23,6 +23,7 @@ type Blog struct {
 	Blog_image    string               `bson:"blog_image"`
 	Deleted       bool                 `bson:"deleted"`
 	DeletedAt     time.Time            `bson:"deletedAt"`
+	Comments      []Comment   `bson:"comments"`
 }
 
 type Comment struct {

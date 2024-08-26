@@ -15,25 +15,85 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Refresh from "@/app/api/auth/[...nextauth]/token/RefreshToken";
+import { getBalanceHistory } from "@/lib/api/transactionController";
 
-const chartData = [
-  { month: "July", desktop: 95 },
-  { month: "August", desktop: 215 },
-  { month: "September", desktop: 415 },
-  { month: "October", desktop: 730 },
-  { month: "November", desktop: 200 },
-  { month: "December", desktop: 530 },
-  { month: "January", desktop: 230 },
-];
+
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  Balance: {
+    label: "Balance",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
+type DataItem = {
+  heading: string;
+  text: string;
+  headingStyle: string;
+  dataStyle: string;
+};
 
+// eslint-disable-next-line react-hooks/rules-of-hooks
+
+
+type Data = {
+  access_token: string;
+  data: string;
+  refresh_token: string;
+};
+type SessionDataType = {
+  user: Data;
+};
 export function BalanceHistory() {
+  const [chartData, setChartData] = useState<{ month: string; balance: number }[]>([]);
+
+  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<Data | null>(null);
+  const router = useRouter();
+  const [access_token, setAccess_token] = useState("");
+
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = (await getSession()) as SessionDataType | null;
+      setAccess_token(await Refresh());
+
+      if (sessionData && sessionData.user) {
+        setSession(sessionData.user);
+      } else {
+        router.push(
+          `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
+        );
+      }
+      setLoading(false);
+    };
+
+    fetchSession();
+  }, [router]);
+  useEffect(() => {
+    const fetchBalanceHistory = async () => {
+      if (!access_token) return;
+      try {
+        const balanceHistory = await getBalanceHistory(access_token);
+
+        if (balanceHistory.success) {
+          const formattedData = balanceHistory.data.map((item) => ({
+            month: item.time, // Adjust the time to match your needs (e.g., month)
+            balance: item.value,
+          }));
+          setChartData(formattedData);
+        }
+      } catch (error) {
+        console.error("Error fetching balance history:", error);
+      }
+    };
+
+    fetchBalanceHistory();
+
+  }, [access_token]);
   return (
     <Card className="my-4 mx-4 rounded-3xl flex-grow md:w-[75%]">
       <CardHeader>
@@ -42,25 +102,19 @@ export function BalanceHistory() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="w-full ">
-          <ChartContainer config={chartConfig} className="md:h-32 md:w-full">
+        <div className="w-full">
+          <ChartContainer config={chartConfig} className="md:h-36 md:w-full">
             <AreaChart
               width={5}
               height={300}
               data={chartData}
-              className="aspect-square h-60 w-full max-w-[300px]" // Ensure full width within a max limit
-              // margin={{
-              //   left: 0, // Removed padding
-              //   right: 0, // Removed padding
-              //   top: 10, // Added some margin at the top
-              //   bottom: 0, // Added some margin at the bottom
-              // }}
+              className="aspect-square h-60 w-full max-w-[300px]"
             >
               <CartesianGrid
-                strokeDasharray="3 3" // Dotted lines
-                stroke="rgba(0, 0, 0, 0.5)" // More visible lines
-                vertical={true} // Enable vertical lines
-                horizontal={true} // Enable horizontal lines
+                strokeDasharray="3 3"
+                stroke="rgba(0, 0, 0, 0.5)"
+                vertical={true}
+                horizontal={true}
               />
               <XAxis
                 dataKey="month"
@@ -75,14 +129,14 @@ export function BalanceHistory() {
                 tickMargin={8}
                 interval={0}
                 ticks={[0, 200, 400, 600, 800]}
-                domain={[0, 800]} // Ensure the Y axis ends at 800
+                domain={[0, 800]}
               />
               <ChartTooltip
                 cursor={false}
                 content={<ChartTooltipContent indicator="line" />}
               />
               <Area
-                dataKey="desktop"
+                dataKey="Balance"
                 type="natural"
                 fill="rgba(0, 0, 255, 0.2)"
                 stroke="blue"

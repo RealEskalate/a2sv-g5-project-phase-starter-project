@@ -61,13 +61,13 @@ const ToggleSwitch = ({
       />
       <label
         htmlFor="two-factor-toggle"
-        className={`cursor-pointer rounded-full w-12 h-6 flex items-center relative transition-colors duration-300 ${
+        className={`cursor-pointer rounded-full w-14 h-7 flex items-center relative transition-colors duration-300 ${
           enabled ? "bg-[#16DBCC]" : "bg-gray-200"
         }`}
       >
         <span
           className={`bg-white w-6 h-6 rounded-full transition-transform duration-300 ${
-            enabled ? "translate-x-6" : ""
+            enabled ? "translate-x-7" : ""
           }`}
         ></span>
       </label>

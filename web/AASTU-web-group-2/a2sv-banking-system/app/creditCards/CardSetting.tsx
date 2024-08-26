@@ -8,7 +8,7 @@ interface Props {
 const CardSetting = ({ icon, data }: Props) => {
   return (
     <div className="flex gap-3 items-center p-3">
-      {icon}
+      <div className="w-10">{icon}</div>
       <div className="flex gap-8">
         {data.map((data, index) => {
           return (

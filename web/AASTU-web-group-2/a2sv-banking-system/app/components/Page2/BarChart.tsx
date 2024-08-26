@@ -17,7 +17,7 @@ const getLastSixMonthsLabels = (): string[] => {
   const labels = [];
 
   for (let i = 5; i >= 0; i--) {
-    const monthIndex = (currentMonth - i + 12) % 12;
+    const monthIndex = (currentMonth - i + 5) % 12;
     labels.push(monthNames[monthIndex]);
   }
 
@@ -43,7 +43,7 @@ const BarChart: React.FC<{ token: string }> = ({ token }) => {
   useEffect(() => {
     const fetchBalanceHistory = async () => {
       try {
-        const response = await getBalanceHistory(6, token); // Fetching data for the last 6 months
+        const response = await getBalanceHistory(token); // Fetching data for the last 6 months
         const data = response.data;
 
 

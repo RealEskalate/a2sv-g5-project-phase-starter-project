@@ -112,6 +112,7 @@ const Navbar = ({ handleClick, toggleDarkMode }: Props) => {
               alt="Profile"
               width={35}
               height={35}
+              className="rounded-3xl"
             ></Image>
           </div>
         </div>

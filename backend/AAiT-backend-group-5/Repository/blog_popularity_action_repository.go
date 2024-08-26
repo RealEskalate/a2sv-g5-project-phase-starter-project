@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	dtos "github.com/aait.backend.g5.main/backend/Domain/DTOs"
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
@@ -73,11 +74,11 @@ func (br *BlogPupularityActionRepo) GetBlogPopularityAction(ctx context.Context,
 		"blog_id": blogID,
 		"user_id": userID,
 	}
-
+	fmt.Println(filter)
 	var popInfo models.PopularityAction
 	err := br.BlogUserActionCollection.FindOne(ctx, filter).Decode(&popInfo)
 	if err != nil {
-		return nil, models.InternalServerError(err.Error())
+		return nil, models.InternalServerError("Error while getting blog popularity action")
 	}
 
 	return &popInfo, models.Nil()

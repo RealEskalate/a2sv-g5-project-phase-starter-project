@@ -101,7 +101,7 @@ func (br *BlogMongoRepository) UpdateBlog(ctx context.Context, blogID string, bl
 	}
 
 	updateFields["updated_at"] = time.Now().Truncate(time.Minute)
-		update := bson.M{
+	update := bson.M{
 		"$set": updateFields,
 	}
 
@@ -163,7 +163,6 @@ func (br *BlogMongoRepository) GetPopularity(ctx context.Context, blogID string)
 
 }
 
-
 func (br *BlogMongoRepository) SearchBlogsByPopularity(ctx context.Context, filter dtos.FilterBlogRequest, blogs_slice map[string]*models.Blog) ([]*models.Blog, *models.ErrorResponse) {
 
 	query_two := bson.M{}
@@ -179,34 +178,41 @@ func (br *BlogMongoRepository) SearchBlogsByPopularity(ctx context.Context, filt
 		query_two["view_count"] = bson.M{"$gte": filter.ViewCount}
 	}
 
-	cursor, err := br.BlogActionCollection.Find(ctx, query_two)
-	if err != nil {
-		return nil, models.InternalServerError("Failed to search blogs by popularity")
-	}
-
 	var blogIDs []string
-	for cursor.Next(ctx) {
-		var popularity models.Popularity
-		if err := cursor.Decode(&popularity); err != nil {
-			return nil, models.InternalServerError("Failed to decode popularity")
+	if len(query_two) != 0 {
+		cursor, err := br.BlogActionCollection.Find(ctx, query_two)
+		if err != nil {
+			return nil, models.InternalServerError("Failed to search blogs by popularity")
 		}
-		blogIDs = append(blogIDs, popularity.BlogID)
-	}
 
-	log.Println(blogIDs, "blogIDs akjfdigastfaeua akbfkjbfa askjfba")
-	if err := cursor.Err(); err != nil {
-		return nil, models.InternalServerError("Cursor error occurred while searching blogs by popularity")
+		for cursor.Next(ctx) {
+			var popularity models.Popularity
+			if err := cursor.Decode(&popularity); err != nil {
+				return nil, models.InternalServerError("Failed to decode popularity")
+			}
+			blogIDs = append(blogIDs, popularity.BlogID)
+		}
+
+		log.Println(blogIDs, "blogIDs by popularity")
+
+		if err := cursor.Err(); err != nil {
+			return nil, models.InternalServerError("Cursor error occurred while searching blogs by popularity")
+		}
+		var blogs []*models.Blog
+
+		for _, id := range blogIDs {
+			if blog, ok := blogs_slice[id]; ok {
+				blogs = append(blogs, blog)
+			}
+		}
+		return blogs, models.Nil()
 	}
 
 	var blogs []*models.Blog
-
-	for _, id := range blogIDs {
-		if blog, ok := blogs_slice[id]; ok {
-			blogs = append(blogs, blog)
-		}
+	for _, blog := range blogs_slice {
+		blogs = append(blogs, blog)
 	}
-
-	log.Println(blogs, "blogs akjfdigastfaeua akbfkjbfa askjfba")
+	
 
 	return blogs, models.Nil()
 
@@ -250,7 +256,7 @@ func (br *BlogMongoRepository) SearchBlogs(ctx context.Context, filter dtos.Filt
 		return nil, models.InternalServerError("Cursor error occurred while searching blogs")
 	}
 
-	log.Println(blogs, "blogs akjfdigastfaeu")
+	log.Println(blogs, "blogs search blogs")
 
 	anotherBlog, anotheBlogErr := br.SearchBlogsByPopularity(ctx, filter, blogs)
 

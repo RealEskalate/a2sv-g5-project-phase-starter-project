@@ -47,6 +47,11 @@ func NewblogUsecase(
 }
 
 func (b *blogUsecase) CreateBlog(ctx context.Context, blog *models.Blog) (*dtos.BlogResponse, *models.ErrorResponse) {
+	if blog.Title == "" || blog.Content == ""{
+		return nil, models.BadRequest("Title and Content are required")
+	}
+
+	
 	slug := b.helper.CreateSlug(blog.Title)
 	blog.Slug = slug
 
@@ -193,11 +198,11 @@ func (b *blogUsecase) TrackPopularity(ctx context.Context, popularity dtos.Track
 		return models.BadRequest("Invalid action")
 	}
 
-	existingAction, err := b.popularity.GetBlogPopularityAction(ctx, popularity.BlogID, popularity.UserID)
+	existingAction, _ := b.popularity.GetBlogPopularityAction(ctx, popularity.BlogID, popularity.UserID)
 
-	if err != nil && err.Code != 404 {
-		return err
-	}
+	// if err != nil && err.Code != 404 {
+	// 	return err
+	// }
 
 	if existingAction != nil {
 		if existingAction.Action == popularity.Action {

@@ -115,7 +115,7 @@ func (c *BlogController) SearchBlogsController(ctx *gin.Context) {
 		DislikeCount: dislikeCountInt,
 		Tags:         tagsSlice,
 	}
-
+	
 	blogs, err := c.usecase.SearchBlogs(ctx, filter)
 
 	if err != nil {
@@ -197,17 +197,13 @@ func (c *BlogController) TrackPopularityController(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
+	blogPopularity.BlogID = ctx.Param("id")
+	blogPopularity.UserID = ctx.GetString("id")
 
 	if err := blogPopularity.Validate(); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
 		return
 	}
-	
-	userID := ctx.GetString("id")
-	blogID := ctx.Param("id")
-
-	blogPopularity.UserID = userID
-	blogPopularity.BlogID = blogID
 
 	if err := c.usecase.TrackPopularity(ctx, blogPopularity); err != nil {
 		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})

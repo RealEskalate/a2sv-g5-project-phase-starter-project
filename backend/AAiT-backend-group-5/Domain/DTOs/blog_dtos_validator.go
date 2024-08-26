@@ -31,3 +31,8 @@ func (c *CommentCreateRequest) Validate() error {
 	validate := validator.New()
 	return validate.Struct(c)
 }
+
+func (c *FilterBlogRequest) Validate() error {
+	validate := validator.New()
+	return validate.Struct(c)
+}

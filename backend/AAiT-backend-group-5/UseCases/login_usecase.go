@@ -41,7 +41,7 @@ func (uc *loginUsecase) LoginUser(ctx context.Context, userReqest dtos.LoginRequ
 
 	// validate password
 	if validPassword := uc.passwordService.ValidatePassword(userReqest.Password, user.Password); !validPassword {
-		return nil, models.Unauthorized("Invalid creaditional")
+		return nil, models.Unauthorized("Invalid credentials")
 	}
 
 	// generate access token

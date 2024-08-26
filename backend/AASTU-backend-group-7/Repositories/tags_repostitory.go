@@ -3,8 +3,10 @@ package Repositories
 import (
 	"blogapp/Domain"
 	"context"
+	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type TagRepository struct {
@@ -19,27 +21,44 @@ func NewTagRepository(blogCollection Domain.BlogCollections) *TagRepository {
 	}
 }
 
+var ErrDuplicateKey = errors.New("a tag with the same slug already exists")
+
 func (repo *TagRepository) CreateTag(ctx context.Context, tag *Domain.Tag) (error, int) {
-	// get tag by slug
+	// Attempt to insert a new tag into the collection
 	_, err := repo.tagCollection.InsertOne(ctx, tag)
 	if err != nil {
+		// Check if the error is a MongoDB duplicate key error
+		if mongo.IsDuplicateKeyError(err) {
+			return ErrDuplicateKey, 409 // HTTP 409 Conflict
+		}
+		// For other errors, return a generic server error
 		return err, 500
 	}
+	// If successful, return nil error and HTTP 201 Created
 	return nil, 201
 }
 
-func (repo *TagRepository) DeleteTag(ctx context.Context, slug string) (error, int) {
+// Define custom errors for clarity and reuse
+var (
+	ErrTagNotFound = errors.New("tag not found")
+	ErrInternal    = errors.New("internal server error")
+)
 
-	// delete tag by slug
-	_, err := repo.tagCollection.DeleteOne(ctx, bson.M{"slug": slug})
+func (repo *TagRepository) DeleteTag(ctx context.Context, slug string) (error, int) {
+	// Attempt to delete the tag by slug
+	result, err := repo.tagCollection.DeleteOne(ctx, bson.M{"slug": slug})
 	if err != nil {
-		return err, 500
+		return ErrInternal, 500
+	}
+	if result.DeletedCount == 0 {
+		// No tag was found with the given slug
+		return ErrTagNotFound, 404
 	}
 
-	// delete tag from all posts
+	// Attempt to remove the tag from all posts
 	_, err = repo.postCollection.UpdateMany(ctx, bson.M{}, bson.M{"$pull": bson.M{"tags": slug}})
 	if err != nil {
-		return err, 500
+		return ErrInternal, 500
 	}
 
 	return nil, 200

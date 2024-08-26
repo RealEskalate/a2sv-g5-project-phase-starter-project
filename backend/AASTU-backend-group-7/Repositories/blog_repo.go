@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type blogrepository struct {
+type Blogrepository struct {
 	postCollection        Domain.Collection
 	commentColection      Domain.Collection
 	tagCollection         Domain.Collection
@@ -21,8 +21,8 @@ type blogrepository struct {
 	userCollection        Domain.Collection
 }
 
-func NewBlogRepository(blogCollection Domain.BlogCollections) *blogrepository {
-	return &blogrepository{
+func NewBlogrepository(blogCollection Domain.BlogCollections) *Blogrepository {
+	return &Blogrepository{
 		postCollection:        blogCollection.Posts,
 		commentColection:      blogCollection.Comments,
 		tagCollection:         blogCollection.Tags,
@@ -32,7 +32,7 @@ func NewBlogRepository(blogCollection Domain.BlogCollections) *blogrepository {
 
 }
 
-func (br *blogrepository) CreateBlog(ctx context.Context, post *Domain.Post) (error, int) {
+func (br *Blogrepository) CreateBlog(ctx context.Context, post *Domain.Post) (error, int) {
 	// get author name from user collection using author id
 	filter := bson.D{{"_id", post.AuthorID}}
 	var user *Domain.User
@@ -53,7 +53,7 @@ func (br *blogrepository) CreateBlog(ctx context.Context, post *Domain.Post) (er
 }
 
 // get all posts from slug return an array of posts
-func (br *blogrepository) GetPostBySlug(ctx context.Context, slug string) ([]*Domain.Post, error, int) {
+func (br *Blogrepository) GetPostBySlug(ctx context.Context, slug string) ([]*Domain.Post, error, int) {
 	var posts []*Domain.Post
 	filter := bson.D{{"slug", slug}}
 	cursor, err := br.postCollection.Find(ctx, filter)
@@ -80,7 +80,7 @@ func (br *blogrepository) GetPostBySlug(ctx context.Context, slug string) ([]*Do
 }
 
 // get all posts from author id return an array of posts
-func (br *blogrepository) GetPostByAuthorID(ctx context.Context, authorID primitive.ObjectID) ([]*Domain.Post, error, int) {
+func (br *Blogrepository) GetPostByAuthorID(ctx context.Context, authorID primitive.ObjectID) ([]*Domain.Post, error, int) {
 	var posts []*Domain.Post
 	filter := bson.D{{"authorid", authorID}}
 	fmt.Println("filter", filter)
@@ -107,7 +107,7 @@ func (br *blogrepository) GetPostByAuthorID(ctx context.Context, authorID primit
 }
 
 // get post by id
-func (br *blogrepository) GetPostByID(ctx context.Context, id primitive.ObjectID) (*Domain.Post, error, int) {
+func (br *Blogrepository) GetPostByID(ctx context.Context, id primitive.ObjectID) (*Domain.Post, error, int) {
 	var post *Domain.Post
 	filter := bson.D{{"_id", id}}
 	// update views by 1
@@ -121,7 +121,7 @@ func (br *blogrepository) GetPostByID(ctx context.Context, id primitive.ObjectID
 }
 
 // update post by id
-func (br *blogrepository) UpdatePostByID(ctx context.Context, id primitive.ObjectID, newpost *Domain.Post) (error, int) {
+func (br *Blogrepository) UpdatePostByID(ctx context.Context, id primitive.ObjectID, newpost *Domain.Post) (error, int) {
 	// filter post by id
 	filter := bson.D{{"_id", id}}
 	//get post by id
@@ -158,7 +158,7 @@ func (br *blogrepository) UpdatePostByID(ctx context.Context, id primitive.Objec
 }
 
 // get tags by from tags field in post collection
-func (br *blogrepository) GetTags(ctx context.Context, id primitive.ObjectID) ([]*Domain.Tag, error, int) {
+func (br *Blogrepository) GetTags(ctx context.Context, id primitive.ObjectID) ([]*Domain.Tag, error, int) {
 	var tags []*Domain.Tag
 	filter := bson.D{{"_id", id}}
 	cursor, err := br.tagCollection.Find(ctx, filter)
@@ -183,7 +183,7 @@ func (br *blogrepository) GetTags(ctx context.Context, id primitive.ObjectID) ([
 }
 
 // get comments by post id
-func (br *blogrepository) GetComments(ctx context.Context, id primitive.ObjectID) ([]*Domain.Comment, error, int) {
+func (br *Blogrepository) GetComments(ctx context.Context, id primitive.ObjectID) ([]*Domain.Comment, error, int) {
 	var comments []*Domain.Comment
 	filter := bson.D{{"postid", id}}
 	cursor, err := br.commentColection.Find(ctx, filter)
@@ -208,7 +208,7 @@ func (br *blogrepository) GetComments(ctx context.Context, id primitive.ObjectID
 }
 
 // add tag to post
-func (br *blogrepository) AddTagToPost(ctx context.Context, id primitive.ObjectID, slug string) (error, int) {
+func (br *Blogrepository) AddTagToPost(ctx context.Context, id primitive.ObjectID, slug string) (error, int) {
 	// get tag by slug
 	filter := bson.D{{"slug", slug}}
 	var tag *Domain.Tag
@@ -232,7 +232,7 @@ func (br *blogrepository) AddTagToPost(ctx context.Context, id primitive.ObjectI
 }
 
 // like post
-func (br *blogrepository) LikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string) {
+func (br *Blogrepository) LikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string) {
 	// check if user has already liked post
 	filter := bson.D{{"postid", id}, {"userid", userID}}
 	var likeDislike = &Domain.LikeDislike{}
@@ -314,7 +314,7 @@ func (br *blogrepository) LikePost(ctx context.Context, id primitive.ObjectID, u
 }
 
 // dislike post
-func (br *blogrepository) DislikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string) {
+func (br *Blogrepository) DislikePost(ctx context.Context, id primitive.ObjectID, userID primitive.ObjectID) (error, int, string) {
 	// check if user has already disliked post
 	filter := bson.D{{"postid", id}, {"userid", userID}}
 	var likeDislike = &Domain.LikeDislike{}
@@ -393,7 +393,7 @@ func (br *blogrepository) DislikePost(ctx context.Context, id primitive.ObjectID
 }
 
 // search posts
-func (br *blogrepository) SearchPosts(ctx context.Context, query string, pagefilter Domain.Filter) ([]*Domain.Post, error, int, Domain.PaginationMetaData) {
+func (br *Blogrepository) SearchPosts(ctx context.Context, query string, pagefilter Domain.Filter) ([]*Domain.Post, error, int, Domain.PaginationMetaData) {
 	// search posts by title or author name using the query
 	var posts []*Domain.Post
 
@@ -466,11 +466,26 @@ func (br *blogrepository) SearchPosts(ctx context.Context, query string, pagefil
 }
 
 // get all posts
-func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter) ([]*Domain.Post, error, int, Domain.PaginationMetaData) {
+func (br *Blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter) ([]*Domain.Post, error, int, Domain.PaginationMetaData) {
 	var posts []*Domain.Post
 
 	// Initialize the filter for MongoDB query
 	pipeline := []bson.M{}
+
+	// Add lookup for comments and calculate comment count
+	pipeline = append(pipeline, bson.M{
+		"$lookup": bson.M{
+			"from":         "comments",
+			"localField":   "_id",
+			"foreignField": "postid", // Ensure this matches your Comment struct
+			"as":           "comments",
+		},
+	})
+	pipeline = append(pipeline, bson.M{
+		"$addFields": bson.M{
+			"commentcount": bson.M{"$size": "$comments"},
+		},
+	})
 
 	// Build the match stage for filtering
 	matchStage := bson.M{}
@@ -481,7 +496,6 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 	if filter.Page > 1 {
 		page = filter.Page
 	}
-
 	limit := 20
 	if filter.Limit > 0 {
 		limit = filter.Limit
@@ -492,30 +506,29 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 		matchStage["slug"] = filter.Slug
 		countfilter["slug"] = filter.Slug
 	}
-
 	if filter.AuthorName != "" {
 		matchStage["authorname"] = filter.AuthorName
 		countfilter["authorname"] = filter.AuthorName
 	}
-
+	
 	if filter.Title != "" {
 		matchStage["title"] = primitive.Regex{Pattern: filter.Title, Options: "i"}
 		countfilter["title"] = primitive.Regex{Pattern: filter.Title, Options: "i"}
 	}
-
-	if len(filter.Tags) > 1 {
-		matchStage["tags"] = bson.M{"$all": filter.Tags} // Filter documents that contain all the specified tags
-		countfilter["tags"] = bson.M{"$all": filter.Tags}
+	fmt.Println(len(filter.Tags))
+	if len(filter.Tags) > 0 {
+		matchStage["tags"] = bson.M{"$in": filter.Tags}
+		countfilter["tags"] = bson.M{"$in": filter.Tags}
 	}
 
-	// count the number of documents that match the filter criteria
+	// Count the number of documents that match the filter criteria
 	count, err := br.postCollection.CountDocuments(ctx, countfilter)
 
 	if len(matchStage) > 0 {
 		pipeline = append(pipeline, bson.M{"$match": matchStage})
 	}
 
-	// Default sort by publishedAt in descending order
+	// Default sort by updatedat in descending order
 	orderBy := -1
 	if filter.OrderBy == 1 {
 		orderBy = 1
@@ -524,21 +537,20 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 	sort := bson.M{sortBy: orderBy}
 	if filter.SortBy != "" {
 		sortBy = filter.SortBy
-
 		if sortBy == "popularity" {
 			pipeline = append(pipeline, bson.M{
 				"$addFields": bson.M{
 					"popularity": bson.M{
 						"$add": []interface{}{
-							bson.M{"$multiply": []interface{}{"$views", 1}},         // Weight for views
-							bson.M{"$multiply": []interface{}{"$likecount", 2}},     // Weight for likes
-							bson.M{"$multiply": []interface{}{"$dislikecount", -1}}, // Weight for dislikes
+							bson.M{"$multiply": []interface{}{"$views", 1}},
+							bson.M{"$multiply": []interface{}{"$likecount", 2}},
+							bson.M{"$multiply": []interface{}{"$dislikecount", -1}},
+							bson.M{"$multiply": []interface{}{"$commentcount", 3}}, // Adjust the weight for comments as needed
 						},
 					},
 				},
 			})
-
-			pipeline = append(pipeline, bson.M{"$sort": bson.M{"popularity": -1}})
+			pipeline = append(pipeline, bson.M{"$sort": bson.M{"popularity": orderBy}})
 		} else {
 			pipeline = append(pipeline, bson.M{"$sort": bson.M{sortBy: orderBy}})
 		}
@@ -568,8 +580,11 @@ func (br *blogrepository) GetAllPosts(ctx context.Context, filter Domain.Filter)
 	return posts, nil, 200, paginationMetaData
 }
 
+
+
+
 // delete post by id
-func (br *blogrepository) DeletePost(ctx context.Context, id primitive.ObjectID) (error, int) {
+func (br *Blogrepository) DeletePost(ctx context.Context, id primitive.ObjectID) (error, int) {
 	filter := bson.D{{"_id", id}}
 	_, err := br.postCollection.DeleteOne(ctx, filter)
 	if err != nil {

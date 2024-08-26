@@ -81,14 +81,14 @@ func (ar *authRepository) Login(ctx context.Context, user *Dtos.LoginUserDto) (D
 		return Domain.Tokens{}, errors.New("Invalid credentials"), http.StatusBadRequest
 	}
 	fmt.Println("emailverified :", existingUser.EmailVerified, "email", existingUser.Email)
-	if existingUser.EmailVerified == false {
-		err, statusCode := ar.SendActivationEmail(user.Email)
-		if err != nil {
-			fmt.Println("error at sending email", err)
-			return Domain.Tokens{}, err, statusCode
-		}
-		return Domain.Tokens{}, errors.New("email is not activated , an activation email has been sent"), http.StatusUnauthorized
-	}
+	// if existingUser.EmailVerified == false {
+	// 	err, statusCode := ar.SendActivationEmail(user.Email)
+	// 	if err != nil {
+	// 		fmt.Println("error at sending email", err)
+	// 		return Domain.Tokens{}, err, statusCode
+	// 	}
+	// 	return Domain.Tokens{}, errors.New("email is not activated , an activation email has been sent"), http.StatusUnauthorized
+	// }
 	return ar.GenerateTokenFromUser(ctx, existingUser)
 
 }
@@ -169,10 +169,10 @@ func (ar *authRepository) Register(ctx context.Context, user *Dtos.RegisterUserD
 		return &Domain.OmitedUser{}, errors.New("User Not Created"), 500
 	}
 	fetched.Password = ""
-	err, statusCode := ar.SendActivationEmail(fetched.Email)
-	if err != nil {
-		return &fetched, err, statusCode
-	}
+	// err, statusCode := ar.SendActivationEmail(fetched.Email)
+	// if err != nil {
+	// 	return &fetched, err, statusCode
+	// }
 	return &fetched, err, 200
 }
 

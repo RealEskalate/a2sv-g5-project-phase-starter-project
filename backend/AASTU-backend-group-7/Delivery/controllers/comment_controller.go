@@ -49,7 +49,7 @@ func (cc *CommentController) CommentOnPost(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid or missing data", "error": err.Error()})
 		return
 	}
-	
+
 	comment.ID = primitive.NewObjectID()
 	comment.PostID = objID
 	comment.AuthorID = claim.ID
@@ -203,4 +203,58 @@ func (cc *CommentController) DeleteComment(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "Comment deleted successfully"})
+}
+
+// comment on comment
+func (cc *CommentController) CommentOnComment(c *gin.Context) {
+	// get claim
+	claim, err := Getclaim(c)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	id := c.Param("id")
+	objID, err := Utils.StringToObjectId(id)
+	if err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	// get comment by id
+	existingComment, err, status := cc.commentUseCase.GetCommentByID(c, objID)
+	if err != nil {
+		c.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+
+
+
+	var comment = &Domain.Comment{}
+	if err := c.ShouldBindJSON(comment); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	// validate comment
+	v := validator.New()
+	if err := v.Struct(comment); err != nil {
+		fmt.Printf(err.Error())
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": "invalid or missing data", "error": err.Error()})
+		return
+	}
+
+	comment.ParentID = existingComment.ID
+	comment.AuthorID = claim.ID
+	comment.PostID = existingComment.PostID
+	comment.CreatedAt = time.Now()
+	comment.UpdatedAt = time.Now()
+
+	err, status = cc.commentUseCase.CommentOnPost(c, comment, existingComment.PostID)
+	if err != nil {
+		c.JSON(status, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Comment created successfully"})
+
 }

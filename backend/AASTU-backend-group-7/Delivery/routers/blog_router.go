@@ -11,7 +11,7 @@ func BlogRouter() {
 	user_repo := Repositories.NewUserRepository(BlogCollections.Users, BlogCollections.RefreshTokens)
 	postRouter := Router.Group("/blog", auth_middleware.AuthMiddleware())
 	{
-		blogrepo := Repositories.NewBlogRepository(BlogCollections)
+		blogrepo := Repositories.NewBlogrepository(BlogCollections)
 		blogusecase := usecases.NewBlogUseCase(blogrepo)
 		blogcontroller := controllers.NewBlogController(blogusecase)
 
@@ -58,18 +58,25 @@ func BlogRouter() {
 		commentRouter.GET("/getmycomments", commentcontroller.GetMyComments)
 		// delete comment
 		commentRouter.DELETE("/delete/:id", commentcontroller.DeleteComment)
+		// comment on comment
+		commentRouter.POST("/comment/:id", commentcontroller.CommentOnComment)
 	}
 
-	tagRouter := Router.Group("/tags", auth_middleware.AuthMiddleware(), auth_middleware.IsAdminMiddleware(user_repo))
+	tagRouter := Router.Group("/tags", auth_middleware.AuthMiddleware())
+
 	{
 		tagRepo := Repositories.NewTagRepository(BlogCollections)
 		tagUsecase := usecases.NewTagsUseCase(tagRepo)
 		tagController := controllers.NewTagsController(tagUsecase)
-
-		tagRouter.POST("/create", tagController.CreateTag)
-		//delete tag
-		tagRouter.DELETE("/delete/:slug", tagController.DeleteTag)
 		//get all tags
+		// admin routes
+		adminRouter := tagRouter.Group("/admin",  auth_middleware.IsAdminMiddleware())
+		{
+			adminRouter.POST("/create", tagController.CreateTag)
+			//delete tag
+			adminRouter.DELETE("/delete/:slug", tagController.DeleteTag)
+		}
+
 		tagRouter.GET("/all", tagController.GetAllTags)
 		// get tags by slug
 		tagRouter.GET("/get/:slug", tagController.GetTagBySlug)
@@ -77,4 +84,5 @@ func BlogRouter() {
 		tagRouter.GET("/posts/:slug", tagController.GetPostsByTag)
 
 	}
+	
 }

@@ -29,7 +29,6 @@ export const ExpenseStatistics = ({
 }) => {
   const [transactions, setTransactions] = useState<TransactionContent[]>([]);
   const [loading, setLoading] = useState(true);
-  const {isDarkMode} = useUser()
   useEffect(() => {
     const fetchData = async () => {
       try {

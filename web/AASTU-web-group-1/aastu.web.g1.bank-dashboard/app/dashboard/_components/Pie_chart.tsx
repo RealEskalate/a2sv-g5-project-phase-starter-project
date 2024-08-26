@@ -47,7 +47,7 @@ export function Pie_chart({
           break;
       }
     });
-
+    console.log(transactions)
     const totalSum =
       categoryTotals.Other +
       categoryTotals.Investment +
@@ -58,22 +58,22 @@ export function Pie_chart({
       {
         expense: "Other",
         value: Math.round((categoryTotals.Other / totalSum) * 100),
-        fill: isDarkMode ? "#FF4500" : "#1814F3", // Fancy OrangeRed for dark mode
+        fill: isDarkMode ? "#FF4500" : "#1814F3", 
       },
       {
         expense: "Investment",
         value: Math.round((categoryTotals.Investment / totalSum) * 100),
-        fill: isDarkMode ? "#8A2BE2" : "#343C6A", // Fancy BlueViolet for dark mode
+        fill: isDarkMode ? "#8A2BE2" : "#343C6A", 
       },
       {
         expense: "Bill Expense",
         value: Math.round((categoryTotals.BillExpense / totalSum) * 100),
-        fill: isDarkMode ? "#00CED1" : "#FC7900", // Fancy DarkTurquoise for dark mode
+        fill: isDarkMode ? "#00CED1" : "#FC7900", 
       },
       {
         expense: "Entertainment",
         value: Math.round((categoryTotals.Entertainment / totalSum) * 100),
-        fill: isDarkMode ? "#FF69B4" : "#FA00FF", // Fancy HotPink for dark mode
+        fill: isDarkMode ? "#FF69B4" : "#FA00FF", 
       },
     ];
     setChartData(newChartData);
@@ -85,19 +85,19 @@ export function Pie_chart({
     },
     other: {
       label: "Other",
-      color: isDarkMode ? "#FF4500" : "#1814F3", // Fancy OrangeRed for dark mode
+      color: isDarkMode ? "#FF4500" : "#1814F3",
     },
     investment: {
       label: "Investment",
-      color: isDarkMode ? "#8A2BE2" : "#343C6A", // Fancy BlueViolet for dark mode
+      color: isDarkMode ? "#8A2BE2" : "#343C6A", 
     },
     billExpense: {
       label: "Bill Expense",
-      color: isDarkMode ? "#00CED1" : "#FC7900", // Fancy DarkTurquoise for dark mode
+      color: isDarkMode ? "#00CED1" : "#FC7900", 
     },
     entertainment: {
       label: "Entertainment",
-      color: isDarkMode ? "#FF69B4" : "#FA00FF", // Fancy HotPink for dark mode
+      color: isDarkMode ? "#FF69B4" : "#FA00FF", 
     },
   };
 
@@ -110,16 +110,16 @@ export function Pie_chart({
       <CardContent
         className="p-0 border-none"
         style={{
-          backgroundColor: isDarkMode ? "#1f2937" : "#ffffff", // Card background color
-          borderColor: isDarkMode ? "#333333" : "#dddddd", // Card border color
+          backgroundColor: isDarkMode ? "#1f2937" : "#ffffff", 
+          borderColor: isDarkMode ? "#333333" : "#dddddd", 
         }}
       >
         <ChartContainer
           config={chartConfig}
           className="h-64 w-full rounded-xl"
           style={{
-            backgroundColor: isDarkMode ? "#1f2937" : "#ffffff", // Chart container background color
-            borderColor: isDarkMode ? "#34495e" : "#dddddd", // Chart container border color
+            backgroundColor: isDarkMode ? "#1f2937" : "#ffffff", 
+            borderColor: isDarkMode ? "#34495e" : "#dddddd", 
           }}
         >
           <PieChart>
@@ -142,7 +142,7 @@ export function Pie_chart({
                 formatter={(value: number) => ` ${value}`}
               />
             </Pie>
-            <Legend  />
+            <Legend />
           </PieChart>
         </ChartContainer>
       </CardContent>

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+
+import '../../../../../core/utility/global_message_part.dart';
+import '../../../../../core/utility/socket_impl.dart';
+import '../../../domain/entity/chat_entity.dart';
 
 import 'chat_app_bar.dart';
-// import 'currentUser.dart';
-import 'mockdata.dart';
-
+import 'single_text.dart';
 
 class IndividualChatPage extends StatefulWidget {
   const IndividualChatPage({
@@ -16,12 +19,33 @@ class IndividualChatPage extends StatefulWidget {
 
 class _IndividualChatPageState extends State<IndividualChatPage> {
   final ScrollController _scrollController = ScrollController();
+  final List<ChatEntity> result = [];
+  late SocketService _socketProvider;
+  TextEditingController textInputControl = TextEditingController();
+  List<Map<String, String>>? messageList = [];
 
   @override
   void initState() {
     super.initState();
+    _socketProvider = GetIt.instance<SocketService>();
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
+    });
+
+    _initializeSocketService();
+  }
+
+  void _initializeSocketService() async {
+    // Ensure socket connection
+    await _socketProvider.connect();
+
+    // Listen for incoming messages
+    _socketProvider.listen('message:received', (data) {
+      print(data);
+      print('Message received:');
+      print('=============================================================================');
+      
     });
   }
 
@@ -41,12 +65,17 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> data =
+        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+
+    messageList = GlobalMessagePart.gloablMessage[data['chatId']];
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar: const PreferredSize(
-          preferredSize: Size.fromHeight(kToolbarHeight),
-          child: ChatAppBar(),
+        appBar:  PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: ChatAppBar(name: data['name']),
         ),
         body: GestureDetector(
           onTap: unfocusTextFields,
@@ -59,16 +88,23 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
                   child: ListView.separated(
                     controller: _scrollController,
                     itemBuilder: (BuildContext context, int index) {
-                      return mock_chat_data[index];
+                      final current = messageList?[index] ?? {};
+
+                      return SingleText(
+                          profile_pic: 'assets/image/profileG.jpg',
+                          name: data['name'],
+                          text: current['content'],
+                          isMe: current['senderId'] == data['itMe'],
+                          time: '22:34');
                     },
                     separatorBuilder: (BuildContext context, int index) {
                       return const SizedBox(height: 20);
                     },
-                    itemCount: mock_chat_data.length,
+                    itemCount: messageList?.length ?? 0,
                   ),
                 ),
               ),
-              _buildInputBar(),
+              _buildInputBar(data['chatId'], data['itMe']),
             ],
           ),
         ),
@@ -76,7 +112,7 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
     );
   }
 
-  Widget _buildInputBar() {
+  Widget _buildInputBar(String chatId, senderId) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
       child: Row(
@@ -101,6 +137,7 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
+                      controller: textInputControl,
                       decoration: const InputDecoration(
                         hintText: 'Write your message',
                         border: InputBorder.none,
@@ -112,10 +149,21 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
                   ),
                   IconButton(
                     icon: const Icon(
-                      Icons.copy,
+                      Icons.send,
                     ),
                     onPressed: () {
-                      // Handle copy action
+                      if (textInputControl.text.isNotEmpty) {
+                        _socketProvider.sendMessage(
+                            chatId, textInputControl.text);
+                        setState(() {
+                          GlobalMessagePart.gloablMessage[chatId]?.add({
+                            'content': textInputControl.text,
+                            'senderId': senderId
+                          });
+                          _scrollToBottom();
+                          textInputControl.clear();
+                        });
+                      }
                     },
                   ),
                 ],

@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../domain/usecase/chat_usecase.dart';
-import '../chat_event/chat_event.dart';
-import '../chat_state/chat_state.dart';
+import '../../domain/usecase/chat_usecase.dart';
+import 'chat_event.dart';
+import 'chat_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent,ChatState> {
 
@@ -22,6 +22,7 @@ class ChatBloc extends Bloc<ChatEvent,ChatState> {
             emit(ChatErrorState(errorMessage: failur.message));
           }, 
           (data){
+            
             emit(ChatMessageGetSuccess(chatEntity: data));
           },
           );
@@ -41,7 +42,28 @@ class ChatBloc extends Bloc<ChatEvent,ChatState> {
               emit(ChatErrorState(errorMessage: 'try again'));
             }
             else{
+
             emit(ChatDeleteSuccess(chatDeleted: data));}
+          });
+      }
+    );
+
+    on<OnInitiatChat> (
+
+      (event,emit) async{
+        final result = await chatUsecase.initiateChats(event.userId);
+
+        result.fold(
+          (failur){
+            emit(ChatErrorState(errorMessage: failur.message));
+          }, 
+          (data){
+            if(data == false){
+              emit(ChatErrorState(errorMessage: 'try again'));
+            }
+            else{
+              print(1234);
+            emit(ChatInitiatState(chatInitiated: data));}
           });
       }
     );

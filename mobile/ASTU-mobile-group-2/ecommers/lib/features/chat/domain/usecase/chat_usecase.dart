@@ -25,6 +25,10 @@ class ChatUsecase extends Equatable {
     return repositories.deleteMessages(id);
   }
 
+  Future<Either<Failure, bool>> initiateChats(String id) {
+    return repositories.initiateChat(id);
+  }
+
   @override
   List<Object?> get props => throw UnimplementedError();
 }

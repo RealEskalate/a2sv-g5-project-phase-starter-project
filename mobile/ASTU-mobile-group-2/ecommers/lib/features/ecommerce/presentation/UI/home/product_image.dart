@@ -9,14 +9,17 @@ class ProductImage extends StatelessWidget {
   final String disc;
   final String title;
   final String id;
-
+  final String senderId;
+  final String senderName;
   const ProductImage({
     super.key,
     required this.disc,
     required this.imageUrl,
     required this.price,
     required this.title,
-    required this.id
+    required this.id,
+    required this.senderName,
+    required this.senderId
     });
 
   @override
@@ -26,7 +29,7 @@ class ProductImage extends StatelessWidget {
         onTap: () => {
           Navigator.pushNamed(
             context, '/detail',
-            arguments: {'disc':disc,'imageUrl':imageUrl,'price':price,'name':title,'id':id}
+            arguments: {'disc':disc,'imageUrl':imageUrl,'price':price,'name':title,'id':id,'senderName':senderName,'senderId':senderId}
             )
         },
         child: Column(

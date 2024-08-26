@@ -13,6 +13,8 @@ class EcommerceModel extends EcommerceEntity {
     required super.description,
     required super.imageUrl,
     required super.price,
+    required super.sellerId,
+    required super.sellerName
   });
 
 
@@ -21,7 +23,9 @@ class EcommerceModel extends EcommerceEntity {
     name: json['name'],
     description: json['description'],
     imageUrl: json['imageUrl'],
-    price: json['price'].toDouble()
+    price: json['price'].toDouble(),
+    sellerId: json['seller']['_id'],
+    sellerName:  json['seller']['name']
   );
  
   static List<EcommerceModel> getAllProduct(dynamic jsons) {
@@ -37,7 +41,9 @@ class EcommerceModel extends EcommerceEntity {
     'name' : name,
     'description' : description,
     'imageUrl' : imageUrl,
-    'price' : price
+    'price' : price,
+    'sellerId' : sellerId,
+    'sellerName' : sellerName
   };
 
   EcommerceEntity toEntity() => EcommerceEntity(
@@ -45,7 +51,9 @@ class EcommerceModel extends EcommerceEntity {
     name: name,
     description: description,
     imageUrl: imageUrl,
-    price: price
+    price: price,
+    sellerId: sellerId,
+    sellerName:  sellerName
   );
   static List<EcommerceEntity> listToEntity(List<EcommerceModel> models) {
     return models.map((model) => model.toEntity()).toList();

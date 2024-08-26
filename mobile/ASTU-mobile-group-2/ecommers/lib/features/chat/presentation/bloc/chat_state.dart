@@ -2,7 +2,7 @@
 
 import 'package:equatable/equatable.dart';
 
-import '../../../domain/entity/chat_entity.dart';
+import '../../domain/entity/chat_entity.dart';
 
 abstract class ChatState  extends Equatable{}
 

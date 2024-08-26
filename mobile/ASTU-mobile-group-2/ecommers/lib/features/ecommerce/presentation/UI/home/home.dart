@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../../../../core/Colors/colors.dart';
 import '../../../../../core/Text_Style/text_style.dart';
 import '../../../../../core/const/width_height.dart';
 import '../../../../../core/utility/loading_page.dart';
+import '../../../../../core/utility/socket_impl.dart';
+import '../../../../chat/presentation/bloc/chat_bloc.dart';
+import '../../../../chat/presentation/bloc/chat_event.dart';
 import '../../state/product_bloc/product_bloc.dart';
 import '../../state/product_bloc/product_event.dart';
 import '../../state/product_bloc/product_state.dart';
@@ -22,24 +26,52 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final SocketService socketService =  GetIt.instance<SocketService>();
+  
   List<dynamic> dataProduct = [];
   @override
   void initState() {
     
 
+    super.initState();
     context.read<LoginUserStatesBloc>().add(ProfileDetail());
     context.read<ProductBloc>().add(const LoadAllProductEvent());
-    super.initState();
+    context.read<ChatBloc>().add(OnGetAllChat());
+    
+    _setupSocketListeners();
+
+  }
+  Future<void> _setupSocketListeners() async {
+    // Ensure the socket is connected
+    await socketService.connect();
+    print('connected');
+    // Set up the event listeners
+    socketService.listen('message:received', (data) {
+      // Handle the received message here
+      print('Message received: $data');
+    });
+
+    // Add other event listeners as needed
+  }
+
+  @override
+  void dispose() {
+    // Disconnect the socket when the page is disposed
+    socketService.disconnect();
+    super.dispose();
   }
   @override
   Widget build(BuildContext context) {
     double width = WidthHeight.screenWidth(context);
     // double height = WidthHeight.screenHeight(context);
+    final SocketService socketService = GetIt.instance<SocketService>();
     return SafeArea(
       child: Scaffold(
         body: RefreshIndicator(
           onRefresh: () {
             context.read<ProductBloc>().add(const LoadAllProductEvent());
+            context.read<ChatBloc>().add(OnGetAllChat());
+            socketService.connect();
             return Future.delayed(const Duration(seconds: 1));
           },
           child: BlocConsumer<ProductBloc, ProductState>(
@@ -141,6 +173,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       disc: product.description,
                                       title: product.name,
                                       id: product.id,
+                                      senderId: product.sellerId,
+                                      senderName: product.sellerName,
                                     );
                                   }),
                               ): state is LoadingState? ListView.builder(

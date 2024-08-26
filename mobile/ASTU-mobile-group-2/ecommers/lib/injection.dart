@@ -6,6 +6,13 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/network/check_connectivity.dart';
+import 'features/chat/data/datasource/chat_local_data.dart';
+import 'features/chat/data/datasource/chat_remote_data.dart';
+import 'features/chat/data/repository_implimentation/chat_repo_impl.dart';
+import 'features/chat/domain/repository/chat_repo.dart';
+import 'features/chat/domain/usecase/chat_usecase.dart';
+import 'core/utility/socket_impl.dart';
+import 'features/chat/presentation/bloc/chat_bloc.dart';
 import 'features/ecommerce/Data/data_source/local_data_source.dart';
 import 'features/ecommerce/Data/data_source/remote_data_source.dart';
 import 'features/ecommerce/Data/repositories/ecommerce_repo_impl.dart';
@@ -38,8 +45,13 @@ Future<void> setUpLocator() async {
   locator.registerLazySingleton<LocalDataSource>(() => LocalDataSourceImpl(sharedPreferences: locator()));
   locator.registerLazySingleton<EcommerceRemoteDataSource>(() => EcommerceRemoteDataSourceImpl(client: locator(),sharedPreferences: locator()));
   locator.registerLazySingleton<EcommerceRepositories>(() => EcommerceRepoImpl(remoteDataSource: locator(), networkInfo: locator(),localDataSource: locator()));
+  locator.registerLazySingleton<ChatLocalData>(() => ChatLocalDataImpl(sharedPreferences: locator()));
+  locator.registerLazySingleton<ChatRemoteData>(() => ChatRemoteDataImpl(client: locator(),sharedPreferences: locator()));
+  locator.registerLazySingleton<ChatRepositories>(() => ChatRepoImpl(chatLocalData: locator(),chatRemoteData: locator()));
+
 
   locator.registerLazySingleton(() => EcommerceUsecase(repositories: locator()));
+  locator.registerLazySingleton(() => ChatUsecase(repositories: locator()));
   locator.registerFactory(
     () => ProductBloc(ecommerceUsecase: locator()),
   );
@@ -62,6 +74,15 @@ Future<void> setUpLocator() async {
     () => LoginUserStatesBloc(ecommerceUsecase: locator()),
   
   );
+
+  locator.registerFactory(
+    () => ChatBloc(chatUsecase: locator()),
+  );
+ 
+   locator.registerSingletonAsync<SocketService>(() async {
+    final service = await SocketService.create();
+    return service;
+  });
 
  
   

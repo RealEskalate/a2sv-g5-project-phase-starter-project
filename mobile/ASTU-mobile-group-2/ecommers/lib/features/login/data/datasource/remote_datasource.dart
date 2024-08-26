@@ -57,6 +57,7 @@ class RemoteDatasourceImpl implements RemoteDatasource {
           sharedPreferences.setString('key', data['data']['access_token']);
           sharedPreferences.setString('name',findMeData['data']['name']);
           sharedPreferences.setString('email', findMeData['data']['email']);
+          sharedPreferences.setString('user_id', findMeData['data']['id']);
           
           return Right(LoginModel.fromJson(findMeData).toEntity());
         } else {

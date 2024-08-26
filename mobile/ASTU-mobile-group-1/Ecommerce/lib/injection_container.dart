@@ -16,6 +16,18 @@ import 'features/auth/domain/usecases/log_out_usecase.dart';
 import 'features/auth/domain/usecases/sign_in_usecase.dart';
 import 'features/auth/domain/usecases/sign_up_usecase.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/chat/data/data_source/remote_data_source/remote_data_source.dart';
+import 'features/chat/data/data_source/remote_data_source/remote_data_source_impl.dart';
+import 'features/chat/data/data_source/remote_data_source/socket_service.dart';
+import 'features/chat/data/repository/chat_repository_impl.dart';
+import 'features/chat/domain/repositories/chat_repository.dart';
+import 'features/chat/domain/usecases/delete_chat.dart';
+import 'features/chat/domain/usecases/get_chat_message_usecase.dart';
+import 'features/chat/domain/usecases/initiate_chat_usecase.dart';
+import 'features/chat/domain/usecases/my_chat.dart';
+import 'features/chat/domain/usecases/my_chat_by_id.dart';
+import 'features/chat/domain/usecases/send_message_usecase.dart';
+import 'features/chat/presentation/bloc/chat_bloc.dart';
 import 'features/product/data/data_sources/local_data_source.dart';
 import 'features/product/data/data_sources/remote_data_source.dart';
 import 'features/product/data/repositories/product_repository_impl.dart';
@@ -127,4 +139,23 @@ Future<void> init() async {
   sl.registerLazySingleton(() => sharedpreferences);
   sl.registerLazySingleton(() => http.Client());
   sl.registerLazySingleton(() => InternetConnectionChecker());
+
+  //chat features
+  sl.registerLazySingleton(()=>SocketService);
+  sl.registerLazySingleton<ChatRemoteDataSource>(()=>ChatRemoteDataSourceImpl(accessToken: '', socketService: sl(), client: sl()));
+
+  sl.registerLazySingleton<ChatRepository>(()=>ChatRepositoryImpl(sl()));
+
+  sl.registerLazySingleton(()=>DeleteChat(chatRepository: sl()));
+  sl.registerLazySingleton(()=>InitiateChatUsecase(chatRepository: sl()));
+  sl.registerLazySingleton(()=>GetChatMessageUsecase(chatRepository: sl()));
+  sl.registerLazySingleton(()=>MyChat(chatRepository: sl()));
+  sl.registerLazySingleton(()=>MyChatById(chatRepository: sl()));
+  sl.registerLazySingleton(()=>SendMessageUsecase(chatRepository: sl()));
+
+  sl.registerFactory(
+    ()=>ChatBloc(sl(), sl(), sl(), sl(), sl(), sl())
+  );
+
+
 }

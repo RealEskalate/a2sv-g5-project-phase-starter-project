@@ -11,15 +11,15 @@ final class ChatInitial extends ChatState {}
 
 
 final class LoadedAllChatState extends ChatState{
-  final List<ChatModel> allChats;
-
-  const LoadedAllChatState({required this.allChats});
+  final List<ChatEntity> allChats;
+  final List<UserEntity> users;
+  const LoadedAllChatState(this.users, {required this.allChats});
 }
 
-final class MessagingState extends ChatState{
-  final ChatModel chatModel;
-  final Stream<MessageModel> chatMessages;
-  const MessagingState(this.chatMessages, {required this.chatModel});
+final class IndividualChatingState extends ChatState{
+  final List<MessageEntity> chatMessages;
+  final ChatEntity chatEntity;
+  const IndividualChatingState({required this.chatEntity, required this.chatMessages});
 }
 
 final class ChatFailureState extends ChatState{

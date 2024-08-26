@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'config/route/route.dart' as route;
 import 'core/cubit/user_cubit.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/chat/presentation/bloc/chat_bloc.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
 import 'injection_container.dart';
 
@@ -19,7 +20,8 @@ class App extends StatelessWidget {
         BlocProvider(
           create: (context) => sl<AuthBloc>(),
         ),
-        BlocProvider(create: (context) => sl<UserCubit>())
+        BlocProvider(create: (context) => sl<UserCubit>()),
+        BlocProvider(create: (context) => sl<ChatBloc>(),)
       ],
       child: MaterialApp(
         theme: ThemeData(

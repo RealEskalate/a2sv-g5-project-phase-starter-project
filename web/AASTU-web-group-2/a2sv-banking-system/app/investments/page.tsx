@@ -143,10 +143,10 @@ export default function Home() {
   if (loading || Loading)
     return (
       <div className="bg-gray-100 dark:bg-gray-900 p-6 animate-pulse">
-        <div className="flex justify-between flex-wrap lg:flex-nowrap gap-4">
-          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
-          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
-          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
+        <div className="flex flex-wrap justify-between">
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-80 h-20"></div>
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-80 h-20"></div>
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-80 h-20"></div>
         </div>
         <div className="grid grid-cols-2 gap-6">
           <div className="col-span-2 lg:col-span-1">

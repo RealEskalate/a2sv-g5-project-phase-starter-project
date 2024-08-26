@@ -66,8 +66,6 @@ const RecentTransaction = () => {
     fetcheddata = fetcheddata.slice(-3);
   }
 
-  console.log("Fetched data:", fetcheddata);
-  console.log("Is array:", Array.isArray(fetcheddata));
 
   return (
     <div className="flex flex-col flex-initial flex-wrap gap-[10px] bg-white drop-shadow-xl font-medium rounded-[25px] p-[25px]">

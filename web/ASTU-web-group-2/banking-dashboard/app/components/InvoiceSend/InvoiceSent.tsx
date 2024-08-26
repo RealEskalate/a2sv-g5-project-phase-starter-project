@@ -64,7 +64,6 @@ const InvoicesSent = () => {
   }
   let fetcheddata: Props[] = data?.data.content || recentlistitems;
   if (fetcheddata.length > 4){fetcheddata = fetcheddata.slice(0,4);}
-  console.log(fetcheddata)
 
   return (
     <div className="flex flex-col gap-6 bg-white drop-shadow-xl font-medium rounded-[25px] p-[25px]">

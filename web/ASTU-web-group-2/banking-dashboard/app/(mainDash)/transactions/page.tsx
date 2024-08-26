@@ -1,10 +1,10 @@
 import React from "react";
-import CardForCreditCards from "../../components/card/CardForCreditCards";
-import CreditCard from "../../components/creditCard/CreditCard";
-import Card from "../../components/card/Card";
+import CardForCreditCards from "../../components/virtualCards/card/CardForCreditCards";
+import CreditCard from "../../components/virtualCards/creditCard/CreditCard";
+import Card from "../../components/virtualCards/card/Card";
 import MyExpenseChart from "../../components/charts/MyExpenseChart";
-import TransactionsDisplay from "../../components/transactionsDisplay/TransactionsDisplay";
-import CardDisplay from "@/app/components/cardDisplay/CardDisplay";
+import TransactionsDisplay from "../../components/transactions/transactionsDisplay/TransactionsDisplay";
+import CardDisplay from "@/app/components/virtualCards/cardDisplay/CardDisplay";
 
 const TransactionPage = () => {
   return (

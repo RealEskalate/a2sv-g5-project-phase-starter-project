@@ -33,7 +33,6 @@ describe("should navigate to the desired page", () => {
   for (const path of paths) {
     const name = path.slice(1);
 
-    console.log(name);
     it(`should navigate to ${name}`, () => {
       const image = cy.get(`[data-id=side-image-${path.slice(1)}]`);
       const side_name = cy.get(`[data-id=side-image-${path.slice(1)}]`);

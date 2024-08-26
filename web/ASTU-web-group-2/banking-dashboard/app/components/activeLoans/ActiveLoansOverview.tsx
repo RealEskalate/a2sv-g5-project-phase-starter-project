@@ -12,9 +12,7 @@ import EmptyShow from "../emptyShowingImage/EmptyShow";
 const ActiveLoansOverview = () => {
   const { data: session } = useSession();
   const accessToken = session?.user.accessToken!;
-  useEffect(() => {
-    console.log("data", session);
-  }, [session]);
+
   const { data, isLoading, isError, isSuccess, error } =
     useGetMyLoanServiceQuery(accessToken);
   let loans: loan[] = [];
@@ -27,7 +25,6 @@ const ActiveLoansOverview = () => {
     );
   }
   if (isError) {
-    console.log("errorrrrs");
     console.log(error);
     return (
       <div>
@@ -36,7 +33,7 @@ const ActiveLoansOverview = () => {
     );
   }
   if (isSuccess) {
-    console.log("data", data);
+    
     loans = data.data.content;
   }
 

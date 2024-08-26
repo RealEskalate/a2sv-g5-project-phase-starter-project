@@ -26,12 +26,13 @@ import {
 } from "@/lib/api/transactionController";
 import Refresh from "@/app/api/auth/[...nextauth]/token/RefreshToken";
 import { IconType } from "react-icons";
+import { ShimmerPieChartPage } from "@/app/creditCards/Shimmer";
 
 const initialChartData = [
   { browser: "shopping", amount: 0, fill: "var(--color-shopping)" },
   { browser: "transfer", amount: 0, fill: "var(--color-transfer)" },
   { browser: "deposit", amount: 0, fill: "var(--color-deposit)" },
-  {browser: "service", amount: 0, fill: "var(--color-service)"}
+  { browser: "service", amount: 0, fill: "var(--color-service)" },
 ];
 
 const chartConfig = {
@@ -78,16 +79,13 @@ type Data = {
 type SessionDataType = {
   user: Data;
 };
-const ShimmerEffect = () => (
-  <div className="h-64 w-64 max-w-[300px] bg-gray-200 animate-pulse rounded-full"></div>
-);
+
 export function ExpenseStatistics() {
   const [chartData, setChartData] = useState(initialChartData);
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<Data | null>(null);
   const router = useRouter();
   const [access_token, setAccess_token] = useState("");
-
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -101,25 +99,22 @@ export function ExpenseStatistics() {
           `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
         );
       }
-      setLoading(false);
     };
 
     fetchSession();
   }, [router]);
-
-
 
   useEffect(() => {
     const fetchAndProcessExpenses = async () => {
       try {
         if (access_token) {
           const { data } = await getTransactionsExpenses(0, 1000, access_token);
-          console.log("worked", data)
+          console.log("worked", data);
           const typeAmounts: { [key: string]: number } = {
             shopping: 0,
             transfer: 0,
             deposit: 0,
-            service: 0
+            service: 0,
           };
 
           data.content.forEach((transaction: any) => {
@@ -137,15 +132,15 @@ export function ExpenseStatistics() {
             { browser: "service", amount: typeAmounts.service, fill: "var(--color-service)" },
           ]);
 
-          setLoading(false);
         }
       } catch (error) {
         console.error("Error fetching expenses:", error);
-        setLoading(false);
       }
     };
 
     fetchAndProcessExpenses();
+    setLoading(false);
+
   });
 
   return (
@@ -158,9 +153,9 @@ export function ExpenseStatistics() {
       <CardContent className="flex-1 pb-0">
         <div className="flex justify-center items-center">
           {loading ? (
-            <ShimmerEffect/>
+          <ShimmerPieChartPage/>
           ) : (
-            <ChartContainer 
+            <ChartContainer
               config={chartConfig}
               className="aspect-square h-72 w-full max-w-[300px]" // Ensure full width within a max limit
             >

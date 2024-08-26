@@ -87,7 +87,7 @@ export default function Home() {
       } catch (error) {
         console.error("Error fetching session:", error);
       } finally {
-        setLoading(false);
+        
       }
     };
 
@@ -102,6 +102,7 @@ export default function Home() {
         console.log("Fetching Completeddddd", transfers);
 
         setQuickTransfer(transfers.data); // Set the content array
+        setLoading(false);
       }
     };
     addingData();
@@ -155,7 +156,7 @@ export default function Home() {
           <p className="text-[#343C6A] font-bold mx-3 py-3 text-xl md:hidden">Quick Transfers</p>
       <div className="flex flex-col gap-3 px-5 py-5">
         {/*  Image Component  */}
-            <div className="flex py-2 gap-6 justify-center items-center [&::-webkit-scrollbar]:hidden">
+            <div className="flex py-2 gap-6 justify-center items-center [&::-webkit-scrollbar]:hidden overflow-hidden">
             <Carousel       opts={{
         align: "start",
       }}
@@ -176,17 +177,17 @@ export default function Home() {
                 ))}
                 
               </CarouselContent>
-              <CarouselPrevious children={undefined} className=" md:rounded-full dark:bg-white overflow-hidden"/>
-              <CarouselNext children={undefined} className=" md:rounded-full dark:bg-white overflow-hidden"/>
+              <CarouselPrevious children={undefined} className=" md:rounded-full dark:bg-gray-400 overflow-hidden"/>
+              <CarouselNext children={undefined} className=" md:rounded-full dark:bg-gray-400 overflow-hidden"/>
             </Carousel>
 
             
             </div> 
 
-            <div className="flex  text-[#718EBF] text-xs justify-between items-center text-nowrap ">
-              <p>Write Amount</p>
+            <div className="flex  text-[#718EBF] text-xs justify-between items-center flex-wrap-reverse ">
+              <p className="px-8">Write Amount</p>
               <div className="flex gap-6  rounded-full ">
-              <div>
+              <div className = "flex flex-wrap  ">
                 <form onSubmit={handleSubmit} className="flex flex-1 items-center">
                   <div className="bg-[#EDF1F7] rounded-full flex items-center flex-1">
                     <input

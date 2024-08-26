@@ -48,7 +48,7 @@ func (uc *UserController) RegisterUser(ctx *gin.Context) {
 
 func (uc *UserController) UpdateProfile(ctx *gin.Context) {
 	var user auth.User
-	userid := ctx.Value("userID").(string)
+	userid := ctx.Value("user_id").(string)
 
 	if err := ctx.ShouldBindJSON(&user); err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
@@ -66,21 +66,22 @@ func (uc *UserController) ActivateUser(ctx *gin.Context) {
 	token := ctx.Param("token")
 	userID := ctx.Param("userID")
 
-	err := uc.authuserusecase.Activate(ctx, userID, token)
+	user, err := uc.authuserusecase.Activate(ctx, userID, token)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "activated"})
+	ctx.JSON(http.StatusOK, gin.H{"message activated": user})
 }
 
 func (uc *UserController) Logout(ctx *gin.Context) {
-	userid := ctx.Value("userID")
+	userid := ctx.Value("user_id")
 	uc.authuserusecase.Logout(ctx, userid.(string))
 	ctx.JSON(http.StatusOK, gin.H{"message": "loged out successfully"})
 }
 
 func (uc *UserController) PromoteUser(ctx *gin.Context) {
-	userID := ctx.Param("userid")
+	userID := ctx.Param("userID")
 	err := uc.authuserusecase.PromoteUser(ctx, userID)
 
 	if err != nil {
@@ -92,21 +93,42 @@ func (uc *UserController) PromoteUser(ctx *gin.Context) {
 }
 
 func (uc *UserController) DemoteUser(ctx *gin.Context) {
-	userID := ctx.Param("userid")
+	userID := ctx.Param("userID")
 	err := uc.authuserusecase.DemoteUser(ctx, userID)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": " un able to demote user"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": " unable to demote user"})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "demoted "})
 }
 
 func (uc *UserController) ForgetPassword(ctx *gin.Context) {
-	// email := ctx.Param("email")
-	var email string
+	var email auth.Email
 	if err := ctx.ShouldBindJSON(&email); err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
-	uc.authuserusecase.ForgetPassword(ctx, email)
+	err := uc.authuserusecase.ForgetPassword(ctx, email)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "reset email is sent"})
+}
+
+func (uc *UserController) ResetPassword(ctx *gin.Context) {
+	userid := ctx.Param("userid")
+	tokenTime := ctx.Param("tokentime")
+	token := ctx.Param("token")
+	var resetForm auth.ResetForm
+	if err := ctx.ShouldBindJSON(&resetForm); err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	err := uc.authuserusecase.ResetPassword(ctx, userid, tokenTime, token, resetForm.Passowrd, resetForm.NewPassword)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "password reseted"})
 }

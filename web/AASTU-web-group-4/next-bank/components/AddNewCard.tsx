@@ -84,7 +84,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
       <>
     {contextHolder}
       
-      <div className="mr-4 lg:w-[800px] w-[330px] md:w-[630px] p-6 border-[1px] m:h-[720px] md:h-[470px] rounded-xl md:px-20 md:py-40 mb-5 flex flex-col items-center justify-center dark:border-[1px] dark:border-gray-700">
+      <div className="mr-4 lg:w-[800px] w-[330px] md:w-[630px] p-6 border-[1px] md:h-[720px] lg:h-[470px] rounded-xl md:px-20 md:py-40 mb-5 flex flex-col items-center justify-center dark:border-[1px] dark:border-gray-700">
         {error ? (
           <></>
           // HEY YO NATI BOY UP THE ERROR COMPONENT HERE 
@@ -115,8 +115,8 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
     <>
     {contextHolder}
     <div className={`mr-4 ${Loading ? "animate-pulse opacity-50 pointer-events-none" : ""}`}>
-      <div className="bg-white 2xl:w-[800px] xl:w-[600px] lg:w[600px] w-[330px] md:w-[400px] sm:h-[720px] md:h-[470px] p-7 dark:border-[1px] dark:border-gray-700 rounded-xl dark:bg-dark dark:text-white">
-        <p className="text-[17px] text-[#718EBF]">
+      <div className="bg-white 2xl:w-[800px] xl:w-[600px] lg:w[600px] w-[330px] md:w-[400px] sm:h-[880px] md:h-[520px] lg:h-[470px] p-7 dark:border-[1px] dark:border-gray-700 rounded-xl dark:bg-dark dark:text-white">
+        <p className="text-[17px] md:text-[15px] text-[#718EBF]">
           Credit Card generally means a plastic card issued by Scheduled
           Commercial Banks assigned to a Cardholder, with a credit limit, that
           can be used to purchase goods and services on credit or obtain cash
@@ -128,14 +128,14 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
           className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 dark:bg-dark text-gray-900 dark:text-white"
         >
           <div>
-            <label htmlFor="cardTypeId" className="text-[16px] block pb-2">
+            <label htmlFor="cardTypeId" className="text-[16px] md:text-[15px] block pb-2">
               Card Type
             </label>
             <input
               id="cardTypeId"
               {...register("cardType", { required: "Card Type is required" })}
               placeholder="Classic"
-              className="border-[1px] border-[#DFEAF2] rounded-md text-[15px] p-3 w-full outline-none text-[#718EBF] dark:text-white placeholder-[#718EBF]"
+              className="border-[1px] border-[#DFEAF2] rounded-md text-[15px] md:text-[14px] p-3 w-full outline-none text-[#718EBF] dark:text-white placeholder-[#718EBF]"
             />
             {errors.cardType && (
               <span className="text-red-500 text-sm">
@@ -145,7 +145,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
           </div>
 
           <div>
-            <label htmlFor="nameOneCardId" className="text-[16px] block pb-2">
+            <label htmlFor="nameOneCardId" className="text-[16px] md:text-[15px] block pb-2">
               Name On Card
             </label>
             <input
@@ -154,7 +154,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
                 required: "Name on Card is required",
               })}
               placeholder="My Cards"
-              className="border-[1px] border-[#DFEAF2] rounded-md text-[15px] p-3 w-full outline-none text-[#718EBF] dark:text-white placeholder-[#718EBF]"
+              className="border-[1px] border-[#DFEAF2] rounded-md text-[15px] md:text-[14px] p-3 w-full outline-none text-[#718EBF] dark:text-white placeholder-[#718EBF]"
             />
             {errors.nameOnCard && (
               <span className="text-red-500 text-sm">
@@ -164,7 +164,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
           </div>
 
           <div>
-            <label htmlFor="balanceId" className="text-[16px] block pb-2">
+            <label htmlFor="balanceId" className="text-[16px] md:text-[15px] block pb-2">
               Balance
             </label>
             <input
@@ -177,7 +177,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
                 },
               })}
               placeholder="27,000$"
-              className="border-[1px] border-[#DFEAF2] rounded-md text-[15px] p-3 w-full outline-none text-[#718EBF] dark:text-white placeholder-[#718EBF]"
+              className="border-[1px] border-[#DFEAF2] rounded-md text-[15px] md:text-[14px] p-3 w-full outline-none text-[#718EBF] dark:text-white placeholder-[#718EBF]"
             />
             {errors.balance && (
               <span className="text-red-500 text-sm">
@@ -189,7 +189,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
           <div className="relative">
             <label
               htmlFor="expirationDateId"
-              className="text-[16px] block pb-2"
+              className="text-[16px] md:text-[15px] block pb-2"
             >
               Expiration Date
             </label>
@@ -205,7 +205,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
                   }
                 }}
                 placeholderText="dd MMMM yyyy"
-                className="border-[1px] border-[#DFEAF2] rounded-md text-[15px] p-3 w-full pr-40 outline-none text-[#718EBF] dark:text-white placeholder-[#718EBF]"
+                className="border-[1px] border-[#DFEAF2] rounded-md text-[15px] p-3 w-full pr-40 outline-none text-[#718EBF] dark:text-white placeholder-[#718EBF] "
                 dateFormat="dd MMMM yyyy"
               />
               <FaCalendarAlt className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none text-[#718EBF] dark:text-white" />
@@ -218,14 +218,14 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
           </div>
 
           <div>
-            <label htmlFor="passcodeId" className="text-[16px] block pb-2">
+            <label htmlFor="passcodeId" className="text-[16px] md:text-[15px] block pb-2">
               Passcode
             </label>
             <input
               id="passcodeId"
               {...register("passcode", { required: "Passcode is required" })}
               placeholder="******"
-              className="border-[1px] border-[#DFEAF2] rounded-md text-[15px] p-3 w-full outline-none text-[#718EBF] dark:text-white placeholder-[#718EBF]"
+              className="border-[1px] border-[#DFEAF2] rounded-md text-[15px] md:text-[14px] p-3 w-full outline-none text-[#718EBF] dark:text-white placeholder-[#718EBF]"
             />
             {errors.passcode && (
               <span className="text-red-500 text-sm">
@@ -234,10 +234,10 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
             )}
           </div>
 
-          <div className="md:mt-4 md:ml-10 2xl:ml-56">
+          <div className="md:mt-2 lg:mt-4 md:ml-10 2xl:ml-56">
             <button
               type="submit"
-              className="rounded-xl text-[16px] px-7 text-center bg-[#1814F3] dark:bg-blue-700 text-white w-[95%] md:w-[auto] mt-4 p-2"
+              className="rounded-xl text-[16px] px-7 md:px-4 xl:px-7 text-center bg-[#1814F3] dark:bg-blue-700 text-white w-[95%] md:w-[auto] mt-4 py-2 "
             >
               Add Card
             </button>

@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-const API_BASE_URL = " https://web-team-g4.onrender.com";
+const API_BASE_URL = " https://next-bank.onrender.com";
 const token = Cookies.get("accessToken");
 
 // GET /transactionshttps://bank-dashboard-1tst.onrender.com
@@ -21,22 +21,21 @@ export const getAllTransactionsss = async () => {
 
 // GET /transactions
 export const getAllTransactions = async (page: any, size: any) => {
-  
-  try 
-  {const response = await fetch(
-    `${API_BASE_URL}/transactions?page=${page}&size=${size}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  return response.json();
-}catch (error) {
-  console.error("Error fetching some transactions:", error);
-  throw error;
-};
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/transactions?page=${page}&size=${size}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching some transactions:", error);
+    throw error;
+  }
 };
 // POST /transactions
 export const createTransaction = async (
@@ -121,9 +120,7 @@ export const getRandomBalanceHistory = async () => {
 };
 
 // GET /transactions/latest-transfers
-export const getLatestTransfers = async (
-  number: number
-) => {
+export const getLatestTransfers = async (number: number) => {
   try {
     const response = await fetch(
       `${API_BASE_URL}/transactions/quick-transfers?number=${number}`,

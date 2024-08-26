@@ -41,7 +41,7 @@ export function ExpenseChart({ expenses }: ExpenseChartProps) {
   const chartConfig = {
     desktop: {
       label: "expense",
-      color: isDarkMode ? "#16DBCC" : "#16DBCC", // Adjust as needed for dark mode
+      color: isDarkMode ? "#16DBCC" : "#16DBCC", 
     },
   } satisfies ChartConfig;
 

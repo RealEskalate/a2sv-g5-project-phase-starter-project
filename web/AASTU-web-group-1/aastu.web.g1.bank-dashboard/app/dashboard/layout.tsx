@@ -61,7 +61,7 @@ export default function RootLayout({
                 alt="Search"
               />
               <input
-                className="outline-none bg-[#F5F7FA]"
+                className={`outline-none rounded-3xl ${isDarkMode ? "bg-gray-700":"bg-[#F5F7FA]"}`}
                 type="text"
                 placeholder="Search for something"
               />

@@ -49,7 +49,7 @@ class _searchPageState extends State<searchPage> {
     );
 
     return Scaffold(
-      bottomNavigationBar: Bottomnavbar(),
+      bottomNavigationBar: Container(child: Bottomnavbar()),
 
       appBar: AppBar(
         automaticallyImplyLeading: false,

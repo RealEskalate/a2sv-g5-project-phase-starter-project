@@ -123,7 +123,7 @@ func (b BlogController) ReplyCommentOnBlog(c *gin.Context) {
 		return
 	}
 
-	parentID := c.GetString("parent_id")
+	parentID := c.Query("parent_id")
 	err := b.BlogUsecase.ReplyCommentOnBlog(userID, parentID, comment)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{

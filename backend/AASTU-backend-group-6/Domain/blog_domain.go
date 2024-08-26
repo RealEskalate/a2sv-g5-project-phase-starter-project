@@ -69,4 +69,5 @@ type BlogRepository interface {
 	GetMyBlogs(user_id string, pageNo int64, pageSize int64, popularity string) ([]Blog, Pagination, error)
 	GetMyBlogByID(user_id string, blog_id string) (Blog, error)
 	GetUserRoleByID(id string) (string, error)
+	ReplyCommentOnBlog(user_id string, parent_id string, comment Comment) error
 }

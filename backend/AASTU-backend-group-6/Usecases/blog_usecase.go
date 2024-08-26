@@ -48,14 +48,13 @@ func (b BlogUsecase) CommentOnBlog(user_id string, comment domain.Comment) error
 
 func (b BlogUsecase) ReplyCommentOnBlog(user_id string, parent_id string, comment domain.Comment) error {
 	comment.Commentor_ID = b.idConverter.ToObjectID(user_id)
-
 	existing_comment, err := b.blogRepository.GetCommentByID(parent_id)
 	if err != nil || existing_comment.Deleted {
 		return errors.New("parent comment not found")
 	}
 
 	comment.Parent_ID = b.idConverter.ToObjectID(parent_id)
-	err = b.ReplyCommentOnBlog(user_id, parent_id, comment)
+	err = b.blogRepository.ReplyCommentOnBlog(user_id, parent_id, comment)
 	if err != nil {
 		return err
 	}

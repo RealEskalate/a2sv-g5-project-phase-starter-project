@@ -9,6 +9,9 @@ import paypal from "../../public/images/iconfinder_paypal_payment_pay_5340264 1.
 import deposit from "../../public/images/iconfinder_business_finance_money-13_2784281 1.png";
 import dollar from "../../public/images/iconfinder_6_4753731 1.png";
 import Dashboard from "../app/dashboard/page";
+import { AreaChart } from "lucide-react";
+import { AreaChartComponent } from "./components/Chart/AreaChartComponent";
+import { BarChartComponent } from "./components/Chart/Barchart";
 
 const imageData = [
   { src: julia.src, alt: "julia", name: "Livia Bator", position: "CEO" },
@@ -47,7 +50,7 @@ const transactionData = [
 ];
 
 const HomePage: React.FC = () => {
-  return <Dashboard />;
+  return <BarChartComponent />;
 };
 
 export default HomePage;

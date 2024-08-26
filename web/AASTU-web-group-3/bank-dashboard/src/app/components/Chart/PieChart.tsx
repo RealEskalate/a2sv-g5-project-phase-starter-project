@@ -1,68 +1,87 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
 import { LabelList, Pie, PieChart } from "recharts";
-
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  ChartConfig,
 } from "@/components/ui/chart";
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
-  { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
-  { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
-  { browser: "edge", visitors: 173, fill: "var(--color-edge)" }
-];
 
+import { useGetRandomBalanceHistoryQuery } from "@/lib/redux/api/transactionsApi";
+
+// Define the type for the data item
+interface DataItem {
+  time: string;
+  value: number;
+}
+
+// Define the type for pie chart data
+interface PieChartData {
+  browser: keyof typeof chartConfig;
+  visitors: number;
+  fill: string;
+}
+
+// Define the chart configuration
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
   chrome: {
-    label: "Chrome",
+    label: "Transfer",
     color: "#343C6A",
   },
   safari: {
-    label: "Safari",
+    label: "Shopping",
     color: "#FC7900",
   },
   firefox: {
-    label: "Firefox",
+    label: "Services",
     color: "#1814F3",
   },
   edge: {
-    label: "Edge",
+    label: "Others",
     color: "#FA00FF",
   },
 } satisfies ChartConfig;
 
 export function PieChartComponent() {
+  const { data, isLoading, error } = useGetRandomBalanceHistoryQuery({
+    monthsBeforeFirstTransaction: 4,
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data</div>;
+
+  const pieChartData: PieChartData[] = data?.data.map(
+    (item: DataItem, index: number) => {
+      const browsers: Array<keyof typeof chartConfig> = [
+        "chrome",
+        "safari",
+        "firefox",
+        "edge",
+      ];
+      const browser = browsers[index % browsers.length];
+
+      return {
+        browser,
+        visitors: item.value,
+        fill: chartConfig[browser].color,
+      };
+    }
+  );
+
   return (
-    <Card className="flex flex-col lg:mt-9 lg:flex">
-      <CardHeader className="items-center pb-0">
-        <CardTitle>Expenses Stasitics</CardTitle>
-        {/* <CardDescription>January - June 2024</CardDescription> */}
-      </CardHeader>
-      <CardContent className="flex-1 pb-0">
+    <Card className="w-full h-full lg:h-fit lg:rounded-3xl">
+      <CardContent className="flex-1 pb-0 lg:h-[400px]">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto aspect-square   lg:h-[400px] lg:w-full"
         >
           <PieChart>
             <ChartTooltip
               content={<ChartTooltipContent nameKey="visitors" hideLabel />}
             />
-            <Pie data={chartData} dataKey="visitors">
+            <Pie data={pieChartData} dataKey="visitors">
               <LabelList
                 dataKey="browser"
                 className="fill-background"
@@ -76,14 +95,6 @@ export function PieChartComponent() {
           </PieChart>
         </ChartContainer>
       </CardContent>
-      {/* <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
-      </CardFooter> */}
     </Card>
   );
 }

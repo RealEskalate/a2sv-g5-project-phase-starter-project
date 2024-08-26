@@ -9,8 +9,8 @@ export default function NotFound() {
       <p className="mt-4 text-lg text-gray-700">
         Could not find the requested resource.
       </p>
-      <Link href="/">
-        <a className="mt-6 text-blue-500 hover:underline">Return Home</a>
+      <Link href="/" className="mt-6 text-blue-500 hover:underline">
+        Return Home
       </Link>
     </div>
   );

@@ -143,40 +143,47 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
               </div>
 
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-2 z-50 bg-slate-400">
+                <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-2 z-50 bg-white">
                   <div className="flex flex-col gap-1">
-                    <div className="lg:hidden md:hidden flex gap-4 items-center justify-center">
-                      <Link
-                        href="/settings"
-                        className="sm:flex  bg-[#F5F7FA] rounded-full justify-center items-center"
-                      >
-                        <Image
-                          src="/assets/navbar/settings.svg"
-                          width={50}
-                          height={50}
-                          alt="settings"
-                          className="flex-shrink-0 min-w-fit"
-                        />
-                      </Link>
+                    <Link
+                      href="/settings"
+                      className="md:hidden  flex bg-[#F5F7FA] rounded-full gap-2 items-center"
+                    >
+                      <Image
+                        src="/assets/navbar/settings.svg"
+                        width={30}
+                        height={30}
+                        alt="settings"
+                        className="flex-shrink-0"
+                      />
+                      <span className="ml-2 text-sm">Setting</span>
+                    </Link>
 
-                      <Link
-                        href="/"
-                        className="sm:flex  bg-[#F5F7FA] rounded-full  justify-center items-center"
-                      >
-                        <Image
-                          src="/assets/navbar/notification.svg"
-                          width={50}
-                          height={50}
-                          alt="notification"
-                          className="flex-shrink-0 min-w-fit"
-                        />
-                      </Link>
-                    </div>
+                    <Link
+                      href="/"
+                      className="md:hidden flex bg-[#F5F7FA] rounded-full gap-2 items-center"
+                    >
+                      <Image
+                        src="/assets/navbar/notification.svg"
+                        width={30}
+                        height={30}
+                        alt="notification"
+                        className="flex-shrink-0"
+                      />
+                      <span className="ml-2 text-sm">Notification</span>
+                    </Link>
                     <button
                       onClick={() => signOut({ callbackUrl: "/" })}
-                      className="flex justify-center items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="flex bg-[#F5F7FA] rounded-full gap-4 items-center pl-2"
                     >
-                      Logout
+                      <Image
+                        src="/assets/transaction/deposit.svg"
+                        width={16}
+                        height={16}
+                        alt="Logout"
+                        className="flex-shrink-0 rotate-90"
+                      />
+                      <span className="ml-2 text-sm">Logout</span>
                     </button>
                   </div>
                 </div>

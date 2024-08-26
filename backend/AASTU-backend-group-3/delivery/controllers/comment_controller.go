@@ -109,30 +109,26 @@ func (c *CommentController) GetCommentByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, comment)
 }
 
-func (c *CommentController) GetComments(ctx *gin.Context) {
-	postID := ctx.Param("postID")
-	page := ctx.DefaultQuery("page", "1")
-	limit := ctx.DefaultQuery("limit", "10")
+func (cc *CommentController) GetComments(c *gin.Context) {
+    postID := c.Param("postID")
+    page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+        return
+    }
+    limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit number"})
+        return
+    }
 
-	pageInt, err := strconv.Atoi(page)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	comments, uerr := cc.commentUsecase.GetComments(postID, int(page), int(limit))
+    if uerr.Message != "" {
+        c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
+        return
+    }
 
-	limitInt, err := strconv.Atoi(limit)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	comments, err := c.commentUsecase.GetComments(postID, pageInt, limitInt)
-	if (err != &domain.CustomError{}) {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, comments)
+    c.JSON(http.StatusOK, comments)
 }
 
 func (c *CommentController) CreateReply(ctx *gin.Context) {
@@ -172,7 +168,7 @@ func (c *CommentController) UpdateReply(ctx *gin.Context) {
 	reply.ID = replyIDObj
 
 	updatedReply, uerr := c.commentUsecase.UpdateReply(&reply, userID)
-	if (uerr != &domain.CustomError{}) {
+	if (uerr.Message != "") {
 		ctx.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
@@ -189,7 +185,7 @@ func (c *CommentController) DeleteReply(ctx *gin.Context) {
 	Roles := ctx.GetString("role")
 
 	deletedReply, err := c.commentUsecase.DeleteReply(replyID, Roles, userID)
-	if err != nil {
+	if err.Message != "" {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -217,7 +213,7 @@ func (c *CommentController) GetReplies(ctx *gin.Context) {
 		return
 	}
 	replies, uerr := c.commentUsecase.GetReplies(commentID, pageInt, limitInt)
-	if (uerr != &domain.CustomError{}) {
+	if (uerr.Message != "") {
 		ctx.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
@@ -232,7 +228,7 @@ func (c *CommentController) LikeComment(ctx *gin.Context) {
 	commentID := ctx.Param("id")
 	userID := ctx.GetString("user_id")
 
-	if err := c.commentUsecase.LikeComment(commentID, userID); err != nil {
+	if err := c.commentUsecase.LikeComment(commentID, userID); err.Message != "" {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -244,7 +240,7 @@ func (c *CommentController) UnlikeComment(ctx *gin.Context) {
 	commentID := ctx.Param("id")
 	userID := ctx.GetString("user_id")
 
-	if err := c.commentUsecase.UnlikeComment(commentID, userID); err != nil {
+	if err := c.commentUsecase.UnlikeComment(commentID, userID); err.Message != "" {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -256,7 +252,7 @@ func (c *CommentController) LikeReply(ctx *gin.Context) {
 	replyID := ctx.Param("id")
 	userID := ctx.GetString("user_id")
 
-	if err := c.commentUsecase.LikeReply(replyID, userID); err != nil {
+	if err := c.commentUsecase.LikeReply(replyID, userID); err.Message != "" {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -268,7 +264,7 @@ func (c *CommentController) UnlikeReply(ctx *gin.Context) {
 	replyID := ctx.Param("id")
 	userID := ctx.GetString("user_id")
 
-	if err := c.commentUsecase.UnlikeReply(replyID, userID); err != nil {
+	if err := c.commentUsecase.UnlikeReply(replyID, userID); err.Message != "" {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

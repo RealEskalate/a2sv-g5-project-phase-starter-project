@@ -29,9 +29,9 @@ func (c *BlogController) CreateBlog(ctx *gin.Context) {
 	userID := ctx.GetString("user_id")
 	username := ctx.GetString("username")
 
-	newBlog, err := c.blogUsecase.CreateBlog(username, userID, blog)
-	if err != nil {
-		ctx.JSON(err.StatusCode, gin.H{"error": err.Message})
+	newBlog, uerr := c.blogUsecase.CreateBlog(username, userID, blog)
+	if uerr.Message != "" {
+		ctx.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 
@@ -46,9 +46,9 @@ func (c *BlogController) DeleteBlog(ctx *gin.Context) {
 	role := ctx.GetString("role")
 	userId := ctx.GetString("user_id")
 
-	newBlog, err := c.blogUsecase.DeleteBlog(role, userId, id)
-	if err != nil {
-		ctx.JSON(err.StatusCode, gin.H{"error": err.Message})
+	newBlog, uerr := c.blogUsecase.DeleteBlog(role, userId, id)
+	if uerr.Message != "" {
+		ctx.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 
@@ -68,11 +68,10 @@ func (c *BlogController) UpdateBlog(ctx *gin.Context) {
 	}
 	blog.AuthorID = ctx.GetString("user_id")
 
-	if _, err := c.blogUsecase.UpdateBlog(blog, ctx.GetString("role"), id); err != nil {
-		ctx.JSON(err.StatusCode, gin.H{"error": err.Message})
+	if _, uerr := c.blogUsecase.UpdateBlog(blog, ctx.GetString("role"), id); uerr.Message != "" {
+		ctx.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
-
 	ctx.JSON(http.StatusOK, gin.H{
 		"message":      "Blog updated successfully",
 		"Updated Blog": blog,
@@ -82,9 +81,9 @@ func (c *BlogController) UpdateBlog(ctx *gin.Context) {
 func (c *BlogController) GetBlogByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 
-	blog, err := c.blogUsecase.GetBlogByID(id)
-	if err != nil {
-		ctx.JSON(err.StatusCode, gin.H{"error": err.Message})
+	blog, uerr := c.blogUsecase.GetBlogByID(id)
+	if uerr.Message != "" {
+		ctx.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 
@@ -117,16 +116,22 @@ func (c *BlogController) GetBlogs(ctx *gin.Context) {
 	tag = ctx.Query("tag")
 	authorName = ctx.Query("authorName")
 
-	blogs, err := c.blogUsecase.GetBlogs(page, limit, sortBy, tag, authorName)
-	if err != nil {
-		ctx.JSON(err.StatusCode, gin.H{"error": err.Message})
+	blogs, total, uerr := c.blogUsecase.GetBlogs(page, limit, sortBy, tag, authorName)
+	if uerr.Message != "" {
+		ctx.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Blogs retrieved successfully",
-		"blogs":   blogs,
-	})
+	totalPages := (total + limit - 1) / limit 
+
+    ctx.JSON(http.StatusOK, gin.H{
+        "message":       "Blogs retrieved successfully",
+        "blogs":         blogs,
+        "current_page":  page,
+        "per_page":      limit,
+        "total_records": total,
+        "total_pages":   totalPages,
+    })
 }
 
 func (c *BlogController) GetUserBlogs(ctx *gin.Context) {

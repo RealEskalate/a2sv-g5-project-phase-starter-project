@@ -55,7 +55,7 @@ func (u *UserUsecase) Login(user *domain.User, deviceID string) (domain.LogInRes
 	return domain.LogInResponse{
 		AccessToken:  accessToken,
 		RefreshToken: newRefreshToken.Token,
-	}, nil
+	}, &domain.CustomError{}
 }
 
 func (u *UserUsecase) Logout(userID, deviceID, token string) *domain.CustomError {
@@ -71,7 +71,7 @@ func (u *UserUsecase) Logout(userID, deviceID, token string) *domain.CustomError
 			if err != nil {
 				return domain.ErrFailedToUpdateUser
 			}
-			return nil
+			return &domain.CustomError{}
 		}
 	}
 
@@ -89,7 +89,7 @@ func (u *UserUsecase) LogoutAllDevices(userID string) *domain.CustomError {
 	if err != nil {
 		return domain.ErrFailedToUpdateUser
 	}
-	return nil
+	return &domain.CustomError{}
 }
 
 func (u *UserUsecase) LogoutDevice(userID, deviceID string) *domain.CustomError {
@@ -105,7 +105,7 @@ func (u *UserUsecase) LogoutDevice(userID, deviceID string) *domain.CustomError 
 			if err != nil {
 				return domain.ErrFailedToUpdateUser
 			}
-			return nil
+			return &domain.CustomError{}
 		}
 	}
 
@@ -122,7 +122,7 @@ func (u *UserUsecase) GetDevices(userID string) ([]string, *domain.CustomError) 
 	for _, rt := range user.RefreshTokens {
 		devices = append(devices, rt.DeviceID)
 	}
-	return devices, nil
+	return devices, &domain.CustomError{}
 }
 
 func (u *UserUsecase) RefreshToken(userID, deviceID, token string) (domain.LogInResponse, *domain.CustomError) {
@@ -160,7 +160,7 @@ func (u *UserUsecase) RefreshToken(userID, deviceID, token string) (domain.LogIn
 			return domain.LogInResponse{
 				AccessToken:  accessToken,
 				RefreshToken: newRefreshToken.Token,
-			}, nil
+			}, &domain.CustomError{}
 		}
 	}
 
@@ -193,7 +193,7 @@ func (u *UserUsecase) Register(user domain.User) *domain.CustomError {
 		return domain.ErrInternalServer
 	}
 
-	token, err := infrastracture.GenerateActivationToken()
+	token, err := infrastracture.GenerateOTP()
 	if err != nil {
 		return domain.ErrInternalServer
 	}
@@ -222,7 +222,7 @@ func (u *UserUsecase) GetUserByUsernameOrEmail(username, email string) (domain.U
 	if err != nil {
 		return domain.User{}, domain.ErrNotFound
 	}
-	return user, nil
+	return user, &domain.CustomError{}
 }
 
 func (u *UserUsecase) AccountActivation(token string, email string) *domain.CustomError {
@@ -230,7 +230,7 @@ func (u *UserUsecase) AccountActivation(token string, email string) *domain.Cust
 	if err != nil {
 		return domain.ErrActivationFailed
 	}
-	return nil
+	return &domain.CustomError{}
 }
 
 func (u *UserUsecase) SendPasswordResetLink(email string) *domain.CustomError {
@@ -279,7 +279,7 @@ func (u *UserUsecase) ResetPassword(token, newPassword string) *domain.CustomErr
 		return domain.ErrFailedToUpdateUser
 	}
 
-	return nil
+	return &domain.CustomError{}
 }
 
 func (u *UserUsecase) ActivateAccountMe(userID string) *domain.CustomError {
@@ -306,5 +306,5 @@ func (u *UserUsecase) ActivateAccountMe(userID string) *domain.CustomError {
 		return domain.ErrFailedToSendEmail
 	}
 
-	return nil
+	return &domain.CustomError{}
 }

@@ -55,7 +55,7 @@ func SendActivationEmail(email, token string) error {
 	m.SetHeader("Subject", "Account Activation")
 
 
-	m.SetBody("text/html", fmt.Sprintf("Click <a href=\"http://127.0.0.1:8080/auth/activate/?token=%s&Email=%s\">here</a> to activate your account.", token, email))
+	m.SetBody("text/html", fmt.Sprintf("Your OTP code is %s", token))
 
 	d := gomail.NewDialer("smtp.gmail.com", 587, "bereket.meng@gmail.com", "xjbs vduu hkjd lqlf")
 
@@ -67,7 +67,20 @@ func SendActivationEmail(email, token string) error {
 }
 
 
-
+func GenerateOTP() (string, error) {
+	digits := "0123456789"
+	var otp string
+	for i := 0; i < 6; i++ {
+		randomByte := make([]byte, 1)
+		_, err := rand.Read(randomByte)
+		if err != nil {
+			return "", err
+		}
+		randomByte[0] = randomByte[0] % byte(len(digits))
+		otp += string(digits[randomByte[0]])
+	}
+	return otp, nil
+}
 
 func GenerateActivationToken() (string, error) {
 	// Create a 32-byte random token

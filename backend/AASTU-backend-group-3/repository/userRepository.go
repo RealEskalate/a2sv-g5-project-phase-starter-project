@@ -72,6 +72,14 @@ func (ur *UserRepositoryImpl) DeleteAllRefreshTokens(user *domain.User) error {
 	return err
 }
 
+func (ur *UserRepositoryImpl) IsVerified(userID primitive.ObjectID) (bool, error) {
+	var user domain.User
+	err := ur.collection.FindOne(context.Background(), bson.M{"_id": userID}).Decode(&user)
+	if err != nil {
+		return false, err
+	}
+	return user.IsActive, nil
+}
 
 func (ur *UserRepositoryImpl) Register(user domain.User) error {
 

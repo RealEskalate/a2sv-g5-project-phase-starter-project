@@ -15,7 +15,7 @@ func SetUpPublicRoutes(router *gin.Engine) {
 	blogRepo := repository.NewBlogRepositoryImpl(db.BlogCollection, db.CommentCollection, db.LikeCollection)
     blogUsecase := usecase.NewBlogUsecase(blogRepo)
     blogController := controllers.NewBlogController(blogUsecase)
-
+	
 	public := router.Group("/")
 	{
 

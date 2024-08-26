@@ -2,12 +2,18 @@
 package routers
 
 import (
+    "group3-blogApi/infrastracture"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter() *gin.Engine {
     router := gin.Default()
+
+    rateLimiter := infrastracture.NewRateLimitterMiddleware()
+
+    // Add rate limiter middleware
+    router.Use(rateLimiter.RateLimitter())
 
     // Add CORS middleware
     router.Use(cors.Default())

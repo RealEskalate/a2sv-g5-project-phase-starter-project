@@ -13,27 +13,29 @@ func FilterReactionBlog(ids []primitive.ObjectID, reaction bool, isLiked bool, i
 
 	if reaction {
 		if !isLiked && !isDisliked {
-			update = bson.M{"$inc": bson.M{"like_count": PopularityRate("like")}}
+			update = bson.M{"$inc": bson.M{"like_count": PopularityRate("like"), "popularity": PopularityRate("like")}}
 		} else if isLiked {
-			update = bson.M{"$inc": bson.M{"like_count": -PopularityRate("like")}}
+			update = bson.M{"$inc": bson.M{"like_count": -PopularityRate("like"), "popularity": -PopularityRate("like")}}
 		} else if isDisliked {
 			update = bson.M{
 				"$inc": bson.M{
 					"like_count":    PopularityRate("like"),
 					"dislike_count": -PopularityRate("dislike"),
+					"popularity":    PopularityRate("like"),
 				},
 			}
 		}
 	} else {
 		if !isLiked && !isDisliked {
-			update = bson.M{"$inc": bson.M{"dislike_count": PopularityRate("dislike")}}
+			update = bson.M{"$inc": bson.M{"dislike_count": PopularityRate("dislike"), "popularity": PopularityRate("dislike")}}
 		} else if isDisliked {
-			update = bson.M{"$inc": bson.M{"dislike_count": -PopularityRate("dislike")}}
+			update = bson.M{"$inc": bson.M{"dislike_count": -PopularityRate("dislike"), "popularity": -PopularityRate("dislike")}}
 		} else if isLiked {
 			update = bson.M{
 				"$inc": bson.M{
 					"dislike_count": PopularityRate("dislike"),
 					"like_count":    -PopularityRate("like"),
+					"popularity":    PopularityRate("dislike"),
 				},
 			}
 		}

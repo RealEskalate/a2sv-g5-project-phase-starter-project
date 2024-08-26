@@ -124,6 +124,60 @@ func (_m *BlogRepository) CreateTag(ctx context.Context, tag *domain.BlogTag) er
 	return r0
 }
 
+// DecrementBlogCommentCount provides a mock function with given fields: ctx, blogId
+func (_m *BlogRepository) DecrementBlogCommentCount(ctx context.Context, blogId string) error {
+	ret := _m.Called(ctx, blogId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DecrementBlogCommentCount")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, blogId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// DecrementBlogLikeCount provides a mock function with given fields: ctx, blogId
+func (_m *BlogRepository) DecrementBlogLikeCount(ctx context.Context, blogId string) error {
+	ret := _m.Called(ctx, blogId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DecrementBlogLikeCount")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, blogId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// DecrementBlogViewCount provides a mock function with given fields: ctx, blogId
+func (_m *BlogRepository) DecrementBlogViewCount(ctx context.Context, blogId string) error {
+	ret := _m.Called(ctx, blogId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DecrementBlogViewCount")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, blogId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // DeleteBlog provides a mock function with given fields: ctx, id
 func (_m *BlogRepository) DeleteBlog(ctx context.Context, id string) error {
 	ret := _m.Called(ctx, id)
@@ -178,34 +232,41 @@ func (_m *BlogRepository) DeleteTag(ctx context.Context, id string) error {
 	return r0
 }
 
-// FilterBlogs provides a mock function with given fields: ctx, filter
-func (_m *BlogRepository) FilterBlogs(ctx context.Context, filter domain.BlogFilter) ([]*domain.Blog, error) {
-	ret := _m.Called(ctx, filter)
+// FindBlogs provides a mock function with given fields: ctx, filter, page, pageSize, orderBy
+func (_m *BlogRepository) FindBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int, orderBy []string) ([]*domain.GetBlogDTO, int, error) {
+	ret := _m.Called(ctx, filter, page, pageSize, orderBy)
 
 	if len(ret) == 0 {
-		panic("no return value specified for FilterBlogs")
+		panic("no return value specified for FindBlogs")
 	}
 
-	var r0 []*domain.Blog
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter) ([]*domain.Blog, error)); ok {
-		return rf(ctx, filter)
+	var r0 []*domain.GetBlogDTO
+	var r1 int
+	var r2 error
+	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter, int, int, []string) ([]*domain.GetBlogDTO, int, error)); ok {
+		return rf(ctx, filter, page, pageSize, orderBy)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter) []*domain.Blog); ok {
-		r0 = rf(ctx, filter)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.BlogFilter, int, int, []string) []*domain.GetBlogDTO); ok {
+		r0 = rf(ctx, filter, page, pageSize, orderBy)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Blog)
+			r0 = ret.Get(0).([]*domain.GetBlogDTO)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, domain.BlogFilter) error); ok {
-		r1 = rf(ctx, filter)
+	if rf, ok := ret.Get(1).(func(context.Context, domain.BlogFilter, int, int, []string) int); ok {
+		r1 = rf(ctx, filter, page, pageSize, orderBy)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(int)
 	}
 
-	return r0, r1
+	if rf, ok := ret.Get(2).(func(context.Context, domain.BlogFilter, int, int, []string) error); ok {
+		r2 = rf(ctx, filter, page, pageSize, orderBy)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // GetAllBlogs provides a mock function with given fields: ctx
@@ -269,23 +330,23 @@ func (_m *BlogRepository) GetAllTags(ctx context.Context) ([]*domain.BlogTag, er
 }
 
 // GetBlogByID provides a mock function with given fields: ctx, id
-func (_m *BlogRepository) GetBlogByID(ctx context.Context, id string) (*domain.Blog, error) {
+func (_m *BlogRepository) GetBlogByID(ctx context.Context, id string) (*domain.GetSingleBlogDTO, error) {
 	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetBlogByID")
 	}
 
-	var r0 *domain.Blog
+	var r0 *domain.GetSingleBlogDTO
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (*domain.Blog, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*domain.GetSingleBlogDTO, error)); ok {
 		return rf(ctx, id)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.Blog); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.GetSingleBlogDTO); ok {
 		r0 = rf(ctx, id)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.Blog)
+			r0 = ret.Get(0).(*domain.GetSingleBlogDTO)
 		}
 	}
 
@@ -328,9 +389,9 @@ func (_m *BlogRepository) GetCommentById(ctx context.Context, commentId string) 
 	return r0, r1
 }
 
-// GetCommentsByBlogID provides a mock function with given fields: ctx, blogID
-func (_m *BlogRepository) GetCommentsByBlogID(ctx context.Context, blogID string) ([]*domain.Comment, error) {
-	ret := _m.Called(ctx, blogID)
+// GetCommentsByBlogID provides a mock function with given fields: ctx, blogID, page, pageSize
+func (_m *BlogRepository) GetCommentsByBlogID(ctx context.Context, blogID string, page int, pageSize int) ([]*domain.Comment, error) {
+	ret := _m.Called(ctx, blogID, page, pageSize)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetCommentsByBlogID")
@@ -338,19 +399,19 @@ func (_m *BlogRepository) GetCommentsByBlogID(ctx context.Context, blogID string
 
 	var r0 []*domain.Comment
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) ([]*domain.Comment, error)); ok {
-		return rf(ctx, blogID)
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) ([]*domain.Comment, error)); ok {
+		return rf(ctx, blogID, page, pageSize)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) []*domain.Comment); ok {
-		r0 = rf(ctx, blogID)
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) []*domain.Comment); ok {
+		r0 = rf(ctx, blogID, page, pageSize)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]*domain.Comment)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(ctx, blogID)
+	if rf, ok := ret.Get(1).(func(context.Context, string, int, int) error); ok {
+		r1 = rf(ctx, blogID, page, pageSize)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -448,6 +509,36 @@ func (_m *BlogRepository) GetTagByID(ctx context.Context, id string) (*domain.Bl
 	return r0, r1
 }
 
+// GetUserBlogs provides a mock function with given fields: ctx, userID, page, pageSize
+func (_m *BlogRepository) GetUserBlogs(ctx context.Context, userID string, page int, pageSize int) ([]*domain.Blog, error) {
+	ret := _m.Called(ctx, userID, page, pageSize)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserBlogs")
+	}
+
+	var r0 []*domain.Blog
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) ([]*domain.Blog, error)); ok {
+		return rf(ctx, userID, page, pageSize)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) []*domain.Blog); ok {
+		r0 = rf(ctx, userID, page, pageSize)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.Blog)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, int, int) error); ok {
+		r1 = rf(ctx, userID, page, pageSize)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetViewsByBlogID provides a mock function with given fields: ctx, blogID
 func (_m *BlogRepository) GetViewsByBlogID(ctx context.Context, blogID string) ([]*domain.View, error) {
 	ret := _m.Called(ctx, blogID)
@@ -532,6 +623,60 @@ func (_m *BlogRepository) HasUserViewedBlog(ctx context.Context, userId string, 
 	}
 
 	return r0, r1
+}
+
+// IncrementBlogCommentCount provides a mock function with given fields: ctx, blogId
+func (_m *BlogRepository) IncrementBlogCommentCount(ctx context.Context, blogId string) error {
+	ret := _m.Called(ctx, blogId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for IncrementBlogCommentCount")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, blogId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// IncrementBlogLikeCount provides a mock function with given fields: ctx, blogId
+func (_m *BlogRepository) IncrementBlogLikeCount(ctx context.Context, blogId string) error {
+	ret := _m.Called(ctx, blogId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for IncrementBlogLikeCount")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, blogId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// IncrementBlogViewCount provides a mock function with given fields: ctx, blogId
+func (_m *BlogRepository) IncrementBlogViewCount(ctx context.Context, blogId string) error {
+	ret := _m.Called(ctx, blogId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for IncrementBlogViewCount")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, blogId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // PaginateBlogs provides a mock function with given fields: ctx, filter, page, pageSize

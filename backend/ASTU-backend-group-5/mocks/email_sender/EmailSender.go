@@ -9,6 +9,24 @@ type EmailSender struct {
 	mock.Mock
 }
 
+// SendDemotionFromAdminEmail provides a mock function with given fields: userEmail
+func (_m *EmailSender) SendDemotionFromAdminEmail(userEmail string) error {
+	ret := _m.Called(userEmail)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SendDemotionFromAdminEmail")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(userEmail)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // SendPasswordResetEmail provides a mock function with given fields: userEmail, token
 func (_m *EmailSender) SendPasswordResetEmail(userEmail string, token string) error {
 	ret := _m.Called(userEmail, token)
@@ -20,6 +38,24 @@ func (_m *EmailSender) SendPasswordResetEmail(userEmail string, token string) er
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string, string) error); ok {
 		r0 = rf(userEmail, token)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// SendPromotionToAdminEmail provides a mock function with given fields: userEmail
+func (_m *EmailSender) SendPromotionToAdminEmail(userEmail string) error {
+	ret := _m.Called(userEmail)
+
+	if len(ret) == 0 {
+		panic("no return value specified for SendPromotionToAdminEmail")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(userEmail)
 	} else {
 		r0 = ret.Error(0)
 	}

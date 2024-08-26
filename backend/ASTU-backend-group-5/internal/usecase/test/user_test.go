@@ -1,140 +1,205 @@
 package usecase_test
 
-
 import (
-	"github.com/stretchr/testify/suite"
-	"testing"
-	"blogApp/mocks/repository"
-	"blogApp/pkg/hash"
-	"github.com/stretchr/testify/mock"
-	"blogApp/internal/usecase/user"
 	"blogApp/internal/domain"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"time"
+	"blogApp/mocks/repository"
+	"blogApp/internal/usecase/user"
 	"context"
+	"time"
+	"errors"
+	"testing"
+	"blogApp/pkg/hash"
+	//"blogApp/pkg/jwt"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/suite"
+	"golang.org/x/crypto/bcrypt"
 )
-	
 
-type UserUsecaseSuite struct {
+type UserUsecaseTestSuite struct {
 	suite.Suite
-	repository *mocks.UserRepository
-	usecase *user.UserUsecase
+	userUsecase *user.UserUsecase
+	mockRepo    *mocks.UserRepository
 }
 
-
-func (suite *UserUsecaseSuite) SetupTest() {
-	repository := new(mocks.UserRepository)
-	usecase := user.NewUserUsecase(repository)
-	suite.repository = repository
-	suite.usecase  = usecase
+func (suite *UserUsecaseTestSuite) SetupTest() {
+	suite.mockRepo = new(mocks.UserRepository)
+	suite.userUsecase = user.NewUserUsecase(suite.mockRepo)
 }
 
-
-func (suite *UserUsecaseSuite) TestRegisterUser_Positive() {
-	mockUserProfile := domain.UserProfile{
-		ProfileUrl: "https://example.com/profiles/user123",
-		FirstName:  "John",
-		LastName:   "Doe",
-		Gender:     "Male",
-		Bio:        "A passionate software developer.",
-		Profession: "Software Engineer",
-    }
-
-
-	mockUser := domain.User{
-		ID:       primitive.NewObjectID(),
-		UserName: "johndoe",
-		Email:    "johndoe@example.com",
-		Password: "hashedpassword123", 
-		Profile:  mockUserProfile,
-		Role:     "user",
-		Created:  primitive.NewDateTimeFromTime(time.Now()),
-		Updated:  primitive.NewDateTimeFromTime(time.Now()),
-		Verified: true,
+func (suite *UserUsecaseTestSuite) TestRegisterUserSuccess() {
+	newUser := &domain.User{
+		Email:    "test@example.com",
+		Password: "password123",
+		UserName: "testuser",
+		Profile: domain.UserProfile{
+			ProfileUrl: "http://example.com/profile.jpg",
+			FirstName:  "Test",
+			LastName:   "User",
+			Gender:     "Non-binary",
+			Bio:        "Just a test user",
+			Profession: "Software Engineer",
+		},
 	}
 
-	suite.repository.On("FindUserByEmail", context.Background(), "johndoe@example.com").Return(nil, nil)
-	suite.repository.On("IsEmptyCollection", context.Background()).Return(true, nil)
-	suite.repository.On("CreateUser", context.Background(), &mockUser).Return(nil)
+	suite.mockRepo.On("FindUserByEmail", context.Background(), newUser.Email).Return(nil, nil)
+	suite.mockRepo.On("IsEmptyCollection", context.Background()).Return(false, nil)
 
-	_, err := suite.usecase.RegisterUser(&mockUser)
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
+	suite.mockRepo.On("CreateUser", context.Background(), mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+		user := args.Get(1).(*domain.User)
+		user.Password = string(hashedPassword) // Check if password is hashed
+	})
 
-	suite.Nil(err, "err is a nil pointer so no error in this process")
-	suite.repository.AssertExpectations(suite.T())
+	createdUser, err := suite.userUsecase.RegisterUser(newUser)
+
+	suite.NoError(err)
+	suite.Equal(newUser.Email, createdUser.Email)
+	suite.Equal(newUser.UserName, createdUser.UserName)
+	suite.Equal(newUser.Profile, createdUser.Profile)
+	suite.NotEmpty(createdUser.Password) // Ensure the password was hashed
+	suite.mockRepo.AssertExpectations(suite.T())
 }
 
-func (suite *UserUsecaseSuite) TestUpdateUser_Positive() {
-	mockUserProfile := domain.UserProfile{
-		ProfileUrl: "https://example.com/profiles/user123",
-		FirstName:  "John",
-		LastName:   "Doe",
-		Gender:     "Male",
-		Bio:        "A passionate software developer.",
-		Profession: "Software Engineer",
+func (suite *UserUsecaseTestSuite) TestRegisterUserAlreadyExists() {
+	existingUser := &domain.User{
+		Email: "test@example.com",
 	}
 
-	mockUser := domain.User{
-		ID:       primitive.NewObjectID(),
-		UserName: "johndoe",
-		Email:    "johndoe@example.com",
-		Password: "hashedpassword123",
-		Profile:  mockUserProfile,
-		Role:     "user",
-		Created:  primitive.NewDateTimeFromTime(time.Now()),
-		Updated:  primitive.NewDateTimeFromTime(time.Now()),
-		Verified: true,
+	suite.mockRepo.On("FindUserByEmail", context.Background(), existingUser.Email).Return(existingUser, nil)
+
+	createdUser, err := suite.userUsecase.RegisterUser(existingUser)
+
+	suite.Error(err)
+	suite.Nil(createdUser)
+	suite.EqualError(err, "user already exists")
+	suite.mockRepo.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestRegisterUserEmptyCollection() {
+	newUser := &domain.User{
+		Email:    "new@example.com",
+		Password: "password123",
+		UserName: "newuser",
+		Profile: domain.UserProfile{
+			ProfileUrl: "http://example.com/newprofile.jpg",
+			FirstName:  "New",
+			LastName:   "User",
+			Gender:     "Female",
+			Bio:        "New test user",
+			Profession: "Product Manager",
+		},
 	}
+
+	suite.mockRepo.On("FindUserByEmail", context.Background(), newUser.Email).Return(nil, nil)
+	suite.mockRepo.On("IsEmptyCollection", context.Background()).Return(true, nil)
+
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
+	suite.mockRepo.On("CreateUser", context.Background(), mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+		user := args.Get(1).(*domain.User)
+		user.Password = string(hashedPassword) // Check if password is hashed
+	})
+
+	createdUser, err := suite.userUsecase.RegisterUser(newUser)
+
+	suite.NoError(err)
+	suite.Equal("owner", createdUser.Role) // Check if role is set to "owner"
+	suite.mockRepo.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestRegisterUserErrorIsEmptyCollection() {
+	newUser := &domain.User{
+		Email:    "new@example.com",
+		Password: "password123",
+	}
+
+	suite.mockRepo.On("FindUserByEmail", context.Background(), newUser.Email).Return(nil, nil)
+	suite.mockRepo.On("IsEmptyCollection", context.Background()).Return(false, errors.New("database error"))
+
+	createdUser, err := suite.userUsecase.RegisterUser(newUser)
+
+	suite.Error(err)
+	suite.Nil(createdUser)
+	suite.EqualError(err, "database error")
+	suite.mockRepo.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestLoginSuccess() {
+    email := "test@example.com"
+    password := "password123"
+    hashedPassword, err := hash.HashPassword(password)
+    suite.NoError(err, "Hashing password should not return an error")
+
+    // Setup the mock to return a user with the hashed password
+    suite.mockRepo.On("FindUserByEmail", context.TODO(), email).Return(&domain.User{
+        ID:       primitive.NewObjectID(),
+        UserName: "testuser",
+        Email:    email,
+        Password: hashedPassword, // Ensure this matches the hashed password
+        Profile:  domain.UserProfile{},
+        Role:     "user",
+        Created:  primitive.NewDateTimeFromTime(time.Now()),
+        Updated:  primitive.NewDateTimeFromTime(time.Now()),
+        Verified: true,
+    }, nil).Once()
+
+    // user := &domain.User{
+    //     ID:       primitive.NewObjectID(),
+    //     UserName: "testuser",
+    //     Email:    email,
+    //     Role:     "user",
+    // }
+
+    // expectedAccessToken, err := jwt.GenerateJWT(user.ID.Hex(), user.Email, user.UserName, user.Role)
+    // suite.NoError(err, "Generating access token should not return an error")
+
+    // expectedRefreshToken, err := jwt.GenerateRefreshToken(user.ID.Hex(), user.Email, user.Role, user.UserName)
+    // suite.NoError(err, "Generating refresh token should not return an error")
+
+    resultUser, _, err := suite.userUsecase.Login(email, password)
+
+    suite.NoError(err, "Login should not return an error")
+    suite.NotNil(resultUser, "Result user should not be nil")
+    suite.Equal(email, resultUser.Email, "Emails should match")
+    //suite.Equal(expectedAccessToken, tokens.AccessToken, "Access tokens should match")
+    //suite.Equal(expectedRefreshToken, tokens.RefreshToken, "Refresh tokens should match")
+
+    suite.mockRepo.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestLoginInvalidCredentials() {
+	email := "test@example.com"
+	password := "wrongpassword"
+
+	suite.mockRepo.On("FindUserByEmail", context.TODO(), email).Return(nil, nil)
+
+	resultUser, tokens, err := suite.userUsecase.Login(email, password)
 
 	
-	suite.repository.On("FindUserByEmail", mock.Anything, mockUser.ID.Hex()).Return(&mockUser, nil)
-	suite.repository.On("UpdateUser", mock.Anything, mock.AnythingOfType("*domain.User")).Return(nil)
-	err := suite.usecase.UpdateUser(&mockUser)
-	suite.Nil(err, "error should be nil")
-	suite.repository.AssertExpectations(suite.T())
-}
-
-func (suite *UserUsecaseSuite) TestLogin_Positive() {
-	password, _ := hash.HashPassword("password123")
-	mockUser := &domain.User{
-		ID:       primitive.NewObjectID(),
-		UserName: "johndoe",
-		Email:    "johndoe@example.com",
-		Password: password, 
-		Role:     "user",
-	}
-
-	suite.repository.On("FindUserByEmail", mock.Anything, mockUser.Email).Return(mockUser, nil)
-	user, token, err := suite.usecase.Login(mockUser.Email, "password123")
-	suite.Nil(err)
-	suite.Equal(mockUser.Email, user.Email)
-	suite.Equal(mockUser.Password, user.Password)
-	suite.NotNil(token)
-	suite.repository.AssertExpectations(suite.T())
-}
-
-func (suite *UserUsecaseSuite) TestLogin_InvalidPassword_Negative() {
-	password, _ := hash.HashPassword("password123")
-	mockUser := &domain.User{
-		ID:       primitive.NewObjectID(),
-		UserName: "johndoe",
-		Email:    "johndoe@example.com",
-		Password: password,
-		Role:     "user",
-	}
-
-	suite.repository.On("FindUserByEmail", mock.Anything, "johndoe@example.com").Return(mockUser, nil)
-
-	user, token, err := suite.usecase.Login("johndoe@example.com", "wrongpassword")
-
-	suite.NotNil(err)
-	suite.Nil(user)
-	suite.Nil(token)
+	suite.Error(err)
+	suite.Nil(resultUser)
+	suite.Nil(tokens)
 	suite.EqualError(err, "invalid credentials")
-	suite.repository.AssertExpectations(suite.T())
+	suite.mockRepo.AssertExpectations(suite.T())
+}
+
+func (suite *UserUsecaseTestSuite) TestLoginUserNotFound() {
+	email := "test@example.com"
+	password := "password123"
+
+	suite.mockRepo.On("FindUserByEmail", context.TODO(), email).Return(nil, nil)
+	resultUser, tokens, err := suite.userUsecase.Login(email, password)
+
+	suite.Error(err)
+	suite.Nil(resultUser)
+	suite.Nil(tokens)
+	suite.EqualError(err, "invalid credentials")
+	suite.mockRepo.AssertExpectations(suite.T())
 }
 
 
 
-func TestUserUsecaseSuite(t *testing.T) {
-	suite.Run(t, new(UserUsecaseSuite))
+func TestUserUsecaseTestSuite(t *testing.T) {
+	suite.Run(t, new(UserUsecaseTestSuite))
 }

@@ -1,6 +1,7 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { BarChartComponent } from "./components/BarChartComponent";
+import  BarChartComponent from "./components/BarChartComponent";
 import { TableComponent } from "./components/TableComponent";
 import TableCard from "./components/TableComponentMobile";
 import Card from "../components/common/card";
@@ -26,6 +27,45 @@ const Transactions: React.FC = () => {
   const accessToken = user?.accessToken;
   const [data, setData] = useState<any[]>([]);
   const [expenseData, setExpenseData] = useState<any[]>([]);
+  
+  const transformData = (data: any[], type: string) => {
+    return data.map((item: any) => {
+      switch (type) {
+        case "recent":
+          return {
+            column1: item.description,
+            column2: item.transactionId,
+            column3: item.type,
+            column4: "N/A", // Update this if you have card info
+            column5: new Date(item.date).toLocaleDateString(),
+            column6: `$${item.amount.toFixed(2)}`, // Format amount as currency
+            column7: "N/A", // Update this if you have receipt info
+          };
+        case "income":
+          return {
+            column1: item.description,
+            column2: item.transactionId,
+            column3: item.type,
+            column4: "N/A",
+            column5: new Date(item.date).toLocaleDateString(),
+            column6: `$${item.amount.toFixed(2)}`,
+            column7: "N/A",
+          };
+        case "expenses":
+          return {
+            column1: item.description,
+            column2: item.transactionId,
+            column3: item.type,
+            column4: "N/A",
+            column5: new Date(item.date).toLocaleDateString(),
+            column6: `$${item.amount.toFixed(2)}`,
+            column7: "N/A",
+          };
+        default:
+          return item;
+      }
+    });
+  };
 
   const fetchExpenseData = async () => {
     if (!accessToken) {
@@ -36,7 +76,7 @@ const Transactions: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=0&size=7`,
+        `https://bank-dashboard-irbd.onrender.com/transactions/expenses?page=0&size=7`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -47,8 +87,13 @@ const Transactions: React.FC = () => {
       if (!response.ok) {
         throw new Error("Failed to fetch expenses");
       }
+
       const data = await response.json();
-      setExpenseData(data.data.content);
+      const transformedData = data.data.content.map((item: any) => ({
+        amount: item.amount,
+        month: new Date(item.date).toLocaleString('default', { month: 'short' }),
+      }));
+      setExpenseData(transformedData);
     } catch (error) {
       setError((error as Error).message);
     } finally {
@@ -65,7 +110,7 @@ const Transactions: React.FC = () => {
 
     try {
       const response = await axios.get(
-        `https://bank-dashboard-rsf1.onrender.com/transactions?page=0&size=5`,
+        `https://bank-dashboard-irbd.onrender.com/transactions?page=0&size=5`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -73,16 +118,7 @@ const Transactions: React.FC = () => {
         }
       );
 
-      const transformedData = response.data.data.content.map((item: any) => ({
-        column1: item.description,
-        column2: item.transactionId,
-        column3: item.type,
-        column4: "N/A", // Update this if you have card info
-        column5: new Date(item.date).toLocaleDateString(),
-        column6: `$${item.amount.toFixed(2)}`, // Format amount as currency
-        column7: "N/A", // Update this if you have receipt info
-      }));
-
+      const transformedData = transformData(response.data.data.content, "recent");
       setData(transformedData);
     } catch (error) {
       setError("Failed to fetch data");
@@ -100,7 +136,7 @@ const Transactions: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://bank-dashboard-rsf1.onrender.com/transactions/incomes?page=0&size=5`,
+        `https://bank-dashboard-irbd.onrender.com/transactions/incomes?page=0&size=5`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -109,7 +145,8 @@ const Transactions: React.FC = () => {
       );
 
       const data = await response.json();
-      setData(data.data.content || []);
+      const transformedData = transformData(data.data.content, "income");
+      setData(transformedData);
     } catch (error) {
       setError("Failed to fetch income data");
     } finally {
@@ -126,7 +163,7 @@ const Transactions: React.FC = () => {
 
     try {
       const response = await fetch(
-        `https://bank-dashboard-rsf1.onrender.com/cards?page=${page}&size=3`,
+        `https://bank-dashboard-irbd.onrender.com/cards?page=${page}&size=2`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -171,7 +208,7 @@ const Transactions: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#F5F7FA] dark:bg-gray-900 space-y-8 w-[95%] pt-3 overflow-hidden mx-auto">
+    <div className="bg-[#F5F7FA] dark:bg-gray-900 space-y-8 w-full px-9 pt-3 overflow-hidden mx-auto">
       {/* First Row - My Cards and My Expenses */}
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 lg:w-[49%] overflow-hidden">
@@ -186,6 +223,10 @@ const Transactions: React.FC = () => {
           <div className="flex gap-4">
             {loading ? (
               <Shimmer /> // Display shimmer effect while loading
+            ) : cardData.length === 0 ? (
+              <p className="text-center w-full text-gray-500 animate-pulse">
+                No data here yet
+              </p>
             ) : (
               cardData.map((card, index) => (
                 <Card
@@ -201,7 +242,15 @@ const Transactions: React.FC = () => {
           <h2 className="text-lg font-semibold mb-4 font-Inter text-[#343C6A]">
             My Expenses
           </h2>
-          {loading ? <Shimmer /> : <BarChartComponent/>} 
+          {loading ? (
+            <Shimmer />
+          ) : expenseData.length === 0 ? (
+            <p className="text-center w-full text-gray-500 animate-pulse">
+              No data here yet
+            </p>
+          ) : (
+            <BarChartComponent data={expenseData} />
+          )}
         </div>
       </div>
 
@@ -211,7 +260,9 @@ const Transactions: React.FC = () => {
           <a
             href="#"
             className={`text-lg font-normal mx-2 transition-all ${
-              activeLink === "recent" ? "text-blue-500 font-bold border-b-2 border-blue-500" : "text-[#343C6A]"
+              activeLink === "recent"
+                ? "text-blue-500 font-bold border-b-2 border-blue-500"
+                : "text-[#343C6A]"
             }`}
             onClick={() => handleLinkClick("recent")}
           >
@@ -220,7 +271,9 @@ const Transactions: React.FC = () => {
           <a
             href="#"
             className={`text-lg font-normal mx-2 transition-all ${
-              activeLink === "income" ? "text-blue-500 font-bold border-b-2 border-blue-500" : "text-[#343C6A]"
+              activeLink === "income"
+                ? "text-blue-500 font-bold border-b-2 border-blue-500"
+                : "text-[#343C6A]"
             }`}
             onClick={() => handleLinkClick("income")}
           >
@@ -229,33 +282,30 @@ const Transactions: React.FC = () => {
           <a
             href="#"
             className={`text-lg font-normal mx-2 transition-all ${
-              activeLink === "expenses" ? "text-blue-500 font-bold border-b-2 border-blue-500" : "text-[#343C6A]"
+              activeLink === "expenses"
+                ? "text-blue-500 font-bold border-b-2 border-blue-500"
+                : "text-[#343C6A]"
             }`}
             onClick={() => handleLinkClick("expenses")}
           >
             Expenses
           </a>
         </div>
-
-        <div className="hidden lg:flex flex-col w-full">
-          {error ? (
-            <p className="text-red-500">{error}</p>
-          ) : loading ? (
-            <Shimmer /> // Display shimmer effect while loading
-          ) : activeLink === "recent" || activeLink === "income" ? (
-            <TableComponent columns={columns} data={data} />
-          ) : (
-            <BarChartComponent/>
-          )}
-        </div>
-
-        <div className="block lg:hidden">
-          {loading ? (
-            <Shimmer /> // Display shimmer effect while loading
-          ) : (
-            <TableCard data={data} />
-          )}
-        </div>
+        {loading ? (
+          <Shimmer /> // Display shimmer effect while loading
+        ) : (
+          <>
+            {activeLink === "expenses" ? (
+              <TableCard data={transformData(expenseData, "expenses")} activeLink={activeLink}/>
+            ) : (
+              <TableComponent
+                data={data}
+                columns={columns}
+                activeLink={activeLink}
+              />
+            )}
+          </>
+        )}
       </div>
     </div>
   );

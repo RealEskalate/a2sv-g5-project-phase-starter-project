@@ -1,10 +1,9 @@
 import React from "react";
-import "./shimmer.css"; // You'll need to create this CSS file for styling
 
 const Shimmer: React.FC = () => {
   return (
-    <div className="shimmer-wrapper">
-      <div className="shimmer"></div>
+    <div className="relative overflow-hidden bg-gray-200 animate-pulse rounded-md h-full">
+      <div className="absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_auto] animate-shimmer"></div>
     </div>
   );
 };

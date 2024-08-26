@@ -62,7 +62,7 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
   }
 
   return (
-    <div className={`shadow-md bg-white dark:bg-gray-900 `}>
+    <div className={`shadow-md bg-white dark:bg-gray-800 `}>
       {/* Mobile view */}
       <div className="flex justify-between items-center p-6 sm:hidden">
         <button onClick={toggleSidebar} aria-label="Toggle sidebar">

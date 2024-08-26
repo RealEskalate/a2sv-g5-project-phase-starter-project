@@ -12,10 +12,12 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 interface TableProps {
   columns: ColumnDef<any, any>[];
   data: any[];
+  activeLink: string; // Added activeLink to the props
 }
 
-export function TableComponent({ columns, data }: TableProps) {
+export function TableComponent({ columns, data, activeLink }: TableProps) {
   console.log(data, 22222);
+
   const tableInstance = useReactTable({
     data,
     columns,
@@ -26,6 +28,9 @@ export function TableComponent({ columns, data }: TableProps) {
     },
     debugTable: true,
   });
+
+  // Optional: Conditional logic based on activeLink
+  // For example, you might want to apply a different class or style based on activeLink
 
   return (
     <div className="overflow-x-auto">

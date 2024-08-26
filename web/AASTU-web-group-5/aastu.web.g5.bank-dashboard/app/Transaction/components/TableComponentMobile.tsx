@@ -13,9 +13,10 @@ interface TableCardProps {
     column6: number; // amount
     column7: string; // receiptInfo (not used here)
   }[];
+  activeLink: string; // Added activeLink to the props
 }
 
-const TableCard: React.FC<TableCardProps> = ({ data }) => {
+const TableCard: React.FC<TableCardProps> = ({ data, activeLink }) => {
   const [currentPage, setCurrentPage] = useState<number>(0);
 
   // Paginate data
@@ -70,7 +71,7 @@ const TableCard: React.FC<TableCardProps> = ({ data }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 bg-white dark:bg-gray-900 shadow-md dark:shadow-gray-800 rounded-lg">
+    <div className={`flex flex-col gap-4 p-4 bg-white dark:bg-gray-900 shadow-md dark:shadow-gray-800 rounded-lg ${activeLink === 'tablecard' ? 'border-blue-500 border-2' : ''}`}>
       {paginatedData.map((item, index) => {
         const amount = item.column6;
         const isPositive = item.column3 === "deposit" || amount > 0;

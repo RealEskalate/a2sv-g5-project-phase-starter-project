@@ -1,65 +1,50 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis, Cell, LabelList } from "recharts";
-import { Card, CardContent } from "@/components/ui/card";
+import React, { useState } from "react";
 import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  LabelList,
+  CartesianGrid,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 
-interface TransactionData {
-  transactionId: string;
-  type: string;
-  senderUserName: string;
-  description: string;
-  date: string;
+interface ExpenseData {
   amount: number;
-  receiverUserName: string | null;
+  month: string;
 }
 
-// Define all months of the year
-const monthsOfYear = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+interface BarChartComponentProps {
+  data: ExpenseData[];
+}
 
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "hsl(var(--chart-1))",
-  },
-} satisfies ChartConfig;
-
-export function BarChartComponent() {
-  const [chartData, setChartData] = useState<{ month: string; desktop: number }[]>([]);
+const BarChartComponent: React.FC<BarChartComponentProps> = ({ data }) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  useEffect(() => {
-    // Fetch data from the API
-    const fetchData = async () => {
-      try {
-        const response = await fetch("https://bank-dashboard-rsf1.onrender.com/transactions?page=0");
-        const data: TransactionData[] = await response.json();
+  // Default data structure for months with different default values
+  const defaultData = [
+    { month: "Jan", amount: 733 },
+    { month: "Feb", amount: 1762 },
+    { month: "Mar", amount: 500 },
+    { month: "Apr", amount: 100 },
+    { month: "May", amount: 1230 },
+    { month: "Jun", amount: 1110 },
+    { month: "Jul", amount: 12340 },
+    { month: "Aug", amount: 2320 },
+    { month: "Sep", amount: 1100 },
+    { month: "Oct", amount: 1100 },
+    { month: "Nov", amount: 1109 },
+    { month: "Dec", amount: 1230 },
+  ];
 
-        // Aggregate data by month
-        const aggregatedData = monthsOfYear.map((month, index) => {
-          const monthData = data.filter(item => {
-            const itemMonth = new Date(item.date).getMonth(); // Extract month from date
-            return itemMonth === index;
-          });
-          const totalAmount = monthData.reduce((sum, item) => sum + item.amount, 0);
-          return { month, desktop: totalAmount + 100 }; // Example addition
-        });
+  // Merge default data with actual data
+  const mergedData = defaultData.map((item) => {
+    const found = data.find((d) => d.month === item.month);
+    return { ...item, amount: found ? found.amount : item.amount }; // Use default value if not found
+  });
 
-        setChartData(aggregatedData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
+  // Handle mouse enter and leave events
   const handleMouseEnter = (index: number) => {
     setActiveIndex(index);
   };
@@ -69,31 +54,30 @@ export function BarChartComponent() {
   };
 
   return (
-    <Card className="dark:bg-gray-800 bg-white">
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart data={chartData} onMouseLeave={handleMouseLeave}>
-            <CartesianGrid vertical={false} horizontal={false} strokeDasharray="3 3" stroke="#ccc" />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-              stroke="#666" // XAxis label color
-              className="dark:text-gray-400"
-            />
-            
-            <Bar dataKey="desktop" radius={10}>
-              {chartData.map((entry, index) => (
+    <ResponsiveContainer width="100%" height={300}>
+      <BarChart
+        data={mergedData}
+        onMouseLeave={handleMouseLeave}
+        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+        
+      >
+ <CartesianGrid vertical={false} horizontal={false} />
+         <XAxis dataKey="month" 
+         tickLine={false}
+         tickMargin={10}
+         axisLine={false}
+         tickFormatter={(value) => value.slice(0, 3)}
+    />
+        <Bar dataKey="amount" radius={10}>
+              {mergedData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={activeIndex === index ? "#12887E" : "#EDF0F7"}
+                  fill={activeIndex === index ? "#12887E33" : "#EDF0F7"}
                   onMouseEnter={() => handleMouseEnter(index)}
                 />
               ))}
-              <LabelList
-                dataKey="desktop"
+               <LabelList
+                dataKey="amount"
                 position="top"
                 content={({ x, y, value, index }) =>
                   activeIndex === index ? (
@@ -101,9 +85,9 @@ export function BarChartComponent() {
                       x={x}
                       y={y}
                       dy={-10}
-                      fill={activeIndex === index ? "white" : "black"}
+                      fill="black"
                       fontSize={12}
-                      textAnchor="middle"
+                      textAnchor="top"
                     >
                       {value}
                     </text>
@@ -111,11 +95,9 @@ export function BarChartComponent() {
                 }
               />
             </Bar>
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+      </BarChart>
+    </ResponsiveContainer>
   );
-}
+};
 
 export default BarChartComponent;

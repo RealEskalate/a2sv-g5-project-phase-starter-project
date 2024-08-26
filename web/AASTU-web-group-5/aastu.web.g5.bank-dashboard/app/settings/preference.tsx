@@ -85,7 +85,7 @@ function Preference() {
 		console.log(updatedData, "updated data ");
 		try {
 			const response = await axios.put(
-				"https://bank-dashboard-rsf1.onrender.com/user/update-preference",
+				"https://bank-dashboard-irbd.onrender.com/user/update-preference",
 				updatedData,
 				{
 					headers: {

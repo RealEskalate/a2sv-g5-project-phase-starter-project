@@ -30,7 +30,7 @@ export function PieChartComponent() {
     const fetchData = async () => {
       if (user?.accessToken) {
         try {
-          const response = await axios.get('https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=0&size=7', {
+          const response = await axios.get('https://bank-dashboard-irbd.onrender.com/transactions/expenses?page=0&size=7', {
             headers: {
               Authorization: `Bearer ${user.accessToken}`,
             },
@@ -43,7 +43,7 @@ export function PieChartComponent() {
           if (error.response?.status === 401) {
             // Token might be expired, try to refresh it
             try {
-              const refreshResponse = await axios.post('https://bank-dashboard-rsf1.onrender.com/auth/refresh_token', {}, {
+              const refreshResponse = await axios.post('https://bank-dashboard-irbd.onrender.com/auth/refresh_token', {}, {
                 headers: {
                   "Content-Type": "application/json",
                   Authorization: `Bearer ${user.refreshToken}`,
@@ -54,7 +54,7 @@ export function PieChartComponent() {
               const newAccessToken = refreshedTokens.access_token;
 
               // Retry the original request with the new access token
-              const retryResponse = await axios.get('https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=0&size=7', {
+              const retryResponse = await axios.get('https://bank-dashboard-irbd.onrender.com/transactions/expenses?page=0&size=7', {
                 headers: {
                   Authorization: `Bearer ${newAccessToken}`,
                 },

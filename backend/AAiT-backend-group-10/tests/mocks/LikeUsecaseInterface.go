@@ -37,22 +37,24 @@ func (_m *LikeUsecaseInterface) DeleteLike(like dto.UnlikeDto) *domain.CustomErr
 }
 
 // GetLike provides a mock function with given fields: blogID, reacterID
-func (_m *LikeUsecaseInterface) GetLike(blogID uuid.UUID, reacterID uuid.UUID) (domain.Like, *domain.CustomError) {
+func (_m *LikeUsecaseInterface) GetLike(blogID uuid.UUID, reacterID uuid.UUID) (*domain.Like, *domain.CustomError) {
 	ret := _m.Called(blogID, reacterID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetLike")
 	}
 
-	var r0 domain.Like
+	var r0 *domain.Like
 	var r1 *domain.CustomError
-	if rf, ok := ret.Get(0).(func(uuid.UUID, uuid.UUID) (domain.Like, *domain.CustomError)); ok {
+	if rf, ok := ret.Get(0).(func(uuid.UUID, uuid.UUID) (*domain.Like, *domain.CustomError)); ok {
 		return rf(blogID, reacterID)
 	}
-	if rf, ok := ret.Get(0).(func(uuid.UUID, uuid.UUID) domain.Like); ok {
+	if rf, ok := ret.Get(0).(func(uuid.UUID, uuid.UUID) *domain.Like); ok {
 		r0 = rf(blogID, reacterID)
 	} else {
-		r0 = ret.Get(0).(domain.Like)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.Like)
+		}
 	}
 
 	if rf, ok := ret.Get(1).(func(uuid.UUID, uuid.UUID) *domain.CustomError); ok {

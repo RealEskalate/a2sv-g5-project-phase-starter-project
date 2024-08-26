@@ -21,7 +21,7 @@ func NewLikeRepository(db *mongo.Database, collectionName string) *LikeRepositor
 		Collection: collection,
 	}
 }
-func (l *LikeRepository) GetLike(blogID uuid.UUID, reacterID uuid.UUID) (domain.Like, *domain.CustomError) {
+func (l *LikeRepository) GetLike(blogID uuid.UUID, reacterID uuid.UUID) (*domain.Like, *domain.CustomError) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -29,13 +29,13 @@ func (l *LikeRepository) GetLike(blogID uuid.UUID, reacterID uuid.UUID) (domain.
 		{Key: "blog_id", Value: blogID},
 		{Key: "reacter_id", Value: reacterID},
 	}
-	var like domain.Like
+	var like *domain.Like
 	err := l.Collection.FindOne(ctx, filter).Decode(&like)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return like, domain.ErrLikeNotFound
+			return nil, domain.ErrLikeNotFound
 		}
-		return like, domain.ErrLikeCountFetchFailed
+		return nil, domain.ErrLikeCountFetchFailed
 	}
 	return like, nil
 }
@@ -110,6 +110,6 @@ func (l *LikeRepository) DeleteLikesByBlog(blogID uuid.UUID) *domain.CustomError
 	_, err := l.Collection.DeleteMany(ctx, filter)
 	if err != nil {
 		return domain.ErrLikeDeletionFailed
-	} 
+	}
 	return nil
 }

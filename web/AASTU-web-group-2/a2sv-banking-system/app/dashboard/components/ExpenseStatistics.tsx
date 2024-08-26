@@ -28,15 +28,15 @@ import Refresh from "@/app/api/auth/[...nextauth]/token/RefreshToken";
 import { IconType } from "react-icons";
 
 const initialChartData = [
-  { browser: "shopping", visitors: 0, fill: "var(--color-shopping)" },
-  { browser: "transfer", visitors: 0, fill: "var(--color-transfer)" },
-  { browser: "deposit", visitors: 0, fill: "var(--color-deposit)" },
-  {browser: "service", visitors: 0, fill: "var(--color-service)"}
+  { browser: "shopping", amount: 0, fill: "var(--color-shopping)" },
+  { browser: "transfer", amount: 0, fill: "var(--color-transfer)" },
+  { browser: "deposit", amount: 0, fill: "var(--color-deposit)" },
+  {browser: "service", amount: 0, fill: "var(--color-service)"}
 ];
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  Amount: {
+    label: "Amount",
   },
   shopping: {
     label: "Shopping",
@@ -78,7 +78,9 @@ type Data = {
 type SessionDataType = {
   user: Data;
 };
-
+const ShimmerEffect = () => (
+  <div className="h-64 w-64 max-w-[300px] bg-gray-200 animate-pulse rounded-full"></div>
+);
 export function ExpenseStatistics() {
   const [chartData, setChartData] = useState(initialChartData);
   const [loading, setLoading] = useState(true);
@@ -129,10 +131,10 @@ export function ExpenseStatistics() {
           });
 
           setChartData([
-            { browser: "shopping", visitors: typeAmounts.shopping, fill: "var(--color-shopping)" },
-            { browser: "transfer", visitors: typeAmounts.transfer, fill: "var(--color-transfer)" },
-            { browser: "deposit", visitors: typeAmounts.deposit, fill: "var(--color-deposit)" },
-            { browser: "service", visitors: typeAmounts.service, fill: "var(--color-service)" },
+            { browser: "shopping", amount: typeAmounts.shopping, fill: "var(--color-shopping)" },
+            { browser: "transfer", amount: typeAmounts.transfer, fill: "var(--color-transfer)" },
+            { browser: "deposit", amount: typeAmounts.deposit, fill: "var(--color-deposit)" },
+            { browser: "service", amount: typeAmounts.service, fill: "var(--color-service)" },
           ]);
 
           setLoading(false);
@@ -156,7 +158,7 @@ export function ExpenseStatistics() {
       <CardContent className="flex-1 pb-0">
         <div className="flex justify-center items-center">
           {loading ? (
-            <p>Loading...</p>
+            <ShimmerEffect/>
           ) : (
             <ChartContainer 
               config={chartConfig}
@@ -164,11 +166,11 @@ export function ExpenseStatistics() {
             >
               <PieChart>
                 <ChartTooltip
-                  content={<ChartTooltipContent nameKey="visitors" hideLabel />}
+                  content={<ChartTooltipContent nameKey="amount" hideLabel />}
                 />
                 <Pie
                   data={chartData}
-                  dataKey="visitors"
+                  dataKey="amount"
                   paddingAngle={0} // Adds margin between the slices
                 >
                   <LabelList

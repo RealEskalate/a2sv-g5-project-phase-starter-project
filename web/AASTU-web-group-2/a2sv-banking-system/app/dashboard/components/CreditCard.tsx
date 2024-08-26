@@ -62,7 +62,7 @@ const CreditCard: React.FC<CardProps> = ({
             {cardNumber}
           </div>
           <div className='flex justify-end relative z-10 px-6'>
-            <img src={ellipseImageSrc} alt="ellipse background" />
+            <img src={ellipseImageSrc}  alt="ellipse background" />
           </div>
         </div>
       </div>

@@ -99,7 +99,7 @@ const LineGraphComponent = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="w-full h-64 bg-white dark:bg-gray-800 border dark:border-white">
+    <div className="w-full h-64 bg-white dark:bg-gray-800 border ">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={chartData}

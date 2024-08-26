@@ -26,15 +26,15 @@ export const QuickTransferCard: React.FC<QuickTransferCardProps> = ({ userId, na
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="flex items-center space-x-4 p-2 rounded-lg ">
-      {/* <Image
+    <div className="flex flex-col gap-2 items-center space-x-4 p-2 rounded-lg ">
+      <Image
         src={Profile}
         alt={`${username}'s profile picture`}
         width={44}
         height={44}
         className="rounded-full object-cover"
-      /> */}
-      <div>
+      />
+      <div className='flex flex-col gap-2'>
         <p className="font-semibold text-sm md:text-base">{name}</p>
         <p className="text-sm text-gray-500">@{username}</p>
         <p className="text-xs text-gray-400">{city}, {country}</p>

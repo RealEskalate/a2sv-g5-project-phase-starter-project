@@ -46,7 +46,7 @@ export const QuickTransferList = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className='container rounded-[20px] flex flex-col gap-4 p-4 bg-white dark:bg-gray-800 transition-colors duration-300'>
+    <div className='container rounded-[20px] flex flex-col gap-6 p-4 transition-colors duration-300'>
       <div className='flex flex-col md:flex-row justify-between items-center'>
         <div className='flex flex-row gap-4 overflow-x-auto'>
           {transfers.map((transfer) => (

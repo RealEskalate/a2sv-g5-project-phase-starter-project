@@ -115,9 +115,9 @@ export default function Component() {
   }, [session, user?.accessToken]);
 
   return (
-    <Card className="relative h-[364px] w-full bg-white dark:bg-gray-300 border dark:border-white">
+    <Card className="relative h-[364px] w-full bg-white dark:bg-gray-800 border rounded-lg">
       {/* Color Titles at the Top Right */}
-      <div className="absolute top-0 right-0 p-2 flex gap-2 bg-white dark:bg-gray-300">
+      <div className="absolute top-0 right-0 p-2 flex gap-2 bg-white dark:bg-gray-800">
         <span className="flex text-sm items-center gap-1 text-[#343C6A] dark:text-white">
           <span
             className="w-3 h-3 inline-block rounded-full"
@@ -139,22 +139,22 @@ export default function Component() {
         <div className="pt-7 w-full flex-1 h-[calc(100%-2rem)] pb-0">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" strokeWidth={0.5} stroke="#ffffff" />
+              <CartesianGrid strokeDasharray="3 3" strokeWidth={0.5} stroke="#666666" />
               <XAxis
                 dataKey="day"
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
-                tick={{ fontSize: 12, fill: '#ffffff' }}
+                tick={{ fontSize: 12, fill: '#666666' }}
                 strokeWidth={0.5}
-                stroke="#ffffff"
+                stroke="#666666"
               />
               <YAxis
                 width={70} // Increased width for better visibility of large numbers
                 tickMargin={10}
-                tick={{ fontSize: 9, fill: '#ffffff' }} // Adjust font size if necessary
+                tick={{ fontSize: 9, fill: '#666666' }} // Adjust font size if necessary
                 strokeWidth={0.5}
-                stroke="#ffffff"
+                stroke="#666666"
               />
               {/* <Tooltip /> */}
               <Bar

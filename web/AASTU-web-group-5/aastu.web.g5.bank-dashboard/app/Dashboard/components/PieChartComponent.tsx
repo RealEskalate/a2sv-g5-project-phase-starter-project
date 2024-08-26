@@ -176,7 +176,7 @@ export function PieChartComponent() {
   if (error) return <p className="text-red-500 dark:text-red-300">Error: {error}</p>;
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div className="flex justify-center items-center h-screen transition-colors duration-300">
       <PieChart width={300} height={300}>
         <Pie
           data={filteredData}
@@ -190,6 +190,7 @@ export function PieChartComponent() {
           label={CustomLabel}
           stroke="#fff"
           strokeWidth={3}
+          
           onMouseEnter={onPieEnter}
           onMouseLeave={onPieLeave}
           activeIndex={activeIndex}

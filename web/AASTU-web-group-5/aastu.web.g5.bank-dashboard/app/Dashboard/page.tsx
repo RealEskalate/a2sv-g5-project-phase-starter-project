@@ -24,7 +24,7 @@ const DashboardCardColor = [
   },
   {
     cardBgColor:
-      "bg-white dark:bg-gray-300 rounded-3xl text-[#343C6A] dark:text-gray-800 border-2 border-solid border-gray-200 ",
+      "bg-white dark:bg-gray-800 rounded-3xl text-[#343C6A] dark:text-white border-2 border-solid border-gray-200 ",
     bottomBgColor:
       "flex justify-between p-4 border-t-2 border-solid border-gray-200 rounded-bl-3xl rounded-br-3xl",
     imageCreditCard: Chip_card3,
@@ -123,7 +123,7 @@ function Dashboard() {
   }, [accessToken, refreshToken]);
 
   return (
-    <div className="bg-gray-500 dark:bg-gray-800 space-y-8 w-[95%] pt-3 overflow-hidden mx-auto">
+    <div className="bg-gray-100 dark:bg-gray-900 space-y-8 w-full px-9 pt-3 overflow-hidden mx-auto">
       <div className="grid grid-cols-1 md:grid-cols-[67%_33%] gap-4">
         <div className="w-full p-4 rounded-lg flex flex-col justify-between">
           <div className="text-[#343C6A] dark:text-white flex-1">
@@ -172,7 +172,7 @@ function Dashboard() {
           ) : (
             <>
               <p className="text-[#343C6A] dark:text-white text-lg font-semibold leading-6">Recent Transactions</p>
-              <div className="mt-4 bg-white dark:bg-gray-300">
+              <div className="mt-4 ">
                 <RecentTransactionCard />
               </div>
             </>
@@ -189,7 +189,7 @@ function Dashboard() {
             <>
               <div className="text-lg font-semibold leading-6 text-[#343C6A] dark:text-white">
                 Weekly Activities
-                <div className="bg-white dark:bg-gray-300 mt-4">
+                <div className="bg-white dark:bg-gray-800 mt-4 rounded-lg">
                   <BarchartComponent />
                 </div>
               </div>
@@ -204,7 +204,7 @@ function Dashboard() {
             <>
               <div className="text-lg font-semibold leading-6 text-[#343C6A] dark:text-white">
                 Expense Statistics
-                <div className="h-64 bg-white dark:bg-gray-300 rounded-[25px] flex items-center mt-4 justify-center flex-1">
+                <div className="h-64 bg-white dark:bg-gray-800 rounded-[25px] flex items-center mt-4 justify-center flex-1">
                   <PieChartComponent />
                 </div>
               </div>
@@ -222,7 +222,7 @@ function Dashboard() {
             <>
               <div className="text-lg font-semibold leading-6 text-[#343C6A] dark:text-white">
                 Quick Transfer
-                <div className="mt-4 bg-white dark:bg-gray-300 rounded-[25px]">
+                <div className="mt-4 bg-white dark:bg-gray-800 rounded-[25px]">
                   <QuickTransferList />
                 </div>
               </div>
@@ -237,7 +237,7 @@ function Dashboard() {
             <>
               <div className="text-lg font-semibold leading-6 text-[#343C6A] dark:text-white">
                 Balance History
-                <div className="bg-white dark:bg-gray-300 mt-4">
+                <div className="bg-white dark:bg-gray-800 mt-4 rounded-lg">
                   <LineGraphComponent />
                 </div>
               </div>

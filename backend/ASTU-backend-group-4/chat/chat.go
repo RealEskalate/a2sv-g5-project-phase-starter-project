@@ -9,11 +9,11 @@ import (
 
 type Chat struct {
 	ID        string    `json:"id,omitempty" bson:"_id,omitempty" `
-	Title     string    `json:"title,omitempty"`
+	Title     string    `json:"title"`
 	History   []Message `json:"history"`
-	UserID    string    `json:"user_id,omitempty"`
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UserID    string    `json:"user_id" bson:"user_id"`
+	CreatedAt time.Time `json:"created_at" bson:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
 }
 
 type Message struct {

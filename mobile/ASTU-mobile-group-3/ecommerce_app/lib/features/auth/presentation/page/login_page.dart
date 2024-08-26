@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/constants.dart';
 import '../../../../core/themes/themes.dart';
+import '../../../../landing_page.dart';
 import '../../../product/presentation/pages/product_list_page.dart';
 import '../../../product/presentation/widgets/fill_custom_button.dart';
 import '../../../product/presentation/widgets/loading_dialog.dart';
@@ -26,7 +27,7 @@ class LoginPage extends StatelessWidget {
           if (state is LogInSuccessState) {
             Navigator.pop(context);
             Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const ProductListPage()));
+                MaterialPageRoute(builder: (_) => const LandingPage()));
           } else if (state is LoginErrorState) {
             Navigator.pop(context);
             ScaffoldMessenger.of(context)

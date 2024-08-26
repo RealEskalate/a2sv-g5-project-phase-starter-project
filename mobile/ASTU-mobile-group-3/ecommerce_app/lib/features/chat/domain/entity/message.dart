@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../../auth/data/model/user_model.dart';
+import '../../../auth/data/model/user_model.dart';
 import '../../../auth/domain/entities/user_entity.dart';
 import 'chat.dart';
 
@@ -16,7 +17,7 @@ class MessageEntity extends Equatable {
     required this.content,
   });
 
-  // Method to convert MessageEntity to JSON
+  // // Method to convert MessageEntity to JSON
   // Map<String, dynamic> toJson() {
   //   return {
   //     '_id': messageId,

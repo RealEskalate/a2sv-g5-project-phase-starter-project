@@ -48,6 +48,7 @@ dependencies:
   custom_clippers: ^2.0.0
   flutter_spinkit: ^5.2.1
   socket_io_client: ^2.0.3+1
+  flutter_svg: ^2.0.10+1
 dev_dependencies:
   flutter_test:
     sdk: flutter

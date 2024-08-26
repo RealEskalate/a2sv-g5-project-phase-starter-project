@@ -122,21 +122,15 @@ Future<void> init() async {
   locator.registerFactory(() => ChatBloc(locator(), locator(), locator(),
       locator(), locator(), locator(), locator()));
 
-  locator.registerLazySingleton<ChatRemoteDataSource>(
-      () => ChatRemoteDataSourceImpl(httpClient: locator()));
+  locator.registerLazySingleton<ChatRemoteDataSource>(() =>
+      ChatRemoteDataSourceImpl(
+          httpClient: locator(), authLocalDataSource: locator()));
 
   locator.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl(
       chatRemoteDataSource: locator(), socketIOService: locator()));
 
   //
-  // Repositories
-  // locator.registerLazySingleton<ProductRepository>(
-  //   () => ProductRepositoryImpl(
-  //     remoteProductDataSource: locator(),
-  //     localProductDataSource: locator(),
-  //     networkInfo: locator(),
-  //   ),
-  // );
+
   //! Shared pref
 
   final sharedPreferences = await SharedPreferences.getInstance();

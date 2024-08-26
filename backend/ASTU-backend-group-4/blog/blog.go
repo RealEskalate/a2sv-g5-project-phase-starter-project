@@ -16,17 +16,17 @@ var weightsToUse = map[string]float32{
 
 type Blog struct {
 	ID            string    `json:"id,omitempty" bson:"_id,omitempty"`
-	AuthorID      string    `json:"author_id,omitempty"`
-	Title         string    `json:"title,omitempty"`
-	Content       string    `json:"content,omitempty"`
-	Tags          []string  `json:"tags,omitempty"`
-	ViewsCount    int       `json:"views_count,omitempty"`
-	CommentsCount int       `json:"comments_count,omitempty"`
-	LikesCount    int       `json:"likes_count,omitempty"`
-	DislikesCount int       `json:"dislikes_count,omitempty"`
-	Popularity    float32   `json:"popularity,omitempty"`
-	CreatedAt     time.Time `json:"created_at,omitempty"`
-	UpdatedAt     time.Time `json:"updated_at,omitempty"`
+	AuthorID      string    `json:"author_id" bson:"author_id"`
+	Title         string    `json:"title"`
+	Content       string    `json:"content"`
+	Tags          []string  `json:"tags"`
+	ViewsCount    int       `json:"views_count" bson:"views_count"`
+	CommentsCount int       `json:"comments_count" bson:"comments_count"`
+	LikesCount    int       `json:"likes_count" bson:"likes_count"`
+	DislikesCount int       `json:"dislikes_count" bson:"dislikes_count"`
+	Popularity    float32   `json:"popularity"`
+	CreatedAt     time.Time `json:"created_at" bson:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at" bson:"updated_at"`
 }
 
 func (b *Blog) CalculatePopularity() {
@@ -74,17 +74,17 @@ func (b *Blog) DecrementCommentsCount() {
 }
 
 type BlogSummary struct {
-	ID            string    `json:"id,omitempty" bson:"_id,omitempty"`
-	AuthorID      string    `json:"author_id,omitempty"`
-	Title         string    `json:"title,omitempty"`
-	Tags          []string  `json:"tags,omitempty"`
-	ViewsCount    int       `json:"views_count,omitempty"`
-	CommentsCount int       `json:"comments_count,omitempty"`
-	LikesCount    int       `json:"likes_count,omitempty"`
-	DislikesCount int       `json:"dislikes_count,omitempty"`
-	Popularity    float32   `json:"popularity,omitempty"`
-	CreatedAt     time.Time `json:"created_at,omitempty"`
-	UpdatedAt     time.Time `json:"updated_at,omitempty"`
+	ID            string    `json:"id" bson:"_id,omitempty"`
+	AuthorID      string    `json:"author_id" bson:"author_id"`
+	Title         string    `json:"title"`
+	Tags          []string  `json:"tags"`
+	ViewsCount    int       `json:"views_count" bson:"views_count"`
+	CommentsCount int       `json:"comments_count" bson:"comments_count"`
+	LikesCount    int       `json:"likes_count" bson:"likes_count"`
+	DislikesCount int       `json:"dislikes_count" bson:"dislikes_count"`
+	Popularity    float32   `json:"popularity"`
+	CreatedAt     time.Time `json:"created_at" bson:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at" bson:"updated_at"`
 }
 
 type Comment struct {
@@ -109,10 +109,11 @@ type Dislike struct {
 }
 
 type FilterQuery struct {
-	Tags          []string
-	CreatedAtFrom string
-	CreatedAtTo   string
-	Popularity    float32
+	Tags           []string
+	CreatedAtFrom  string
+	CreatedAtTo    string
+	PopularityFrom float32
+	PopularityTo   float32
 }
 
 type BlogUseCase interface {

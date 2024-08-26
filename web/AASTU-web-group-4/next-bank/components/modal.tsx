@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { DocumentDuplicateIcon, PencilIcon } from "@heroicons/react/24/outline"
 import Image from "next/image"
 import { UserData } from "@/types"
+
 import SettingsPage from "@/app/(root)/setting/page"
 import Link from "next/link"
 import {

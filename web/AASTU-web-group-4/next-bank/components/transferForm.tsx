@@ -8,7 +8,7 @@ import Cookies from 'js-cookie';
 
 const TransferPage: React.FC = () => {
   const [visible, setVisible] = useState(false); 
-  const { register, reset, handleSubmit, formState: { errors } } = useForm();
+  const { register, reset, handleSubmit, formState: { errors  } } = useForm();
   let account = 5000;
 
   const onSubmit = async (data: any) => {
@@ -92,7 +92,7 @@ const TransferPage: React.FC = () => {
                 placeholder="Enter receiver's username"
                 required
               />
-              {errors.receiverUserName && <p className="text-red-500 text-xs italic">{errors.receiverUserName.message}</p>}
+              {errors.receiverUserName && <p className="text-red-500 text-xs italic">{errors.receiverUserName.message }</p>}
             </div>
             <div className="flex items-center justify-center mt-4">
               <button

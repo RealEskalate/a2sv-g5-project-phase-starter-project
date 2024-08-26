@@ -14,7 +14,7 @@ class OutlineCustomButton extends StatelessWidget {
       style: FilledButton.styleFrom(
         foregroundColor: MyTheme.ecRed,
         side: const BorderSide(color: MyTheme.ecRed),
-        padding: EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.symmetric(vertical: 18),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(5),
         ),

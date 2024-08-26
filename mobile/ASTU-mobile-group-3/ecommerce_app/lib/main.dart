@@ -24,8 +24,7 @@ import 'splash_page.dart';
 void main() async {
   WidgetsFlutterBinding().ensureSemantics();
   await init();
-
-  runApp(DevicePreview(builder: (context) => const MyApp()));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

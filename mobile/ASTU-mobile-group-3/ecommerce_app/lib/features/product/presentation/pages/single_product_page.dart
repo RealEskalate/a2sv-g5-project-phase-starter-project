@@ -31,7 +31,7 @@ class SingleProduct extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     const textStyle = TextStyle(
       fontFamily: 'poppins',
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w500,
       fontSize: 16,
     );
     return Scaffold(
@@ -130,7 +130,7 @@ class SingleProduct extends StatelessWidget {
                 ],
               ),
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -177,7 +177,7 @@ class SingleProduct extends StatelessWidget {
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 2),
                 child: BlocBuilder<ProductBloc, ProductStates>(
                   builder: (context, state) {
                     if (state is LoadedSingleProductState) {
@@ -189,7 +189,7 @@ class SingleProduct extends StatelessWidget {
                             style: const TextStyle(
                                 fontFamily: 'poppins',
                                 fontSize: 24,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.w500),
                           ),
                           Text(
                             '${state.productEntity.price}\$',
@@ -206,7 +206,7 @@ class SingleProduct extends StatelessWidget {
                             style: TextStyle(
                                 fontFamily: 'poppins',
                                 fontSize: 24,
-                                fontWeight: FontWeight.bold),
+                                fontWeight: FontWeight.w500),
                           ),
                           Text(
                             '0\$',
@@ -221,14 +221,15 @@ class SingleProduct extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 10,
+                  vertical: 5,
                 ),
                 child: Text(
                   'Size:',
                   style: TextStyle(
                     fontFamily: 'poppins',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 20,
+                    color: Color(0xFF3E3E3E),
                   ),
                 ),
               ),
@@ -244,17 +245,20 @@ class SingleProduct extends StatelessWidget {
                       return GestureDetector(
                         onTap: () {},
                         child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
-                            padding: const EdgeInsets.all(20),
+                            margin: EdgeInsets.fromLTRB(5, 4, 5, 4),
+                            height: 60,
+                            width: 60,
+                           
                             decoration: BoxDecoration(
                                 color: (size[index][0] == 0)
-                                    ? Colors.white
-                                    : MyTheme.ecBlue,
-                                boxShadow: const [
+                                    ? const Color(0XFFFFFFFF)
+                                    : const Color(0XFF3F51F3),
+                                boxShadow:  [
                                   BoxShadow(
-                                      color: Color.fromARGB(11, 11, 11, 11),
-                                      spreadRadius: 1,
-                                      blurRadius: 2)
+                                      color: Colors.black.withOpacity(0.1),
+                                      spreadRadius: 0.5,
+                                      blurRadius: 1,
+                                      offset: Offset(0,2))
                                 ],
                                 borderRadius: BorderRadius.circular(10)),
                             child: Center(
@@ -264,8 +268,8 @@ class SingleProduct extends StatelessWidget {
                                   color: (size[index][0] == 0)
                                       ? Colors.black
                                       : Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 19),
                             ))),
                       );
                     },

@@ -12,7 +12,7 @@ class FillCustomButton extends StatelessWidget {
       key: Key(label),
       onPressed: press,
       style: FilledButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 18),
           backgroundColor: MyTheme.ecBlue,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))),

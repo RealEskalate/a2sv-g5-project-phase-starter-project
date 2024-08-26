@@ -8,8 +8,8 @@ import (
 )
 
 func (bu *BlogUsecase) DeleteBlog(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID, isAdmin bool) error {
-	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
+	// defer cancel()
 
 	err := bu.blogRepo.DeleteBlog(ctx, userID, blogID, isAdmin)
 	if err != nil {

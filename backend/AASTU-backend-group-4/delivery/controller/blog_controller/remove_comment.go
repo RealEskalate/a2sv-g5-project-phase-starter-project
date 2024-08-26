@@ -1,6 +1,7 @@
 package blog_controller
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +24,7 @@ func (bc *BlogController) DeleteComment(c *gin.Context) {
 		return
 	}
 
-	err = bc.usecase.RemoveComment(c, userId, commentID, isAdmin)
+	err = bc.usecase.RemoveComment(context.Background(), userId, commentID, isAdmin)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

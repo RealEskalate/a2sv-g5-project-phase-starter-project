@@ -9,8 +9,8 @@ import (
 )
 
 func (u *BlogUsecase) SearchBlogs(ctx context.Context, author, title string, tags []string, dateFrom, dateTo string) ([]domain.Blog, error) {
-	ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(ctx, u.contextTimeout)
+	// defer cancel()
 
 	filters := domain.BlogFilters{
 		Author: author,

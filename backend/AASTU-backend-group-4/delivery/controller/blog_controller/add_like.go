@@ -1,6 +1,7 @@
 package blog_controller
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,7 @@ func (bc *BlogController) AddLike(c *gin.Context) {
 		return
 	}
 
-	err = bc.usecase.AddLike(c, userID, ID)
+	err = bc.usecase.AddLike(context.Background(), userID, ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

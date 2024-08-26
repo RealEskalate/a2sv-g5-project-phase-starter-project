@@ -7,9 +7,11 @@ import (
 	"github.com/google/generative-ai-go/genai"
 )
 
-func (uc *BlogUsecase) GenerateAIContent(c context.Context, prompt string) (*genai.GenerateContentResponse, error) {
+func (uc *BlogUsecase) GenerateAIContent(c context.Context, prompt string) (genai.Part, error) {
 	if prompt == "" {
 		return nil, errors.New("prompt cannot be empty")
 	}
-	return uc.genAIService.GenerateContent(prompt)
+	response, err := uc.genAIService.GenerateContent(prompt, uc.Env.API_KEY)
+	return response, err
+
 }

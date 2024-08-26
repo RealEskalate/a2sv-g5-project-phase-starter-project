@@ -2,6 +2,7 @@ package user_controller
 
 import (
 	"blog-api/domain"
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -51,7 +52,7 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 		updateRequest.ProfilePicture = user_.ProfilePicture
 	}
 
-	if err := uc.userUsecase.UpdateUser(c, userID, &updateRequest); err != nil {
+	if err := uc.userUsecase.UpdateUser(context.Background(), userID, &updateRequest); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user profile"})
 		return
 	}

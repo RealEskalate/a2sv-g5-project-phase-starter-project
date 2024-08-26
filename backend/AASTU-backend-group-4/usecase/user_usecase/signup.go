@@ -2,6 +2,7 @@ package user_usecase
 
 import (
 	"blog-api/domain"
+	"blog-api/infrastructure/validation"
 	"context"
 	"errors"
 	"time"
@@ -11,6 +12,11 @@ import (
 )
 
 func (u *userUsecase) SignUp(ctx context.Context, req domain.SignupRequest) (domain.SignupResponse, error) {
+	err := validation.ValidateEmail(req.Email)
+	if err != nil {
+		return domain.SignupResponse{}, err
+	}
+
 	existingUser, err := u.userRepo.GetByEmail(ctx, req.Email)
 	if err != nil {
 		return domain.SignupResponse{}, err

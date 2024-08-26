@@ -8,9 +8,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (bu *BlogUsecase) CreateLike(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID) (*domain.Like, error) {
-	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
-	defer cancel()
+func (bu *BlogUsecase) AddLike(ctx context.Context, userID primitive.ObjectID, blogID primitive.ObjectID) error {
+	// ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
+	// defer cancel()
 
 	var newLike domain.Like
 
@@ -21,8 +21,8 @@ func (bu *BlogUsecase) CreateLike(ctx context.Context, userID primitive.ObjectID
 
 	err := bu.likeRepo.AddLike(ctx, newLike)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &newLike, nil
+	return nil
 }

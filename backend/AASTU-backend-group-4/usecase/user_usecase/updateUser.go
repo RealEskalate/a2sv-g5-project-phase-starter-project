@@ -8,8 +8,8 @@ import (
 )
 
 func (uc *userUsecase) UpdateUser(ctx context.Context, userID primitive.ObjectID, updatedUser *domain.UpdateRequest) error {
-	ctx, cancel := context.WithTimeout(ctx, uc.contextTimeout)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(ctx, uc.contextTimeout)
+	// defer cancel()
 
 	err := uc.userRepo.UpdateUser(ctx, userID, updatedUser)
 	if err != nil {

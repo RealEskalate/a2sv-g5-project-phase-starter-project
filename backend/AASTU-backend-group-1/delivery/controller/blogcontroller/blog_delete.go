@@ -20,6 +20,7 @@ func (b *BlogController) DeleteBlogByID(ctx *gin.Context) {
 			Message: "Internal server error",
 			Error:   "Error getting claims",
 		})
+
 		return
 	}
 
@@ -30,7 +31,7 @@ func (b *BlogController) DeleteBlogByID(ctx *gin.Context) {
 
 		ctx.JSON(code, domain.APIResponse{
 			Status:  code,
-			Message: "Error",
+			Message: "Error deleting blog",
 			Error:   err.Error(),
 		})
 		return

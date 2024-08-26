@@ -85,7 +85,7 @@ func (b *BlogController) UpdateBlogByID(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, domain.APIResponse{
 		Status:  http.StatusOK,
-		Message: "Success",
+		Message: "Blog updated",
 		Data:    newBlog,
 	})
 }

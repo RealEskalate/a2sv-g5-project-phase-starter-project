@@ -78,12 +78,11 @@ func (b *BlogController) GetBlogs(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, domain.APIResponse{
-		Status:  http.StatusOK,
-		Message: "Success",
-		Data: gin.H{
-			"blogs":       blogs,
-			"total_pages": total,
-		},
+		Status:    http.StatusOK,
+		Message:   "Blogs retrieved",
+		Count:     len(blogs),
+		PageCount: total,
+		Data:      blogs,
 	})
 }
 
@@ -114,7 +113,7 @@ func (b *BlogController) GetBlogByID(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, domain.APIResponse{
 		Status:  http.StatusOK,
-		Message: "Success",
+		Message: "Blog retrieved",
 		Data:    blog,
 	})
 }

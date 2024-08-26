@@ -41,11 +41,16 @@ class ProductCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
-            SizedBox(
-                height: 150,
-                child: Image.network(
-                  productObject.imageUrl,
-                )),
+            Hero(
+              tag: 'product',
+              child: SizedBox(
+                  height: 150,
+                  child: Image.network(
+                    width: double.infinity,
+                    productObject.imageUrl,
+                    fit: BoxFit.cover,
+                  )),
+            ),
             Container(
               padding: const EdgeInsets.all(8),
               child: Row(

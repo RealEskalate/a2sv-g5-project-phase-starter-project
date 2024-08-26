@@ -31,6 +31,7 @@ class Fields extends StatelessWidget {
           fillColor: const Color.fromRGBO(250, 250, 250, 1),
           filled: true,
           hintText: hintText,
+          
         ),
         validator: validator,
       ),

@@ -36,8 +36,10 @@ class _LoginPageState extends State<LoginPage> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthLoaded) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text('Login successfully')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Login successfully'),
+            backgroundColor: Colors.green,
+          ));
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -45,8 +47,10 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
         } else if (state is AuthError) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('Sign In failed')));
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Sign In failed'),
+            backgroundColor: Colors.red,
+          ));
         }
         return;
       },
@@ -139,7 +143,8 @@ class _LoginPageState extends State<LoginPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 25),
                       child: TextFormField(
                         controller: passwordController,
-                        obscureText: !_isPasswordVisible, // Toggle password visibility
+                        obscureText:
+                            !_isPasswordVisible, // Toggle password visibility
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your password';
@@ -191,16 +196,20 @@ class _LoginPageState extends State<LoginPage> {
                               password: passwordController.text));
                         }
                       },
-                      child: Text(
-                        'SIGN IN',
-                        style: GoogleFonts.poppins(
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                            color: Color.fromRGBO(255, 255, 255, 1),
-                          ),
-                        ),
-                      ),
+                      child: context.watch<AuthBloc>().state is AuthLoading
+                          ? const CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                          : Text(
+                              'SIGN IN',
+                              style: GoogleFonts.poppins(
+                                textStyle: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                  color: Color.fromRGBO(255, 255, 255, 1),
+                                ),
+                              ),
+                            ),
                     ),
                     //Sign up option text
                     const SizedBox(height: 70),

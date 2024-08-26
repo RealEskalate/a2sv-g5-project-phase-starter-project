@@ -10,17 +10,31 @@ import '../widgets/logo.dart';
 import '../widgets/text_fields.dart';
 import 'login_page.dart';
 
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   final String text;
   SignupPage({super.key, required this.text});
 
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
   final usernameController = TextEditingController();
+
   final passwordController = TextEditingController();
+
   final emailController = TextEditingController();
+
   final confirmPasswordController = TextEditingController();
 
   // Key for the form
   final _formKey = GlobalKey<FormState>();
+
+  // Password visibility
+  bool _isPasswordVisible = false;
+
+  // Checkbox state
+  bool _isCheckboxChecked = false;
 
   // Validation functions
   String? validateUsername(String? value) {
@@ -35,8 +49,8 @@ class SignupPage extends StatelessWidget {
       return 'Please enter an email';
     }
     // Regular expression for email validation
-    final RegExp emailRegExp = RegExp(
-        r'^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$');
+    final RegExp emailRegExp =
+        RegExp(r'^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$');
     if (!emailRegExp.hasMatch(value)) {
       return 'Please enter a valid email';
     }
@@ -63,6 +77,14 @@ class SignupPage extends StatelessWidget {
     return null;
   }
 
+  // Checkbox validation function
+  String? validateCheckbox(bool isChecked) {
+    if (!isChecked) {
+      return 'You must agree to the terms & policy';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
@@ -70,8 +92,8 @@ class SignupPage extends StatelessWidget {
         print('from sign up page');
         print(state);
         if (state is UserSuccessRegister) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Sign Up successfully')));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Sign Up successfully')));
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -81,8 +103,8 @@ class SignupPage extends StatelessWidget {
             ),
           );
         } else if (state is AuthError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Sign Up failed')));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('Sign Up failed')));
         }
       },
       child: Scaffold(
@@ -201,11 +223,36 @@ class SignupPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 5),
-                    Fields(
-                      controller: passwordController,
-                      hintText: '*********',
-                      obsecureText: true,
-                      validator: validatePassword,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      child: TextFormField(
+                        controller: passwordController,
+                        obscureText: !_isPasswordVisible,
+                        validator: validatePassword,
+                        decoration: InputDecoration(
+                          hintText: '*********',
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          fillColor: const Color.fromRGBO(250, 250, 250, 1),
+                          filled: true,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
                     ),
                     SizedBox(height: 5),
                     Padding(
@@ -226,17 +273,49 @@ class SignupPage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 5),
-                    Fields(
-                      controller: confirmPasswordController,
-                      hintText: '*********',
-                      obsecureText: true,
-                      validator: validateConfirmPassword,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      child: TextFormField(
+                        controller: confirmPasswordController,
+                        obscureText: !_isPasswordVisible,
+                        validator: validateConfirmPassword,
+                        decoration: InputDecoration(
+                          hintText: '*********',
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          fillColor: const Color.fromRGBO(250, 250, 250, 1),
+                          filled: true,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Row(
                         children: [
-                          Checkbox(value: false, onChanged: (bool? value) {}),
+                          Checkbox(
+                            value: _isCheckboxChecked,
+                            onChanged: (bool? value) {
+                              setState(() {
+                                _isCheckboxChecked = value ?? false;
+                              });
+                            },
+                          ),
                           Text(
                             'I understood ',
                             style: GoogleFonts.poppins(
@@ -281,16 +360,20 @@ class SignupPage extends StatelessWidget {
                               .add(RegisterEvent(senduserentity: sign));
                         }
                       },
-                      child: Text(
-                        'Sign Up',
-                        style: GoogleFonts.poppins(
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 15,
-                            color: Color.fromRGBO(255, 255, 255, 1),
-                          ),
-                        ),
-                      ),
+                      child: context.watch<AuthBloc>().state is AuthLoading
+                          ? CircularProgressIndicator(
+                              color: Colors.white,
+                            )
+                          : Text(
+                              'Sign Up',
+                              style: GoogleFonts.poppins(
+                                textStyle: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                  color: Color.fromRGBO(255, 255, 255, 1),
+                                ),
+                              ),
+                            ),
                     ),
                     SizedBox(height: 40),
                     Row(
@@ -311,7 +394,8 @@ class SignupPage extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => LoginPage(text: 'SIGN IN'),
+                                builder: (context) =>
+                                    LoginPage(text: 'SIGN IN'),
                               ),
                             );
                           },

@@ -7,5 +7,4 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setupLocator();
   runApp(EcommerceApp());
-  
 }

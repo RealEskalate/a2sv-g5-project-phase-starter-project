@@ -27,9 +27,12 @@ class _DetailsPageState extends State<DetailsPage> {
           children: [
             Stack(
               children: [
-                Container(
-                  color: const Color.fromRGBO(190, 162, 155, 350),
-                  child: Image.network(widget.productObject.imageUrl),
+                Hero(
+                  tag: 'product',
+                  child: Container(
+                    color: const Color.fromRGBO(190, 162, 155, 350),
+                    child: Image.network(widget.productObject.imageUrl),
+                  ),
                 ),
                 Positioned(
                   right: 304,

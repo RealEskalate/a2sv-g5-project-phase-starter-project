@@ -17,9 +17,9 @@ type Like struct {
 type LikeRepository interface {
 	AddLike(ctx context.Context, like Like) error                              //
 	GetLikesCount(ctx context.Context, blogID primitive.ObjectID) (int, error) //
-	GetLikes(ctx context.Context, blogID primitive.ObjectID) ([]Like, error)
+	GetLikes(ctx context.Context, blogID primitive.ObjectID, userID primitive.ObjectID) ([]*Like, error)
 	GetBlogLikes(ctx context.Context, blogID primitive.ObjectID) ([]Like, error)                              //
-	GetLikeByID(ctx context.Context, likeID primitive.ObjectID) (Like, error)                                 //
+	GetLikeByID(ctx context.Context, likeID primitive.ObjectID) (*Like, error)                                //
 	RemoveLike(ctx context.Context, userID primitive.ObjectID, likeID primitive.ObjectID, isAdmin bool) error //
 	RemoveBlogLikes(ctx context.Context, blogID primitive.ObjectID) error                                     //
 }

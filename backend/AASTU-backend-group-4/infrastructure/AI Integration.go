@@ -4,7 +4,6 @@ import (
 	"blog-api/domain"
 	"context"
 	"errors"
-	"os"
 
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
@@ -18,13 +17,13 @@ func NewGenAIService() domain.AIContentGenerator {
 }
 
 // GenerateContent calls the Gemini AI API to generate content based on the given prompt.
-func (s *GenAIService) GenerateContent(prompt string) (*genai.GenerateContentResponse, error) {
+func (s *GenAIService) GenerateContent(prompt string, API_Key string) (genai.Part, error) {
 	if prompt == "" {
 		return nil, errors.New("prompt cannot be empty") // Ensuring prompt is not empty before making the API call
 	}
 
 	ctx := context.Background()
-	apiKey := os.Getenv("API_KEY")
+	apiKey := API_Key
 	if apiKey == "" {
 		return nil, errors.New("API key is not set in the environment variables") // Check if API key is available
 	}
@@ -43,7 +42,7 @@ func (s *GenAIService) GenerateContent(prompt string) (*genai.GenerateContentRes
 
 	// Check the actual structure of the response and extract the text accordingly
 	if len(response.Candidates) > 0 && len(response.Candidates[0].Content.Parts) > 0 {
-		// response := response.Candidates[0].Content.Parts[0]
+		response := response.Candidates[0].Content.Parts[0]
 
 		return response, nil
 	}

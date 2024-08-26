@@ -18,7 +18,7 @@ type CommentRepository interface {
 	CreateComment(ctx context.Context, comment Comment) error                                    //
 	GetCommentsCount(ctx context.Context, blogID primitive.ObjectID) (int, error)                //
 	GetBlogComments(ctx context.Context, blogID primitive.ObjectID) ([]Comment, error)           //
-	GetCommentByID(ctx context.Context, id primitive.ObjectID) (Comment, error)                  //
+	GetCommentByID(ctx context.Context, id primitive.ObjectID) (*Comment, error)                 //
 	RemoveComment(ctx context.Context, userID, commentID primitive.ObjectID, isAdmin bool) error //
 	RemoveBlogComments(ctx context.Context, blogID primitive.ObjectID) error                     //
 }

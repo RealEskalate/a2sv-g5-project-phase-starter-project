@@ -64,6 +64,11 @@ class CostumInput extends StatelessWidget {
                 }
               }
 
+              if (text == InputDataValidator.confirmPass &&
+                  control.text.length >= 6) {
+                color = Colors.transparent;
+              }
+
               return TextField(
                 key: Key(text),
                 controller: control,

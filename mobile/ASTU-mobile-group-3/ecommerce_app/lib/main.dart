@@ -51,6 +51,7 @@ class MyApp extends StatelessWidget {
         )
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: MyTheme.lightTheme,
         routes: {
           AddProductPage.routes: (context) => AddProductPage(),

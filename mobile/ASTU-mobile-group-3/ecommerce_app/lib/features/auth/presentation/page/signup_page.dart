@@ -5,11 +5,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/constants.dart';
 import '../../../../core/themes/themes.dart';
 import '../../../../core/validator/validator.dart';
-import '../../../product/presentation/widgets/fill_custom_button.dart';
 import '../../../product/presentation/widgets/loading_dialog.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/cubit/user_input_validation_cubit.dart';
 import '../widgets/auth_widgets.dart';
+import '../widgets/reusable_button.dart';
 
 // ignore: must_be_immutable
 class SignUpPage extends StatelessWidget {
@@ -25,20 +25,26 @@ class SignUpPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: MyTheme.ecWhite,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(Icons.chevron_left),
-        ),
-        actions: const [
-          Padding(
-            padding: EdgeInsets.all(15.0),
-            child: Image(
-              image: AssetImage('assets/images/logo.png'),
-            ),
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(Icons.navigate_before)),
+              Image.asset(
+                'assets/images/Group 67.png',
+                width: 78,
+                height: 25,
+              )
+            ],
           ),
-        ],
+        ),
       ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -67,8 +73,8 @@ class SignUpPage extends StatelessWidget {
                   height: 40,
                 ),
                 const Text(
-                  'Sign into your account',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35),
+                  'Create your account',
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 26),
                 ),
                 const SizedBox(
                   height: 40,
@@ -138,31 +144,44 @@ class SignUpPage extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: FillCustomButton(
-                        press: () {
-                          String? message =
-                              BlocProvider.of<UserInputValidationCubit>(context)
-                                  .state
-                                  .validate();
-                          if (message == null) {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return const LoadingDialog();
-                                });
-                            BlocProvider.of<AuthBloc>(context).add(
-                              SignUpEvent(
-                                name: nameController.text.trim(),
-                                email: emailController.text.trim(),
-                                password: passwordController.text.trim(),
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(content: Text(message)));
-                          }
-                        },
-                        label: 'SIGN UP',
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            String? message =
+                                BlocProvider.of<UserInputValidationCubit>(
+                                        context)
+                                    .state
+                                    .validate();
+
+                            if (passwordController.text !=
+                                confirmPassController.text) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content:
+                                          Text('Passwords Should Match!')));
+                            } else if (message == null) {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return const LoadingDialog();
+                                  });
+                              BlocProvider.of<AuthBloc>(context).add(
+                                SignUpEvent(
+                                  name: nameController.text.trim(),
+                                  email: emailController.text.trim(),
+                                  password: passwordController.text.trim(),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(message)));
+                            }
+                          },
+                          child: const ReusableButton(
+                            lable: 'SIGN UP',
+                          ),
+                        ),
                       ),
                     ),
                   ],

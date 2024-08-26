@@ -58,7 +58,15 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 		// auth.POST("/blogsearch", blogController.SearchBlogPost)
 		auth.DELETE("/blogs/:id", blogController.DeleteBlogPost)
 		auth.POST("/blogs/:id/dislike", blogController.DislikeBlogPost)
-		auth.POST("/blogs/:id/comment", blogController.AddComment)
+		auth.POST("/blogs/:id/comments", commentController.AddComment)
+		auth.GET("/blogs/:id/comments", commentController.GetCommentsByBlogID)
+		auth.PUT("/blogs/comments/:id", commentController.UpdateComment)
+		auth.DELETE("/blogs/comments/:id", commentController.DeleteComment)
+		// Reply routes
+		auth.POST("/comments/:id/replies", commentController.AddReply)                      // Add a reply to a comment
+		auth.PUT("/comments/:commentID/replies/:replyID", commentController.UpdateReply)    // Update a reply
+		auth.DELETE("/comments/:commentID/replies/:replyID", commentController.DeleteReply) // Delete a reply
+
 		auth.POST("/blogs/:id/like", blogController.LikeBlogPost)
 		// auth.GET("/blogs/:id/likes", likeController.GetLikesByBlogID)
 
@@ -79,9 +87,6 @@ func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *u
 
 	// Comment routes
 	// auth.POST("/blogs/:id/comments", commentController.AddComment)
-	auth.GET("/blogs/:id/comments", commentController.GetCommentsByBlogID)
-	auth.PUT("/comments/:id", commentController.UpdateComment)
-	auth.DELETE("/comments/:id", commentController.DeleteComment)
 
 	// Like routes
 

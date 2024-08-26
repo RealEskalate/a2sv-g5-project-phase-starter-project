@@ -18,9 +18,11 @@ func SetRouter(router *gin.Engine, bc *blog_controller.BlogController, uc *user_
 	router.GET("/promote", auth.JwtAuthMiddleware(env.AccessTokenSecret), uc.PromoteDemote)
 	router.POST("/forgot-password", uc.ForgotPassword)
 	router.POST("/reset-password", uc.ResetPassword)
-	router.POST("/generate", auth.JwtAuthMiddleware(env.AccessTokenSecret), bc.GenerateContent)
 	router.PUT("/updateUser", auth.JwtAuthMiddleware(env.AccessTokenSecret), uc.UpdateUser)
 	router.PATCH("/user/promote-demote", auth.JwtAuthMiddleware(env.AccessTokenSecret), uc.PromoteDemote)
+
+	router.POST("/generate", auth.JwtAuthMiddleware(env.AccessTokenSecret), bc.GenerateContent)
+	router.POST("/file", auth.JwtAuthMiddleware(env.AccessTokenSecret), uc.FileUpload)
 
 	// Blog routes
 	r := router.Group("/blog")

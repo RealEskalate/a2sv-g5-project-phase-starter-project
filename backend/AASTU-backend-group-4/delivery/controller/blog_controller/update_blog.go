@@ -31,6 +31,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 	}
 
 	err = bc.usecase.UpdateBlog(context.Background(), blogID, updatedBlog, ID)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update blog post"})
 		return

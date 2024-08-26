@@ -17,6 +17,7 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	}
 	uID := c.GetString("user_id")
 	userID, err := primitive.ObjectIDFromHex(uID)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid User ID"})
 		return
@@ -27,4 +28,7 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
+  c.JSON(http.StatusOK, gin.H{
+		"message": "Comment removed successfully",
+	})
 }

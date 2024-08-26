@@ -23,8 +23,8 @@ func (bc *BlogController) Removelike(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
-
 	err = bc.usecase.RemoveLike(context.Background(), userId, blogID, isAdmin)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

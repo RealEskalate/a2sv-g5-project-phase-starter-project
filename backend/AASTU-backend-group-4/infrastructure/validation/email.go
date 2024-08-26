@@ -10,7 +10,7 @@ func ValidateEmail(email string) error {
 	// Validate email format
 	err := checkmail.ValidateFormat(email)
 	if err != nil {
-		return errors.New("invalid email format")
+		return errors.New("invalid email format"
 	}
 
 	// Validate email host (domain)

@@ -19,7 +19,8 @@ import (
 
 func getBlogController(database *mongo.Database, cache domain.Cache) *blogcontroller.BlogController {
 	blogRepository := repository.NewBlogRepository(database, cache)
-	blogUsecase := blogusecase.NewBlogUsecase(blogRepository)
+	tagRepository := repository.NewTagRepository(database)
+	blogUsecase := blogusecase.NewBlogUsecase(blogRepository, tagRepository)
 	blogController := blogcontroller.NewBlogController(blogUsecase)
 	return blogController
 }
@@ -85,9 +86,13 @@ func privateBlogRouter(router *gin.RouterGroup, blogController *blogcontroller.B
 	router.POST("/blogs/views", blogController.AddView)
 
 	router.GET("/blogs/search", blogController.SearchBlog)
-	router.GET("/blogs/filter", blogController.FilterBlog)
+
+	router.GET("/blogs/tags", blogController.GetTags)
+	router.POST("/blogs/tags", blogController.InsertTag)
+	router.DELETE("/blogs/tags", blogController.RemoveTags)
 
 	router.POST("/blogs/generate", blogController.GenerateContent)
+	
 }
 
 func SetupRouter(mongoClient *mongo.Client) *gin.Engine {

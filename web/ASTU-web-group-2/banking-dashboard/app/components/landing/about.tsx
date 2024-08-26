@@ -51,7 +51,6 @@ const About: React.FC = () => {
       transition={{ duration: 0.75, ease: "easeOut" }}
       id="about"
       className="flex flex-col sm:flex-row justify-center items-start p-8 gap-32 pt-[80px] min-h-screen" // Adjust pt to ensure the section starts below the fixed navbar
-      style={{ zIndex: -1 }} // Example: Set a fixed z-index
     >
       <m.div
         variants={itemVariants}

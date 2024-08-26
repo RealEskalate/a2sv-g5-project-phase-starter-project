@@ -193,7 +193,7 @@ func (u *UserUsecase) Register(user domain.User) *domain.CustomError {
 		return domain.ErrInternalServer
 	}
 
-	token, err := infrastracture.GenerateActivationToken()
+	token, err := infrastracture.GenerateOTP()
 	if err != nil {
 		return domain.ErrInternalServer
 	}

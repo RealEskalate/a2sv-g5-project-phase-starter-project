@@ -23,6 +23,7 @@ const PreferencesForm = () => {
   }, [userData.preferences]);
 
   const handleToggle = (key: keyof typeof preferences, value: boolean) => {
+    console.log("key", key);
     setPreferences((prev) => ({ ...prev, [key]: value }));
   };
 

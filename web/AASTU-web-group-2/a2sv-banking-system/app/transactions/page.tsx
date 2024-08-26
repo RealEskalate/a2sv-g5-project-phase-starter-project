@@ -165,7 +165,7 @@ const Page = () => {
   };
 
   return (
-    <div className="bg-[#f5f7fa] dark:bg-[#020817] py-4 px-4 md:px-8 max-w-full overflow-x-hidden">
+    <div className="bg-[#f5f7fa] dark:bg-[#090b0e] py-4 px-4 md:px-8 max-w-full overflow-x-hidden">
       <div className="mb-4">
         <div className="flex flex-col md:flex-row space-x-4">
           {/* Card Section */}

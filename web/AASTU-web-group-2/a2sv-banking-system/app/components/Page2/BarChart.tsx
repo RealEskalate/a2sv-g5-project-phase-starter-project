@@ -37,7 +37,7 @@ const Shimmer = () => {
 };
 
 const BarChart: React.FC<{ token: string }> = ({ token }) => {
-  const [chartData, setChartData] = useState<number[]>([]);
+  const [chartData, setChartData] = useState<number[]>(Array(6).fill(0)); // Initialize with six zeros
   const [loading, setLoading] = useState<boolean>(true);
   const [labels, setLabels] = useState<string[]>(getLastSixMonthsLabels());
 
@@ -47,12 +47,24 @@ const BarChart: React.FC<{ token: string }> = ({ token }) => {
         const response = await getBalanceHistory(6, token); // Fetching data for the last 6 months
         const data = response.data;
 
-        // Sort the data by time to match with labels
-        const sortedData = data
-          .sort((a: BalanceHistoryData, b: BalanceHistoryData) => new Date(a.time).getMonth() - new Date(b.time).getMonth())
-          .map((entry: BalanceHistoryData) => entry.value);
+        // Log the response to the console
+        console.log('Fetched Data:', data);
 
-        setChartData(sortedData.length > 0 ? sortedData : [0, 0, 0, 0, 0, 0]);
+        // Initialize chart data array with zeros
+        const updatedChartData = Array(6).fill(0);
+
+        // Map API data to the last six months
+        data.forEach((entry: BalanceHistoryData) => {
+          const entryMonth = new Date(entry.time).getMonth(); // Get the month index from the API data
+          const labelMonth = labels.indexOf(getLastSixMonthsLabels()[entryMonth]);
+
+          // Add 1000 to each data value and set it in the corresponding month
+          if (labelMonth !== -1) {
+            updatedChartData[labelMonth] = entry.value + 1000;
+          }
+        });
+
+        setChartData(updatedChartData);
       } catch (error) {
         console.error('Error fetching balance history:', error);
       } finally {
@@ -124,7 +136,3 @@ const BarChart: React.FC<{ token: string }> = ({ token }) => {
 };
 
 export default BarChart;
-
-
-
-

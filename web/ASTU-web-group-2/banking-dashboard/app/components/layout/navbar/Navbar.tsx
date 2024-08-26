@@ -7,7 +7,10 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Notification from "./Notification";
 import { useGetAllTransactionQuery } from "@/lib/service/TransactionService";
-import { Item } from "../../lastTransaction/lastTransactionItems";
+import { Item } from "../../transactions/lastTransaction/lastTransactionItems";
+
+
+
 
 interface NavbarProps {
   setter: React.Dispatch<React.SetStateAction<boolean>>;

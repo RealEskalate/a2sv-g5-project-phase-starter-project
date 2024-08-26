@@ -14,8 +14,8 @@
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@next/font": "^14.2.5",
-    "@radix-ui/react-context-menu": "^2.2.1",
     "@radix-ui/react-alert-dialog": "^1.1.1",
+    "@radix-ui/react-context-menu": "^2.2.1",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-navigation-menu": "^1.2.0",
     "@radix-ui/react-select": "^2.1.1",
@@ -43,6 +43,7 @@
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
+    "use-local-storage-state": "^19.4.0",
     "uuid": "^10.0.0"
   },
   "devDependencies": {

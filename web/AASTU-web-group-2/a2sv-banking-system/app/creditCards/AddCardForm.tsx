@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { PostCardRequest } from "../../types/cardController.Interface";
 import { postCard } from "../../lib/api/cardController";
@@ -18,6 +18,7 @@ const AddCardForm = ({
   access_token: string;
   handleAddition: Function;
 }) => {
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -26,11 +27,17 @@ const AddCardForm = ({
   } = useForm<PostCardRequest>();
 
   const onSubmit_ = handleSubmit(async (data) => {
-    console.log(data.passcode);
-    data.passcode = "192930";
-    const response = await postCard(data, access_token);
-    handleAddition(response);
-    reset();
+    setLoading(true);
+    try {
+      data.passcode = "192930";
+      const response = await postCard(data, access_token);
+      handleAddition(response);
+      reset();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   });
 
   return (
@@ -150,9 +157,31 @@ ${errors.cardType ? "border-red-500" : "border-indigo-50"}`}
 
         <button
           type="submit"
-          className="bg-[#1814F3] hover:bg-[#423fef] text-white px-5 py-3 rounded-xl w-full md:w-2/6 text-sm"
+          className="bg-[#1814F3] hover:bg-[#423fef] text-white px-5 py-3 rounded-xl w-full md:w-2/6 text-sm flex justify-center items-center"
+          disabled={loading}
         >
-          Add Card
+          {loading ? (
+            <svg
+              className="animate-spin h-5 w-5 mr-3"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v8z"
+              ></path>
+            </svg>
+          ) : (
+            "Add Card"
+          )}
         </button>
       </form>
     </div>

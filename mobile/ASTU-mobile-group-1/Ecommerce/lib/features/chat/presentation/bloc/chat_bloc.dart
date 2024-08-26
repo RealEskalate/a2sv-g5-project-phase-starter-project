@@ -11,6 +11,8 @@ import '../../domain/usecases/get_message_usecase.dart';
 import '../../domain/usecases/send_message_usecase.dart';
 
 import '../../domain/usecases/my_chat_usecase.dart';
+import '../../domain/usecases/get_chat_message_usecase.dart';
+
 
 part 'chat_event.dart';
 part 'chat_state.dart';
@@ -19,6 +21,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetMessageUsecase getMessagesUseCase;
   final SendMessageUsecase sendMessageUseCase;
   final MyChatUsecase myChatUsecase;
+  final GetChatMessageUsecase getChatMessagesUseCase;
   
 
   StreamSubscription<MessageEntity>? _messageSubscription;
@@ -27,6 +30,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     required this.getMessagesUseCase,
     required this.sendMessageUseCase,
     required this.myChatUsecase,
+    required this.getChatMessagesUseCase,
   }) : super(ChatInitial()) {
     // Handle StartChat event to listen to incoming messages
 
@@ -73,7 +77,20 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       });
 
     });
+
+    on<ListOfMessageEvent>((event, emit) async{
+      emit(ChatLoadingState());
+      final res = await getChatMessagesUseCase.execute(event.chatId);
+      res.fold((error){emit(ChatFailureState(message:error.message ));}, 
+      (right){
+        print(right);
+        emit(LoadedAllMessages( allMessages: right));
+      });
+
+    });
   }
+
+  
 
     
 

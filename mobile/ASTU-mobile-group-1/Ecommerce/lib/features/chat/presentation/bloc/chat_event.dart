@@ -21,3 +21,9 @@ class NewMessageReceivedEvent extends ChatEvent {
 }
 
 final class GetAllChatEvent extends ChatEvent{}
+
+
+final class ListOfMessageEvent extends ChatEvent{
+  String  chatId;
+  ListOfMessageEvent({required this.chatId});
+}

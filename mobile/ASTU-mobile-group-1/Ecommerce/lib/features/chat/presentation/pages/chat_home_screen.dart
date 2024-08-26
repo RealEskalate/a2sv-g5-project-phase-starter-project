@@ -22,7 +22,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
   @override
   void initState() {
     // context.read<ChatBloc>().add(StartChat());
-    context.read<ChatBloc>().add(GetAllChatEvent());
+    context.read<ChatBloc>().add(ListOfMessageEvent(chatId: '66cc462cdab43c1a2e9803cd'));
     
     super.initState();
   }

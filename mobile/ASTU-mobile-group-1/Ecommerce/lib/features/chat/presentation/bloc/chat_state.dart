@@ -30,3 +30,11 @@ final class LoadedAllChatState extends ChatState{
   // final List<UserEntity> users;
    LoadedAllChatState({required this.allChats});
 }
+
+
+final class LoadedAllMessages extends ChatState{
+  final List<MessageEntity> allMessages;
+
+  LoadedAllMessages({required this.allMessages});
+ 
+}

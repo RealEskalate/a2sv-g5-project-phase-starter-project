@@ -109,7 +109,7 @@ const LoginForm = () => {
       <div className='w-full mt-5'>
         {`Already have an account?`}
         <Link href='/api/auth/signup'>
-          <span className='text-indigo-800 font-[700] ml-1'>SingUp</span>
+          <span className='text-indigo-800 font-[700] ml-1'>SignUp</span>
         </Link>
       </div>
     </form>

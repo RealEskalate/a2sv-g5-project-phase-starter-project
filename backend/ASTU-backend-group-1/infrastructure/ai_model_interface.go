@@ -10,5 +10,5 @@ type AIModel interface {
 	Summarize(Data) (string, error)
 	Validate(Data) error
 	Chat(prompt string) (string, error)
-	Refine(content string) (string, error)
+	Refine(Data) (Data, error)
 }

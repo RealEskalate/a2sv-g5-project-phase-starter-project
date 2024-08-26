@@ -16,12 +16,10 @@ import (
 // @Property LastName string "Last name of the user"
 // @Property Password string "Password of the user"
 
-
-
 type User struct {
 	ID             string    `bson:"_id" json:"id"`
-	Username       string    `json:"username"`
-	Email          string    `json:"email"`
+	Username       string    `json:"username" binding:"required"`
+	Email          string    `json:"email" binding:"required"`
 	FirstName      string    `json:"first_name"`
 	LastName       string    `json:"last_name"`
 	Password       string    `json:"password"`
@@ -61,13 +59,12 @@ type UserUsecase interface {
 	AccountVerification(uemail string, confirmationToken string) error
 	ResetPassword(email string, token string, password string) (string, error)
 	ForgetPassword(email string) (string, error)
-	LoginUser(uname string, password string,email string) (string,string, error)
+	LoginUser(uname string, password string, email string) (string, string, error)
 	Logout(email string) error
 	DemoteUser(userId string) (User, error)
 	PromteUser(userId string) (User, error)
 	PromteUserByEmail(email string) (User, error)
 	DemoteUserByEmail(username string) (User, error)
-
 }
 type Claims struct {
 	ID       string `bson:"_id,omitempty" json:"id,omitempty"`

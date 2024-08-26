@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"astu-backend-g1/infrastructure"
+	"astu-backend-g1/repository"
 	usecase "astu-backend-g1/usecases"
 	"net/http"
 
@@ -13,8 +14,8 @@ type AIController struct {
 	usecase usecase.BlogUsecase
 }
 
-func NewAIController(model infrastructure.AIModel) *AIController {
-	return &AIController{model: model}
+func NewAIController(model infrastructure.AIModel, uc usecase.BlogUsecase) *AIController {
+	return &AIController{model: model, usecase: uc}
 }
 func (c *AIController) RecommendTitle(ctx *gin.Context) {
 	data := infrastructure.Data{}
@@ -71,8 +72,13 @@ func (c *AIController) Sumarize(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"summary": resp})
 }
 func (c *AIController) SumarizeBlog(ctx *gin.Context) {
-	blogID, _ := ctx.Params.Get("blogID")
-	blog, err := c.usecase.GetBlogByBLogId(blogID)
+	blogID, _ := ctx.Params.Get("blogId")
+	bID, err := repository.IsValidObjectID(blogID)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": "invalid blog id"})
+		return
+	}
+	blog, err := c.usecase.GetBlogByBLogId(bID.Hex())
 	if err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": "blog not found"})
 		return
@@ -102,16 +108,16 @@ func (c *AIController) Chat(ctx *gin.Context) {
 }
 
 func (c *AIController) RefineBlog(ctx *gin.Context) {
-	blogID, _ := ctx.Params.Get("blogID")
+	blogID, _ := ctx.Params.Get("blogId")
 	blog, err := c.usecase.GetBlogByBLogId(blogID)
 	if err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": "blog not found"})
 		return
 	}
-	resp, err := c.model.Refine(blog.Content)
+	resp, err := c.model.Refine(infrastructure.Data{Content: blog.Content, Tags: blog.Tags, Title: blog.Title})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "no response from the ai model"})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"refined_content": resp})
+	ctx.JSON(http.StatusOK, gin.H{"refined_blog": resp})
 }

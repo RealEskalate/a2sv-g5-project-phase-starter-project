@@ -2,27 +2,20 @@ package routers
 
 import (
 	"astu-backend-g1/config"
-	"astu-backend-g1/delivery/controllers"
-	"astu-backend-g1/gemini"
 	"astu-backend-g1/infrastructure"
-	"log"
 
 	"github.com/gin-gonic/gin"
 )
 
-func  (gr *MainRouter) AddAIRoutes(r *gin.Engine, config config.Config, prompts infrastructure.Prompts)  *gin.RouterGroup{
-	model, err := gemini.NewGeminiModel(config.Gemini.ApiKey, config.Gemini.Model, prompts)
-	if err != nil {
-		log.Fatal(err)
-	}
-	aiController := controllers.NewAIController(model)
+func (gr *MainRouter) AddAIRoutes(r *gin.Engine, config config.Config, prompts infrastructure.Prompts) *gin.RouterGroup {
+
 	aiRouteGroup := r.Group("/ai")
 	{
-		aiRouteGroup.POST("/recommendTitles", aiController.RecommendTitle)
-		aiRouteGroup.POST("/recommendContent", aiController.RecommendContent)
-		aiRouteGroup.POST("/recommendTags", aiController.Recommendtags)
-		aiRouteGroup.POST("/summarize", aiController.Sumarize)
-		aiRouteGroup.POST("/chat", aiController.Chat)
+		aiRouteGroup.POST("/recommendTitles", gr.aiController.RecommendTitle)
+		aiRouteGroup.POST("/recommendContent", gr.aiController.RecommendContent)
+		aiRouteGroup.POST("/recommendTags", gr.aiController.Recommendtags)
+		aiRouteGroup.POST("/summarize", gr.aiController.Sumarize)
+		aiRouteGroup.POST("/chat", gr.aiController.Chat)
 	}
 	return aiRouteGroup
 }

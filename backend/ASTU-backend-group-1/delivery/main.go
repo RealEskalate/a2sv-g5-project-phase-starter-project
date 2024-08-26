@@ -5,6 +5,7 @@ import (
 	"astu-backend-g1/delivery/controllers"
 	_ "astu-backend-g1/delivery/docs"
 	"astu-backend-g1/delivery/routers"
+	"astu-backend-g1/gemini"
 	"astu-backend-g1/infrastructure"
 	"astu-backend-g1/repository"
 	usecase "astu-backend-g1/usecases"
@@ -56,7 +57,16 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	prompts, err := infrastructure.LoadPrompt("./prompts.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	model, err := gemini.NewGeminiModel(config_mongo.Gemini.ApiKey, config_mongo.Gemini.Model, prompts)
+	if err != nil {
+		log.Fatal(err)
+	}
+	aiController := controllers.NewAIController(model, *blogUsecase)
 	UserController := controllers.NewUserController(userUsecase)
-	Router := routers.NewMainRouter(*UserController, *blogController, authController)
+	Router := routers.NewMainRouter(*UserController, *blogController, authController, *aiController)
 	Router.GinBlogRouter()
 }

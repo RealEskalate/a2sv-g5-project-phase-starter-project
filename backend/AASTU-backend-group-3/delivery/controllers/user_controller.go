@@ -27,9 +27,9 @@ func (uc *UserController) Login(c *gin.Context) {
 	userAgent := c.Request.UserAgent()
 	deviceFingerprint := infrastracture.GenerateDeviceFingerprint(ipAddress, userAgent)
 
-	LogInResponse, err := uc.UserUsecase.Login(&user, deviceFingerprint)
-	if err != nil {
-		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+	LogInResponse, uerr := uc.UserUsecase.Login(&user, deviceFingerprint)
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 

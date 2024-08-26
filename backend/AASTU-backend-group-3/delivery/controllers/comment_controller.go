@@ -85,9 +85,9 @@ func (c *CommentController) DeleteComment(ctx *gin.Context) {
 	userID := ctx.GetString("user_id")
 	Roles := ctx.GetString("role")
 
-	deletedComment, err := c.commentUsecase.DeleteComment(commentID, Roles, userID)
-	if (err != &domain.CustomError{}) {
-		ctx.JSON(err.StatusCode, gin.H{"error": err.Message})
+	deletedComment,uerr := c.commentUsecase.DeleteComment(commentID, Roles, userID)
+	if uerr.Message != "" {
+		ctx.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 

@@ -157,7 +157,7 @@ export default function Home() {
   }
 
   return (
-    <div className="bg-gray-100 p-6 dark:bg-[#020817]">
+    <div className="bg-gray-100 p-6 dark:bg-[#090b0e]">
       <div className="flex justify-between gap-8 overflow-x-auto [&::-webkit-scrollbar]:hidden ">
         <Card1
           text="Personal Loans"
@@ -178,13 +178,12 @@ export default function Home() {
           // num = {2}
         />
         <SheetDemo handleform={handleform} />
-        
       </div>
       <div className="my-4 text-2xl font-bold text-[#333B69] dark:text-[#9faaeb]">
         Active Loans Overview
       </div>
       <Table className="bg-white shadow-1 rounded-3xl  dark:border dark:border-[#333B69] ">
-        <TableHeader className="dark:bg-[#050914]">
+        <TableHeader className="dark:bg-[#020817]">
           <TableRow className="text-[#718EBF]">
             <TableHead className="w-[100px] text-[#718EBF] hidden md:table-cell">
               SL No
@@ -287,11 +286,15 @@ export default function Home() {
       <div className="flex justify-center items-center pt-5">
         <div className="flex flex-wrap">
           <button
-            onClick={() => handlePage(page - 1)}
+            onClick={() => {
+              if (page > 0) {
+                handlePage(page - 1);
+              }
+            }}
             className={
               page > 0
-                ? "mx-3 text-slate-400 hover:text-slate-700 dark:text-[#9faaeb] font-bold text-xl"
-                : "hidden"
+                ? "mx-3 text-slate-600 hover:text-slate-700 dark:text-[#9faaeb] font-bold text-xl"
+                : "cursor-context-menu mx-3 text-slate-400  dark:text-[#9fabeb6b] font-bold text-xl"
             }
           >
             {"< "}Previous
@@ -320,7 +323,7 @@ export default function Home() {
             className={
               page < total - 1
                 ? "mx-3 text-slate-400 hover:text-slate-700 dark:text-[#9faaeb] font-bold text-xl"
-                : "hidden"
+                : "cursor-context-menu mx-3 text-slate-400  dark:text-[#9fabeb6b] font-bold text-xl"
             }
           >
             Next{" >"}

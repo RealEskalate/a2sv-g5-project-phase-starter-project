@@ -9,8 +9,10 @@ import (
 	"blogs/repository"
 	"blogs/usecase/blogusecase"
 	"blogs/usecase/userusecase"
+	"time"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/secure"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -74,6 +76,7 @@ func privateBlogRouter(router *gin.RouterGroup, blogController *blogcontroller.B
 
 	router.POST("/blogs/:id/comments", blogController.AddComment)
 	router.GET("/blogs/:id/comments", blogController.GetBlogComments)
+	router.DELETE("/blogs/:id/comments/:commentid", blogController.DeleteComment)
 
 	router.POST("/blogs/:id/likes", blogController.AddLike)
 	router.DELETE("/blogs/:id/likes", blogController.RemoveLike)
@@ -91,7 +94,33 @@ func SetupRouter(mongoClient *mongo.Client) *gin.Engine {
 	cache := config.NewRedisCache()
 	router := gin.Default()
 
-	router.Use(cors.Default())
+	// Secure Headers Configuration
+	secureMiddleware := secure.New(secure.Config{
+		SSLRedirect:           true,
+		STSPreload:            true,
+		ContentTypeNosniff:    true,
+		BrowserXssFilter:      true,
+		ContentSecurityPolicy: "default-src 'self'; script-src 'self'; object-src 'none';",
+		ReferrerPolicy:        "no-referrer",
+		IsDevelopment:         true,
+		BadHostHandler:        func(*gin.Context) {},
+	})
+
+	// Apply secure middleware to the router
+	router.Use(secureMiddleware)
+
+	// CORS Configuration
+	corsConfig := cors.Config{
+		AllowOrigins:     []string{"https://trusteddomain.com", "https://anothertrusteddomain.com"}, // Adjust based on your needs
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}
+
+	// Apply CORS middleware with custom configuration
+	router.Use(cors.New(corsConfig))
 
 	database := mongoClient.Database("blog")
 	blogController := getBlogController(database, cache)

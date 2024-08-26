@@ -39,6 +39,7 @@ var (
 	ErrOnlyAuthorUpdates     = errors.New("only author can update the blog")
 	ErrUserCantBePromoted    = errors.New("user cannot be promoted")
 	ErrSamePassword          = errors.New("old password and new password cannot be the same")
+	ErrUserAlreadyVerified   = errors.New("user is already verified")
 )
 
 func GetStatusCode(err error) int {
@@ -51,7 +52,7 @@ func GetStatusCode(err error) int {
 		return http.StatusBadRequest
 	case ErrUserCantPromote, ErrAlreadyAdmin, ErrAlreadyUser, ErrUpdateRole, ErrUpdateJoined, ErrOnlyAuthorOrAdminDel, ErrOnlyAuthorUpdates:
 		return http.StatusForbidden
-	case ErrAlreadyVerified, ErrRootAlreadyExists, ErrUsernameEmailExists, ErrUserNotLoggedIn, ErrSamePassword:
+	case ErrAlreadyVerified, ErrRootAlreadyExists, ErrUsernameEmailExists, ErrUserNotLoggedIn, ErrSamePassword, ErrUserAlreadyVerified:
 		return http.StatusConflict
 	case ErrUserNotFound, ErrTokenNotFound, ErrBlogNotFound, ErrLikeNotFound, ErrCommentNotFound, ErrBlogOrLikeNotFound:
 		return http.StatusNotFound

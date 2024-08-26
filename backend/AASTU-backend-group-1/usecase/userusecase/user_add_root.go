@@ -54,7 +54,6 @@ func (u *UserUsecase) AddRoot() error {
 		Email:      rootEmail,
 		Role:       "root",
 		JoinedDate: time.Now(),
-		IsVerified: true,
 	}
 
 	return u.UserRepo.RegisterUser(user)

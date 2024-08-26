@@ -13,7 +13,6 @@ type User struct {
 	Role       string    `json:"role" bson:"role"`
 	Address    string    `json:"address" bson:"address"`
 	JoinedDate time.Time `json:"joined_date" bson:"joined_date"`
-	IsVerified bool      `json:"is_verified" bson:"is_verified"`
 }
 
 type Token struct {

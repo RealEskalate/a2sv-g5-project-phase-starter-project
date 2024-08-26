@@ -48,31 +48,31 @@ func (u *UserUsecase) GoogleCallback(stateString, code string) (string, string, 
 	}
 
 	// Generate access token
-	accessToken, _, err := config.GenerateToken(
+	accessToken, err := config.GenerateToken(
 		&domain.LoginClaims{
 			Username: user.Username,
 			Role:     user.Role,
 			Type:     "access",
-		}, "access")
+		})
 
 	if err != nil {
 		return "", "", err
 	}
 
 	// Generate refresh token
-	refreshToken, tokenEntry, err := config.GenerateToken(
-		&domain.LoginClaims{
-			Username: user.Username,
-			Role:     user.Role,
-			Type:     "refresh",
-		}, "refresh")
+	refreshClaims := &domain.LoginClaims{
+		Username: user.Username,
+		Role:     user.Role,
+		Type:     "refresh",
+	}
 
+	refreshToken, err := config.GenerateToken(refreshClaims)
 	if err != nil {
 		return "", "", err
 	}
 
 	// Save the refresh token in the repository
-	err = u.UserRepo.InsertToken(tokenEntry)
+	err = u.UserRepo.InsertToken(refreshClaims.ToToken())
 	if err != nil {
 		return "", "", err
 	}

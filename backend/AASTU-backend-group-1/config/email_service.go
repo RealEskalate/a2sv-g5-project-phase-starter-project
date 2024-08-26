@@ -13,12 +13,18 @@ func getPassword() (string, error) {
 	return bootstrap.GetEnv("EMAIL_PASSWORD")
 }
 
-func SendEmail(to, subject, body string) error {
+// SendEmail sends an email with the specified content type (text or HTML)
+func SendEmail(to, subject, body string, isHTML bool) error {
 	e := email.NewEmail()
 	e.From = "eyouel.melkamu@a2sv.org"
 	e.To = []string{to}
 	e.Subject = subject
-	e.Text = []byte(body)
+
+	if isHTML {
+		e.HTML = []byte(body) // Set HTML content
+	} else {
+		e.Text = []byte(body) // Set plain text content
+	}
 
 	password, err := getPassword()
 	if err != nil {

@@ -14,7 +14,13 @@ func (u *UserUsecase) RefreshToken(claims *domain.LoginClaims) (string, error) {
 		return "", err
 	}
 
-	accessToken, _, err := config.GenerateToken(claims, "access")
+	accessClaims := &domain.LoginClaims{
+		Username: claims.Username,
+		Role:     claims.Role,
+		Type:     "access",
+	}
+
+	accessToken, err := config.GenerateToken(accessClaims)
 	if err != nil {
 		return "", err
 	}

@@ -6,25 +6,17 @@ import (
 )
 
 func (u *UserUsecase) VerifyUser(token string) error {
-	claims, err := config.ValidateToken(token, "register")
+	claims := &domain.RegisterClaims{}
+	err := config.ValidateToken(token, claims)
 	if err != nil {
 		return err
 	}
 
-	registerClaims, ok := claims.(*domain.RegisterClaims)
-	if !ok {
-		return config.ErrInvalidToken
-	}
-
-	user, err := u.UserRepo.GetUserByUsernameorEmail(registerClaims.Username)
+	err = u.UserRepo.CheckUsernameAndEmail(claims.User.Username, claims.User.Email)
 	if err != nil {
-		return err
+		return config.ErrUserAlreadyVerified
 	}
 
-	if user.IsVerified {
-		return config.ErrAlreadyVerified
-	}
-
-	user.IsVerified = true
-	return u.UserRepo.UpdateProfile(registerClaims.Username, user)
+	err = u.UserRepo.RegisterUser(&claims.User)
+	return err
 }

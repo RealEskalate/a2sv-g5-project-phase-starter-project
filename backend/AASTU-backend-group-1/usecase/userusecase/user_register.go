@@ -43,24 +43,19 @@ func (u *UserUsecase) RegisterUser(user *domain.User) error {
 		return err
 	}
 
-	verifyToken, _, err := config.GenerateToken(
+	verifyToken, err := config.GenerateToken(
 		&domain.RegisterClaims{
-			Username: user.Username,
-		}, "register")
+			User: *user,
+		})
 
 	if err != nil {
 		return err
 	}
 
 	emailHeader := "Welcome to Blogs!"
-	emailBody := "Please verify your email by clicking the link below.\n" + apiBase + "/users/verify?token=" + verifyToken
+	emailBody := "Hello " + user.Username + ", please verify your email by clicking <a href=\"" + apiBase + "/users/verify?token=" + verifyToken + "\">here</a>."
 
-	err = config.SendEmail(user.Email, emailHeader, emailBody)
-	if err != nil {
-		return err
-	}
-
-	err = u.UserRepo.RegisterUser(user)
+	err = config.SendEmail(user.Email, emailHeader, emailBody, true)
 	if err != nil {
 		return err
 	}

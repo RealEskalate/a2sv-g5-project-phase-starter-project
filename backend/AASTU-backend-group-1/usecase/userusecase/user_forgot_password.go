@@ -25,12 +25,11 @@ func (u *UserUsecase) ForgotPassword(email string, newPassword string) error {
 	}
 
 	// Generate a password reset token
-	resetToken, _, err := config.GenerateToken(
+	resetToken, err := config.GenerateToken(
 		&domain.PasswordResetClaims{
 			Username: user.Username,
 			Password: newPassword,
-		},
-		"password-reset")
+		})
 
 	if err != nil {
 		return err
@@ -48,7 +47,7 @@ func (u *UserUsecase) ForgotPassword(email string, newPassword string) error {
 		apiBase + "/users/reset-password?token=" + resetToken
 
 	// Send the email
-	err = config.SendEmail(email, emailSubject, emailBody)
+	err = config.SendEmail(email, emailSubject, emailBody, false)
 	if err != nil {
 		return err
 	}

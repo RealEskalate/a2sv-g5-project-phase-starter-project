@@ -13,11 +13,6 @@ func (u *UserUsecase) LoginUser(usernameoremail string, password string) (string
 		return "", "", config.ErrIncorrectPassword
 	}
 
-	// Check if the user is verified
-	if !user.IsVerified {
-		return "", "", config.ErrUserNotVerified
-	}
-
 	// Compare the hashed password
 	err = config.ComparePassword(user.Password, password)
 	if err != nil {
@@ -26,31 +21,31 @@ func (u *UserUsecase) LoginUser(usernameoremail string, password string) (string
 	}
 
 	// Generate access token
-	accessToken, _, err := config.GenerateToken(
+	accessToken, err := config.GenerateToken(
 		&domain.LoginClaims{
 			Username: user.Username,
 			Role:     user.Role,
 			Type:     "access",
-		}, "access")
+		})
 
 	if err != nil {
 		return "", "", err
 	}
 
 	// Generate refresh token
-	refreshToken, tokenEntry, err := config.GenerateToken(
-		&domain.LoginClaims{
-			Username: user.Username,
-			Role:     user.Role,
-			Type:     "refresh",
-		}, "refresh")
+	refreshClaims := &domain.LoginClaims{
+		Username: user.Username,
+		Role:     user.Role,
+		Type:     "refresh",
+	}
 
+	refreshToken, err := config.GenerateToken(refreshClaims)
 	if err != nil {
 		return "", "", err
 	}
 
 	// Save the refresh token in the repository
-	err = u.UserRepo.InsertToken(tokenEntry)
+	err = u.UserRepo.InsertToken(refreshClaims.ToToken())
 	if err != nil {
 		return "", "", err
 	}

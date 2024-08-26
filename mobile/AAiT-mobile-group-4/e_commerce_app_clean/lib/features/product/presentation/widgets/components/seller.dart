@@ -18,39 +18,44 @@ class Seller extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomTextStyle(
-                  name: seller.name,
-                  size: 18,
-                  weight: FontWeight.bold,
-                ),
-                const SizedBox(height: 5,),
-                CustomTextStyle(
-                  name: seller.email,
-                  size: 14,
-                  weight: FontWeight.w400,
-                  color: const Color.fromARGB(225, 170, 170, 170),
-                ),
-              ],
-            ),
-            FilledButton.icon(
-              icon: const Icon(Icons.send,),
-              style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor),
-                shape: WidgetStatePropertyAll(RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(3),
-                )),
+            SizedBox(
+              width: 150,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomTextStyle(
+                    name: seller.name,
+                    size: 18,
+                    weight: FontWeight.bold,
+                  ),
+                  const SizedBox(height: 5,),
+                  CustomTextStyle(
+                    name: seller.email,
+                    size: 14,
+                    weight: FontWeight.w400,
+                    color: const Color.fromARGB(225, 170, 170, 170),
+                  ),
+                ],
               ),
-              onPressed: () {},
-              label: const CustomTextStyle(
-                  name: 'Contact Seller',
-                  size: 16,
-                  weight: FontWeight.normal,
-                  color: Colors.white,
-                )
+            ),
+            Expanded(
+              child: FilledButton.icon(
+                icon: const Icon(Icons.send,),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(Theme.of(context).primaryColor),
+                  shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(3),
+                  )),
+                ),
+                onPressed: () {},
+                label: const CustomTextStyle(
+                    name: 'Contact Seller',
+                    size: 16,
+                    weight: FontWeight.normal,
+                    color: Colors.white,
+                  )
+              ),
             ),
           ],
         ),

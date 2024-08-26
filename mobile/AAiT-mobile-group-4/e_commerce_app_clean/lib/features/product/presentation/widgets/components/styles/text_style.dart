@@ -19,6 +19,7 @@ class CustomTextStyle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       name,
+      overflow: TextOverflow.ellipsis,
       style: TextStyle(
         fontFamily: family,
         fontWeight: weight,

@@ -93,7 +93,7 @@ export default function Component() {
 
   if (status === 'loading') {
     return (
-      <div className="w-full h-[300px] bg-gray-200 rounded-lg animate-pulse">
+      <div className="w-full  h-[300px] lg:h-[600px] bg-gray-200 rounded-lg animate-pulse">
 </div>
 
     );

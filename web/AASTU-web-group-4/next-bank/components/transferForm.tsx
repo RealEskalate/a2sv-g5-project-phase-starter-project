@@ -13,8 +13,10 @@ const TransferPage: React.FC = () => {
 
   const onSubmit = async (data: any) => {
     const Token = Cookies.get('accessToken') ?? "";
+    console.log(data)
     const res = await createTransaction(data, Token);
     if (res.status === 200) {
+      
       reset();
     }
   };

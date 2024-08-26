@@ -143,9 +143,13 @@ func (uc *UserController) ActivateAccountMe(c *gin.Context) {
 }
 
 func (uc *UserController) ActivateAccount(c *gin.Context) {
-	token := c.Query("token")
-	Email := c.Query("Email")
-	err := uc.UserUsecase.AccountActivation(token, Email)
+	var activateReq domain.ActivateRequest
+	if err := c.ShouldBindJSON(&activateReq); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	
+	err := uc.UserUsecase.AccountActivation(activateReq.ActivationToken, activateReq.Email)
 	if err.Message != "" {
 		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return

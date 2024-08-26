@@ -67,7 +67,7 @@ type BlogRepository interface {
 	DeleteBlog( id string) (Blog, error)
 	UpdateBlog( blog Blog, blogId string) (Blog, error)
 	GetBlogByID( id string) (Blog, error)
-	GetBlogs( page, limit int64, sortBy, tag, authorName string) ([]Blog, error)
+	GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]Blog, int64, error)
 	GetUserBlogs(userID string) ([]Blog, error)
 
 
@@ -104,7 +104,8 @@ type BlogUsecase interface {
 	DeleteBlog(role, userId,id string) (Blog, *CustomError)
 	UpdateBlog( blog Blog,role, blogId string)  (Blog, *CustomError)   
     GetBlogByID(id string) (Blog, *CustomError)     
-	GetBlogs( page, limit int64, sortBy, tag, authorName string) ([]Blog, *CustomError)
+	GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]Blog, int64, *CustomError)
+
 	GetUserBlogs(userID string) ([]Blog, *CustomError)
 	
 	// Like, Dislike, View, Comment on a blog post

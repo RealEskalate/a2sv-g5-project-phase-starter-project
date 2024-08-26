@@ -26,8 +26,8 @@ func SetUpUser(router *gin.Engine) {
 
 	// Set up user routes
 	user := router.Group("/user")
-	user.Use(infrastracture.AuthMiddleware()) 
 	user.POST("/refresh-token", authController.RefreshToken)
+	user.Use(infrastracture.AuthMiddleware()) 
 
 
 	// Protected routes

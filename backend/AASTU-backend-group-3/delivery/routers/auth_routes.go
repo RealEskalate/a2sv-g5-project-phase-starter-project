@@ -29,7 +29,7 @@ func SetUpAuth(router *gin.Engine) {
 	{
 		auth.POST("/login", authController.Login)
 		auth.POST("/register", authController.Register)
-		auth.GET("/activate", authController.ActivateAccount)
+		auth.POST("/activate", authController.ActivateAccount)
 
 		
 

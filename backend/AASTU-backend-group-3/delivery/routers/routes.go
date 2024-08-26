@@ -2,7 +2,10 @@
 package routers
 
 import (
+
 	"time"
+
+    "group3-blogApi/infrastracture"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -10,6 +13,7 @@ import (
 
 func SetupRouter() *gin.Engine {
     router := gin.Default()
+
 
     // Configure CORS middleware
     router.Use(cors.New(cors.Config{
@@ -20,6 +24,12 @@ func SetupRouter() *gin.Engine {
         AllowCredentials: true,
         MaxAge:           12 * time.Hour,
     }))
+
+    rateLimiter := infrastracture.NewRateLimitterMiddleware()
+
+    // Add rate limiter middleware
+    router.Use(rateLimiter.RateLimitter())
+
 
     // Add CORS middleware
     router.Use(cors.Default())

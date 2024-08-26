@@ -156,6 +156,7 @@ type UserRepository interface {
 	UpdateUser(user *User) error
 	DeleteRefreshToken(user *User, refreshToken string) error
 	DeleteAllRefreshTokens(user *User) error
+	IsVerified(userID primitive.ObjectID) (bool, error)
 	GetUserByID(id string) (User, error)
 	FindOrCreateUserByGoogleID(oauthUserInfo OAuthUserInfo, deviceID string) (*User, error)
 	GetUserByResetToken(token string) (User, error)

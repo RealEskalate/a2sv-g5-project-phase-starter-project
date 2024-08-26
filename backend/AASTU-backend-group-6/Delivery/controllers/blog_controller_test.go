@@ -207,8 +207,8 @@ func (suite *ControllerTestSuite) TestGetMyBlogByIdHandler_Success() {
 	suite.Contains(w.Body.String(), "Blog 1")
 	suite.Contains(w.Body.String(), "The author")
 	suite.mockBlogUseCase.AssertExpectations(suite.T())
-}
 
+}
 func (suite *ControllerTestSuite) TestGetMyBlogsHandler_Success() {
 	user_id := primitive.NewObjectID()
 	mockBlogs := []domain.Blog{

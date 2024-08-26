@@ -14,9 +14,10 @@ import (
 func main() {
 	client := infrastructure.MongoDBInit() //mongodb initialization
 	infrastructure.InitGoogleOAuthConfig()
+	aiserv, _ := infrastructure.NewGeminiAIService()
 
 	blogrepo := repositories.NewBlogRepository(client)
-	bloguse := usecase.NewBlogUsecase(blogrepo, time.Second*300)
+	bloguse := usecase.NewBlogUsecase(blogrepo, aiserv, time.Second*300)
 
 	likerepo := repositories.NewLikeRepository(client)
 	likeuse := usecase.NewLikeUsecase(likerepo, time.Second*300)
@@ -25,9 +26,8 @@ func main() {
 	disluse := usecase.NewDislikeUsecase(dislrepo, time.Second*300)
 
 	commrepo := repositories.NewCommentRepository(client)
-	commuse := usecase.NewCommentUsecase(commrepo, time.Second*300)
+	commuse := usecase.NewCommentUsecase(commrepo, aiserv, time.Second*300)
 	comcont := controllers.NewCommentController(commuse)
-	aiserv, _ := infrastructure.NewGeminiAIService()
 
 	blogcont := controllers.NewBlogController(bloguse, likeuse, commuse, disluse, aiserv)
 

@@ -41,11 +41,6 @@ func (cr *CommentRepositoryImpl) CreateComment(blogID, userID string, comment do
 	comment.UserID = uid
 	comment.Date = time.Now()
 
-	_, err = cr.collection.InsertOne(context.TODO(), comment)
-	if err != nil {
-		return err
-	}
-
 	var blog domain.Blog
 
 	erro := cr.blogcollection.FindOne(context.TODO(), bson.D{}).Decode(&blog)
@@ -54,11 +49,12 @@ func (cr *CommentRepositoryImpl) CreateComment(blogID, userID string, comment do
 		return erro
 	}
 
-	if blog.Comments == 0 {
-		_, err = cr.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": comment.BlogID}, bson.M{"$set": bson.M{"comment": 1}})
-	} else {
-		_, err = cr.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": comment.BlogID}, bson.M{"$inc": bson.M{"comment": 1}})
+	_, err = cr.collection.InsertOne(context.TODO(), comment)
+	if err != nil {
+		return err
 	}
+
+	_, err = cr.blogcollection.UpdateOne(context.TODO(), bson.M{"_id": comment.BlogID}, bson.M{"$inc": bson.M{"comment": 1}})
 
 	if err != nil {
 		return err

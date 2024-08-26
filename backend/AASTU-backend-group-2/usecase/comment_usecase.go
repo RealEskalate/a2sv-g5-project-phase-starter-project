@@ -10,12 +10,14 @@ import (
 type CommentUsecase struct {
 	CommentRepo    domain.CommentRepository
 	contextTimeout time.Duration
+	Aiservice      domain.AIService
 }
 
-func NewCommentUsecase(Commentrepo domain.CommentRepository, timeout time.Duration) domain.CommentUsecase {
+func NewCommentUsecase(Commentrepo domain.CommentRepository, aiserv domain.AIService, timeout time.Duration) domain.CommentUsecase {
 	return &CommentUsecase{
 		CommentRepo:    Commentrepo,
 		contextTimeout: timeout,
+		Aiservice:      aiserv,
 	}
 
 }
@@ -23,6 +25,9 @@ func NewCommentUsecase(Commentrepo domain.CommentRepository, timeout time.Durati
 func (cuse *CommentUsecase) CreateComment(c context.Context, blogID string, user_id string, comment domain.Comment) error {
 	_, cancel := context.WithTimeout(c, cuse.contextTimeout)
 	defer cancel()
+	if err := cuse.Aiservice.Validate_Comment(comment.Comment); err != nil {
+		return err
+	}
 	return cuse.CommentRepo.CreateComment(blogID, user_id, comment)
 }
 

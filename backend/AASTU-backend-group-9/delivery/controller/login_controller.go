@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"blog/internal/tokenutil"
+	"blog/internal/userutil"
 	// "errors"
 	"time"
 
@@ -25,6 +26,11 @@ func (lc *LoginController) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	ipAddress := c.ClientIP()
+	userAgent := c.Request.UserAgent()
+	deviceFingerprint := userutil.GenerateDeviceFingerprint(ipAddress, userAgent)
+
 
 	user, err := lc.LoginUsecase.AuthenticateUser(c, &loginUser)
 	if err != nil {
@@ -49,6 +55,7 @@ func (lc *LoginController) Login(c *gin.Context) {
 		RefreshToken: refreshToken,
 		ExpiresAt:    time.Now().Add(time.Hour * 24 * time.Duration(lc.Env.RefreshTokenExpiryHour)),
 		CreatedAt:    time.Now(),
+		DeviceFingerprint: deviceFingerprint,
 	}
 	err = lc.LoginUsecase.SaveRefreshToken(c, &tkn)
 	if err != nil {

@@ -3,6 +3,7 @@ package controller
 import (
 	"blog/config"
 	"blog/domain"
+	"blog/internal/userutil"
 	"context"
 	"encoding/json"
 	"io/ioutil"
@@ -25,6 +26,11 @@ func (sc *SignupController) Signup(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	ipAddress := c.ClientIP()
+    userAgent := c.Request.UserAgent()
+    deviceFingerprint := userutil.GenerateDeviceFingerprint(ipAddress, userAgent)
+
 	returnedUser, _ := sc.SignupUsecase.GetUserByEmail(c, user.Email)
 	if returnedUser != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
@@ -35,7 +41,7 @@ func (sc *SignupController) Signup(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
 		return
 	}
-	err := sc.SignupUsecase.SendOTP(c, &user, sc.Env.SMTPUsername, sc.Env.SMTPPassword)
+	err := sc.SignupUsecase.SendOTP(c, &user, sc.Env.SMTPUsername, sc.Env.SMTPPassword, deviceFingerprint)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

@@ -1,10 +1,14 @@
 package userutil
 
 import (
+	"blog/domain"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
+	"fmt"
 	"net/http"
 	"regexp"
-	"blog/domain"
+
 	"github.com/xlzd/gotp"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -89,4 +93,19 @@ func CanManipulateUser(claims *domain.JwtCustomClaims, user *domain.User, manip 
 
 	// If the user is a root user, they can manipulate all users.
 	return nil
+}
+
+func GenerateDeviceFingerprint(ipAddress, userAgent string) string {
+    // Combine IP address and User-Agent
+    combined := fmt.Sprintf("%s|%s", ipAddress, userAgent)
+
+    // Create a SHA-256 hash of the combined string
+    hash := sha256.New()
+    hash.Write([]byte(combined))
+    hashBytes := hash.Sum(nil)
+
+    // Convert hash to a hexadecimal string
+    fingerprint := hex.EncodeToString(hashBytes)
+
+    return fingerprint
 }

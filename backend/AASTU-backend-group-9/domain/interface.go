@@ -42,7 +42,7 @@ type SignupUsecase interface {
 	CreateRefreshToken(user *AuthSignup, secret string, expiry int) (string, error)
 	SaveRefreshToken(c context.Context, token string, id primitive.ObjectID) error
 	VerifyOTP(c context.Context, otp *OTPRequest) (*OTP, error)
-	SendOTP(c context.Context, user *AuthSignup, username, password string) error
+	SendOTP(c context.Context, user *AuthSignup, username, password string, devicePrint string) error
 }
 
 type ProfileUsecase interface {
@@ -70,7 +70,7 @@ type OTPRepository interface {
 }
 
 type LogoutUsecase interface {
-	Logout(ctx context.Context, refreshToken string) error
+	Logout(ctx context.Context, refreshToken string, deviceFingerprint string) error
 }
 
 type ForgotPasswordUsecase interface {

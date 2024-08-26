@@ -118,7 +118,7 @@ func (su *signupUsecase) VerifyOTP(c context.Context, otp *domain.OTPRequest) (*
 	return storedOTP, nil
 }
 
-func (su *signupUsecase) SendOTP(c context.Context, user *domain.AuthSignup, smtpusername, smtppassword string) error {
+func (su *signupUsecase) SendOTP(c context.Context, user *domain.AuthSignup, smtpusername, smtppassword string, devicePrint string) error {
 	ctx, cancel := context.WithTimeout(c, su.contextTimeout)
 	defer cancel()
 
@@ -148,6 +148,7 @@ func (su *signupUsecase) SendOTP(c context.Context, user *domain.AuthSignup, smt
 			Password:  user.Password,
 			CreatedAt: time.Now(),
 			ExpiresAt: time.Now().Add(time.Minute * 5),
+			DeviceFingerprint: devicePrint,
 		}
 
 		if err := su.SaveOTP(ctx, &otp); err != nil {

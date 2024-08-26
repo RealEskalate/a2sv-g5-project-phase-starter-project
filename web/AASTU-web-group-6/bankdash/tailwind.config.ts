@@ -34,6 +34,16 @@ const config: Config = {
     //   },
     // },
     extend: {
+      keyframes: {
+        rotateBackAndForth: {
+          "0%": { transform: "rotate(0deg)" },
+          "50%": { transform: "rotate(180deg)" },
+          "100%": { transform: "rotate(0deg)" },
+        },
+      },
+      animation: {
+        rotateBackAndForth: "rotateBackAndForth 2s ease-in-out infinite",
+      },
       fontFamily: {
         Lato: "Lato",
         Inter: "Inter",

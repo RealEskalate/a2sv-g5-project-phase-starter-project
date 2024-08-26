@@ -73,8 +73,7 @@ class TransactionService {
     );
   }
   public static getOneExpenseData(
-    accessToken?: string,
-
+    accessToken?: string
   ): Promise<TransactionType[]> {
     return handleRequest(
       "GET",

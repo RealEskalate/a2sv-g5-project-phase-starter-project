@@ -9,6 +9,8 @@ import ProgressComp from "../Box/ProgressComp";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 // Define the schema using Zod
 const schema = z
@@ -46,6 +48,7 @@ type FormData = Omit<UserValue, "password"> & {
 
 const SignUpForm = () => {
   const [step, setStep] = useState(1);
+  const [flag, setFlag] = useState(false);
   const {
     register,
     handleSubmit,
@@ -85,8 +88,8 @@ const SignUpForm = () => {
   const prevStep = () => setStep((prev) => prev - 1);
 
   return (
-    <div className="flex w-[55%] items-center justify-center bg-white rounded-3xl g-6 relative p-4">
-      <div className="left w-[45%] flex flex-col items-center justify-stretch gap-3 bg-[#1814F3] bg-gradient-to-b from-[#1814F3] to-[#03032A] p-[36px] py-[72px] rounded-xl ">
+    <div className="flex xxs:w-[98%] xs:w-[85%] sm:w-[70%] lg:w-[55%] lg:min-w-[900px] items-center justify-center bg-white rounded-xl g-6 relative p-1">
+      <div className="left xxs:hidden w-[50%] lg:flex flex-col items-center justify-stretch gap-3 bg-[#1814F3] bg-gradient-to-b from-[#1814F3] to-[#03032A] p-[36px] py-[72px] rounded-xl ">
         <h1 className="headline text-center font-semibold text-white text-[36px]">
           Welcome to Bank <span className="text-[#FFDD00]">Dash.</span>
         </h1>
@@ -120,15 +123,24 @@ const SignUpForm = () => {
         </div>
         <div className="already text-gray-300 mt-9">
           Already have an account?
-          <button className="login-btn text-white ml-1"> Login</button>
+          <Link
+            href="/login"
+            className="login-btn text-white ml-1 hover:text-blue-700 hover:cursor-pointer underline"
+          >
+            {" "}
+            Login
+          </Link>
         </div>
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-[55%] flex flex-col justify-center items-center"
+        className="max-w-[650px] xxs:w-full lg:w-[50%] flex flex-col justify-center items-center"
       >
         {step === 1 && (
-          <div key={1} className="flex flex-col w-full px-6 py-3 gap-2">
+          <div
+            key={1}
+            className="flex flex-col w-full xxs:px-4 xxs:py-3 xs:px-5 xs:py-4 sm:px-6 sm:py-6 lg:px-10 lg:py-3 gap-2"
+          >
             <div className="flex gap-3 items-center w-full justify-center py-6">
               <div className="flex items-center circle p-4 pt-5 bg-blue-50 rounded-full">
                 <Image
@@ -259,7 +271,10 @@ const SignUpForm = () => {
         )}
 
         {step === 2 && (
-          <div key={2} className="flex flex-col gap-3 w-full px-6">
+          <div
+            key={2}
+            className="flex flex-col w-full xxs:px-4 xxs:py-3 xs:px-5 xs:py-4 sm:px-6 sm:py-6 lg:px-10 lg:py-3 gap-2"
+          >
             <div className="flex gap-3 items-center w-full justify-center py-6">
               <div className="flex items-center circle p-4 pt-5 bg-blue-50 rounded-full">
                 <Image
@@ -340,7 +355,7 @@ const SignUpForm = () => {
                   <p className="text-[#1814F3]">{errors.city.message}</p>
                 )}
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-2 w-[48%]">
                 <label className="mb-1 text-slate-500" htmlFor="postalCode">
                   Postal Code
                 </label>
@@ -360,7 +375,10 @@ const SignUpForm = () => {
         )}
 
         {step === 3 && (
-          <div key={3} className="flex flex-col gap-3 w-full px-6">
+          <div
+            key={3}
+            className="flex flex-col w-full xxs:px-4 xxs:py-3 xs:px-5 xs:py-4 sm:px-6 sm:py-6 lg:px-10 lg:py-3 gap-2"
+          >
             <div className="flex gap-3 items-center w-full justify-center py-6">
               <div className="flex items-center circle p-4 pt-5 bg-blue-50 rounded-full">
                 <Image
@@ -490,8 +508,17 @@ const SignUpForm = () => {
           ) : (
             <button
               type="submit"
-              className="bg-[#1814F3] text-white px-6 py-3 rounded-md"
+              onClick={() => {
+                handleSubmit(onSubmit);
+                setFlag(!flag);
+              }}
+              // disabled={flag}
+              className=" flex gap-3 items-center bg-[#1814F3] text-white px-6 py-3 rounded-md"
             >
+              {/* <FontAwesomeIcon
+                icon={faSpinner}
+                className={flag ? "visible text-2xl animate-spin" : "hidden"}
+              /> */}
               Submit
             </button>
           )}

@@ -46,7 +46,7 @@ const getIncome = async (page: number, accessToken: string) => {
   try {
     const response = await axios({
       method: "GET",
-      url: `https://bank-dashboard-1tst.onrender.com/transactions/incomes?page=${page}&size=1`,
+      url: `https://bank-dashboard-irse.onrender.com/transactions/incomes?page=${page}&size=5`,
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",

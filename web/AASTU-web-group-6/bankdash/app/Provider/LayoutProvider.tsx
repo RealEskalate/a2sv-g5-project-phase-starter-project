@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 import Sidebar from "../components/Layout/Sidebar";
 import NavBar from "../components/Layout/NavBar";
 import { useAppSelector } from "../Redux/store/store";
+import { useSession } from "next-auth/react";
+import useCardDispatch from "../Redux/Dispacher/useCardDispatch";
+import useTranDispatch from "../Redux/Dispacher/useTranDispatch";
 
 const LayoutProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
@@ -17,6 +20,14 @@ const LayoutProvider = ({ children }: { children: ReactNode }) => {
   const toggle = () => {
     setIsOpen((prev) => !prev);
   };
+
+  const { data: session } = useSession();
+  const accessToken = session?.accessToken as string;
+
+  console.log(session?.accessToken, "token");
+  // Update initial card and tran data using the custom hook
+  useCardDispatch(accessToken);
+  useTranDispatch(accessToken);
   const isDarkMode = useAppSelector((state) => state.darkMode.darkMode);
 
   // Apply dark mode class directly

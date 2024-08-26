@@ -7,7 +7,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { faPaperPlane } from "@fortawesome/free-regular-svg-icons";
 import { AreaComp } from "../Charts/AreaComp";
 import { useAppSelector } from "@/app/Redux/store/store";
-import { useState, useEffect , useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   faArrowRight,
   faGreaterThan,
@@ -17,6 +17,7 @@ import { BalanceType } from "@/app/Redux/slices/TransactionSlice";
 import ModalTrans from "../Forms/SendMoneyForm";
 import TransactionService from "@/app/Services/api/transactionApi";
 import { useSession } from "next-auth/react";
+import ShimmerProfileItem from "../Shimmer/ShimmerProfileItem";
 interface quickType {
   id: string;
   name: string;
@@ -28,14 +29,13 @@ interface quickType {
 
 const Bottom = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const {data:session} = useSession();
+  const { data: session } = useSession();
   const handleScroll = () => {
     if (containerRef.current) {
-      containerRef.current.scrollLeft += 200; 
-      console.log("scrolled")
-    }
-    else{
-      console.log("not scrolled")
+      containerRef.current.scrollLeft += 200;
+      console.log("scrolled");
+    } else {
+      console.log("not scrolled");
     }
   };
   const people: any = [1, 2, 3];
@@ -48,12 +48,11 @@ const Bottom = () => {
     setIsModalOpen(!isModalOpen);
   };
   const [quickData, setQuickData] = useState<quickType[]>([]);
-  const [username , setUsername] = useState<string>("");
-  const [amount , setAmount] = useState<number>(0);
+  const [username, setUsername] = useState<string>("");
+  const [amount, setAmount] = useState<number>(0);
   const accessToken = session?.accessToken as string;
 
   useEffect(() => {
-    
     const fetchData = async () => {
       try {
         const data = await TransactionService.getQuickTransfer(accessToken);
@@ -61,7 +60,7 @@ const Bottom = () => {
         setQuickData(data);
         console.log(quickData, "quick");
       } catch (error) {
-        console.log("error" , error)
+        console.log("error", error);
         console.error("Error fetching quick data:", error);
       }
     };
@@ -77,28 +76,41 @@ const Bottom = () => {
         </h1>
         <div className="flex gap-6 bg-white dark:bg-[#232328] rounded-3xl  p-6">
           <div className="profle-box w-full flex flex-col gap-4">
-            <div className="w-full flex gap-2 items-center   "  >
-              <div className=" flex overflow-hidden"  ref={containerRef} >
-              {quickData.map((account) => (
-                <button
-                  key={account.id}
-                  className={`profile-item flex flex-col gap-1 p-6 items-center justify-center   dark:text-gray-300 ${username == account.username?`border-2 border-solid rounded-[30px] border-blue-600 `:""}`}
-                  
-                  onClick={() => {setUsername(account.username)}}
-                >
-                  <Image
-                    className="rounded-full"
-                    src={"/assets/profile-1.png"}
-                    width={70}
-                    height={70}
-                    alt={account.name}
-                  />
-                  <div className="name text-base font-semibold">
-                    {account.name}
+            <div className="w-full flex gap-2 items-center   ">
+              <div className=" flex overflow-hidden" ref={containerRef}>
+                {quickData.length > 0 ? (
+                  quickData.map((account) => (
+                    <button
+                      key={account.id}
+                      className={`profile-item flex flex-col gap-1 p-6 items-center justify-center   dark:text-gray-300 ${
+                        username == account.username
+                          ? `border-2 border-solid rounded-[30px] border-blue-600 `
+                          : ""
+                      }`}
+                      onClick={() => {
+                        setUsername(account.username);
+                      }}
+                    >
+                      <Image
+                        className="rounded-full"
+                        src={"/assets/profile-1.png"}
+                        width={70}
+                        height={70}
+                        alt={account.name}
+                      />
+                      <div className="name text-base font-semibold">
+                        {account.name}
+                      </div>
+                      <div className="role text-base text-[#718EBF]">CEO</div>
+                    </button>
+                  ))
+                ) : (
+                  <div className="flex gap-4">
+                    <ShimmerProfileItem />
+                    <ShimmerProfileItem />
+                    <ShimmerProfileItem />
                   </div>
-                  <div className="role text-base text-[#718EBF]">CEO</div>
-                </button>
-              ))}
+                )}
               </div>
               <button className="relative flex p-6 py-7 items-center justify-center bg-white dark:bg-gray-700 dark:shadow-gray-500 shadow-sm shadow-blue-300 rounded-full">
                 <FontAwesomeIcon
@@ -118,10 +130,13 @@ const Bottom = () => {
                 className={`flex items-center text-base text-[#718EBF] bg-[#EDF1F7] dark:bg-gray-700 dark:text-gray-400 rounded-[50px] py-1 pl-6 grow justify-end  
                   `}
               >
-                <input className="flex w-full grow bg-[#EDF1F7]  focus:outline-none" onChange={(e) => setAmount(Number(e.target.value))} ></input>
+                <input
+                  className="flex w-full grow bg-[#EDF1F7] dark:bg-transparent  focus:outline-none"
+                  onChange={(e) => setAmount(Number(e.target.value))}
+                ></input>
                 <button
                   onClick={handleModalToggle}
-                  className="flex gap-2 w-full grow p-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-[50px] text-sm px-6  text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 text-6 items-center justify-center"
+                  className="flex gap-2 w-full grow p-4 text-white bg-[#1814f6] hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-[50px] text-sm px-6  text-center dark:hover:bg-blue-700 dark:focus:ring-blue-800 text-6 items-center justify-center"
                   type="button"
                 >
                   Send
@@ -143,9 +158,9 @@ const Bottom = () => {
                     <ModalTrans
                       isOpen={isModalOpen}
                       onClose={handleModalToggle}
-                      userName = {username}
-                      amount = {amount}
-                      accessToken = {accessToken}
+                      userName={username}
+                      amount={amount}
+                      accessToken={accessToken}
                     />
                   </div>
                 </div>

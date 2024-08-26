@@ -20,7 +20,6 @@ export const TransactionTable = ({
   const [transactions, setTransactions] = useState<TransactionContent[]>([]);
   const [totalPages, setTotalPages] = useState<number>(5);
   const [loading, setLoading] = useState(true);
-  const [dataFetched, setDataFetched] = useState(false);
   const rowsPerPage = 5;
 
 useEffect(() => {

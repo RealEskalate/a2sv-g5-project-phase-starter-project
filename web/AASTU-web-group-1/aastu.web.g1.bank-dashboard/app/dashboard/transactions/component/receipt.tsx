@@ -1,12 +1,12 @@
-import React from "react";
 import {
+  Document,
+  Image,
   Page,
+  StyleSheet,
   Text,
   View,
-  Document,
-  StyleSheet,
-  Image,
 } from "@react-pdf/renderer";
+import React from "react";
 
 interface ReceiptProps {
   senderUserName: string;
@@ -46,6 +46,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textTransform: "uppercase",
     letterSpacing: 1,
+  },
+  companyInfo: {
+    marginBottom: 15,
+    fontSize: 12,
+    color: "#333",
+    lineHeight: 1.5,
+    textAlign: "center",
   },
   section: {
     marginBottom: 15,
@@ -100,10 +107,10 @@ const Receipt: React.FC<ReceiptProps> = ({
     <Page size="A4" style={styles.page}>
       <View style={styles.logoContainer}>
         <Image style={styles.logo} src="/icons/logo.png" />
-        <Text style={styles.bankName}>Bank Dash</Text>
+        <Text style={styles.bankName}> Bank Dash of Ethiopia</Text>
       </View>
 
-      <Text style={styles.title}>Payment Information</Text>
+      <Text style={styles.title}>Customer Receipt</Text>
 
       <View style={styles.section}>
         <View style={styles.fieldContainer}>
@@ -128,13 +135,13 @@ const Receipt: React.FC<ReceiptProps> = ({
         </View>
         <View style={styles.fieldContainer}>
           <Text style={styles.fieldTitle}>Transferred Amount:</Text>
-          <Text style={styles.fieldValue}>${amount}</Text>
+          <Text style={styles.fieldValue}>ETB {amount}</Text>
         </View>
       </View>
 
       <Text style={styles.footer}>
         The Bank you can always rely on.
-        {"\n"}© 2024 Commercial Bank of Ethiopia. All rights reserved.
+        {"\n"}© 2024 Bank Dash. All rights reserved.
       </Text>
     </Page>
   </Document>

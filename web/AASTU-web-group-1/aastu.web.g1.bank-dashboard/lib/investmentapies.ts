@@ -5,7 +5,7 @@ export  async function getInvestmentData(year:number, months:number) {
     try {
         const session = await getSession();
         const accessToken = session?.user.accessToken;
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/random-investment-data?years=${year}&months=${months}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/user/random-investment-data?years=${year}&months=${months}`, {
             method: "GET",
             cache: "reload",
             headers: {
@@ -22,5 +22,27 @@ export  async function getInvestmentData(year:number, months:number) {
         }
     } catch (error) {
       console.error("An error occurred on card:", error);
+    }
+}
+
+export async function getTrendingData() {
+    try{
+        const session = await getSession();
+        const accessToken = session?.user.accessToken;
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/companies/trending-companies`, {
+            method: "GET",
+            cache:"no-cache",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            body: null
+        }).then((res)=>(res.json()));
+
+        if (response.success){
+            // console.log(response.data);
+            return response.data;
+        }
+    }catch(error){
+        console.error("An error occurred on TrendingTable:", error);
     }
 }

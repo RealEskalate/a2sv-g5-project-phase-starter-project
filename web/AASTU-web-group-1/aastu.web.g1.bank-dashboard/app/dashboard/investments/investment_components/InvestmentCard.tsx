@@ -28,7 +28,7 @@ export default function InvestmentCard(props: any) {
           {props.type.map((item: any) => (
             <p
               key={item}
-              className={`font-[400] text-[14px] md:text-[16px] text-wrap w-[100px] ml-0 ${
+              className={`font-[400] text-[13px] md:text-[14px] text-wrap w-[100px] ml-0 ${
                 isDarkMode ? "text-gray-400" : "text-blue-900"
               }`}
             >
@@ -41,28 +41,28 @@ export default function InvestmentCard(props: any) {
         <h1
           className={`${
             isDarkMode ? "text-gray-200" : "text-black"
-          } text-[16px] md:text-[20px]`}
+          } text-[13px] md:text-[14px]`}
         >
           {props.investmentValue}
         </h1>
         <p
           className={`${
             isDarkMode ? "text-gray-400" : "text-blue-800"
-          } text-[10px] md:text-[16px]`}
+          } text-[12px] md:text-[14px]`}
         >
           Investment Value
         </p>
       </div>
       <div className="my-auto w-[40%] md:w-[30%] pl-16 md:pl-0">
         <h1
-          className={`${isDarkMode ? "text-emerald-500" : "text-emerald-700"}`}
+          className={`${isDarkMode ? "text-emerald-500" : "text-emerald-700"} text-[14px]`}
         >
           {props.returnValue}
         </h1>
         <p
           className={`${
             isDarkMode ? "text-gray-400" : "text-blue-800"
-          } hidden md:table-cell my-auto`}
+          } hidden md:table-cell my-auto text-[14px]`}
         >
           Return Value
         </p>

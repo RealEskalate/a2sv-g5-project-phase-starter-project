@@ -6,6 +6,7 @@ import { loanTypes } from "@/constants";
 import { getDetailData } from "@/lib/loanApies";
 import { useUser } from "@/contexts/UserContext";
 import { useState, useEffect } from "react";
+import CardShimmer from "./LoanComponents/CardShimmer";
 
 interface LoanTypes {
   personalLoan: number;
@@ -38,7 +39,7 @@ const Loans = () => {
   return (
     <div className={isDarkMode ? "bg-gray-700" : "bg-transparent"}>
       {loading ? (
-        <div></div>
+        <CardShimmer/>
       ) : (
         <div className="flex gap-2 overflow-x-scroll scrollbar-hidden my-3 scroll md:w-[98%] md:mx-auto">
           {loanTypes.map((item) => (
@@ -54,12 +55,8 @@ const Loans = () => {
           ))}
         </div>
       )}
-      <div className="mt-5 px-2">
-        <h1
-          className={`text-md font-[500] md:font-[600]  ${
-            isDarkMode ? "text-white" : "text-[#333B69]"
-          } md:text-left md:pl-20 md:text-[35px] pl-4`}
-        >
+      <div className="mt-5 px-2 scrollbar-hidden">
+        <h1 className={`text-md font-[500] md:font-[600]  ${isDarkMode ? "text-white" : "text-[#333B69]"} md:text-left md:pl-20 md:text-[35px] pl-4 my-3`}>
           Active Loans Overview
         </h1>
         <TableDemo />

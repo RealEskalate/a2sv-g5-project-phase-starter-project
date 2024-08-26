@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"astu-backend-g1/config"
 	"astu-backend-g1/delivery/controllers"
 	"astu-backend-g1/infrastructure"
 
@@ -32,9 +31,9 @@ func (gr *MainRouter) GinBlogRouter() {
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	blogRouter := gr.addBlogRouter(router)
 	_ = gr.addUserRouter(router)
-	conf := config.Config{}
-	prompts := infrastructure.Prompts{}
-	_ = gr.AddAIRoutes(router, conf, prompts)
+	// conf := config.Config{}
+	// prompts := infrastructure.Prompts{}
+	// _ = gr.AddAIRoutes(router, conf, prompts)
 	commentRouter := gr.addCommentRouter(blogRouter)
 	_ = gr.addReplyRouter(commentRouter)
 

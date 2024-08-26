@@ -4,6 +4,7 @@ import (
 	"astu-backend-g1/domain"
 	"astu-backend-g1/infrastructure"
 	usecase "astu-backend-g1/usecases"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -80,7 +81,7 @@ func (cont *BlogController) HandleGetPopularBlog(ctx *gin.Context) {
 }
 
 func (cont *BlogController) HandleFilterBlogs(ctx *gin.Context) {
-	
+
 	var blf domain.BlogFilterOption
 	err := ctx.ShouldBindJSON(&blf)
 	if err != nil {
@@ -101,7 +102,6 @@ func (cont *BlogController) HandleFilterBlogs(ctx *gin.Context) {
 	x.Page = ipage
 	x.PageSize = ipageSize
 	blf.Pagination = x
-
 
 	blogs, err := cont.usecase.FilterBlogs(blf)
 	if err != nil {
@@ -214,7 +214,7 @@ func (cont *BlogController) HandleGetAllComments(ctx *gin.Context) {
 	x.Page = ipage
 	x.PageSize = ipageSize
 
-	comments, err := cont.usecase.GetAllComments(blogId,x)
+	comments, err := cont.usecase.GetAllComments(blogId, x)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -244,25 +244,25 @@ func (cont *BlogController) HandleCommentLikeOrDislike(ctx *gin.Context) {
 	}
 
 	if interactionType == "like" {
-		err := cont.usecase.LikeComment(blogId, commentId, claims.ID)
+		msg,err := cont.usecase.LikeComment(blogId, commentId, claims.ID)
 		if err != nil {
-			ctx.IndentedJSON(http.StatusNotFound, err)
+			ctx.IndentedJSON(http.StatusNotFound, gin.H{"error":err,"message":msg})
 		} else {
-			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment liked successfully"})
+			ctx.IndentedJSON(http.StatusOK,  gin.H{"error":err,"message":msg})
 		}
 	} else if interactionType == "dislike" {
-		err := cont.usecase.DislikeComment(blogId, commentId, claims.ID)
+		msg,err := cont.usecase.DislikeComment(blogId, commentId, claims.ID)
 		if err != nil {
-			ctx.IndentedJSON(http.StatusNotFound, err)
+			ctx.IndentedJSON(http.StatusNotFound, gin.H{"error":err,"message":msg})
 		} else {
-			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment disliked successfully"})
+			ctx.IndentedJSON(http.StatusOK, gin.H{"error":err,"message":msg})
 		}
 	} else if interactionType == "view" {
-		err := cont.usecase.ViewComment(blogId, commentId, claims.ID)
+		msg,err := cont.usecase.ViewComment(blogId, commentId, claims.ID)
 		if err != nil {
-			ctx.IndentedJSON(http.StatusNotFound, err)
+			ctx.IndentedJSON(http.StatusNotFound, gin.H{"error":err,"message":msg})
 		} else {
-			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Comment viewed successfully"})
+			ctx.IndentedJSON(http.StatusOK, gin.H{"error":err,"message":msg})
 		}
 	} else {
 		ctx.IndentedJSON(http.StatusNotFound, gin.H{"message": "invalid interaction type"})
@@ -284,6 +284,7 @@ func (cont *BlogController) HandleReplyOnComment(ctx *gin.Context) {
 		return
 	}
 	newReply.AuthorId = claims.ID
+	fmt.Println("this is the new Reply", newReply)
 	err = cont.usecase.ReplyToComment(blogId, commentId, newReply)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
@@ -309,7 +310,7 @@ func (cont *BlogController) HandleGetAllRepliesForComment(ctx *gin.Context) {
 	x.Page = ipage
 	x.PageSize = ipageSize
 
-	replies, err := cont.usecase.GetAllReplies(blogId, commentId,x)
+	replies, err := cont.usecase.GetAllReplies(blogId, commentId, x)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -340,25 +341,25 @@ func (cont *BlogController) HandleReplyLikeOrDislike(ctx *gin.Context) {
 		return
 	}
 	if like == "like" {
-		err := cont.usecase.LikeReply(blogId, commentId, replyId, claims.ID)
+		msg,err := cont.usecase.LikeReply(blogId, commentId, replyId, claims.ID)
 		if err != nil {
-			ctx.IndentedJSON(http.StatusNotFound, err)
+			ctx.IndentedJSON(http.StatusNotFound, gin.H{"error":err,"message":msg})
 		} else {
-			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply liked successfully"})
+			ctx.IndentedJSON(http.StatusOK, gin.H{"error":err,"message":msg})
 		}
 	} else if like == "dislike" {
-		err := cont.usecase.DislikeReply(blogId, commentId, replyId, claims.ID)
+		msg,err := cont.usecase.DislikeReply(blogId, commentId, replyId, claims.ID)
 		if err != nil {
-			ctx.IndentedJSON(http.StatusNotFound, err)
+			ctx.IndentedJSON(http.StatusNotFound, gin.H{"error":err,"message":msg})
 		} else {
-			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply disliked successfully"})
+			ctx.IndentedJSON(http.StatusOK, gin.H{"error":err,"message":msg})
 		}
 	} else if like == "view" {
-		err := cont.usecase.ViewReply(blogId, commentId, replyId, claims.ID)
+		msg,err := cont.usecase.ViewReply(blogId, commentId, replyId, claims.ID)
 		if err != nil {
-			ctx.IndentedJSON(http.StatusNotFound, err)
+			ctx.IndentedJSON(http.StatusNotFound, gin.H{"error":err,"message":msg})
 		} else {
-			ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Reply viewed successfully"})
+			ctx.IndentedJSON(http.StatusOK, gin.H{"error":err,"message":msg})
 		}
 	} else {
 		ctx.IndentedJSON(http.StatusNotFound, gin.H{"message": "invalid interaction type"})

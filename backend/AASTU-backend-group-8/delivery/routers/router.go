@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
-
 func InitRoutes(r *gin.Engine, client *mongo.Client) {
 
 	r.MaxMultipartMemory = 8 << 20
@@ -61,5 +60,6 @@ func InitRoutes(r *gin.Engine, client *mongo.Client) {
 
 	likeUsecase := usecases.NewLikeUsecase(likeRepo)
 	NewLikeRouter(r, likeUsecase, otpUsecase, jwtService)
+
 
 }

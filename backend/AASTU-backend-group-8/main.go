@@ -20,10 +20,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
-
+  
 	r := gin.Default()
 
 	routers.InitRoutes(r, client)
+
 
 	if err := r.Run(os.Getenv("PORT")); err != nil {
 		log.Fatalf("Failed to run server: %v", err)

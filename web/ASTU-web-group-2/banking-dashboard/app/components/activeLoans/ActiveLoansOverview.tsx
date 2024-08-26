@@ -7,19 +7,18 @@ import { useSession } from "next-auth/react";
 import { useGetMyLoanServiceQuery } from "@/lib/service/LoanService";
 import LoanTableSkeleton from "./LoanTableSkeleton";
 import ErrorImage from "../Error/ErrorImage";
+import EmptyShow from "../emptyShowingImage/EmptyShow";
 
 const ActiveLoansOverview = () => {
   const { data: session } = useSession();
   const accessToken = session?.user.accessToken!;
-  useEffect(()=>{
-    console.log("data",session)
-  },[session])
-  const { data, isLoading, isError, isSuccess } = useGetMyLoanServiceQuery(
-    accessToken
-  );
+  useEffect(() => {
+    console.log("data", session);
+  }, [session]);
+  const { data, isLoading, isError, isSuccess, error } =
+    useGetMyLoanServiceQuery(accessToken);
   let loans: loan[] = [];
 
- 
   if (isLoading) {
     return (
       <div>
@@ -28,27 +27,26 @@ const ActiveLoansOverview = () => {
     );
   }
   if (isError) {
+    console.log("errorrrrs");
+    console.log(error);
     return (
       <div>
-        <ErrorImage />
+        <EmptyShow text="No active loans found" />
       </div>
-    )
+    );
   }
   if (isSuccess) {
-    loans = data.data;
+    console.log("data", data);
+    loans = data.data.content;
   }
 
   return (
     <div className="bg-white rounded-3xl w-full h-max-[466px] sm:h-max-[500px] md:h-max-[625px]  p-3">
       {loans.length === 0 ? (
         <div className="flex justify-center">
-          <img
-            src="/assets/bankService/empty-image.png"
-            className="w-fit h-fit"
-          />
+          <EmptyShow text="No active loans found" />
         </div>
       ) : (
-
         <table className="min-w-full divide-y">
           <thead>
             <tr>

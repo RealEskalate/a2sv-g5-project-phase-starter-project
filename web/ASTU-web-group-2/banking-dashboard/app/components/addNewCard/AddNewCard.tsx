@@ -45,6 +45,7 @@ const AddNewCard = () => {
 
     if (res && res.data && res.data.id) {
       notify.success("Card successfully added!");
+      window.location.reload();
       // Store the card ID in local storage
     } else {
       // Handle failure case

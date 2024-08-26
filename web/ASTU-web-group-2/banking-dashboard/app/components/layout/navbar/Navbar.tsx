@@ -41,7 +41,6 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
     };
   }, [dropdownRef]);
 
-
   // Toggle dropdown visibility
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -75,7 +74,10 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
         </div>
         <div className="flex gap-2 w-full items-center justify-between px-4 py-2">
           <div className="flex-grow flex justify-start max-md:justify-center">
-            <p className="font-semibold text-[20px] sm:text-[25px] text-[#343C6A]">
+            <p
+              data-id="title"
+              className="font-semibold text-[20px] sm:text-[25px] text-[#343C6A]"
+            >
               {title.slice(0)}
             </p>
           </div>
@@ -136,6 +138,7 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
                   alt="profile-picture"
                   className="block mx-auto h-12 rounded-full cursor-pointer"
                   onClick={toggleDropdown}
+                  data-id="Profile-image"
                 />
               </div>
 

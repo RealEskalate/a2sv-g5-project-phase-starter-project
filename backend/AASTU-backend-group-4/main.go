@@ -33,7 +33,7 @@ func main() {
 	userCollection := db.Collection("users")
 	refreshTokenCollection := db.Collection("refresh-tokens")
 	resetTokenCollection := db.Collection("reset-tokens")
-
+	medup := infrastructures.NewMediaUpload()
 	userRepo := user_repository.NewUserRepository(userCollection)
 	refreshTokenRepo := refresh_token_repository.NewRefreshTokenRepository(refreshTokenCollection)
 	resetTokenRepo := reset_token_repository.NewResetTokenRepository(resetTokenCollection)
@@ -43,16 +43,15 @@ func main() {
 	emailService := email.NewEmailService(env.SMTPServer, env.SMTPPort, env.SMTPUser, env.SMTPPassword, env.FromAddress)
 
 	userUsecase := user_usecase.NewUserUsecase(userRepo, authService, emailService, time.Duration(env.ContextTimeout))
-	userController := user_controller.NewUserController(userUsecase, authService, env)
+	userController := user_controller.NewUserController(userUsecase, authService, env, medup)
 
 	blogRepo := blog_repository.NewBlogRepository(db.Collection("blogs"))
 	commRepo := comment_repository.NewCommentRepository(db.Collection("comments"))
 	likeRepo := like_repository.NewLikeRepository(db.Collection("likes"))
 	aiService := infrastructure.NewGenAIService()
-	medup := infrastructures.NewMediaUpload()
 
 	blogUsecase := blog_usecase.NewBlogUsecase(blogRepo, commRepo, likeRepo, aiService, *env, time.Duration(env.ContextTimeout))
-	blogController := blog_controller.NewBlogController(blogUsecase, medup)
+	blogController := blog_controller.NewBlogController(blogUsecase)
 
 	r := gin.Default()
 	router.SetRouter(r, blogController, userController, env)

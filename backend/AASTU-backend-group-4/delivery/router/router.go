@@ -21,7 +21,7 @@ func SetRouter(router *gin.Engine, bc *blog_controller.BlogController, uc *user_
 	router.PATCH("/user/promote-demote", auth.JwtAuthMiddleware(env.AccessTokenSecret), uc.PromoteDemote)
 
 	router.POST("/generate", auth.JwtAuthMiddleware(env.AccessTokenSecret), bc.GenerateContent)
-	router.POST("/file", auth.JwtAuthMiddleware(env.AccessTokenSecret), bc.FileUpload)
+	router.POST("/file", auth.JwtAuthMiddleware(env.AccessTokenSecret), uc.FileUpload)
 
 	// Blog routes
 	r := router.Group("/blog")

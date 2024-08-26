@@ -10,6 +10,27 @@ import { setCards, setLoading, setError } from '@/lib/redux/slices/cardsSlice'
 import { RootState } from '@/lib/redux/store'
 
 
+const cardStyles = {
+  Debit: {
+    backgroundImg:
+      "bg-[linear-gradient(107.38deg,#2D60FF_2.61%,#539BFF_101.2%)]",
+    textColor: "text-white",
+  },
+  Primary: {
+    backgroundImg:
+      "bg-[linear-gradient(107.38deg,#4C49ED_2.61%,#0A06F4_101.2%)]",
+    textColor: "text-white",
+  },
+  Visa: {
+    backgroundImg: "bg-black",
+    textColor: "text-white",
+  },
+  Secondary: {
+    backgroundImg: "bg-gray-200",
+    textColor: "text-black",
+  },
+};
+
 const CreditCardTransaction = () => {
     const dispatch = useDispatch()
     const {
@@ -46,22 +67,32 @@ const CreditCardTransaction = () => {
               <h1 className="text-[#2D60FF] dark:text-darkPrimary">+ Add Card</h1>
             </Link>  
           </div>
-          <div className="cards flex gap-5 lg:gap-1 lg:flex-row overflow-x-auto overflow-y-hidden no-scrollbar h-56 lg:justify-between xl:gap-10">
-            {
-                cards.map((card)=>(
-                    <div key={card.id} className="flex-shrink-0 min-w-60 w-73 lg:w-60 lg:h-48 xl:w-96 xl:h-56 items-center">
-                      <CreditCard
-                        name={card.cardHolder}
-                        balance={card.balance.toString()} // Convert the balance to a string
-                        cardNumber={card.semiCardNumber}
-                        validDate={card.expiryDate}
-                        backgroundImg="bg-blue-500"
-                        textColor="text-white"
-                      />
-                    </div>
-                ))
-            }
-          </div>
+
+          <div className="creditcards flex gap-5 lg:flex-row overflow-x-auto overflow-y-hidden no-scrollbar h-56 lg:justify-start lg:px-4">
+
+          {cards.map((card, index) => {
+            const style =
+              cardStyles[card.cardType as keyof typeof cardStyles] ||
+              cardStyles.Primary;
+  
+            return (
+              <div
+                key={index}
+                className="credit-card min-h-80 w-[360px] max-w-72 md:max-w-96 flex-shrink-0"
+              >
+                <CreditCard
+                  name={card.cardHolder}
+                  balance={String(card.balance)}
+                  cardNumber={card.semiCardNumber}
+                  validDate={card.expiryDate}
+                  backgroundImg={style.backgroundImg}
+                  textColor={style.textColor}
+                />
+              </div>
+            );
+          })}
+        </div>
+
         </div>
     )
 }

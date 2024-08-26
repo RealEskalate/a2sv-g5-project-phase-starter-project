@@ -77,26 +77,26 @@ const transactions: Transaction[] = [
   },
 ];
 
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Add 1 because months are zero-indexed
-  const year = date.getFullYear().toString()?.slice(-2); // Get the last two digits of the year
-  return `${month}/${year}`;
-}
+// function formatDate(dateString: string): string {
+//   const date = new Date(dateString);
+//   const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Add 1 because months are zero-indexed
+//   const year = date.getFullYear().toString()?.slice(-2); // Get the last two digits of the year
+//   return `${month}/${year}`;
+// }
 
-function formatCardNumber(cardNumber: string): string {
-  const start = cardNumber?.slice(0, 4);
-  const end = cardNumber?.slice(-4);
-  return `${start} **** **** ${end}`;
-}
+// function formatCardNumber(cardNumber: string): string {
+//   const start = cardNumber?.slice(0, 4);
+//   const end = cardNumber?.slice(-4);
+//   return `${start} **** **** ${end}`;
+// }
 
-function formatBalance(balance: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  }).format(balance);
-}
+// function formatBalance(balance: number): string {
+//   return new Intl.NumberFormat("en-US", {
+//     style: "currency",
+//     currency: "USD",
+//     minimumFractionDigits: 2,
+//   }).format(balance);
+// }
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -230,10 +230,10 @@ const Page = () => {
           </h1>
           <div className="min-w-60 w-73 lg:w-72 lg:h-48 xl:w-96 xl:h-56">
             <CreditCard
-              name={cards[1]?.cardHolder}
-              balance={formatBalance(cards[1]?.balance)}
-              cardNumber={formatCardNumber(cards[1]?.semiCardNumber)}
-              validDate={formatDate(cards[1]?.expiryDate)}
+              name={cards[0]?.cardHolder}
+              balance={`${cards[0]?.balance}`}
+              cardNumber={cards[0]?.semiCardNumber}
+              validDate={cards[0]?.expiryDate}
               backgroundImg="bg-[linear-gradient(107.38deg,#2D60FF_2.61%,#539BFF_101.2%)]"
               textColor="text-white"
             />

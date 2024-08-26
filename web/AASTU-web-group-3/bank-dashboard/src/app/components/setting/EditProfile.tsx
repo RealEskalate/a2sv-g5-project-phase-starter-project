@@ -175,7 +175,7 @@ const EditProfile = ({ userData }: EditProfileProps ) => {
               {field.label}
             </label>
             <input
-              className="w-full p-3 md:p-2 text-[#718EBF] border-2 text-sm border-[#DFEAF2] rounded-lg focus:outline-none bg-white dark:border-darkPage  dark:bg-[#172941]"
+              className="w-full p-3 md:p-2 text-[#718EBF] border-2 text-sm border-[#DFEAF2] rounded-lg focus:outline-none bg-white dark:border-white dark:bg-[#172941]"
               type={field.type}
               id={field.id}
               defaultValue={field.value}

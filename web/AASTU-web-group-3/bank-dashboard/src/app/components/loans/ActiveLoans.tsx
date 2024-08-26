@@ -117,7 +117,8 @@ const ActiveLoans = () => {
         <button
           onClick={() => handlePageClick(page - 1)}
           disabled={page === 1}
-          className={`px-4 py-2 rounded mx-1 flex items-center ${page === 1 ? 'text-gray-400 dark:text-gray-600' : 'text-blue-600 dark:text-darkAccent'}`}
+          className="px-4 py-2 bg-blue-600 dark:bg-darkPrimary rounded disabled:bg-blue-400 text-white flex gap-1 items-center"
+
         >
           <FaArrowLeft className="mr-2" />
           Previous
@@ -126,7 +127,8 @@ const ActiveLoans = () => {
         <button
           onClick={() => handlePageClick(page + 1)}
           disabled={page === (loansData?.data.totalPages || 1)}
-          className={`px-4 py-2 rounded mx-1 flex items-center ${page === (loansData?.data.totalPages || 1) ? 'text-gray-400 dark:text-gray-600' : 'text-blue-600 dark:text-darkAccent'}`}
+          className="px-4 py-2 bg-blue-600 dark:bg-darkPrimary rounded disabled:bg-blue-400 text-white flex gap-1 items-center"
+
         >
           Next
           <FaArrowRight className="ml-2" />

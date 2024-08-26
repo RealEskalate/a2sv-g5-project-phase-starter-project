@@ -265,14 +265,14 @@ const RecentTransactions = () => {
       >
         {transaction.amount < 0 ? '-' : '+'}${Math.abs(transaction.amount)}
       </div>
-      <div className="hidden lg:block first-line:col-span-2 lg:col-span-1 justify-self-end lg:justify-self-auto xl:justify-self-center">
-        View
+      <div className="hidden lg:block first-line:col-span-2 lg:col-span-1 justify-self-end lg:justify-self-auto xl:justify-self-center border border-blue-300 hover:border-blue-500 px-3 py-1 rounded-xl hover:cursor-pointer ">
+        Download
       </div>
     </div>
   ))}
 </section>
 
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex justify-end space-x-2 items-center mt-4">
         <button
           onClick={handlePrevPage}
           disabled={

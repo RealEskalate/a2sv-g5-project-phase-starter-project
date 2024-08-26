@@ -53,7 +53,7 @@ const Security = () => {
         <div className="mb-3 w-full md:w-[45%] ">
           <label className="block text-black text-sm mb-2 dark:text-white ">Password</label>
           <input
-            className="w-full p-3 text-[#718EBF] border-2 bg-white text-sm border-[#DFEAF2] rounded-lg focus:outline-none  dark:border-darkPage  dark:bg-[#172941]"
+            className="w-full p-3 text-[#718EBF] border-2 bg-white text-sm border-[#DFEAF2] rounded-lg focus:outline-none  dark:border-white  dark:bg-[#172941]"
             type="password"
             id="password"
             placeholder="*********"
@@ -68,7 +68,7 @@ const Security = () => {
         <div className="mb-3 w-full md:w-[45%]">
           <label className="block text-black text-sm mb-2 dark:text-white">New Password</label>
           <input
-            className="w-full p-3 text-[#718EBF] border-2 bg-white text-sm border-[#DFEAF2] rounded-lg focus:outline-none  dark:border-darkPage  dark:bg-[#172941]"
+            className="w-full p-3 text-[#718EBF] border-2 bg-white text-sm border-[#DFEAF2] rounded-lg focus:outline-none  dark:border-white  dark:bg-[#172941]"
             type="password"
             id="newPassword"
             placeholder="*********"

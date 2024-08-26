@@ -1,4 +1,3 @@
-
 export interface Transaction {
   transactionId: string;
   type: string;
@@ -15,12 +14,11 @@ export interface TransactionsResponse {
   data: Transaction[];
 }
 
-export interface TransactionResponse{
+export interface TransactionResponse {
   success: boolean;
   message: string;
   data: Transaction;
 }
-
 
 export interface TransactionRequest {
   type: string;
@@ -29,61 +27,73 @@ export interface TransactionRequest {
   receiverUserName: string;
 }
 
-export interface TransactionDepositRequest{
-  description:string;
-  amount:number;
+export interface TransactionDepositRequest {
+  description: string;
+  amount: number;
 }
 
-interface Transfer{
-  id: string,
-  name: string,
-  username: string,
-  city: string,
-  country: string,
-  profilePicture: string
+interface Transfer {
+  id: string;
+  name: string;
+  username: string;
+  city: string;
+  country: string;
+  profilePicture: string;
 }
 
-export interface LatestTransferResponse{
-  success: true,
-  message: string,
-  data: Transfer[]
+export interface LatestTransferResponse {
+  success: true;
+  message: string;
+  data: Transfer[];
 }
 
-export interface BalanceData{
-  time: string
-  value: number
+export interface BalanceData {
+  time: string;
+  value: number;
 }
-export interface BalanceHistoryResponse{
-  success: true,
-  message: string,
-  data: BalanceData[]
+export interface BalanceHistoryResponse {
+  success: true;
+  message: string;
+  data: BalanceData[];
 }
 
-export interface MyExpenseResponse{
+export interface MyExpenseResponse {
   success: boolean;
   message: string;
   data: {
     content: Transaction[];
     totalPages: number;
   };
-
 }
 
-export interface IncomeResponse{
-  success: boolean,
-  message: string,
+export interface IncomeResponse {
+  success: boolean;
+  message: string;
   data: {
     content: [
       {
-        transactionId: string,
-        type: string,
-        senderUserName: string,
-        description: string,
-        date:string,
-        amount: number,
-        receiverUserName: string
+        transactionId: string;
+        type: string;
+        senderUserName: string;
+        description: string;
+        date: string;
+        amount: number;
+        receiverUserName: string;
       }
-    ],
-    totalPages: number
-  }
+    ];
+    totalPages: number;
+  };
+}
+
+export interface getQuickTransfersResponse {
+  success: boolean;
+  message: string;
+  data: {
+    id: string;
+    name: string;
+    username: string;
+    city: string;
+    country: string;
+    profilePicture: string;
+  }[];
 }

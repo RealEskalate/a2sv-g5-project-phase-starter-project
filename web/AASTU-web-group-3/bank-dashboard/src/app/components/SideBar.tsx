@@ -44,7 +44,7 @@ const Sidebar = () => {
         </div>
         <div
           onClick={() => dispatch(toggleSidebar())}
-          className="md:hidden rounded-full text-end py-3 px-4 text-blue-600 dark:text-darkAccent font-bold bg-[#F5F7FA] dark:bg-gray-800 dark:hover:bg-gray-600 "
+          className="md:hidden rounded-full text-end py-2 px-3 text-blue-600 dark:text-darkAccent font-bold bg-[#F5F7FA] dark:bg-gray-800 dark:hover:bg-gray-600 "
         >
           X
         </div>

@@ -9,6 +9,7 @@ import {
   BalanceHistoryResponse,
   MyExpenseResponse,
   IncomeResponse,
+  getQuickTransfersResponse,
 } from "../types/transactions";
 
 export const transactionsApi = createApi({
@@ -95,8 +96,11 @@ export const transactionsApi = createApi({
     getBalanceHistory: builder.query<BalanceHistoryResponse, {}>({
       query: () => "/transactions/balance-history",
     }),
-    getQuickTransfers: builder.query<BalanceHistoryResponse, { num: number }>({
-      query: ({ num }) => `/transactions/quick-transfers/${num}`,
+    getQuickTransfers: builder.query<
+      getQuickTransfersResponse,
+      { num: number }
+    >({
+      query: ({ num }) => `/transactions/quick-transfers?number=${num}`,
     }),
   }),
 });
@@ -111,4 +115,5 @@ export const {
   useCreateTransactionMutation,
   useCreateTransactionDepositMutation,
   useGetBalanceHistoryQuery,
+  useGetQuickTransfersQuery,
 } = transactionsApi;

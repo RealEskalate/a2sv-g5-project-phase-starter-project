@@ -1,12 +1,10 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Legend, XAxis, YAxis } from "recharts";
 
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -17,66 +15,115 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-const chartData = [
-  { day: "Fri", desktop: 186, mobile: 80 },
-  { day: "Sat", desktop: 305, mobile: 200 },
-  { day: "Sun", desktop: 237, mobile: 120 },
-  { day: "Mon", desktop: 73, mobile: 190 },
-  { day: "Tue", desktop: 209, mobile: 130 },
-  { day: "Wed", desktop: 214, mobile: 140 },
-];
+import { useGetRandomBalanceHistoryQuery } from "@/lib/redux/api/transactionsApi";
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  withdraw: {
+    label: "Withdraw",
     color: "#1814F3",
   },
-  mobile: {
-    label: "Mobile",
+  deposit: {
+    label: "Deposit",
     color: "#16DBCC",
   },
 } satisfies ChartConfig;
 
 export function BarChartComponent() {
+  const { data, isLoading, error } = useGetRandomBalanceHistoryQuery({
+    monthsBeforeFirstTransaction: 14,
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data</div>;
+
+  // Extract and transform data for the chart
+  const rawData = data?.data || [];
+  const totalEntries = 14;
+  const half = Math.ceil(totalEntries / 2);
+
+  const slicedData = rawData.slice(0, totalEntries);
+
+  const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+  const withdrawData = slicedData
+    .slice(0, half)
+    .map((item: { time: string; value: number }, index: number) => ({
+      day: weekdays[index % 7],
+      withdraw: item.value,
+      deposit: 0,
+    }));
+
+  const depositData = slicedData
+    .slice(half)
+    .map((item: { time: string; value: number }) => ({
+      day: new Date(item.time).toLocaleString("default", { weekday: "short" }),
+      withdraw: 0,
+      deposit: item.value,
+    }));
+
+  //format the data
+  const chartData = withdrawData.map(
+    (withdrawItem: { time: string; value: number }, index: number) => ({
+      ...withdrawItem,
+      deposit: depositData[index]?.deposit || 0,
+    })
+  );
+
   return (
-    <Card className="w-full lg:w-[800px] mb-8 lg:mt-9 dark:bg-darkComponent">
-      <CardHeader>
-        <CardTitle>Weekly Activity</CardTitle>
-        {/* <CardDescription>January - June 2024</CardDescription> */}
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={chartData} barSize={20}>
+    <Card className="w-full h-auto lg:ml-4 lg:rounded-3xl  dark:bg-darkComponent">
+      <CardContent className="p-0 lg:h-auto ">
+        <ChartContainer config={chartConfig} className="lg:h-[400px]">
+          <BarChart data={chartData} barSize={20}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="day"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value}
             />
             <YAxis
-              tickCount={6} 
-              domain={[0, 500]} 
-              ticks={[0, 100, 200, 300, 400, 500]} 
+              tickCount={6}
+              domain={[0, 5000]}
+              ticks={[0, 1000, 2000, 3000, 4000, 5000]}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="dashed" />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={15} />
-            <Bar dataKey="mobile" fill="var(--color-mobile)" radius={15} />
+            <Bar
+              dataKey="withdraw"
+              fill={chartConfig.withdraw.color}
+              radius={15}
+            />
+            <Bar
+              dataKey="deposit"
+              fill={chartConfig.deposit.color}
+              radius={15}
+            />
+
+            <Legend
+              verticalAlign="top"
+              align="right"
+              height={36}
+              width={500}
+              iconType="circle"
+              iconSize={15}
+              payload={[
+                {
+                  value: chartConfig.deposit.label,
+                  type: "circle",
+                  color: chartConfig.deposit.color,
+                },
+                {
+                  value: chartConfig.withdraw.label,
+                  type: "circle",
+                  color: chartConfig.withdraw.color,
+                },
+              ]}
+            />
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-start gap-2 text-sm">
-        {/* <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this day <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 days
-        </div> */}
-      </CardFooter>
     </Card>
   );
 }

@@ -50,9 +50,9 @@ export default function ServiceCard() {
           key={index}
           className="body flex  h-auto p-2 border-[1px] rounded-[10px] m-2 w-[93%] bg-white dark:bg-darkComponent"
         >
-          <div className="flex items-center rounded-2xl px-5 bg-[#FFE0EB] dark:bg-darkPage">
+          {/* <div className="flex items-center rounded-2xl px-5 bg-[#FFE0EB] dark:bg-darkPage">
             <Image width={18} height={18} src={card.icon} alt="aastu" />
-          </div>
+          </div> */}
           <div className="right w-full flex justify-between items-center p-2">
             <div className="md:w-1/4 flex-shrink-0">
               <div className="font-normal dark:text-darkText">{card.name}</div>

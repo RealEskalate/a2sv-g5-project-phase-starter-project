@@ -39,7 +39,7 @@ const CardListPage = () => {
     }
   };
 
-  if (isLoading) return <Loading />;
+  // if (isLoading) return <Loading />;
   if (error) return <div>Error fetching cards</div>;
 
   return (

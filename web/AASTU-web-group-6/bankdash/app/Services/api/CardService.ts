@@ -1,8 +1,8 @@
 import axios from "axios";
-import {jwtDecode} from "jwt-decode"; // Assuming you're using the jwt-decode library
+import { jwtDecode } from "jwt-decode"; // Assuming you're using the jwt-decode library
 import { checkAndRefreshToken } from "./hooks/useRefresh";
 
-const API_URL = "https://bank-dashboard-rsf1.onrender.com/cards";
+const API_URL = "https://bank-dashboard-irse.onrender.com/cards"; // Adjust this to match your actual API base URL
 
 interface Card {
   id?: string;
@@ -38,7 +38,6 @@ const handleRequest = async (
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      
       console.error("Axios error:", error.message);
     } else {
       console.error("Unexpected error:", error);
@@ -48,7 +47,9 @@ const handleRequest = async (
 };
 
 class CardService {
-  private static async ensureAccessToken(accessToken?: string): Promise<string> {
+  private static async ensureAccessToken(
+    accessToken?: string
+  ): Promise<string> {
     if (accessToken) {
       try {
         const decodedToken = jwtDecode<any>(accessToken);
@@ -63,7 +64,7 @@ class CardService {
       }
     }
 
-    return await checkAndRefreshToken() as string;
+    return (await checkAndRefreshToken()) as string;
   }
 
   public static async getAllCards(accessToken?: string): Promise<Card[]> {
@@ -76,12 +77,18 @@ class CardService {
     return handleRequest("POST", API_URL, card, token);
   }
 
-  public static async getCardById(id: string, accessToken?: string): Promise<Card> {
+  public static async getCardById(
+    id: string,
+    accessToken?: string
+  ): Promise<Card> {
     const token = await this.ensureAccessToken(accessToken);
     return handleRequest("GET", `${API_URL}/${id}`, undefined, token);
   }
 
-  public static async deleteCardById(id: string, accessToken?: string): Promise<void> {
+  public static async deleteCardById(
+    id: string,
+    accessToken?: string
+  ): Promise<void> {
     const token = await this.ensureAccessToken(accessToken);
     return handleRequest("DELETE", `${API_URL}/${id}`, undefined, token);
   }

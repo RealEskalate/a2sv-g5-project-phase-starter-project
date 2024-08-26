@@ -34,7 +34,6 @@ class AuthRepositoryImp implements AuthRepository {
     if (isConnected) {
       try {
         final userModel = await authRemoteDataSource.getUser();
-        final toke = authLocalDataSource.getToken();
 
         final userEntity = UserEntity.fromModel(userModel);
         sl<UserCubit>().updateUser(userEntity);

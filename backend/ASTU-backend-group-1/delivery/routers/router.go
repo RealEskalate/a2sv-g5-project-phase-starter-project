@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"astu-backend-g1/config"
 	"astu-backend-g1/delivery/controllers"
 	"astu-backend-g1/infrastructure"
 
@@ -34,9 +35,9 @@ func (gr *MainRouter) GinBlogRouter() {
 	gr.AddHelpRoute(router)
 	blogRouter := gr.addBlogRouter(router)
 	_ = gr.addUserRouter(router)
-	// conf := config.Config{}
-	// prompts := infrastructure.Prompts{}
-	// _ = gr.AddAIRoutes(router, , prompts)
+	conf := config.Config{}
+	prompts := infrastructure.Prompts{}
+	_ = gr.AddAIRoutes(router, conf, prompts)
 	commentRouter := gr.addCommentRouter(blogRouter)
 	_ = gr.addReplyRouter(commentRouter)
 

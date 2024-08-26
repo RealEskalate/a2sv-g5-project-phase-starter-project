@@ -18,6 +18,7 @@ const register = async (userDetails: RegisterRequest): Promise<RegisterResponse>
       const data: RegisterResponse = await response.json();
       return data;
     } else {
+      alert(`Registration failed with status code: ${response.status}`)
       throw new Error(`Registration failed with status code: ${response.status}`);
     }
   } catch (error) {

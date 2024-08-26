@@ -1,5 +1,5 @@
 import axios from "axios";
-const baseUrl = "https://bank-dashboard-mih0.onrender.com";
+const baseUrl = "https://a2svwallets.onrender.com";
 const activeloansall = async (token: string, size: number, page: number) => {
   const response = await axios.get(
     baseUrl + `/active-loans/all?page=${page}&size=${size}`,
@@ -76,15 +76,17 @@ interface activeloanbody {
   type: string;
 }
 
-const activeloans = async (token: string) => {
+type Form = {
+  loanAmount: number;
+  duration: number;
+  interestRate: number;
+  type: string;
+};
+
+const activeloans = async (token: string, data: Form) => {
   const response = await axios.post(
     baseUrl + "/active-loans",
-    JSON.stringify({
-      loanAmount: 1,
-      duration: 1,
-      interestRate: 1,
-      type: "personal",
-    }),
+    JSON.stringify(data),
     {
       headers: {
         Authorization: `Bearer ${token}`,

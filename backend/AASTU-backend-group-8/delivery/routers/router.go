@@ -1,92 +1,65 @@
 package routers
 
 import (
-	"meleket/delivery/controllers"
-	"meleket/delivery/external"
 	"meleket/infrastructure"
+	"meleket/repository"
 	"meleket/usecases"
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/sessions"
-	"github.com/markbates/goth"
-	"github.com/markbates/goth/gothic"
-	"github.com/markbates/goth/providers/google"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func InitRoutes(r *gin.Engine, blogUsecase *usecases.BlogUsecase, userUsecase *usecases.UserUsecase, refreshTokenUsecase *usecases.TokenUsecase, jwtService infrastructure.JWTService, likeUsecase *usecases.LikeUsecase, commentUsecase *usecases.CommentUsecase, tokenUsecase *usecases.TokenUsecase, otpUsecase *usecases.OTPUsecase) {
-	r.MaxMultipartMemory = 8 << 20 // 8 MB
-	r.Static("/public", "./uploads")
+func InitRoutes(r *gin.Engine, client *mongo.Client) {
 
-	// Initialize controllers
-	signupController := controllers.NewSignupController(userUsecase, otpUsecase)
-	blogController := controllers.NewBlogController(blogUsecase)
-	userController := controllers.NewUserController(userUsecase)
+	r.MaxMultipartMemory = 8 << 20
 
-	refreshTokenController := controllers.NewRefreshTokenController(userUsecase, refreshTokenUsecase, jwtService)
-	forgotPasswordController := controllers.NewForgotPasswordController(userUsecase, otpUsecase)
-	logoutController := controllers.NewLogoutController(refreshTokenUsecase)
+	jwtService := infrastructure.NewJWTService(os.Getenv("JWT_SECRET"), "Kal", os.Getenv("JWT_REFRESH_SECRET"))
 
-	commentController := controllers.NewCommentController(commentUsecase)
-	likeController := controllers.NewLikeController(likeUsecase)
+	aiService := infrastructure.NewAIService()
+	aiUsecase := usecases.NewAIUsecase(aiService)
+	AIRouter(r, aiUsecase, jwtService)
 
-	// Admin middleware
-	// adminMiddleware := infrastructure.AdminMiddleware(jwtService)
-	adminMiddleware := infrastructure.AdminMiddleware(jwtService)
+	userCollection := client.Database("Blog").Collection("Users")
+	blogCollection := client.Database("Blog").Collection("Blogs")
+	tokenCollection := client.Database("Blog").Collection("Tokens")
+	otpCollection := client.Database("Blog").Collection("OTPs")
+	profileCollection := client.Database("Blog").Collection("profile")
+	commentCollection := repository.NewMongoCollection(client.Database("Blog").Collection("Comments"))
+	likeCollection := repository.NewMongoCollection(client.Database("Blog").Collection("Likes"))
 
-	// Public routes
-	r.POST("/signup", signupController.Signup)
-	r.POST("/verify", signupController.VerifyOTP)
-	r.POST("/login", userController.Login)
-	r.POST("/refreshtoken", refreshTokenController.RefreshToken)
-	r.POST("/forgotpassword", forgotPasswordController.ForgotPassword)
-	r.POST("/verfiyforgotpassword", forgotPasswordController.VerifyForgotOTP)
+	userMockCollection := repository.NewMongoCollection(userCollection)
+	blogMockCollection := repository.NewMongoCollection(blogCollection)
+	tokenMockCollection := repository.NewMongoCollection(tokenCollection)
+	otpMockCollection := repository.NewMongoCollection(otpCollection)
+	profileMockCollection := repository.NewMongoCollection(profileCollection)
 
-	r.GET("/blogs/:id", blogController.GetBlogByID)
-	r.GET("/blogs", blogController.GetAllBlogPosts)
+	userRepo := repository.NewUserRepository(userMockCollection)
+	blogRepo := repository.NewBlogRepository(blogMockCollection)
+	tokenRepo := repository.NewTokenRepository(tokenMockCollection)
+	otpRepo := repository.NewOtpRepository(otpMockCollection)
+	profileRepo := repository.NewProfileRepository(profileMockCollection)
+	commentRepo := repository.NewCommentRepository(commentCollection)
+	likeRepo := repository.NewLikeRepository(likeCollection)
 
-	// Authenticated routes
-	auth := r.Group("/api")
-	auth.Use(infrastructure.AuthMiddleware(jwtService))
-	{
-		// Blog routes
-		auth.POST("/blogs", blogController.CreateBlogPost)
-		auth.PUT("/blogs/:id", blogController.UpdateBlogPost)
+	userUsecase := usecases.NewUserUsecase(userRepo, tokenRepo, jwtService)
+	otpUsecase := usecases.NewOTPUsecase(otpRepo, userRepo)
 
-		auth.POST("/logout", logoutController.Logout)
+	NewUserRouter(r, userUsecase, jwtService, otpUsecase)
 
-		// auth.POST("/blogsearch", blogController.SearchBlogPost)
-		auth.DELETE("/blogs/:id", blogController.DeleteBlogPost)
+	tokenUsecase := usecases.NewTokenUsecase(tokenRepo, jwtService)
+	NewRefreshTokenRouter(r, userUsecase, tokenUsecase, jwtService)
 
-		// Admin-specific routes
-		auth.GET("/getallusers", adminMiddleware, userController.GetAllUsers)
-		auth.DELETE("/deleteuser/:id", adminMiddleware, userController.DeleteUser)
-	}
+	blogUsecase := usecases.NewBlogUsecase(blogRepo)
+	NewBlogRouter(r, blogUsecase, jwtService)
 
-	goth.UseProviders(
-		google.New(os.Getenv("OAUTH_CLIENT_ID"), os.Getenv("OAUTH_CLIENT_SECRET"), os.Getenv("OAUTH_CALLBACK_URL")),
-	)
+	profileUsecase := usecases.NewProfileUsecase(profileRepo)
+	NewProfileRoutes(r, profileUsecase, jwtService)
 
-	oauthHandler := external.NewOauthHandler(userUsecase)
+	commentUsecase := usecases.NewCommentUsecase(commentRepo)
+	NewCommentRouter(r, commentUsecase, otpUsecase, jwtService)
 
-	gothic.Store = sessions.NewCookieStore([]byte("secret"))
-	r.GET("/auth/:provider", oauthHandler.SignInWithProvider)
-	r.GET("/auth/:provider/callback", oauthHandler.CallbackHandler)
+	likeUsecase := usecases.NewLikeUsecase(likeRepo)
+	NewLikeRouter(r, likeUsecase, otpUsecase, jwtService)
 
-	// Comment routes
-	auth.POST("/blogs/:id/comments", commentController.AddComment)
-	auth.GET("/blogs/:id/comments", commentController.GetCommentsByBlogID)
-	auth.PUT("/comments/:id", commentController.UpdateComment)
-	auth.DELETE("/comments/:id", commentController.DeleteComment)
-
-	// Like routes
-	auth.POST("/blogs/:id/likes", likeController.AddLike)
-	auth.GET("/blogs/:id/likes", likeController.GetLikesByBlogID)
-	auth.DELETE("/likes/:id", likeController.RemoveLike)
-
-	// Admin-specific routes
-	auth.POST("/getallusers", adminMiddleware, userController.GetAllUsers)
-	auth.PUT("/deleteusers/:id", adminMiddleware, userController.DeleteUser)
-
-	// }
 }

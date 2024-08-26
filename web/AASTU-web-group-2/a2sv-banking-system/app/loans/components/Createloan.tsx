@@ -55,7 +55,8 @@ export function SheetDemo({ handleform }: { handleform : (data:Form)=>void}) {
                 message: "invalid Loan Amount",
               },
             })}
-            className="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+            className="border w-full border-[#DFEAF2] focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
+
             // className={errors.loanAmount && "error"}
           />{" "}
           <p className="text-red-700">{errors.loanAmount?.message}</p>
@@ -76,13 +77,13 @@ export function SheetDemo({ handleform }: { handleform : (data:Form)=>void}) {
               },
             })}
             // className={errors.duration && "error"}
-            className="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+            className="border w-full border-[#DFEAF2] focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
           />
           <p className="text-red-700">{errors.duration?.message}</p>
           <div className="mt-5">
             <label className="interestRate" htmlFor="interestRate">
               {" "}
-              InterestRate{" "}
+              Interest Rate{" "}
             </label>
           </div>
           <input
@@ -96,7 +97,7 @@ export function SheetDemo({ handleform }: { handleform : (data:Form)=>void}) {
               },
             })}
             // className={errors.interestRate && "error"}
-            className="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+            className="border w-full border-[#DFEAF2] focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
           />
           <p className="text-red-700">{errors.interestRate?.message}</p>
           <div className="mt-5">
@@ -111,7 +112,7 @@ export function SheetDemo({ handleform }: { handleform : (data:Form)=>void}) {
             {...register("type", {
               required: "type is requered",
             })}
-            className="block w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border w-full border-[#DFEAF2] focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-xl py-3 px-6 placeholder:text-[#718EBF] dark:border-gray-600 dark:focus:outline-none dark:bg-[#313244] dark:text-[#cdd6f4] dark:focus:bg-[#313244] dark:focus:border-[#4640DE] dark:focus:text-[#cdd6f4]"
           >
             <option value="personal">Personal</option>
             <option value="corporate">Corporate</option>
@@ -120,7 +121,7 @@ export function SheetDemo({ handleform }: { handleform : (data:Form)=>void}) {
           <br />
           <p className="text-red-700">{errors.type?.message}</p>
           <div className="flex justify-center">
-            <button className="bg-blue-500  text-white font-semibold py-2 px-4 rounded shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <button className="bg-blue-500  text-white font-semibold py-2 px-4 rounded shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 mt-5">
               Submit
             </button>
           </div>

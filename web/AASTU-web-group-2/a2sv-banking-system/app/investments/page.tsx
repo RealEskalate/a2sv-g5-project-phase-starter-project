@@ -174,7 +174,7 @@ export default function Home() {
     );
 
   return (
-    <div className="bg-gray-100 p-6 dark:bg-[#020817]">
+    <div className="bg-gray-100 p-6 dark:bg-[#090b0e]">
       <div className="flex justify-between flex-wrap lg:flex-nowrap">
         <Card1
           text="Total Invested Amount"
@@ -206,7 +206,7 @@ export default function Home() {
             My Investment
           </div>
           <div>
-            <div className="flex bg-white rounded-2xl p-5 justify-between my-3 dark:bg-[#050914] dark:border dark:border-[#333B69]">
+            <div className="flex bg-white rounded-2xl p-5 justify-between my-3 dark:bg-[#020817] dark:border dark:border-[#333B69]">
               <div>
                 <svg
                   width="45"
@@ -247,7 +247,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="flex bg-white rounded-2xl p-5 justify-between my-3 dark:bg-[#050914] dark:border dark:border-[#333B69]">
+            <div className="flex bg-white rounded-2xl p-5 justify-between my-3 dark:bg-[#020817] dark:border dark:border-[#333B69]">
               <div>
                 <svg
                   width="45"
@@ -300,7 +300,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="flex bg-white rounded-2xl p-5 justify-between my-3 dark:bg-[#050914] dark:border dark:border-[#333B69]">
+            <div className="flex bg-white rounded-2xl p-5 justify-between my-3 dark:bg-[#020817] dark:border dark:border-[#333B69]">
               <div>
                 <svg
                   width="45"
@@ -352,7 +352,7 @@ export default function Home() {
             Trending Stock
           </div>
           <Table className="bg-white shadow-1 rounded-3xl ">
-            <TableHeader className="dark:bg-[#050914] dark:border dark:border-[#333B69]">
+            <TableHeader className="dark:bg-[#020817] dark:border dark:border-[#333B69]">
               <TableRow className="text-[#718EBF] p1">
                 <TableHead className="w-[100px] text-[#718EBF] dark:text-[#9faaeb] h1 hidden md:table-cell">
                   SL No
@@ -368,7 +368,7 @@ export default function Home() {
                 </TableHead>
               </TableRow>
             </TableHeader>
-            <TableBody className="dark:bg-[#050914] dark:border dark:border-[#333B69]">
+            <TableBody className="dark:bg-[#020817] dark:border dark:border-[#333B69]">
               {invoices.map((invoice) => (
                 <TableRow key={invoice.slno}>
                   <TableCell className="font-medium text-[#232323] dark:text-[#718EBF] px-5  h-2 p-3">

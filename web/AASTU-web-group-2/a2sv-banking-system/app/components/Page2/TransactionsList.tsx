@@ -119,14 +119,14 @@ const TransactionsList: React.FC<TransactionsListProps> = ({ transactions, loadi
   };
 
   return (
-    <div className="dark:bg-[#020817]">
+    <div className="dark:bg-[#090b0e]">
       {loading ? (
         <div className="p-4">
           {/* Shimmer effect for loading state */}
           <div className="hidden md:block rounded-3xl shadow-md p-4 bg-white dark:bg-[#050914]">
             <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden">
               <table className="min-w-full divide-y divide-[#E6EFF5] dark:divide-[#333B69]">
-                <thead className="bg-white dark:bg-[#050914] font-inter font-black">
+                <thead className="bg-white dark:bg-[#020817] font-inter font-black">
                   <tr>
                     {columns.map((column, index) => (
                       <th
@@ -138,7 +138,7 @@ const TransactionsList: React.FC<TransactionsListProps> = ({ transactions, loadi
                     ))}
                   </tr>
                 </thead>
-                <tbody className="bg-white dark:bg-[#050914] divide-y divide-[#E6EFF5] dark:divide-[#333B69]">
+                <tbody className="bg-white dark:bg-[#020817] divide-y divide-[#E6EFF5] dark:divide-[#333B69]">
                   {[...Array(5)].map((_, rowIndex) => (
                     <tr key={rowIndex} className="animate-pulse">
                       {columns.map((_, colIndex) => (
@@ -159,13 +159,13 @@ const TransactionsList: React.FC<TransactionsListProps> = ({ transactions, loadi
               <div key={index} className="border-b border-gray-200 dark:border-[#333B69] py-4 animate-pulse">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-2">
-                    <div className="w-10 h-10 bg-gray-300 dark:bg-[#333B69] rounded-full"></div>
+                    <div className="w-10 h-10 bg-gray-300 dark:bg-[#020817] rounded-full"></div>
                     <div>
-                      <div className="h-4 bg-gray-300 dark:bg-[#333B69] rounded w-32 mb-2"></div>
-                      <div className="h-4 bg-gray-300 dark:bg-[#333B69] rounded w-20"></div>
+                      <div className="h-4 bg-gray-300 dark:bg-[#020817] rounded w-32 mb-2"></div>
+                      <div className="h-4 bg-gray-300 dark:bg-[#020817] rounded w-20"></div>
                     </div>
                   </div>
-                  <div className="h-4 bg-gray-300 dark:bg-[#333B69] rounded w-16"></div>
+                  <div className="h-4 bg-gray-300 dark:bg-[#020817] rounded w-16"></div>
                 </div>
               </div>
             ))}
@@ -200,9 +200,9 @@ const TransactionsList: React.FC<TransactionsListProps> = ({ transactions, loadi
                           <div className="flex items-center space-x-6">
                             <div className="border border-solid rounded-full flex justify-center items-center h-7 w-7 -mr-4">
                               <img
-                                src={isPositive ? '/upArrow.svg' : '/downArrow.svg'}
-                                alt={isPositive ? 'up arrow' : 'down arrow'}
-                                className="h-4 w-4 "
+                                src={isPositive ? '/downArrow.svg' : '/upArrow.svg'}
+                                alt={isPositive ? 'down arrow' : 'up arrow'}
+                                className="h-4 w-4"
                               />
                             </div>
                             <span>{row.description}</span>

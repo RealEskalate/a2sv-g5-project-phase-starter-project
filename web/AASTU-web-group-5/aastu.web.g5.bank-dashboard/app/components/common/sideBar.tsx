@@ -38,7 +38,10 @@ const SideBar = ({
 	isSidebarVisible: boolean;
 	toggleSidebar: () => void;
 }) => {
+
     const pathname = usePathname() || "Dashboard";
+	console.log(pathname, "pathname",pathname.startsWith('/auth'));
+	
     const [enabled, setEnabled] = useState<string>(pathname);
     const darkMode = useSelector((state: RootState) => state.theme.darkMode);   
     const router = useRouter();
@@ -47,6 +50,9 @@ const SideBar = ({
 		setEnabled(option);
 		router.push(path);
 	};
+	if (pathname.startsWith("/auth")) {
+		return <></>
+	}
 
 	return (
 		<div

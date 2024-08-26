@@ -9,53 +9,49 @@ class Bottomnavbar extends StatefulWidget {
 }
 
 class _BottomnavbarState extends State<Bottomnavbar> {
-  int _currentidx = 0;
+  int _currentIdx = 0;
+
   @override
   Widget build(BuildContext context) {
     return CurvedNavigationBar(
-        height: MediaQuery.of(context).size.width * 0.17,
-        buttonBackgroundColor: Color.fromRGBO(63, 81, 243,1),
-        color: const Color.fromARGB(255, 245, 244, 244),
-        backgroundColor:  Colors.white,
-        animationCurve: Curves.easeInOut,
-        animationDuration: const Duration(milliseconds: 300),
-        // RGBO(63, 81, 243,1)
-        onTap: (int newidx) {
-          setState(() {
-            _currentidx = newidx;
-            Icon(Icons.home, color: Colors.white,);
-          });
-          switch (_currentidx) {
-            case 0:
-              Navigator.pushNamed(context, '/home');
-              break;
-            case 1:
-              Navigator.pushNamed(context, '/add');
-              break;
-            case 2:
-              Navigator.pushNamed(context, '/search');
-          }
-        },
-        
+      height: MediaQuery.of(context).size.width * 0.17,
+      buttonBackgroundColor: const Color.fromRGBO(63, 81, 243, 1),
+      color: const Color.fromARGB(255, 245, 244, 244),
+      backgroundColor: Colors.white,
+      animationCurve: Curves.easeInOut,
+      animationDuration: const Duration(milliseconds: 300),
+      onTap: (int newIdx) {
+        setState(() {
+          _currentIdx = newIdx;
+        });
+
+        // Navigate based on the selected index
+        switch (_currentIdx) {
+          case 0:
+            Navigator.pushNamed(context, '/home');
+            break;
+          case 1:
+            Navigator.pushNamed(context, '/add');
+            break;
+          case 2:
+            Navigator.pushNamed(context, '/search');
+            break;
+        }
+      },
       items: [
-        Icon(Icons.home,
-        color: _currentidx == 0 ? Colors.white : Colors.black,
+        Icon(
+          Icons.home,
+          color: _currentIdx == 0 ? Colors.white : Colors.black,
         ),
-        // label: 'Home'
-        // ),
-        Icon(Icons.add,
-        color: _currentidx == 1 ? Colors.white : Colors.black,
-),
-        // label: 'Add'
-        // // ),
-        // BottomNavigationBarItem(icon: 
-        Icon(Icons.search,
-        color: _currentidx == 2 ? Colors.white : Colors.black,
+        Icon(
+          Icons.add,
+          color: _currentIdx == 1 ? Colors.white : Colors.black,
         ),
-        // label: 'Search'
-        // ),
+        Icon(
+          Icons.search,
+          color: _currentIdx == 2 ? Colors.white : Colors.black,
+        ),
       ],
     );
-    
   }
 }

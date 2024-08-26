@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { BankService, BankServiceData, ApiResponse } from '@/types/bankServiceController.interface'; // Importing interfaces
 
-const BASE_URL = 'https://bank-dashboard-mih0.onrender.com';
+const BASE_URL = 'https://a2svwallets.onrender.com';
 
 
 export const getBankServices = async (token: string, page: number, size: number ): Promise<ApiResponse> => { 

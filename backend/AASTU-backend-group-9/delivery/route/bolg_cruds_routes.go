@@ -50,9 +50,11 @@ func RegisterBlogRoutes(env *config.Env, timeout time.Duration, db database.Data
 	{
 		blogCommentRoutes.Use(middleware.AuthMidd)
 		blogCommentRoutes.POST("/", blogController.AddComment)
+		blogCommentRoutes.POST("/:comment_id/reply", blogController.AddReply)
 		blogCommentRoutes.GET("/", blogController.GetComments)
 		blogCommentRoutes.DELETE("/:comment_id", blogController.DeleteComment)
 		blogCommentRoutes.PATCH("/:comment_id", blogController.UpdateComment)
+		blogCommentRoutes.POST("/:comment_id/popularity", blogController.TrackCommentPopularity)
 
 	}
 

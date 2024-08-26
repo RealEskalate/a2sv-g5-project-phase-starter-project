@@ -175,7 +175,12 @@ func (bu *blogUsecase) DeleteBlog(ctx context.Context, id primitive.ObjectID) er
 	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
 	defer cancel()
 
-	return bu.blogRepository.DeleteBlog(ctx, id)
+	err := bu.blogRepository.DeleteBlog(ctx, id)
+	if err != nil {
+		return err
+
+	}
+	return bu.commentRepo.DeleteComments(ctx, id)
 }
 
 func (bu *blogUsecase) SearchBlogs(ctx context.Context, title string, author string) (*[]domain.Blog, error) {
@@ -223,12 +228,32 @@ func (bu *blogUsecase) TrackLike(ctx context.Context, id primitive.ObjectID, use
 	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
 	defer cancel()
 
-	errChan := make(chan error, 2)
+	errChan := make(chan error, 5)
 
 	go func() {
 		liked, err := bu.popularityRepo.HasUserLiked(ctx, id, userID)
 		if err != nil || liked {
-			errChan <- errors.New("user has already liked this post")
+			err = bu.blogRepository.DecrementPopularity(ctx, id, "likes")
+			if err != nil {
+				errChan <- err
+				return
+			}
+			err = bu.popularityRepo.UserInteractionsDelete(ctx, domain.UserInteraction{
+				PostID:          id,
+				UserID:          userID,
+				InteractionType: "Like",
+			})
+			if err != nil {
+				errChan <- err
+				return
+			}
+			err = bu.blogRepository.DecrementPopularity(ctx, id, "popularity")
+			if err != nil {
+				errChan <- err
+				return 
+			}
+
+			errChan <- errors.New("you have unliked this post")
 			return
 		}
 		errChan <- nil
@@ -255,6 +280,7 @@ func (bu *blogUsecase) TrackLike(ctx context.Context, id primitive.ObjectID, use
 				errChan <- err
 				return
 			}
+			
 		}
 		errChan <- nil
 	}()
@@ -285,12 +311,32 @@ func (bu *blogUsecase) TrackDislike(ctx context.Context, id primitive.ObjectID, 
 	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
 	defer cancel()
 
-	errChan := make(chan error, 2)
+	errChan := make(chan error, 5)
 
 	go func() {
 		disliked, err := bu.popularityRepo.HasUserDisliked(ctx, id, userID)
 		if err != nil || disliked {
-			errChan <- errors.New("user has already disliked this post")
+			err = bu.blogRepository.DecrementPopularity(ctx, id, "dislike")
+			if err != nil {
+				errChan <- err
+				return
+			}
+			err = bu.popularityRepo.UserInteractionsDelete(ctx, domain.UserInteraction{
+				PostID:          id,
+				UserID:          userID,
+				InteractionType: "Dislike",
+			})
+			if err != nil {
+				errChan <- err
+				return
+			}
+			err = bu.blogRepository.IncrementPopularity(ctx, id, "popularity")
+			if err != nil {
+				errChan <- err
+				return
+			}
+
+			errChan <- errors.New("you have undilsiked this post")
 			return
 		}
 		errChan <- nil
@@ -372,6 +418,21 @@ func (bu *blogUsecase) AddComment(ctx context.Context, post_id primitive.ObjectI
 	}
 
 	return nil
+}
+
+func (bu *blogUsecase) AddReply(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID, reply *domain.Comment) error {
+	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
+	defer cancel()
+
+	return bu.commentRepo.AddReply(ctx, post_id, comment_id, userID, reply)
+}
+
+func (bu *blogUsecase) TrackCommentPopularity(ctx context.Context, postID, commentID, userID primitive.ObjectID, metric string) error {
+	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
+	defer cancel()
+
+	return bu.commentRepo.IncrementCommentPopularity(ctx, postID, commentID, metric)
+
 }
 
 func (bu *blogUsecase) GetComments(ctx context.Context, post_id primitive.ObjectID) ([]domain.Comment, error) {

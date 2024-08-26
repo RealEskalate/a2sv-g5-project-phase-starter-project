@@ -5,6 +5,8 @@ import (
 	"blog/domain"
 	"context"
 	"errors"
+	"fmt"
+
 	// "fmt"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -37,6 +39,29 @@ func (r *CommentRepository) AddComment(ctx context.Context, post_id primitive.Ob
 	return err
 
 }
+
+func (r *CommentRepository) AddReply(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID, reply *domain.Comment) error {
+	reply.BlogID = post_id
+	reply.AuthorID = userID
+	reply.ParentID = comment_id
+
+	collection := r.commentdb.Collection(r.collection)
+	_, err := collection.InsertOne(ctx, reply)
+	return err
+
+}
+
+func (r *CommentRepository) IncrementCommentPopularity(ctx context.Context, post_id primitive.ObjectID, commentID primitive.ObjectID, metric string) error {
+	collection := r.commentdb.Collection(r.collection)
+	fmt.Println("test for", metric)
+	if metric != "likes" && metric != "dislikes" && metric != "comments" {
+		return errors.New("invalid metric")
+	}
+
+	_, err := collection.UpdateOne(ctx, bson.M{"_id": commentID}, bson.M{"$inc": bson.M{metric: 1}})
+	return err
+}
+
 func (r *CommentRepository) GetComments(ctx context.Context, post_id primitive.ObjectID) ([]domain.Comment, error) {
 	var comments []domain.Comment
 	collection := r.commentdb.Collection(r.collection)
@@ -62,6 +87,11 @@ func (r *CommentRepository) GetComments(ctx context.Context, post_id primitive.O
 	return comments, nil
 }
 
+func (r *CommentRepository) DeleteComments(ctx context.Context, post_id primitive.ObjectID) error {
+	collection := r.commentdb.Collection(r.collection)
+	_, err := collection.DeleteMany(ctx, bson.M{"blog_id": post_id})
+	return err
+}
 
 func (r *CommentRepository) DeleteComment(ctx context.Context, postID, commentID, userID primitive.ObjectID) error {
 	var comment domain.Comment
@@ -86,7 +116,6 @@ func (r *CommentRepository) DeleteComment(ctx context.Context, postID, commentID
 
 	return nil
 }
-
 
 func (r *CommentRepository) UpdateComment(ctx context.Context, post_id primitive.ObjectID, comment_id primitive.ObjectID, userID primitive.ObjectID, comment *domain.Comment) error {
 	var oldComment domain.Comment

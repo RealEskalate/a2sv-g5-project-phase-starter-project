@@ -280,6 +280,49 @@ func (bc *BlogController) AddComment(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
 }
 
+func (bc *BlogController) AddReply(c *gin.Context) {
+
+	post_id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+	comment_id, _ := primitive.ObjectIDFromHex(c.Param("comment_id"))
+	claims, err := getclaim(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	var reply domain.Comment
+	if err := c.BindJSON(&reply); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+	userID := claims.UserID
+	err = bc.BlogUsecase.AddReply(c.Request.Context(), post_id, comment_id, userID, &reply)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Reply added successfully"})
+}
+
+
+func (bc *BlogController) TrackCommentPopularity(c *gin.Context) {
+	post_id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+	comment_id, _ := primitive.ObjectIDFromHex(c.Param("comment_id"))
+	metric := c.Query("metric")
+	claims, err := getclaim(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	userID := claims.UserID
+	err = bc.BlogUsecase.TrackCommentPopularity(c.Request.Context(), post_id, comment_id, userID, metric)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Like tracked successfully"})
+}
+
+
 func (bc *BlogController) GetComments(c *gin.Context) {
 	// Convert the post ID from the URL parameter to an ObjectID
 	postID, err := primitive.ObjectIDFromHex(c.Param("id"))
@@ -369,3 +412,4 @@ func (bc *BlogController) UpdateComment(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Comment updated successfully"})
 }
+

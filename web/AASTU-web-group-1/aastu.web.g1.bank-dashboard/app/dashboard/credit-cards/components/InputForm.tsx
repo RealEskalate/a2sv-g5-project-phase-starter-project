@@ -4,7 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cardSchema } from "@/schema";
 import { postCards } from "@/lib/api";
-import { toast } from "sonner";
+import { useToast } from "@/components/ui/use-toast";
 
 
 
@@ -21,7 +21,7 @@ const InputForm = () => {
   } = useForm<FormData>({
     resolver: zodResolver(cardSchema),
   });
-
+  const {toast} = useToast();
   const onSubmit = async (data: FormData) => {
     
     try {
@@ -29,10 +29,18 @@ const InputForm = () => {
       console.log(updatedForm);
       
       await postCards(updatedForm);
-      toast("Card was submitted succesfully")
+      toast({
+        title: "Success",
+        description: "Card was submitted succesfully",
+        variant: "success",
+      });
     } catch (error) {
       console.error("Failed to submit form:", error);
-      toast("Card submission failed")
+      toast({
+        title: "Error",
+        description: "Card submission failed",
+        variant: "destructive",
+      });
     }
   };
 

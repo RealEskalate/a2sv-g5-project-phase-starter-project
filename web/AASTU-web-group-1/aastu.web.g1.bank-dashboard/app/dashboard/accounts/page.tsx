@@ -12,10 +12,11 @@ import { BalanceData } from "@/types";
 import { TransactionContent } from "@/types";
 import getRandomBalance, {
   getallTransactions,
+  getbalance,
   getCreditCards,
 } from "@/lib/api";
-import { setLogger } from "react-query";
 import { Loading } from "../_components/Loading";
+import { CreditCardShimmer } from "../_components/Shimmer"; // Import Shimmer component
 
 const Accounts = () => {
   const { isDarkMode } = useUser();
@@ -23,30 +24,34 @@ const Accounts = () => {
     TransactionContent[]
   >([]);
   const [creditCards, setCreditCards] = useState<CardDetails[]>([]);
-  const [balance, setBalanceHistory] = useState<BalanceData[]>([]);
+  const [balanceHistory, setBalanceHistory] = useState<BalanceData[]>([]);
+  const [totalBalance, setTotalBalance] = useState<number | null>(null); // State for balance
   const [loading, setLoading] = useState(true);
   let totalCreditcardpage;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getCreditCards(0, 1);
-        const recent = await getallTransactions(0, 3);
-        const balance = await getRandomBalance();
+        const [creditCardsRes, recentTransactionsRes, balanceRes, balance] =
+          await Promise.all([
+            getCreditCards(0, 1),
+            getallTransactions(0, 3),
+            getRandomBalance(),
+            getbalance(),
+          ]);
 
-        setCreditCards(res?.content || []);
-        totalCreditcardpage = res?.totalPages;
-        setBalanceHistory(balance || []);
-        setRecentTransactions(recent?.content || []);
+        setCreditCards(creditCardsRes?.content || []);
+        totalCreditcardpage = creditCardsRes?.totalPages;
+        setBalanceHistory(balanceRes || []);
+        setRecentTransactions(recentTransactionsRes?.content || []);
+        setTotalBalance((balance as unknown as number | null) || 0); // Set the fetched balance
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
   }, []);
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <div
@@ -56,23 +61,23 @@ const Accounts = () => {
     >
       <div
         className={`grid grid-cols-2 md:grid-cols-4 gap-4 md:flex-row p-3 ${
-          isDarkMode ? "bg-gray-700" : "bg-white"
+          isDarkMode ? "bg-gray-700" : ""
         }`}
       >
         <div
-          className={`p-4 rounded-3xl ${
+          className={`py-5 rounded-3xl ${
             isDarkMode ? "bg-gray-800" : "bg-white"
           } shadow-md`}
         >
           <InfoCard
             title="My balance"
-            amount={12750}
+            amount={totalBalance ?? 0} // Use the balance value here
             image="/icons/money.svg"
             color={isDarkMode ? "bg-yellow-300" : "bg-yellow-500"}
           />
         </div>
         <div
-          className={`p-4 rounded-3xl ${
+          className={`py-5 rounded-3xl ${
             isDarkMode ? "bg-gray-800" : "bg-white"
           } shadow-md`}
         >
@@ -84,7 +89,7 @@ const Accounts = () => {
           />
         </div>
         <div
-          className={`p-4 rounded-3xl ${
+          className={`py-5 rounded-3xl ${
             isDarkMode ? "bg-gray-800" : "bg-white"
           } shadow-md`}
         >
@@ -96,7 +101,7 @@ const Accounts = () => {
           />
         </div>
         <div
-          className={`p-4 rounded-3xl ${
+          className={`py-5 rounded-3xl ${
             isDarkMode ? "bg-gray-800" : "bg-white"
           } shadow-md`}
         >
@@ -108,11 +113,7 @@ const Accounts = () => {
           />
         </div>
       </div>
-      <div
-        className={`md:flex md:gap-12 ${
-          isDarkMode ? "bg-gray-700" : "bg-white"
-        }`}
-      >
+      <div className={`md:flex md:gap-12 ${isDarkMode ? "bg-gray-700" : ""}`}>
         <div className="w-[70%]">
           <h1 className="text-xl mb-4">Last Transactions</h1>
           <div className="">
@@ -161,27 +162,27 @@ const Accounts = () => {
             </h4>
           </div>
           <div className="mb-4">
-            {creditCards.map((card) => (
-              <CreditCard
-                key={card.id}
-                id={card.id}
-                balance={card.balance}
-                semiCardNumber={card.semiCardNumber}
-                cardHolder={card.cardHolder}
-                expiryDate={card.expiryDate}
-                cardType={card.cardType}
-              />
-            ))}
+            {loading ? (
+              <CreditCardShimmer />
+            ) : (
+              creditCards.map((card) => (
+                <CreditCard
+                  key={card.id}
+                  id={card.id}
+                  balance={card.balance}
+                  semiCardNumber={card.semiCardNumber}
+                  cardHolder={card.cardHolder}
+                  expiryDate={card.expiryDate}
+                  cardType={card.cardType}
+                />
+              ))
+            )}
           </div>
         </div>
       </div>
-      <div
-        className={`md:flex gap-6 mb-5 ${
-          isDarkMode ? "bg-gray-700" : "bg-white"
-        }`}
-      >
+      <div className={`md:flex gap-6 mb-5 ${isDarkMode ? "bg-gray-700" : ""}`}>
         <div>
-          <h1 className="text-xl mb-4"> Debit & Credit Overview </h1>
+          <h1 className="text-xl mb-4">Debit & Credit Overview</h1>
           <div className="mb-4">
             <ChartWeekly />
           </div>
@@ -190,38 +191,46 @@ const Accounts = () => {
           <div>
             <h1 className="text-xl mb-4">Invoices Sent</h1>
             <div
-              className={`rounded-xl ${
+              className={`rounded-xl mb- ${
                 isDarkMode ? "bg-gray-800" : "bg-white"
               }`}
             >
-              <Invoices
-                image="/icons/eaten.svg"
-                title="Apple Store"
-                date="5h ago"
-                expense={450}
-                color={isDarkMode ? "bg-green-300" : "bg-green-500"}
-              />
-              <Invoices
-                image="/icons/useryello.svg"
-                title="Michael"
-                date="2 days ago"
-                expense={450}
-                color={isDarkMode ? "bg-yellow-300" : "bg-yellow-500"}
-              />
-              <Invoices
-                image="/icons/playstation.svg"
-                title="Apple Store"
-                date="2 days ago"
-                expense={1085}
-                color={isDarkMode ? "bg-blue-300" : "bg-blue-500"}
-              />
-              <Invoices
-                image="/icons/user.svg"
-                title="William"
-                date="10 days ago"
-                expense={90}
-                color={isDarkMode ? "bg-pink-300" : "bg-pink-500"}
-              />
+              <div>
+                <Invoices
+                  image="/icons/eaten.svg"
+                  title="Apple Store"
+                  date="5h ago"
+                  expense={450}
+                  color={isDarkMode ? "bg-green-300" : "bg-green-500"}
+                />
+              </div>
+              <div>
+                <Invoices
+                  image="/icons/useryello.svg"
+                  title="Michael"
+                  date="2 days ago"
+                  expense={450}
+                  color={isDarkMode ? "bg-yellow-300" : "bg-yellow-500"}
+                />
+              </div>
+              <div>
+                <Invoices
+                  image="/icons/playstation.svg"
+                  title="Apple Store"
+                  date="2 days ago"
+                  expense={1085}
+                  color={isDarkMode ? "bg-blue-300" : "bg-blue-500"}
+                />
+              </div>
+              <div>
+                <Invoices
+                  image="/icons/user.svg"
+                  title="William"
+                  date="10 days ago"
+                  expense={90}
+                  color={isDarkMode ? "bg-pink-300" : "bg-pink-500"}
+                />
+              </div>
             </div>
           </div>
         </div>

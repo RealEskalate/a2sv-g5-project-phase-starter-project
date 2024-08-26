@@ -5,7 +5,7 @@ import { useUser } from '@/contexts/UserContext';
 const TableShimmer = () => {
     const { isDarkMode } = useUser();
   return (
-    <div className="flex flex-col justify-center rounded-2xl bg-transparent">
+    <div className="flex flex-col justify-center rounded-2xl bg-transparent w-[80%] mx-auto">
     {/* Placeholder for the table */}
     <div className={`w-[80%] md:w-full mx-auto rounded-2xl my-4 ${isDarkMode ? "bg-gray-950" : "bg-white"} animate-pulse`}>
       {/* Placeholder for table header */}

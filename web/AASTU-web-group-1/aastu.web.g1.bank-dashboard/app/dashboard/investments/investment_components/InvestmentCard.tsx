@@ -7,9 +7,9 @@ export default function InvestmentCard(props: any) {
 
   return (
     <div
-      className={`flex rounded-3xl mb-2 w-[90%] md:w-full h-[100px] mx-auto p-2 ${
+      className={`flex rounded-3xl mb-2 w-[90%] md:w-full h-[100px] mx-auto my-2 p-2 ${
         isDarkMode ? "bg-gray-800" : "bg-white"
-      }`}
+      } shadow-md`}
     >
       <div className="my-auto w-[15%] md:w-[10%] h-auto">
         <Image

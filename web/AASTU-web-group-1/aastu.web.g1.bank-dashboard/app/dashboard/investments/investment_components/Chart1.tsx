@@ -79,7 +79,7 @@ export default function LineChartComp(props:any) {
               dataKey="value"
               type="linear"
               fill="white"
-              fillOpacity={0.1}
+              fillOpacity={0}
               stroke="#EDA10D"
               strokeWidth={2.5}
               dot={{

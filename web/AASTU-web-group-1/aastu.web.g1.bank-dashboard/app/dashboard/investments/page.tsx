@@ -12,18 +12,18 @@ import { useUser } from "@/contexts/UserContext";
 const ShimmerEffect = ()=>{
   return(
     <>
-      <div className="flex flex-col md:flex-row gap-3 md:gap-10 justify-center pt-4 w-full">
+      <div className="flex flex-col md:flex-row gap-3 md:gap-10 justify-center pt-4 w-[80%] my-10 mx-auto">
         {Array(3).fill("").map((_, index) => (<div key={index} className="w-full h-[80px] md:w-[30%] bg-gray-300 animate-pulse rounded-2xl"></div>))}
       </div>
 
-      <div className="flex flex-col flex-wrap md:flex-row gap-10 my-4 w-full justify-center">
-        <div className="w-[90%] md:w-[35%] mx-auto md:mx-0">
+      <div className="flex flex-col flex-wrap md:flex-row gap-10 my-4 justify-between w-[80%] mx-auto">
+        <div className="w-[45%] mx-auto md:mx-0">
           <div className="h-6 w-3/4 bg-gray-300 animate-pulse rounded-md mb-3"></div>
-          <div className="w-full h-48 bg-gray-300 animate-pulse rounded-md"></div>
+          <div className="w-full h-64 bg-gray-300 animate-pulse rounded-md"></div>
         </div>
-        <div className="w-[90%] md:w-[35%] mx-auto md:mx-0">
+        <div className="w-[45%] mx-auto md:mx-0">
           <div className="h-6 w-3/4 bg-gray-300 animate-pulse rounded-md mb-3"></div>
-          <div className="w-full h-48 bg-gray-300 animate-pulse rounded-md"></div>
+          <div className="w-full h-64 bg-gray-300 animate-pulse rounded-md"></div>
         </div>
       </div>
     </>
@@ -66,19 +66,19 @@ const Investments = () => {
          <ShimmerEffect/>
         ):(
           <>
-          <div className="flex flex-col md:flex-row gap-3 md:gap-10 justify-center pt-4 w-full">
+          <div className="flex flex-col md:flex-wrap md:flex-row justify-evenly gap-3 md:gap-5 pt-4 w-[80%] mx-auto">
             {investmentTypes.map((item, index) => (
               ( data && <Card {...item} amount={data[item.id as keyof fetchDataType]} key={index} />)  
             ))}
           </div>
-          <div className="flex flex-col flex-wrap md:flex-row gap-10 my-4 w-full justify-center">
-            <div className="w-[90%] md:w-[35%] min-w-[650px] mx-auto md:mx-0">
+          <div className="flex flex-col md:flex-row md:flex-wrap gap-10 md:gap-5 my-4 w-[80%] justify-between mx-auto">
+            <div className="w-full md:w-[35%] md:min-w-[600px] mx-auto md:mx-0">
               <h1 className={`my-3 font-[600] text-[16px] md:text-[22px] text-nowrap ${isDarkMode ? "text-white" : "text-[#333B69]"}`}>
                 Yearly Total Investment
               </h1>
               <LineChartComp data = {data?.yearlyTotalInvestment}/>
             </div>
-            <div className="w-[90%] md:w-[35%] min-w-[650px] mx-auto md:mx-0">
+            <div className="w-full md:w-[35%] md:min-w-[600px] mx-auto md:mx-0">
               <h1 className={`my-3 font-[600] text-[16px] md:text-[22px] ${isDarkMode ? "text-white" : "text-[#333B69]"}`}>
                 Monthly Revenue
               </h1>
@@ -88,7 +88,7 @@ const Investments = () => {
           </>
         )
       }
-      <div className="flex flex-col md:flex-row gap-3 md:gap-10 my-2 w-full justify-center">
+      <div className="flex flex-col md:flex-row gap-3 md:gap-10 my-2 w-[80%] justify-between mx-auto">
         <Investment />
         <Trending />
       </div>

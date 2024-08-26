@@ -9,7 +9,7 @@ import ResponsiveCreditCard from "@/components/CreditCard";
 import Cookies from "js-cookie";
 import { getAllCards } from "@/services/cardfetch";
 import { colors } from "@/constants";
-import Image from "next/image";
+import { TbFileSad } from "react-icons/tb";
 import MyCardsLoad from "@/components/loadingComponents/MyCardsLoad";
 import CurrencyConverter from '@/components/CurrencyConverter';
 
@@ -101,14 +101,12 @@ const Accounts = () => {
                 ))
               ) : token ? (
                 <div className="w-screen bg-white py-16 rounded-xl flex flex-col justify-center dark:bg-dark dark:border-[1px] dark:border-gray-700">
-                  <Image
-                    src="/icons/null.png"
-                    width={80}
-                    height={80}
-                    alt="null"
-                    className="mx-auto pb-2 block"
+                  <TbFileSad
+                    className={`text-gray-300 dark:text-[#993d4b] w-[80px] h-[80px] pb-2 block mx-auto font-thin`}
+                    strokeWidth={1}
                   />
-                  <span className="mx-auto my-auto md:text-xl text-sm text-[#993d4b] font-bold mb-5">
+                  
+                  <span className="mx-auto my-auto md:text-xl text-sm text-[#993d4b] mb-5">
                     {error ? error : "There are no cards for now!"}
                   </span>
                 </div>

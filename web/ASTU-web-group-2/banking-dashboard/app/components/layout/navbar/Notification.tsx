@@ -11,7 +11,7 @@ const Notification = ({ notifications }: NotificationsProps) => {
         Notifications
       </p>
       <ul className="max-h-48 overflow-auto">
-        {notifications.map((notification, index) => (
+        {notifications?.map((notification, index) => (
           <li
             key={index}
             className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 cursor-pointer"

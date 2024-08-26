@@ -85,7 +85,7 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
 
   let transactions: { content: Item[]; totalPages: number } = data?.data || "";
 
-  const notifications = transactions.content;
+  const notifications = transactions?.content;
 
   const title = capitalizeFirstLetter(pathname);
   return (
@@ -154,9 +154,9 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
                   className="flex-shrink-0 min-w-fit"
                   onClick={toggleNotification}
                 />
-                {notifications.length > 0 && (
+                {notifications?.length > 0 && (
                   <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-white bg-red-600 rounded-full text-xs">
-                    {notifications.length}
+                    {notifications?.length}
                   </span>
                 )}
                 {isNotificationOpen && (
@@ -214,9 +214,9 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
                           onClick={toggleNotification}
                         />
 
-                        {notifications.length > 0 && (
+                        {notifications?.length > 0 && (
                           <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-white bg-red-600 rounded-full text-xs">
-                            {notifications.length}
+                            {notifications?.length}
                           </span>
                         )}
                         {isNotificationOpen && (

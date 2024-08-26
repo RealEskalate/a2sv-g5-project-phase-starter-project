@@ -330,7 +330,7 @@ func (b *BlogUseCaseImpl) UpdateBlog(ctx context.Context, id, userID string, blo
 		return Blog{}, err
 	}
 
-	if oldBlog.AuthorID != user.ID || !user.IsAdmin {
+	if oldBlog.AuthorID != user.ID && !user.IsAdmin {
 		return Blog{}, ErrBlogNotFound
 	}
 

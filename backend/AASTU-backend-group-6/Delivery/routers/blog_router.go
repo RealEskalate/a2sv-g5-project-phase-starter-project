@@ -23,5 +23,6 @@ func NewBlogrouter(blogRouter *gin.RouterGroup, controller controllers.BlogContr
 	blogRouter.PUT("/update/:id", authHandler, controller.UpdateBlogByID)
 	blogRouter.DELETE("/delete/:id", authHandler, controller.DeleteBlogByID)
 	blogRouter.POST("/comment/create", authHandler, controller.CommentOnBlog)
+	blogRouter.POST("/comment/reply", authHandler, controller.ReplyCommentOnBlog)
 	blogRouter.POST("/react/:id", authHandler, controller.ReactOnBlog)
 }

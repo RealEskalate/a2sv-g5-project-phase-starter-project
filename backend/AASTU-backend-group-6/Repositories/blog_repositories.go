@@ -188,6 +188,40 @@ func (b BlogRepository) CommentOnBlog(user_id string, comment domain.Comment) er
 	return nil
 }
 
+// ReplytOnBlog implements domain.BlogRepository.
+func (b BlogRepository) ReplyCommentOnBlog(user_id string, parent_id string, comment domain.Comment) error {
+	timeOut := b.env.ContextTimeout
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*5*time.Second)
+	defer cancel()
+
+	comment.ID = primitive.NewObjectID()
+
+	post, err := b.GetBlogByID(comment.Blog_ID.Hex(), true)
+	if err != nil || post.Deleted {
+		return errors.New("blog not found")
+	}
+
+	_, err = b.CommentCollection.InsertOne(context, comment)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": comment.Blog_ID}
+	_, err = b.PostCollection.UpdateOne(context, filter, bson.M{"$push": bson.M{"comment_ids": comment.ID}})
+	if err != nil {
+		return err
+	}
+
+	userID, _ := primitive.ObjectIDFromHex(user_id)
+	_, err = b.UserCollection.UpdateOne(context, bson.M{"_id": userID}, bson.M{"$push": bson.M{"comments_id": comment.Blog_ID}})
+
+	if err != nil {
+		return err
+	}
+	_ = b.UpdatePopularity(comment.Blog_ID.Hex(), "reply")
+	return nil
+}
+
 // CreateBlog implements domain.BlogRepository.
 func (b BlogRepository) CreateBlog(user_id string, blog domain.Blog, creator_id string) (domain.Blog, error) {
 	timeOut := b.env.ContextTimeout
@@ -355,6 +389,15 @@ func (b BlogRepository) FilterBlogsByTag(tags []string, pageNo int64, pageSize i
 }
 
 // GetBlogByID implements domain.BlogRepository.
+func (b BlogRepository) GetCommentByID(comment_id string) (domain.Comment, error) {
+	var comment domain.Comment
+	err := b.CommentCollection.FindOne(context.TODO(), bson.M{"_id": comment_id}).Decode(comment)
+	if err != nil {
+		return domain.Comment{}, err
+	} else {
+		return comment, nil
+	}
+}
 func (b BlogRepository) GetBlogByID(blog_id string, isCalled bool) (domain.Blog, error) {
 	blog_object_id, err := primitive.ObjectIDFromHex(blog_id)
 	if err != nil {

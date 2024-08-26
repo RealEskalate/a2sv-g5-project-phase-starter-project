@@ -20,6 +20,7 @@ import Image from 'next/image';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { LogOut } from 'lucide-react';
 import AvatarSkeleton from '../AllSkeletons/Navigation/AvatarSkeleton';
+import { signOut } from 'next-auth/react';
 
 const data = [
   {
@@ -87,6 +88,10 @@ export default function Sidebar() {
     dispatch(hideMenu());
   };
 
+  const handleLogout = () => {
+    signOut();
+  };
+
   const handleClickOutside = (e: any) => {
     if (e.target.classList.contains('backdrop-blur-sm')) {
       dispatch(toggleHamburgerMenu());
@@ -123,6 +128,8 @@ export default function Sidebar() {
                   <Image
                     src={getData.profilePicture || '/assets/default-user.png'}
                     alt=''
+                    width={50}
+                    height={50}
                     className='object-cover rounded-full w-[50px] h-[50px] md:w-[50px] md:h-[50px]'
                   />
                   <h3>{getData?.name}</h3>
@@ -132,10 +139,10 @@ export default function Sidebar() {
               )}
             </PopoverTrigger>
             <PopoverContent className='divide-y divide-blue-200'>
-              <Link href={'/api/auth/signout'} className='w-full gap-4 flex' id='logout-btn'>
+              <button className='w-full gap-4 flex' id='logout-btn' onClick={handleLogout}>
                 <LogOut />
                 Logout
-              </Link>
+              </button>
             </PopoverContent>
           </Popover>
         </div>

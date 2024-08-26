@@ -205,19 +205,19 @@ class _AddUpdateState extends State<AddUpdate> {
                         ),
                       ),
                       SizedBox(height: 16),
-                      reusableTextpar("Category", FontWeight.w500, 14),
-                      SizedBox(height: 8),
-                      TextField(
-                        controller: category_input,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
-                          ),
-                          filled: true,
-                          fillColor: Color.fromRGBO(243, 243, 243, 1),
-                        ),
-                      ),
+                      // reusableTextpar("Category", FontWeight.w500, 14),
+                      // SizedBox(height: 8),
+                      // TextField(
+                      //   controller: category_input,
+                      //   decoration: InputDecoration(
+                      //     border: OutlineInputBorder(
+                      //       borderRadius: BorderRadius.circular(8),
+                      //       borderSide: BorderSide.none,
+                      //     ),
+                      //     filled: true,
+                      //     fillColor: Color.fromRGBO(243, 243, 243, 1),
+                      //   ),
+                      // ),
                       SizedBox(height: 16),
                       reusableTextpar("Price", FontWeight.w500, 14),
                       SizedBox(height: 8),

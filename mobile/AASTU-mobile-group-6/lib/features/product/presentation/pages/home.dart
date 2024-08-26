@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
       //   NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
       // ],
       // height: MediaQuery.of(context).size.height * 0.07),
-
+      
       bottomNavigationBar: Container(child: Bottomnavbar()),
 
       backgroundColor: Colors.white,
@@ -124,7 +124,7 @@ class _HomePageState extends State<HomePage> {
                                 BlocBuilder<GetUserBloc, GetUserState>(
                                   builder: (context, state) {
                                     if (state is GetUserLoading) {
-                                      return Text("Fetching User...",
+                                      return Text("...",
                                           style: GoogleFonts.sora(
                                               fontWeight: FontWeight.w600));
                                     } else if (state is GetUserLoaded)  {
@@ -289,21 +289,25 @@ class _HomePageState extends State<HomePage> {
                           height: MediaQuery.of(context).size.height * 0.8,
                           child: RefreshIndicator(
                             onRefresh: _refresh,
-                            child: ListView.builder(
-                              itemCount: state.products.length,
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                    onTap: () {
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 75),
+                              child: ListView.builder(
+                                itemCount: state.products.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                      onTap: () {
+                                        
+                              
+                                        Navigator.pushNamed(context, '/detail',
+                                            arguments: state.products[index],);
+                                        },
                                       
-
-                                      Navigator.pushNamed(context, '/detail',
-                                          arguments: state.products[index],);
-                                      },
-                                    
-                                    child: OverflowCard(
-                                      product: state.products[index],
-                                    ));
-                              },
+                                      child: OverflowCard(
+                                        product: state.products[index],
+                                      ));
+                                      
+                                },
+                              ),
                             ),
                           ),
                         ),
@@ -319,8 +323,11 @@ class _HomePageState extends State<HomePage> {
 
             // onPressed: onPressed)
           ],
+        
         ),
-      )),
+    
+      )
+      ),
     );
   }
 }

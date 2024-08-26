@@ -56,7 +56,7 @@ class ChatPage extends StatelessWidget{
                 child: ChatBody(
                   ownerId: ownerId,
                   senderIds: senderIds,
-                  chats: chats,
+                  // chats: chats,
                 ),
               ),
               ChatBottomAppBar( 

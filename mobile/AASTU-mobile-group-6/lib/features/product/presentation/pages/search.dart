@@ -3,6 +3,7 @@ import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/home_eve
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_state.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/bottomnavbar.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_event.dart';
 import 'package:ecommerce_app_ca_tdd/locator.dart';
@@ -47,6 +48,8 @@ class _searchPageState extends State<searchPage> {
       create: (context) => sl.get<SearchBloc>()..add(LoadAllProductEvent()),
     );
     return Scaffold(
+      bottomNavigationBar: Container(child: Bottomnavbar()),
+
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Row(

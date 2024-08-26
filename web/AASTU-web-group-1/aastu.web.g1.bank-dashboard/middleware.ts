@@ -5,7 +5,11 @@ import { NextResponse } from "next/server";
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (pathname.startsWith("/auth") || pathname.startsWith("/api") || pathname.startsWith("/landing")) {
+  if (
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/landing")
+  ) {
     return NextResponse.next();
   }
 
@@ -15,19 +19,19 @@ export async function middleware(req: NextRequest) {
     "/_next/static/",
     "/_next/image/",
     "/favicon.ico",
-];
+  ];
 
-if (excludedPaths.some(path => pathname.startsWith(path))) {
+  if (excludedPaths.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();
-}
+  }
 
+  console.log(process.env.NEXTAUTH_SECRET);
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  console.log("Token", token)
+  console.log("Token", token);
 
-  
   if (!token) {
     const url = req.nextUrl.clone();
-    url.pathname = "/auth/sign-in";
+    url.pathname = "/landing";
     return NextResponse.redirect(url);
   }
   // const url = new URL("/path/to/another/page", req.nextUrl.origin);
@@ -38,7 +42,5 @@ if (excludedPaths.some(path => pathname.startsWith(path))) {
 }
 
 export const config = {
-    matcher: [
-        "/((?!api|_next/static|_next/image|favicon.ico|auth).*)"
-    ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|auth).*)"],
 };

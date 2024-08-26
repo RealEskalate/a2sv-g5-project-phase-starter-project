@@ -9,7 +9,7 @@ import (
 
 func BlogRouter() {
 	user_repo := Repositories.NewUserRepository(BlogCollections.Users, BlogCollections.RefreshTokens)
-	postRouter := Router.Group("/blog", auth_middleware.AuthMiddleware())
+	postRouter := Router.Group("/blog", auth_middleware.AuthMiddleware(), auth_middleware.IsAdminMiddleware(user_repo))
 	{
 		blogrepo := Repositories.NewBlogrepository(BlogCollections)
 		blogusecase := usecases.NewBlogUseCase(blogrepo)
@@ -70,7 +70,7 @@ func BlogRouter() {
 		tagController := controllers.NewTagsController(tagUsecase)
 		//get all tags
 		// admin routes
-		adminRouter := tagRouter.Group("/admin",  auth_middleware.IsAdminMiddleware())
+		adminRouter := tagRouter.Group("/admin", auth_middleware.IsAdminMiddleware(user_repo))
 		{
 			adminRouter.POST("/create", tagController.CreateTag)
 			//delete tag
@@ -84,5 +84,5 @@ func BlogRouter() {
 		tagRouter.GET("/posts/:slug", tagController.GetPostsByTag)
 
 	}
-	
+
 }

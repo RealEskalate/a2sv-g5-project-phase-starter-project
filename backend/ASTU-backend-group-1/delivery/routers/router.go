@@ -1,4 +1,4 @@
-package router
+package routers
 
 import (
 	"astu-backend-g1/delivery/controllers"
@@ -35,7 +35,6 @@ func (gr *MainRouter) GinBlogRouter() {
 	router.GET("blogs/:blogId", gr.blogController.HandleGetBlogById)
 	userrouter := router.Group("/users")
 	{
-		
 		userrouter.POST("/register", gr.handler.Register)
 		userrouter.GET("/accountVerification", gr.handler.AccountVerification)
 		userrouter.POST("/login", gr.handler.LoginUser)
@@ -50,11 +49,10 @@ func (gr *MainRouter) GinBlogRouter() {
 			userrouter.PUT("/changePassword", gr.handler.ChangePassword)
 			userrouter.PUT("/changeEmail", gr.handler.UpdateProfiles)
 			userrouter.PATCH("promote/:username", gr.authController.ADMINMiddleware(), gr.handler.Promote)
-			userrouter.PATCH("demote/:username",gr.authController.ADMINMiddleware(),gr.handler.Demote)
+			userrouter.PATCH("demote/:username", gr.authController.ADMINMiddleware(), gr.handler.Demote)
 			userrouter.PATCH("promotebyemail/:email", gr.authController.ADMINMiddleware(), gr.handler.PromoteByEmail)
-			userrouter.PATCH("demotebyemail/:email",gr.authController.ADMINMiddleware(),gr.handler.DemoteByEmail)
-			userrouter.DELETE("/:id",gr.authController.ADMINMiddleware(),gr.handler.DeleteUser)
-			
+			userrouter.PATCH("demotebyemail/:email", gr.authController.ADMINMiddleware(), gr.handler.DemoteByEmail)
+			userrouter.DELETE("/:id", gr.authController.ADMINMiddleware(), gr.handler.DeleteUser)
 		}
 	}
 	blogRouter := router.Group("/blogs")

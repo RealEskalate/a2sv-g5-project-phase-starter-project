@@ -74,6 +74,7 @@ var (
 	ErrUserRoleRequired          = New("user role required", http.StatusForbidden)
 	ErrFailedToGetUser 		 = New("failed to get user", http.StatusInternalServerError)
 	ErrUserNotVerified		   = New("user not verified", http.StatusForbidden)
+	ErrInvalidBlogID 		   = New("invalid blog ID", http.StatusBadRequest)
 	// Comment-specific Errors
 	ErrFailedToCreateComment       = New("failed to create comment", http.StatusInternalServerError)
 	ErrFailedToUpdateComment       = New("failed to update comment", http.StatusInternalServerError)

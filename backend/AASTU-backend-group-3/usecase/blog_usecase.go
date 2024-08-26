@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"group3-blogApi/domain"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogUsecaseImpl struct {
@@ -29,7 +31,11 @@ func (uc *BlogUsecaseImpl) CreateBlog(username, userID string, blog domain.Blog)
 
 func (uc *BlogUsecaseImpl) DeleteBlog(role, userId, id string) (domain.Blog, *domain.CustomError) {
 	if role != "admin" {
-		existingBlog, err := uc.blogRepo.GetBlogByID(id)
+		objID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			return domain.Blog{}, domain.ErrInvalidBlogID
+		}
+		existingBlog, err := uc.blogRepo.GetBlogByID(objID)
 		if err != nil {
 			return domain.Blog{}, domain.ErrBlogNotFound
 		}
@@ -46,7 +52,11 @@ func (uc *BlogUsecaseImpl) DeleteBlog(role, userId, id string) (domain.Blog, *do
 }
 
 func (uc *BlogUsecaseImpl) UpdateBlog(blog domain.Blog, role string, blogId string) (domain.Blog, *domain.CustomError) {
-	existingBlog, err := uc.blogRepo.GetBlogByID(blogId)
+	objID, err := primitive.ObjectIDFromHex(blogId)
+	if err != nil {
+		return domain.Blog{}, domain.ErrInvalidBlogID
+	}
+	existingBlog, err := uc.blogRepo.GetBlogByID(objID)
 	if err != nil {
 		return domain.Blog{}, domain.ErrBlogNotFound
 	}
@@ -61,12 +71,16 @@ func (uc *BlogUsecaseImpl) UpdateBlog(blog domain.Blog, role string, blogId stri
 }
 
 func (uc *BlogUsecaseImpl) GetBlogByID(id string) (domain.Blog, *domain.CustomError) {
-	blog, err := uc.blogRepo.GetBlogByID(id)
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return domain.Blog{}, domain.ErrInvalidBlogID
+	}
+
+	blog, err := uc.blogRepo.GetBlogByID(objID)
 	if err != nil {
 		return domain.Blog{}, domain.ErrBlogNotFound
 	}
 	return blog, &domain.CustomError{}
-
 }
 
 func (uc *BlogUsecaseImpl) GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]domain.Blog, int64, *domain.CustomError) {

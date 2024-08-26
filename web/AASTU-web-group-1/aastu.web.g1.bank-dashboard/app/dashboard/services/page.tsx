@@ -124,7 +124,6 @@ const Services = () => {
           Previous
         </button>
         <span className="self-center">
-          Page {currentPage + 1} of {totalPages}
           {pages.map((page) => (
             <button
               key={page}

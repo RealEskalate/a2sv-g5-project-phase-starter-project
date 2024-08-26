@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	blogDomain "github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/blog"
@@ -112,13 +113,13 @@ func (b *BlogStorage) CreateBlog(ctx context.Context, blog blogDomain.Blog) (str
 func (b *BlogStorage) CreateComment(ctx context.Context, comment blogDomain.Comment) (string, error) {
 	comment.ID = primitive.NewObjectID().Hex()
 
-	result, err := b.db.Collection(commentCollection).InsertOne(ctx, comment)
+	_, err := b.db.Collection(commentCollection).InsertOne(ctx, comment)
 	if err != nil {
 		log.Default().Printf("Failed to create comment: %v", err)
 		return "", blogDomain.ErrUnableToCreatComment
 	}
 
-	return result.InsertedID.(primitive.ObjectID).Hex(), nil
+	return comment.ID, nil
 }
 
 // DeleteBlog implements BlogRepository.
@@ -170,8 +171,12 @@ func (b *BlogStorage) DeleteComment(ctx context.Context, id string) error {
 // DislikeBlog implements BlogRepository.
 func (b *BlogStorage) DislikeBlog(ctx context.Context, dislike blogDomain.Dislike) error {
 	dislike.ID = primitive.NewObjectID().Hex()
+	count, err := b.db.Collection(dislikeCollection).CountDocuments(ctx, bson.D{{Key: "blog_id", Value: dislike.BlogID}, {Key: "user_id", Value: dislike.UserID}})
+	if count >= 1 {
+		return blogDomain.ErrAlreadyDisliked
+	}
 
-	_, err := b.db.Collection(dislikeCollection).InsertOne(ctx, dislike)
+	_, err = b.db.Collection(dislikeCollection).InsertOne(ctx, dislike)
 	if err != nil {
 		log.Default().Printf("Failed to dislike blog: %v", err)
 		return blogDomain.ErrUnableToDislikeBlog
@@ -243,7 +248,7 @@ func (b *BlogStorage) GetBlogs(ctx context.Context, filterQuery blogDomain.Filte
 	var blogs []blogDomain.BlogSummary = make([]blogDomain.BlogSummary, 0)
 	cursor.All(ctx, &blogs)
 
-	return infrastructure.NewPaginationResponse[blogDomain.BlogSummary](pagination.Limit, pagination.Page, count, blogs), nil
+	return infrastructure.NewPaginationResponse(pagination.Limit, pagination.Page, count, blogs), nil
 }
 
 // GetCommentsByBlogID implements BlogRepository.
@@ -256,7 +261,7 @@ func (b *BlogStorage) GetCommentsByBlogID(ctx context.Context, blogID string, pa
 	filter := bson.D{{Key: "blog_id", Value: blogID}}
 
 	findOptions := options.Find()
-	findOptions.SetSkip(int64(pagination.Limit*pagination.Page - 1))
+	findOptions.SetSkip(int64(pagination.Limit * (pagination.Page - 1)))
 	findOptions.SetLimit(int64(pagination.Limit))
 	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
 
@@ -271,17 +276,22 @@ func (b *BlogStorage) GetCommentsByBlogID(ctx context.Context, blogID string, pa
 		return infrastructure.PaginationResponse[blogDomain.Comment]{}, blogDomain.ErrUnableToGetComments
 	}
 
-	var comments []blogDomain.Comment
+	var comments []blogDomain.Comment = make([]blogDomain.Comment, 0)
 	cursor.All(ctx, &comments)
 
-	return infrastructure.NewPaginationResponse[blogDomain.Comment](pagination.Limit, pagination.Page, count, comments), nil
+	return infrastructure.NewPaginationResponse(pagination.Limit, pagination.Page, count, comments), nil
 }
 
 // LikeBlog implements BlogRepository.
 func (b *BlogStorage) LikeBlog(ctx context.Context, like blogDomain.Like) error {
 	like.ID = primitive.NewObjectID().Hex()
+	count, err := b.db.Collection(likeCollection).CountDocuments(ctx, bson.D{{Key: "blog_id", Value: like.BlogID}, {Key: "user_id", Value: like.UserID}})
+	fmt.Println(count)
+	if count >= 1 {
+		return blogDomain.ErrAlreadyLiked
+	}
 
-	_, err := b.db.Collection(likeCollection).InsertOne(ctx, like)
+	_, err = b.db.Collection(likeCollection).InsertOne(ctx, like)
 	if err != nil {
 		log.Default().Printf("Failed to like blog: %v", err)
 		return blogDomain.ErrUnableToLikeBlog
@@ -292,30 +302,72 @@ func (b *BlogStorage) LikeBlog(ctx context.Context, like blogDomain.Like) error 
 
 // SearchBlogs implements BlogRepository.
 func (b *BlogStorage) SearchBlogs(ctx context.Context, query string, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[blogDomain.BlogSummary], error) {
-	filter := bson.D{{Key: "$text", Value: bson.D{
-		{Key: "$search", Value: query},
-		{Key: "$caseSensitive", Value: false},
+	filter := bson.D{{
+		Key: "$search",
+		Value: bson.D{{
+			Key: "text",
+			Value: bson.D{
+				{Key: "path", Value: "title"},
+				{Key: "query", Value: query},
+			},
+		}},
+	}}
+
+	project := bson.D{{Key: "$project", Value: bson.D{{Key: "content", Value: 0}}}}
+	facet := bson.D{{Key: "$facet", Value: bson.M{
+		"total": []bson.M{{"$count": "total"}},
+		"results": []bson.M{
+			{"$skip": int64(pagination.Limit * (pagination.Page - 1))},
+			{"$limit": pagination.Limit},
+		},
 	}}}
 
-	findOptions := options.Find()
-	findOptions.SetSkip(int64(pagination.Limit*pagination.Page - 1))
-	findOptions.SetLimit(int64(pagination.Limit))
-	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
-	findOptions.SetProjection(bson.D{{Key: "content", Value: 0}})
-
-	count, err := b.db.Collection(blogCollection).CountDocuments(ctx, filter)
-	if err != nil {
-		return infrastructure.PaginationResponse[blogDomain.BlogSummary]{}, err
-	}
-
-	cursor, err := b.db.Collection(blogCollection).Find(ctx, filter, findOptions)
+	cursor, err := b.db.Collection(blogCollection).Aggregate(ctx, mongo.Pipeline{filter, project, facet})
 	if err != nil {
 		log.Default().Printf("Failed to search blogs: %v", err)
 		return infrastructure.PaginationResponse[blogDomain.BlogSummary]{}, blogDomain.ErrUnabletoSearchBlogs
 	}
 
-	var blogs []blogDomain.BlogSummary
-	cursor.All(ctx, &blogs)
+	blogs := make([]blogDomain.BlogSummary, 0)
+	var count int64
+	for cursor.Next(context.TODO()) {
+		var result bson.M
+		err := cursor.Decode(&result)
+		if err != nil {
+			log.Default().Printf("Failed to execute operation: %v", err)
+			continue
+		}
+
+		for key, v := range result {
+			switch vv := v.(type) {
+			case bson.M:
+				for _, val := range vv {
+					if key == "total" {
+						count = val.(int64)
+					} else if key == "results" {
+						results := val.([]interface{})
+						for _, item := range results {
+							data := item.(bson.M)
+							dataD, err := bson.Marshal(data)
+							if err != nil {
+								log.Default().Printf("Failed to execute operation: %v", err)
+								continue
+							}
+							var blog blogDomain.BlogSummary
+							err = bson.Unmarshal(dataD, &blog)
+							if err != nil {
+								log.Default().Printf("Failed to execute operation: %v", err)
+								continue
+							}
+							blogs = append(blogs, blog)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	fmt.Println(blogs)
 
 	return infrastructure.NewPaginationResponse[blogDomain.BlogSummary](pagination.Limit, pagination.Page, count, blogs), nil
 }
@@ -348,7 +400,7 @@ func (b *BlogStorage) UnlikeBlog(ctx context.Context, like blogDomain.Like) erro
 	result, err := b.db.Collection(likeCollection).DeleteOne(ctx, filter)
 	if err != nil {
 		log.Default().Printf("Failed to unlike blog: %v", err)
-		return blogDomain.ErrUnableToUnLikeBlog
+		return blogDomain.ErrNoLikeFound
 	}
 
 	if result.DeletedCount == 0 {

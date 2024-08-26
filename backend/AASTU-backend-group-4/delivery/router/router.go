@@ -25,12 +25,12 @@ func SetRouter(router *gin.Engine, bc *blog_controller.BlogController, uc *user_
 	r := router.Group("/blog")
 	r.Use(auth.JwtAuthMiddleware(env.AccessTokenSecret))
 	{
-		r.POST("/create", bc.CreateBlog)
+		r.POST("/", bc.CreateBlog)
 		r.GET("/", bc.GetBlogs)
 		r.GET("/:id", bc.GetBlogByID)
 		r.PUT("/:id", bc.UpdateBlog)
 		r.DELETE("/:id", bc.DeleteBlog)
-		r.GET("/search", bc.SearchBlog)
+		r.GET("/search", bc.SearchBlogs)
 		r.POST("/filters", bc.FilterBlog)
 
 	}

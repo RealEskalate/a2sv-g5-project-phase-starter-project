@@ -13,6 +13,7 @@ func (bc *BlogController) GetBlogByID(c *gin.Context) {
 	blogID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	post, err := bc.usecase.GetBlogByID(c, blogID)
 	if err != nil {

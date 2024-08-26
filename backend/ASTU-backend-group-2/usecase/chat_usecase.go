@@ -1,187 +1,151 @@
 package usecase
 
-//
-// import (
-// 	"context"
-// 	"fmt"
-// 	"time"
+import (
+	"context"
+	"fmt"
+	"time"
 
-// 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
-// 	gemini "github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/internal/aiutil"
-// 	"github.com/go-playground/validator/v10"
-// )
+	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
+	custom_error "github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/errors"
+	gemini "github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/internal/aiutil"
+	mongopagination "github.com/gobeam/mongo-go-pagination"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
-// type ChatUsecase struct {
-// 	AIService      gemini.AI
-// 	contextTimeout time.Duration
-// 	Repository     entities.ChatRepository
-// }
+type ChatUsecase struct {
+	AIService      gemini.AI
+	contextTimeout time.Duration
+	ChatRepository entities.ChatRepository
+}
 
-// var validate = validator.New()
+func NewChatUsecase(repository entities.ChatRepository, aiService gemini.AI, timeout time.Duration) entities.ChatUsecase {
+	return &ChatUsecase{
+		ChatRepository: repository,
+		AIService:      aiService,
+		contextTimeout: timeout,
+	}
+}
 
-// func NewUsecase(repository entities.ChatRepository, aiService AI, timeout time.Duration) *ChatUsecase {
-// 	return &ChatUsecase{
-// 		Repository:     repository,
-// 		AIService:      aiService,
-// 		contextTimeout: timeout,
-// 	}
-// }
+func (cu *ChatUsecase) CreateChat(c context.Context, userId primitive.ObjectID) (entities.Chat, error) {
 
-// func (usecase *ChatUsecase) CreateChat(ctx context.Context, userId string) (Chat, error) {
-// 	err := infrastructure.Validate(validate, form)
-// 	if err != nil {
-// 		return Chat{}, err
-// 	}
+	ctx, cancel := context.WithTimeout(c, cu.contextTimeout)
+	defer cancel()
 
-// 	firstMessageText := fmt.Sprint(
-// 		"> Hello! Please send me either:",
-// 		">",
-// 		"> * **A blog description:** I'll create a well-crafted blog post based on your outline or ideas.",
-// 		"> * **An existing blog post:** I'll provide detailed feedback, including suggestions for improvement, clarity, and engagement.",
-// 		">",
-// 		"> Feel free to share any specific requirements or preferences you have.",
-// 	)
+	command := fmt.Sprint(
+		"Hi there! You can send me any of the following:",
+		"",
+		"1. **A brief overview of your blog topic:** I can help you create a polished and engaging blog post based on your ideas.",
+		"2. **A draft or existing blog post:** I can offer comprehensive feedback to enhance its clarity, impact, and overall quality.",
+		"",
+		"Don’t hesitate to mention any specific guidelines or preferences you might have.",
+	)
 
-// 	firstMessage := Message{
-// 		Text:   firstMessageText,
-// 		Role:   "model",
-// 		SentAt: time.Now(),
-// 	}
+	firstMessage := entities.Message{
+		Text:      command,
+		Role:      "model",
+		CreatedAt: time.Now(),
+	}
 
-// 	newChat := Chat{
-// 		Title:     "New Chat",
-// 		UserID:    form.UserID,
-// 		History:   []Message{firstMessage},
-// 		CreatedAt: time.Now(),
-// 		UpdatedAt: time.Now(),
-// 	}
+	newChat := entities.Chat{
+		Title:     "New Chat",
+		UserID:    userId,
+		Messages:  []entities.Message{firstMessage},
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 
-// 	newChat, err = usecase.Repository.CreateChat(ctx, newChat)
-// 	if err != nil {
-// 		return Chat{}, err
-// 	}
+	newChat, err := cu.ChatRepository.CreateChat(ctx, newChat)
+	if err != nil {
+		return entities.Chat{}, err
+	}
 
-// 	return newChat, nil
-// }
+	return newChat, nil
+}
 
-// func (usecase *ChatUsecase) DeleteChat(ctx context.Context, form DefaultChatForm) error {
-// 	if err := infrastructure.Validate(validate, form); err != nil {
-// 		return err
-// 	}
+func (cu *ChatUsecase) DeleteChat(c context.Context, userId primitive.ObjectID, chatId primitive.ObjectID) error {
+	ctx, cancel := context.WithTimeout(c, cu.contextTimeout)
+	defer cancel()
 
-// 	chat, err := usecase.Repository.GetChat(ctx, form.ChatID)
-// 	if err != nil {
-// 		return err
-// 	}
+	chat, err := cu.ChatRepository.GetChat(ctx, chatId)
+	if err != nil {
+		return err
+	}
 
-// 	if chat.UserID != form.UserID {
-// 		return ErrChatNotFound
-// 	}
+	if chat.UserID != userId {
+		return custom_error.ErrChatNotFound
+	}
 
-// 	return usecase.Repository.DeleteChat(ctx, form.ChatID)
-// }
+	return cu.ChatRepository.DeleteChat(ctx, chatId)
+}
 
-// func (usecase *ChatUsecase) GenerateChatTitle(ctx context.Context, form TextForm) (string, error) {
-// 	if err := infrastructure.Validate(validate, form); err != nil {
-// 		return "", err
-// 	}
+func (cu *ChatUsecase) GetChat(c context.Context, userId primitive.ObjectID, chatId primitive.ObjectID) (entities.Chat, error) {
+	ctx, cancel := context.WithTimeout(c, cu.contextTimeout)
+	defer cancel()
 
-// 	return usecase.AIService.GenerateChatTitle(ctx, form.Text)
-// }
+	chat, err := cu.ChatRepository.GetChat(ctx, chatId)
+	if err != nil {
+		return entities.Chat{}, err
+	}
 
-// func (usecase *ChatUsecase) GetChat(ctx context.Context, form DefaultChatForm) (Chat, error) {
-// 	if err := infrastructure.Validate(validate, form); err != nil {
-// 		return Chat{}, err
-// 	}
+	if chat.UserID != userId {
+		return entities.Chat{}, custom_error.ErrChatNotFound
+	}
 
-// 	chat, err := usecase.Repository.GetChat(ctx, form.ChatID)
-// 	if err != nil {
-// 		return Chat{}, err
-// 	}
+	return chat, nil
+}
 
-// 	if chat.ID != form.UserID {
-// 		return Chat{}, ErrChatNotFound
-// 	}
+func (cu *ChatUsecase) GetChats(c context.Context, userId primitive.ObjectID, limit int64, skip int64) (*[]entities.Chat, mongopagination.PaginationData, error) {
+	ctx, cancel := context.WithTimeout(c, cu.contextTimeout)
+	defer cancel()
 
-// 	return chat, nil
-// }
+	return cu.ChatRepository.GetChats(ctx, userId, limit, skip)
+}
 
-// func (usecase *ChatUsecase) GetChats(ctx context.Context, form UserIDForm, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[Chat], error) {
-// 	if err := infrastructure.Validate(validate, form); err != nil {
-// 		return infrastructure.PaginationResponse[Chat]{}, err
-// 	}
+func (cu *ChatUsecase) CreateMessage(c context.Context, userId primitive.ObjectID, chatId primitive.ObjectID, body string) (entities.Message, error) {
+	ctx, cancel := context.WithTimeout(c, cu.contextTimeout)
+	defer cancel()
 
-// 	if pagination.Limit == 0 {
-// 		pagination.Limit = 10
-// 	}
-// 	if pagination.Page == 0 {
-// 		pagination.Page = 1
-// 	}
+	chat, err := cu.ChatRepository.GetChat(ctx, chatId)
+	if err != nil {
+		return entities.Message{}, err
+	}
 
-// 	return usecase.Repository.GetChats(ctx, form.UserID, pagination)
-// }
+	if chat.UserID != userId {
+		return entities.Message{}, custom_error.ErrChatNotFound
+	}
 
-// func (usecase *ChatUsecase) SendMessage(ctx context.Context, chatForm DefaultChatForm, textForm TextForm) (Message, error) {
-// 	if err := infrastructure.Validate(validate, chatForm); err != nil {
-// 		return Message{}, err
-// 	}
+	message := entities.Message{
+		Text:      body,
+		Role:      "user",
+		CreatedAt: time.Now(),
+	}
 
-// 	if err := infrastructure.Validate(validate, textForm); err != nil {
-// 		return Message{}, err
-// 	}
+	if chat.Messages == nil {
+		_, err = cu.ChatRepository.UpdateChat(ctx, chatId, chat)
+		if err != nil {
+			return entities.Message{}, err
+		}
+	}
 
-// 	chat, err := usecase.Repository.GetChat(ctx, chatForm.ChatID)
-// 	if err != nil {
-// 		return Message{}, err
-// 	}
+	response, err := cu.AIService.SendMessage(ctx, chat.Messages, message)
+	if err != nil {
+		return entities.Message{}, err
+	}
 
-// 	if chat.UserID != chatForm.UserID {
-// 		return Message{}, ErrChatNotFound
-// 	}
+	if err := cu.ChatRepository.CreateMessage(ctx, chatId, message); err != nil {
+		return entities.Message{}, err
+	}
 
-// 	message := Message{
-// 		Text:   textForm.Text,
-// 		Role:   "user",
-// 		SentAt: time.Now(),
-// 	}
+	if err := cu.ChatRepository.CreateMessage(ctx, chatId, response); err != nil {
+		return entities.Message{}, err
+	}
 
-// 	if chat.History == nil {
-// 		title, err := usecase.AIService.GenerateChatTitle(ctx, textForm.Text)
-// 		if err != nil {
-// 			return Message{}, err
-// 		}
-// 		chat.Title = title
+	return response, nil
+}
 
-// 		_, err = usecase.Repository.UpdateChat(ctx, chatForm.ChatID, chat)
-// 		if err != nil {
-// 			return Message{}, err
-// 		}
-// 	}
+func (cu *ChatUsecase) UpdateChat(c context.Context, userId primitive.ObjectID, chatId primitive.ObjectID, updatedChat entities.Chat) (entities.Chat, error) {
+	ctx, cancel := context.WithTimeout(c, cu.contextTimeout)
+	defer cancel()
 
-// 	response, err := usecase.AIService.SendMessage(ctx, chat.History, message)
-// 	if err != nil {
-// 		return Message{}, err
-// 	}
-
-// 	if err := usecase.Repository.AddMessage(ctx, chatForm.ChatID, message); err != nil {
-// 		return Message{}, err
-// 	}
-
-// 	if err := usecase.Repository.AddMessage(ctx, chatForm.ChatID, response); err != nil {
-// 		return Message{}, err
-// 	}
-
-// 	return response, nil
-// }
-
-// func (usecase *ChatUsecase) UpdateChat(ctx context.Context, form DefaultChatForm, updatedChat Chat) (Chat, error) {
-// 	if err := infrastructure.Validate(validate, form); err != nil {
-// 		return Chat{}, err
-// 	}
-
-// 	if err := infrastructure.Validate(validate, updatedChat); err != nil {
-// 		return Chat{}, err
-// 	}
-
-// 	return usecase.Repository.UpdateChat(ctx, form.ChatID, updatedChat)
-// }
+	return cu.ChatRepository.UpdateChat(ctx, chatId, updatedChat)
+}

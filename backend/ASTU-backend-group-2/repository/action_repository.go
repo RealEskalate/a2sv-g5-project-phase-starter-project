@@ -13,13 +13,13 @@ import (
 
 type reactionRepository struct {
 	db         *mongo.Database
-	Collection *mongo.Collection
+	collection *mongo.Collection
 }
 
 func NewReactionRepository(database *mongo.Database) entities.ReactionRepository {
 	return reactionRepository{
 		db:         database,
-		Collection: database.Collection("blogs"),
+		collection: database.Collection(entities.CollectionBlog),
 	}
 }
 
@@ -42,7 +42,7 @@ func (ar reactionRepository) Like(c context.Context, blogID, userID string) erro
 	//blogs collection likes field
 
 	log.Printf("filter: %v", filter)
-	res, err := ar.Collection.UpdateOne(c, filter, bson.M{"$addToSet": bson.M{"likes": userObjID}})
+	res, err := ar.collection.UpdateOne(c, filter, bson.M{"$addToSet": bson.M{"likes": userObjID}})
 	if err != nil {
 		log.Printf("error while updating the document. Error: %v", err)
 		return err
@@ -67,7 +67,7 @@ func (ar reactionRepository) Dislike(c context.Context, blogID, userID string) e
 
 	filter := bson.M{"_id": blogObjID}
 
-	res, err := ar.Collection.UpdateOne(c, filter, bson.M{"$addToSet": bson.M{"dislikes": userObjID}})
+	res, err := ar.collection.UpdateOne(c, filter, bson.M{"$addToSet": bson.M{"dislikes": userObjID}})
 	if res.ModifiedCount < 1 {
 		return custom_error.ErrBlogNotFound
 	}
@@ -85,7 +85,7 @@ func (ar reactionRepository) RemoveLike(c context.Context, blogID, userID string
 		return custom_error.ErrInvalidID
 	}
 	filter := bson.M{"_id": blogObjID}
-	res, err := ar.Collection.UpdateOne(c, filter, bson.M{"$pull": bson.M{"likes": userObjID}})
+	res, err := ar.collection.UpdateOne(c, filter, bson.M{"$pull": bson.M{"likes": userObjID}})
 	if res.ModifiedCount < 1 {
 		return custom_error.ErrBlogNotFound
 	}
@@ -102,7 +102,7 @@ func (ar reactionRepository) RemoveDislike(c context.Context, blogID, userID str
 		return custom_error.ErrInvalidID
 	}
 	filter := bson.M{"_id": blogObjID}
-	res, err := ar.Collection.UpdateOne(c, filter, bson.M{"$pull": bson.M{"dislikes": userObjID}})
+	res, err := ar.collection.UpdateOne(c, filter, bson.M{"$pull": bson.M{"dislikes": userObjID}})
 	if res.ModifiedCount < 1 {
 		return custom_error.ErrBlogNotFound
 	}
@@ -123,7 +123,7 @@ func (ar reactionRepository) IsPostLiked(c context.Context, blogID, userID strin
 		"likes": bson.M{"$in": []primitive.ObjectID{userObjID}},
 	}
 
-	count, err := ar.Collection.CountDocuments(c, filter)
+	count, err := ar.collection.CountDocuments(c, filter)
 	if err != nil {
 		return false, custom_error.ErrErrorCountingBlogLikes
 	}
@@ -142,7 +142,7 @@ func (ar reactionRepository) IsPostDisliked(c context.Context, blogID, userID st
 		"_id":      blogObjID,
 		"dislikes": bson.M{"$in": []primitive.ObjectID{userObjID}},
 	}
-	count, err := ar.Collection.CountDocuments(c, filter)
+	count, err := ar.collection.CountDocuments(c, filter)
 	if err != nil {
 		return false, custom_error.ErrErrorCountingBlogDisLikes
 	}

@@ -35,6 +35,8 @@ type Env struct {
 	CloudinaryName             string `mapstructure:"CLOUDINARY_NAME"`
 	CloudinaryKey              string `mapstructure:"CLOUDINARY_KEY"`
 	CloudinarySecret           string `mapstructure:"CLOUDINARY_SECRET"`
+	RateLimitMaxRequest        int    `mapstructure:"RATE_LIMIT_MAX_REQUEST"`
+	RateLimitExpirationMin     int    `mapstructure:"RATE_LIMIT_EXPIRATION_MIN"`
 }
 
 func NewEnv() *Env {

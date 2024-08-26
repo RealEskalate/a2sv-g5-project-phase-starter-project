@@ -15,8 +15,8 @@ import (
 )
 
 type blogRepository struct {
-	database   mongo.Database
-	collection string
+	database       mongo.Database
+	collectionName string
 }
 
 var project bson.M = bson.M{
@@ -42,14 +42,14 @@ var project bson.M = bson.M{
 func NewBlogRepository(db mongo.Database, collection string) entities.BlogRepository {
 
 	return &blogRepository{
-		database:   db,
-		collection: collection,
+		database:       db,
+		collectionName: collection,
 	}
 }
 
 // BatchCreateBlog implements entities.BlogRepository.
 func (br *blogRepository) BatchCreateBlog(c context.Context, newBlogs *[]entities.Blog) error {
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 
 	var blogs []interface{}
 
@@ -68,7 +68,7 @@ func (br *blogRepository) BatchCreateBlog(c context.Context, newBlogs *[]entitie
 }
 
 func (br *blogRepository) GetByTags(c context.Context, tags []string, limit int64, page int64) ([]entities.Blog, mongopagination.PaginationData, error) {
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 
 	filter := bson.M{"tags": bson.M{"$in": tags}}
 
@@ -76,7 +76,7 @@ func (br *blogRepository) GetByTags(c context.Context, tags []string, limit int6
 }
 
 func (br *blogRepository) GetAllBlogs(c context.Context, filter bson.M, blogFilter entities.BlogFilter) ([]entities.Blog, mongopagination.PaginationData, error) {
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 
 	return getFiltered(c, collection, filter, blogFilter)
 }
@@ -173,7 +173,7 @@ func getFiltered(c context.Context, collection *mongo.Collection, filter bson.M,
 }
 
 func (br *blogRepository) GetBlogByID(c context.Context, blogID string, view bool) (entities.Blog, error) {
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 
 	ID, err := primitive.ObjectIDFromHex(blogID)
 
@@ -212,7 +212,7 @@ func (br *blogRepository) GetBlogByID(c context.Context, blogID string, view boo
 }
 
 func (br *blogRepository) CreateBlog(c context.Context, newBlog *entities.Blog) (entities.Blog, error) {
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 	blog := entities.Blog{}
 	blog.ID = primitive.NewObjectID()
 
@@ -235,7 +235,7 @@ func (br *blogRepository) CreateBlog(c context.Context, newBlog *entities.Blog) 
 }
 
 func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBlog *entities.BlogUpdate) (entities.Blog, error) {
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 
 	ID, err := primitive.ObjectIDFromHex(blogID)
 
@@ -259,7 +259,7 @@ func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBl
 }
 
 func (br *blogRepository) DeleteBlog(c context.Context, blogID string) error {
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 
 	ID, err := primitive.ObjectIDFromHex(blogID)
 
@@ -278,14 +278,14 @@ func (br *blogRepository) DeleteBlog(c context.Context, blogID string) error {
 }
 
 func (br *blogRepository) SortByDate(c context.Context, limit int64, page int64) ([]entities.Blog, mongopagination.PaginationData, error) {
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 
 	return getSortedBlog(c, collection, limit, page, "created_at")
 
 }
 
 func (br *blogRepository) SortByComment(c context.Context, limit int64, page int64) ([]entities.Blog, mongopagination.PaginationData, error) {
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 
 	return getSortedBlog(c, collection, limit, page, "comments_count")
 
@@ -293,14 +293,14 @@ func (br *blogRepository) SortByComment(c context.Context, limit int64, page int
 
 func (br *blogRepository) SortByLikes(c context.Context, limit int64, page int64) ([]entities.Blog, mongopagination.PaginationData, error) {
 
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 
 	return getSortedBlog(c, collection, limit, page, "comments_likes")
 
 }
 
 func (br *blogRepository) GetByPopularity(c context.Context, limit int64, page int64) ([]entities.Blog, mongopagination.PaginationData, error) {
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 
 	return getSortedBlog(c, collection, limit, page, "popularity")
 }
@@ -331,7 +331,7 @@ func getFilteredBlog(c context.Context, collection *mongo.Collection, limit int6
 	return blogs, paginatedData.Pagination, nil
 }
 func (br *blogRepository) UpdateLikeCount(c context.Context, blogID string, increment bool) error {
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 
 	// Convert blogID to a MongoDB ObjectID
 	ID, err := primitive.ObjectIDFromHex(blogID)
@@ -364,7 +364,7 @@ func (br *blogRepository) UpdateLikeCount(c context.Context, blogID string, incr
 }
 
 func (br *blogRepository) UpdateDislikeCount(c context.Context, blogID string, increment bool) error {
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 
 	// Convert blogID to a MongoDB ObjectID
 	ID, err := primitive.ObjectIDFromHex(blogID)
@@ -396,7 +396,7 @@ func (br *blogRepository) UpdateDislikeCount(c context.Context, blogID string, i
 	return nil
 }
 func (br *blogRepository) UpdateCommentCount(c context.Context, blogID string, increment bool) error {
-	collection := br.database.Collection(br.collection)
+	collection := br.database.Collection(br.collectionName)
 	ID, err := primitive.ObjectIDFromHex(blogID)
 
 	if err != nil {

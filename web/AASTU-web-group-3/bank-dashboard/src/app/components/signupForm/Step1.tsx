@@ -1,28 +1,80 @@
 'use client';
-import React from 'react';
+import React, { useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import Image from 'next/image';
-import { logo } from "@/../../public/Icons";
 import Link from 'next/link';
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from 'firebase/storage';
+import app from '@/app/firebase';
+import { logo } from '@/../../public/Icons';
 
 interface StepProps {
   step: number;
 }
 
 const Step1: React.FC<StepProps> = ({ step }) => {
-  const { register, formState: { errors }, watch } = useFormContext();
+  const { register, formState: { errors }, setValue } = useFormContext();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Calculate minimum age validation
+  const handleImageClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const imageUrl = await uploadImageToCloud(file);
+      setValue("profilePicture", imageUrl);
+    } else {
+      setValue("profilePicture", "");
+    }
+  };
+
+  const uploadImageToCloud = async (file: File): Promise<string> => {
+    const storage = getStorage(app);
+    const storageRef = ref(storage, file.name);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    return new Promise((resolve, reject) => {
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          if (progress === 100) {
+            alert(`Upload is ${progress}% done`);
+          }
+        },
+        (error) => {
+          console.error('Error during upload:', error);
+          reject(error);
+        },
+        async () => {
+          try {
+            const url = await getDownloadURL(uploadTask.snapshot.ref);
+            console.log('File available at', url);
+            resolve(url);
+          } catch (err) {
+            console.error('Error getting download URL:', err);
+            reject(err);
+          }
+        }
+      );
+    });
+  };
+
   const validateAge = (value: string) => {
     const birthDate = new Date(value);
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
 
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDate.getDate())
-    ) {
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--;
     }
 
@@ -43,7 +95,7 @@ const Step1: React.FC<StepProps> = ({ step }) => {
             {...register('name', { required: 'Name is required' })}
             className="mt-1 p-2 block w-full border rounded-md"
           />
-          {errors.name && <p className="text-red-500 text-sm mt-1">{String(errors.name.message)}</p>}
+          {errors.name && <p className="text-red-500 text-sm mt-1">{String(errors.name?.message)}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium">Email <span className="text-red-500">*</span></label>
@@ -57,7 +109,7 @@ const Step1: React.FC<StepProps> = ({ step }) => {
             })}
             className="mt-1 p-2 block w-full border rounded-md"
           />
-          {errors.email && <p className="text-red-500 text-sm mt-1">{String(errors.email.message)}</p>}
+          {errors.email && <p className="text-red-500 text-sm mt-1">{String(errors.email?.message)}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium">Date of Birth <span className="text-red-500">*</span></label>
@@ -69,22 +121,24 @@ const Step1: React.FC<StepProps> = ({ step }) => {
             })}
             className="mt-1 p-2 block w-full border rounded-md"
           />
-          {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{String(errors.dateOfBirth.message)}</p>}
+          {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{String(errors.dateOfBirth?.message)}</p>}
         </div>
         <div>
           <label className="block text-sm font-medium">Profile Picture <span className="text-red-500">*</span></label>
           <input
             type="file"
-            {...register('profilePicture', { required: 'Profile picture is required' })}
+            ref={fileInputRef}
+            // {...register('profilePictureFile', { required: 'Profile picture is required' })}
             className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+            onChange={handleFileChange}
           />
-          {errors.profilePicture && <p className="text-red-500 text-sm mt-1">{String(errors.profilePicture.message)}</p>}
+          {errors.profilePictureFile && <p className="text-red-500 text-sm mt-1">{String(errors.profilePictureFile?.message)}</p>}
         </div>
       </div>
       <div className="text-center mt-4 flex justify-end my-4">
         <p className="text-base">
           Already have an account?{' '}
-          <Link href="/auth/signin" className="text-[#4640DE] hover:underline">Sign in here</Link>.
+          <Link href="/auth/signin" className="text-[#4640DE] hover:underline">Sign in here</Link>
         </p>
       </div>
     </>

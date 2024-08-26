@@ -42,3 +42,8 @@ final class LogoutFailedState extends AuthState {
 
   LogoutFailedState({required this.message});
 }
+
+final class GetMeSuccessState extends AuthState {
+  final UserEntity user;
+  GetMeSuccessState({required this.user});
+}

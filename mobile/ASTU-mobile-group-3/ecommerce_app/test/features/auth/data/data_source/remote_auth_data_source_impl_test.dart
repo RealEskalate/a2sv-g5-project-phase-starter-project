@@ -155,4 +155,40 @@ void main() {
           throwsA(isA<ServerException>()));
     });
   });
+
+  group('get me', () {
+    test('Should return user model when data is there', () async {
+      /// arrange
+      when(
+        mockHttpClient.get(
+          any,
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response(AuthData.readJson(), 200));
+
+      /// action
+      final result = await remoteAuthDataSourceImpl.getMe(AuthData.tokenModel);
+
+      /// assert
+      expect(
+          result, UserModel.fromJson(json.decode(AuthData.readJson())['data']));
+    });
+
+    test('Should return user model when data is there', () async {
+      /// arrange
+      when(
+        mockHttpClient.get(
+          any,
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response(AuthData.readJson(), 201));
+
+      /// action
+      final result = remoteAuthDataSourceImpl.getMe;
+
+      /// assert
+      expect(() async => result(AuthData.tokenModel),
+          throwsA(isA<ServerException>()));
+    });
+  });
 }

@@ -46,10 +46,10 @@ export const getActiveLoanById = async (id: any) => {
 };
 
 // GET /active-loans/my-loans
-export const getMyLoans = async () => {
+export const getMyLoans = async (page:any , size:any) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}/active-loans/my-loans?page=0&size=5`,
+      `${API_BASE_URL}/active-loans/my-loans?page=${page}&size=${size}`,
       {
         method: "GET",
         headers: {

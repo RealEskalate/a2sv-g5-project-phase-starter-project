@@ -84,6 +84,7 @@ export default function Component() {
               strokeWidth={5}
               activeIndex={activeIndex}
               onMouseEnter={(_, index) => setActiveIndex(index)}
+              className="dark:text-white"
               activeShape={({
                 outerRadius = 0,
                 ...props
@@ -107,6 +108,7 @@ export default function Component() {
                         y={viewBox.cy}
                         textAnchor="middle"
                         dominantBaseline="middle"
+                        className="dark:text-white]"
                       >
                         <tspan
                           x={viewBox.cx}

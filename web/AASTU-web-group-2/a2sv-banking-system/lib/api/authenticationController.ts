@@ -1,7 +1,7 @@
 // authenticationController.ts
 import { RegisterRequest, RegisterResponse, RefreshTokenResponse, LoginRequest, LoginResponse, ChangePasswordRequest, ChangePasswordResponse, RefreshTokenReturn } from '@/types/authenticationController.interface';
 
-const BASE_URL = 'https://bank-dashboard-mih0.onrender.com'
+const BASE_URL = 'https://a2svwallets.onrender.com'
 
 
 const register = async (userDetails: RegisterRequest): Promise<RegisterResponse> => {
@@ -18,6 +18,7 @@ const register = async (userDetails: RegisterRequest): Promise<RegisterResponse>
       const data: RegisterResponse = await response.json();
       return data;
     } else {
+      alert(`Registration failed with status code: ${response.status}`)
       throw new Error(`Registration failed with status code: ${response.status}`);
     }
   } catch (error) {

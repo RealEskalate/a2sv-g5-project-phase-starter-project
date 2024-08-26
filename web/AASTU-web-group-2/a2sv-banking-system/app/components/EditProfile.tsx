@@ -100,7 +100,7 @@ const EditProfile = () => {
       }
 
       console.log("Profile updated successfully");
-      alert("Profile Edited Successfully")
+      alert("Profile Edited Successfully");
     } catch (error) {
       console.error("Error updating profile:", error);
     }
@@ -112,9 +112,10 @@ const EditProfile = () => {
         <div className="relative">
           <Image
             src={
-              user?.profilePicture ||
-              "https://firebasestorage.googleapis.com/v0/b/a2sv-wallet.appspot.com/o/images%2Fminions-removebg-preview.png-99cefd58-79e9-408d-b747-94bcb3bb16ab?alt=media&token=5822c470-99fb-4875-a4fc-425a64bf1473" || "/ProfilePicture"
-            } // Fallback to a default image if userData.profilePicture is null or undefined
+              user?.profilePicture && user?.profilePicture !== "string"
+                ? user.profilePicture
+                : "https://firebasestorage.googleapis.com/v0/b/a2sv-wallet.appspot.com/o/images%2Fminions-removebg-preview.png-99cefd58-79e9-408d-b747-94bcb3bb16ab?alt=media&token=5822c470-99fb-4875-a4fc-425a64bf1473"
+            }
             alt="Profile Picture"
             width={170}
             height={170}

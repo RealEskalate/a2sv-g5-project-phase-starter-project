@@ -65,7 +65,8 @@ func (uc *BlogUsecaseImpl) GetBlogByID(id string) (domain.Blog, *domain.CustomEr
 	if err != nil {
 		return domain.Blog{}, domain.ErrBlogNotFound
 	}
-	return blog, nil
+	return blog, &domain.CustomError{}
+
 }
 
 func (uc *BlogUsecaseImpl) GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]domain.Blog, int64, *domain.CustomError) {

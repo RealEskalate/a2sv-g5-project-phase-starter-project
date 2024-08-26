@@ -9,17 +9,7 @@ import { getQuickTransfers } from "@/lib/api/transactionController";
 import { PropsWithChildren } from 'react';
 import { PostTransactionRequest } from "@/types/transactionController.interface";
 import { postTransaction } from "@/lib/api/transactionController";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+
 
 import {
   Carousel,
@@ -226,21 +216,7 @@ export default function Home() {
                   </div>
                 </form>
               </div>
-              {showDialog && (
-                <AlertDialog>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Transaction Successful</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Your transfer to {transfer[activeIndex]?.username} was successful.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel onClick={() => setShowDialog(false)}>Close</AlertDialogCancel>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              )}
+
             </div>
           </div>  
       </div>

@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	blogDomain "github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/blog"
@@ -206,7 +207,7 @@ func (b *BlogStorage) GetBlogByID(ctx context.Context, id string) (blogDomain.Bl
 func (b *BlogStorage) GetBlogs(ctx context.Context, filterQuery blogDomain.FilterQuery, pagination infrastructure.PaginationRequest) (infrastructure.PaginationResponse[blogDomain.BlogSummary], error) {
 	filter := bson.D{}
 
-	if filterQuery.Tags != nil {
+	if filterQuery.Tags != nil && len(filterQuery.Tags) > 0 {
 		filter = append(filter, bson.E{Key: "tags", Value: bson.D{{Key: "$in", Value: filterQuery.Tags}}})
 	}
 	if filterQuery.CreatedAtFrom != "" && filterQuery.CreatedAtTo != "" {
@@ -216,16 +217,15 @@ func (b *BlogStorage) GetBlogs(ctx context.Context, filterQuery blogDomain.Filte
 		}})
 	}
 
-	if filterQuery.Popularity != 0 {
-		if filterQuery.Popularity > 0 {
-			filter = append(filter, bson.E{Key: "$sort", Value: bson.D{{Key: "popularity", Value: 1}}})
-		} else {
-			filter = append(filter, bson.E{Key: "$sort", Value: bson.D{{Key: "popularity", Value: -1}}})
-		}
-	}
+	filter = append(filter, bson.E{
+		Key: "popularity", Value: bson.D{
+			{Key: "$gte", Value: filterQuery.PopularityFrom},
+			{Key: "$lte", Value: filterQuery.PopularityTo},
+		},
+	})
 
 	findOptions := options.Find()
-	findOptions.SetSkip(int64(pagination.Limit*pagination.Page - 1))
+	findOptions.SetSkip(int64(pagination.Limit * (pagination.Page - 1)))
 	findOptions.SetLimit(int64(pagination.Limit))
 	findOptions.SetSort(bson.D{{Key: "created_at", Value: -1}})
 	findOptions.SetProjection(bson.D{{Key: "content", Value: 0}})
@@ -243,6 +243,7 @@ func (b *BlogStorage) GetBlogs(ctx context.Context, filterQuery blogDomain.Filte
 
 	var blogs []blogDomain.BlogSummary = make([]blogDomain.BlogSummary, 0)
 	cursor.All(ctx, &blogs)
+	fmt.Println(blogs)
 
 	return infrastructure.NewPaginationResponse[blogDomain.BlogSummary](pagination.Limit, pagination.Page, count, blogs), nil
 }

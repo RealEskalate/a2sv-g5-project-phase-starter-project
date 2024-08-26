@@ -39,13 +39,8 @@ func (b *BlogUseCaseImpl) CreateBlog(ctx context.Context, authorID string, blog 
 		return Blog{}, err
 	}
 
-	author, err := b.authRepository.GetUserByID(ctx, authorID)
-	if err != nil {
-		return Blog{}, err
-	}
-
 	var newBlog Blog
-	newBlog.AuthorID = author.ID
+	newBlog.AuthorID = authorID
 	newBlog.Title = blog.Title
 	newBlog.Content = blog.Content
 	newBlog.Tags = blog.Tags
@@ -224,6 +219,17 @@ func (b *BlogUseCaseImpl) GetBlogs(ctx context.Context, filterQuery FilterQuery,
 	}
 	if pagination.Page == 0 {
 		pagination.Page = 1
+	}
+
+	if filterQuery.PopularityTo == 0 {
+		filterQuery.PopularityTo = 100
+	}
+	if filterQuery.PopularityFrom == 0 {
+		filterQuery.PopularityFrom = 0
+	}
+
+	if filterQuery.PopularityFrom > filterQuery.PopularityTo {
+		return infrastructure.PaginationResponse[BlogSummary]{}, ErrInvalidPopularityRange
 	}
 
 	blogs, err := b.blogRepository.GetBlogs(ctx, filterQuery, pagination)

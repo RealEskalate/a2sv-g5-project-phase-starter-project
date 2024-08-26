@@ -2,12 +2,20 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
-const ApplyLoan = () => {
+// Define the structure of your form data
+interface FormData {
+  loanAmount: string;
+  duration: string;
+  interestRate: string;
+  type: string;
+}
+
+const ApplyLoan: React.FC = () => {
   const { data: session } = useSession();
 
   const accessToken = session?.accessToken as string;
-  const [isOpen, setIsOpen] = useState(false);
-  const [formData, setFormData] = useState({
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [formData, setFormData] = useState<FormData>({
     loanAmount: "",
     duration: "",
     interestRate: "",
@@ -18,12 +26,14 @@ const ApplyLoan = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
     try {
       await axios.post(

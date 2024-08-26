@@ -69,7 +69,6 @@ func (uc *UserController) ActivateUser(ctx *gin.Context) {
 	err := uc.authuserusecase.Activate(ctx, userID, token)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err.Error())
-		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "activated"})
 }
@@ -97,9 +96,27 @@ func (uc *UserController) DemoteUser(ctx *gin.Context) {
 	err := uc.authuserusecase.DemoteUser(ctx, userID)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "unable to demote user"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": " un able to demote user"})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "demoted "})
-
 }
+
+func (uc *UserController) ForgetPassword(ctx *gin.Context) {
+	// email := ctx.Param("email")
+	var email string
+	if err := ctx.ShouldBindJSON(&email); err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	err := uc.authuserusecase.ForgetPassword(ctx, email)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "reset email is sent"})
+}
+
+// func (uc *UserController) ResetPassword(ctx *gin.Context) {
+// 	uc.authuserusecase.ResetPassword(ctx, )
+// }

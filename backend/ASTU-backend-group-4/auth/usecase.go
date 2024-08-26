@@ -3,10 +3,13 @@ package auth
 import (
 	"context"
 	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -97,7 +100,7 @@ func (au *AuthUserUsecase) RegisterUser(ctx context.Context, user User) error {
 	from := os.Getenv("FROM")
 	tokenString := au.GenerateActivateToken(user.Password, user.UpdatedAt)
 
-	activationLink := fmt.Sprintf("http://localhost:8000/v1/auth/activate/%s/%s", user.ID, tokenString)
+	activationLink := fmt.Sprintf("http://localhost/activate/%s/%s", user.ID, tokenString)
 	au.emailService.SendEmail(from, user.Email, fmt.Sprintf("click the link to activate you account %s", activationLink), "Account Activation")
 
 	return nil
@@ -208,4 +211,60 @@ func (au *AuthUserUsecase) DemoteUser(ctx context.Context, userID string) error 
 		return err
 	}
 	return nil
+}
+
+////
+
+func (au *AuthUserUsecase) GenerateTokenForReset(ctx context.Context, email string) (string, string) {
+	timeStamp := fmt.Sprint(time.Now().Unix())
+	data := email + timeStamp + os.Getenv("SECRET_KEY")
+	hash := sha256.New()
+	hash.Write([]byte(data))
+	token := hex.EncodeToString(hash.Sum(nil))
+
+	return token, timeStamp
+}
+
+func (au *AuthUserUsecase) ForgetPassword(ctx context.Context, email string) error {
+	_, err := au.repository.GetUserByEmail(ctx, email)
+	if err != nil {
+		return ErrNoUserWithEmail
+	}
+	token, timeStamp := au.GenerateTokenForReset(ctx, email)
+
+	// send the token to that email
+	from := os.Getenv("FROM")
+	link := fmt.Sprintf("http://localhost:8000/v1/auth/reset/%s/%s/%s", email, timeStamp, token)
+	au.emailService.SendEmail(from, email, fmt.Sprintf("click the link to activate your password %s ", link), "Reset password")
+	return nil
+}
+
+func (au *AuthUserUsecase) ResetPassword(ctx context.Context, email, token, timeStamp, password, newPassword string) error {
+	if au.IsTokenExpired(timeStamp) {
+		return fmt.Errorf("token expired")
+	}
+
+	if !au.IsTokenValied(ctx, token, email) {
+		return fmt.Errorf("invalied token")
+	}
+
+	if password != newPassword {
+		return fmt.Errorf("the passwords have to be identical")
+	}
+	return nil
+}
+
+func (au *AuthUserUsecase) IsTokenExpired(timeStamp string) bool {
+	ts, err := strconv.ParseInt(timeStamp, 10, 64)
+
+	if err != nil {
+		return true
+	}
+	tokenTime := time.Unix(ts, 0)
+	return time.Since(tokenTime) > 1*time.Hour
+}
+
+func (au *AuthUserUsecase) IsTokenValied(ctx context.Context, token, email string) bool {
+	tk, _ := au.GenerateTokenForReset(ctx, email)
+	return tk == token
 }

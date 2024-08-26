@@ -4,7 +4,7 @@ import {
   PostCardResponse,
   GetCardByIdResponse,
 } from "@/types/cardController.Interface";
-const BASE_URL = 'https://bank-dashboard-mih0.onrender.com';
+const BASE_URL = 'https://a2svwallets.onrender.com';
 
 // Extend the user type to include accessToken
 

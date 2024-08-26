@@ -53,6 +53,7 @@ const Page = () => {
   useEffect(() => {
     const fetchSession = async () => {
       try {
+
         const sessionData = (await getSession()) as SessionDataType | null;
         setAccess_token(await Refresh());
         if (sessionData && sessionData.user) {
@@ -69,7 +70,7 @@ const Page = () => {
 
     fetchSession();
   }, [router]);
-  console.log(access_token)
+  console.log("bayba", access_token)
   useEffect(() => {
     const addingData = async () => {
       if (!access_token) return;
@@ -80,6 +81,7 @@ const Page = () => {
       }
     };
     addingData();
+    setLoading(false);
   }, [access_token]);
 
   if (loading) {
@@ -99,10 +101,10 @@ const Page = () => {
 
 
   
-  if (!session) {
-    router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
-    return null;
-  }
+  // if (!session) {
+  //   router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
+  //   return null;
+  // }
 
   const getBackgroundColor = (index: number) => {
     const colors = ['bg-[#FFE0EB]', 'bg-[#E0F7FA]', 'bg-[#FFF9C4]'];

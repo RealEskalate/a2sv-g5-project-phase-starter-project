@@ -427,10 +427,11 @@ func (br *Blogrepository) SearchPosts(ctx context.Context, query string, pagefil
 	// Calculate the total number of pages
 	totalPages := (int(totalCount) + limit - 1) / limit
 
-	// Set up find options with limit and skip for pagination
+	// Set up find options with limit, skip, and sort for pagination
 	findOptions := options.Find()
 	findOptions.SetSkip(int64(skip))
 	findOptions.SetLimit(int64(limit))
+	findOptions.SetSort(bson.D{{"updatedat", -1}}) // Sort by updatedat in descending order
 
 	// Execute the query with the filter and pagination options
 	cursor, err := br.postCollection.Find(ctx, filter, findOptions)

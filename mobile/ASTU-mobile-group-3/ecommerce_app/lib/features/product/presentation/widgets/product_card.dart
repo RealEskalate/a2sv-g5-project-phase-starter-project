@@ -37,49 +37,50 @@ class ProductCard extends StatelessWidget {
             child: SizedBox(
               height: 160,
               width: double.infinity,
-              child: Image.network(
-                imageUrl,
-                loadingBuilder: (
-                  context,
-                  thisChild,
-                  progress,
-                ) {
-                  if (progress == null) {
-                    return thisChild;
-                  } else {
-                    return Container(
-                      height: 160,
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                        color: Color.fromARGB(255, 207, 207, 207),
-                      ),
-                      child: const Stack(children: [
-                        Positioned(
-                          bottom: 10,
-                          right: 10,
-                          child: CircularProgressIndicator(),
-                        ),
-                      ]),
-                    );
-                  }
-                },
-                errorBuilder: (BuildContext context, Object exception,
-                    StackTrace? stackTrace) {
-                  return Container(
-                    height: 160,
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 207, 207, 207),
-                    ),
-                    child: const Stack(children: [
-                      Positioned(
-                        bottom: 10,
-                        right: 10,
-                        child: CircularProgressIndicator(),
-                      ),
-                    ]),
-                  );
-                },
+              child: FadeInImage.assetNetwork(
+                placeholder: 'assets/images/logo.png',
+                image: imageUrl,
+                // loadingBuilder: (
+                //   context,
+                //   thisChild,
+                //   progress,
+                // ) {
+                //   if (progress == null) {
+                //     return thisChild;
+                //   } else {
+                //     return Container(
+                //       height: 160,
+                //       width: double.infinity,
+                //       decoration: const BoxDecoration(
+                //         color: Color.fromARGB(255, 207, 207, 207),
+                //       ),
+                //       child: const Stack(children: [
+                //         Positioned(
+                //           bottom: 10,
+                //           right: 10,
+                //           child: CircularProgressIndicator(),
+                //         ),
+                //       ]),
+                //     );
+                //   }
+                // },
+                // errorBuilder: (BuildContext context, Object exception,
+                //     StackTrace? stackTrace) {
+                //   return Container(
+                //     height: 160,
+                //     width: double.infinity,
+                //     decoration: const BoxDecoration(
+                //       color: Color.fromARGB(255, 207, 207, 207),
+                //     ),
+                //     child: const Stack(children: [
+                //       Positioned(
+                //         bottom: 10,
+                //         right: 10,
+                //         child: CircularProgressIndicator(),
+                //       ),
+                //     ]),
+                //   );
+                // },
                 fit: BoxFit.fitWidth,
               ),
             ),

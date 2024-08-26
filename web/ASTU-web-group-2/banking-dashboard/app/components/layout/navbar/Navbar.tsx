@@ -234,7 +234,7 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
                         width={16}
                         height={16}
                         alt="Logout"
-                        className="flex-shrink-0 rotate-90"
+                        className="flex-shrink-0 rotate-90 md:w-[30px] md:h-[30px]"
                       />
                       <span className="ml-2 text-sm">Logout</span>
                     </button>

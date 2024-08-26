@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"blog_g2/domain"
+	"blog_g2/infrastructure"
 
 	"log"
 
@@ -19,16 +20,18 @@ type BlogController struct {
 	Commentusecase domain.CommentUsecase
 	Dislikeusecase domain.DisLikeUsecase
 	Aiservice      domain.AIService
+	Medcont        infrastructure.MediaUpload
 }
 
 // Blog-controller constructor
-func NewBlogController(Blogmgr domain.BlogUsecase, likemgr domain.LikeUsecase, commentmgr domain.CommentUsecase, dislmgr domain.DisLikeUsecase, aiserv domain.AIService) *BlogController {
+func NewBlogController(Blogmgr domain.BlogUsecase, likemgr domain.LikeUsecase, commentmgr domain.CommentUsecase, dislmgr domain.DisLikeUsecase, aiserv domain.AIService, med infrastructure.MediaUpload) *BlogController {
 	return &BlogController{
 		Blogusecase:    Blogmgr,
 		Likeusecase:    likemgr,
 		Commentusecase: commentmgr,
 		Dislikeusecase: dislmgr,
 		Aiservice:      aiserv,
+		Medcont:        med,
 	}
 
 }

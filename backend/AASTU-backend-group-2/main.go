@@ -21,15 +21,19 @@ func main() {
 
 	likerepo := repositories.NewLikeRepository(client)
 	likeuse := usecase.NewLikeUsecase(likerepo, time.Second*300)
+	likecont := controllers.NewLikeController(likeuse)
 
 	dislrepo := repositories.NewDislikeRepository(client)
 	disluse := usecase.NewDislikeUsecase(dislrepo, time.Second*300)
+	dslcont := controllers.NewDisLikeController(disluse)
 
 	commrepo := repositories.NewCommentRepository(client)
 	commuse := usecase.NewCommentUsecase(commrepo, aiserv, time.Second*300)
 	comcont := controllers.NewCommentController(commuse)
 
-	blogcont := controllers.NewBlogController(bloguse, likeuse, commuse, disluse, aiserv)
+	medup := infrastructure.NewMediaUpload()
+
+	blogcont := controllers.NewBlogController(bloguse, likeuse, commuse, disluse, aiserv, medup)
 
 	userrepo := repositories.NewUserRepository(client)
 	useruse := usecase.NewUserUsecase(userrepo, time.Second*300)
@@ -38,7 +42,7 @@ func main() {
 
 	//the router gateway
 	r := gin.Default()
-	router.SetRouter(r, comcont, blogcont, usercont, oauthController, client)
-	r.Run("127.0.0.1:8080")
+	router.SetRouter(r, comcont, blogcont, usercont, oauthController, client, likecont, dslcont)
+	r.Run()
 
 }

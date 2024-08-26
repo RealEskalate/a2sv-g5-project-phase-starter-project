@@ -63,13 +63,15 @@ const CreditCard = () => {
               </span>
             ))
           ) : token ? (
-            <div className="flex flex-col items-center justify-center h-full text-red-500">
-                  <TbFileSad
-                    className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
-                    strokeWidth={1}
-                  />
-                  <div>Error fetching the recent transactions</div>
-                </div>
+            <div className="max-h-[400px] lg:w-[730px] md:w-[487px] bg-white py-16 rounded-xl flex flex-col justify-center dark:bg-dark dark:border-[1px] dark:border-gray-700">
+              <TbFileSad
+                className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
+                strokeWidth={1}
+              />
+              <span className="mx-auto my-auto md:text-xl text-sm text-red-500 mb-5">
+                {error ? error : "There are no cards for now!"}
+              </span>
+            </div>
           ) : (
             <MyCardsLoad count={3}/>
           )}
@@ -89,13 +91,15 @@ const CreditCard = () => {
             <CardListLoad />
           ) : token ? (
             error ? (
-              <div className="flex flex-col items-center justify-center h-full text-red-500">
-                  <TbFileSad
+              <div className="pr-6 py-32 bg-white max-h-[400px] lg:w-[730px] md:w-[487px] w-[325] flex flex-col justify-center align-middle rounded-xl scrollbar-none dark:bg-dark dark:border-[1px] dark:border-gray-700 ">
+                <TbFileSad
                     className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
                     strokeWidth={1}
                   />
-                  <div>Error fetching the recent transactions</div>
-                </div>
+                <span className="mx-auto my-auto md:text-xl text-sm text-red-500">
+                  {error}
+                </span>
+              </div>
             ) : (
               <CardList card_list={cards} />
             )
@@ -106,13 +110,13 @@ const CreditCard = () => {
       </div>
 
       <div className="flex flex-col md:flex-row w-[80%] mb-16">
-        <div className="md:mb-2 mb-0 md:mr-10">
+        <div className="md:mb-2 mb-0 md:mr-5 lg:mr-10">
           <h1 className="text-[20px] mb-3 font-bold text-[#333B69] dark:text-blue-500">Add New Card</h1>
           <AddNewCard token={token} />
         </div>
 
         <div>
-          <h1 className="text-[19px] mb-3 font-bold text-[#333B69] dark:text-blue-500">Card Setting</h1>
+          <h1 className="text-[19px] mb-3 font-bold text-[#333B69] md:mt-0 mt-6 dark:text-blue-500">Card Setting</h1>
           <CardSetting />
         </div>
       </div>

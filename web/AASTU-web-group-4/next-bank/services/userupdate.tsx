@@ -1,21 +1,18 @@
 import Cookie from "js-cookie";
 
-const API_BASE_URL = "https://web-team-g4.onrender.com";
+const API_BASE_URL = "https://next-bank.onrender.com";
 const token = Cookie.get("accessToken");
 
 // Update User Details - PUT Request
 export const updateUserDetails = async (userData: any) => {
   try {
-    const response = await fetch(
-      "https://web-team-g4.onrender.com/user/update",
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      }
-    );
+    const response = await fetch("https://next-bank.onrender.com/user/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(userData),
+    });
 
     if (!response.ok) {
       throw new Error("Failed to update user details");
@@ -33,7 +30,7 @@ export const updateUserDetails = async (userData: any) => {
 export const updatePreference = async (userData: any) => {
   try {
     const response = await fetch(
-      "https://web-team-g4.onrender.com/user/update-preference",
+      "https://next-bank.onrender.com/user/update-preference",
       {
         method: "PUT",
         headers: {
@@ -59,7 +56,7 @@ export const updatePreference = async (userData: any) => {
 export const fetchUserDetails = async (username: string) => {
   try {
     const response = await fetch(
-      `https://web-team-g4.onrender.com/user/{username}`,
+      `https://next-bank.onrender.com/user/{username}`,
       {
         method: "GET",
         headers: {
@@ -84,7 +81,7 @@ export const fetchUserDetails = async (username: string) => {
 export const randomInvestmentData = async () => {
   try {
     const response = await fetch(
-      `https://web-team-g4.onrender.com/user/random-investment-data?years=5&months=8`,
+      `https://next-bank.onrender.com/user/random-investment-data?years=5&months=8`,
       {
         method: "GET",
         headers: {
@@ -109,7 +106,7 @@ export const randomInvestmentData = async () => {
 export const currentuser = async () => {
   try {
     const response = await fetch(
-      `https://web-team-g4.onrender.com/user/current`,
+      `https://next-bank.onrender.com/user/current`,
       {
         method: "GET",
         headers: {

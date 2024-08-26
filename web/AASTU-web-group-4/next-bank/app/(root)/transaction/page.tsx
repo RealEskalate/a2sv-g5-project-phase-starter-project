@@ -97,9 +97,35 @@ const Transaction: React.FC = () => {
       {/* Mobile Layout */}
       <div className="lg:hidden pt-10">
         <h1 className="text-2xl font-bold mb-4 dark:text-blue-500">My Cards</h1>
-        <div className="mb-8">
-          <SlidingCards />
-        </div>
+        {loading ? (
+          <MyCardsLoad count={2}/>
+        ) : Array.isArray(cards) && cards.length > 0 ? (
+          cards.map((card: any, index: number) => (
+            <div key={index} className="p-1 flex gap-1">
+              <ResponsiveCreditCard
+                backgroundColor={
+                  index % 2 === 0 ? colors.blue : colors.white
+                }
+                balance={card.balance}
+                cardHolder={card.cardHolder}
+                expiryDate={card.expiryDate.slice(0, 10)}
+                cardNumber={card.semiCardNumber}
+              />
+            </div>
+          ))
+        ) : token ? (
+          <div className="w-screen bg-white py-16 rounded-xl flex flex-col justify-center dark:bg-dark dark:border-[1px] dark:border-gray-700">
+            <TbFileSad
+              className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
+              strokeWidth={1}
+            />
+            <span className="mx-auto my-auto md:text-xl text-sm text-[#993d4b] mb-5">
+              {error ? error : "There are no cards for now!"}
+            </span>
+          </div>
+        ) : (
+          <MyCardsLoad count={2} />
+        )}
         <h1 className="text-2xl font-bold mb-4 dark:text-blue-500">
           My Expenses
         </h1>

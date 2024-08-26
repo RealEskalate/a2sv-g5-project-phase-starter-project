@@ -5,15 +5,19 @@ import 'package:http/http.dart' as http;
 
 import '../../../../../core/constants/constants.dart';
 import '../../../../../core/error/exception.dart';
+import '../../../../../core/error/failure.dart';
 import '../../model/chat_model.dart';
 import '../../model/message_model.dart';
 import 'remote_data_source.dart';
 
-class RemoteDataSourceImpl extends RemoteDataSource{
+import 'socket_service.dart';
+
+class ChatRemoteDataSourceImpl extends ChatRemoteDataSource{
 
   final http.Client client;
   final String accessToken;
-  RemoteDataSourceImpl(this.accessToken, {required this.client});
+  final SocketService socketService;
+  ChatRemoteDataSourceImpl({required this.accessToken, required this.socketService, required this.client});
 
   @override
   Future<bool> deleteChat(String chatId) async{
@@ -134,8 +138,13 @@ Future<List<MessageModel>> getChatMessages(String chatId) async{
   }
 
   @override
-  Future<void> sendMessage(String chatId, String message, String type) {
-    
-    throw UnimplementedError();
+  Future<Either<Failure,void>> sendMessage(String chatId, String message, String type) async{
+     try {
+      socketService.connectAndListen();
+       final res = socketService.sendMessage(chatId, message, type);
+       return Right(res);
+     } catch (e) {
+       return Left(ServerFailure(message));
+     }
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';

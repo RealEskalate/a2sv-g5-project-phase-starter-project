@@ -74,7 +74,7 @@ class ChatHomeScreen extends StatelessWidget {
                   },
                   title: const Text('Alex Lindrson'),
                   subtitle: const Text('How are you?'),
-                  leading: showUser(),
+                  leading: showUser(onClicked: (){}),
                   trailing: Column(
                     children: [
                       const Text('2 min ago'),

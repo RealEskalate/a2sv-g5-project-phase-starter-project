@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                       child: CircularProgressIndicator(),
                     );
                   } else if (state is LoadedAllProductsState) {
-                    if (state.products.length == 0) {
+                    if (state.products.isEmpty) {
                       return const Center(
                         child: CustomText(
                           text: 'No product avalible. add new product',

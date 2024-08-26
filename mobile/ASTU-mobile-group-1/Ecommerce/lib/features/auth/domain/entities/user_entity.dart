@@ -6,17 +6,16 @@ class UserEntity extends Equatable {
   final String id;
   final String name;
   final String email;
-
   const UserEntity({
     required this.id,
     required this.name,
-    required this.email,
+    required this.email,  String? accessToken,
   });
   factory UserEntity.fromModel(UserModel model) {
     return UserEntity(
       id: model.id,
       name: model.name,
-      email: model.email,
+      email: model.email, accessToken: '',
     );
   }
 

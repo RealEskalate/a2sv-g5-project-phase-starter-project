@@ -3,10 +3,10 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/profile_photo.dart';
 import '../../../auth/presentation/pages/pages.dart';
 
-Widget showUser({  VoidCallback? onClicked}){
+Widget showUser({  required VoidCallback onClicked}){
   return InkWell(
     onTap: () {
-      onClicked ?? () {};
+      onClicked();
     },
     child: CircleAvatar(
       minRadius: 30,

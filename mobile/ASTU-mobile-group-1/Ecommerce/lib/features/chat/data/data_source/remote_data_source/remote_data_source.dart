@@ -1,11 +1,12 @@
 
+
 import 'package:dartz/dartz.dart';
 
 import '../../../../../core/error/failure.dart';
 import '../../model/chat_model.dart';
 import '../../model/message_model.dart';
 
-abstract class RemoteDataSource {
+abstract class ChatRemoteDataSource {
     ///this will take chat recievers id and then initiate the chat and then return chat id
     ///if it already created just it will return chat id
     Future<ChatModel>initiateChat(String recieverId);
@@ -21,7 +22,7 @@ abstract class RemoteDataSource {
     Future<List<ChatModel>> getAllChats();
 
     ///used to send message from sender to server and the server will deliver to reciever
-    Future<void> sendMessage(String chatId, String message, String type);
+    Future<Either<Failure,void>> sendMessage(String chatId, String message, String type);
 
     ///this to always listen server to get new message, so it have to stream
     Future<List<MessageModel>> getChatMessages(String chatId);

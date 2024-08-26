@@ -9,7 +9,7 @@ func (uc *UserUsecase) GetMyProfile(userID string) (domain.User, *domain.CustomE
 	if err != nil {
 		return domain.User{}, domain.ErrNotFound
 	}
-	return user, nil
+	return user, &domain.CustomError{}
 }
 
 func (uc *UserUsecase) GetUsers() ([]domain.User, *domain.CustomError) {

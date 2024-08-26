@@ -1,4 +1,15 @@
 import 'package:ecommerce_app_ca_tdd/core/network/network_info.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/data/data_sources/remote_data_source/remote_data_source.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/data/repositores/chat_repository.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/repository/repository.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/usecases/delete_chat_usecase.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/usecases/get_chat_by_id_usecase.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/usecases/get_chats_usecase.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/usecases/get_messages_usecase.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/usecases/initiate_chat_usecase.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/usecases/send.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_bloc.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/message_bloc/message_bloc_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/data_sources/local_data_source/local_data_source.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/data_sources/remote_data_source/remote_data_source.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/repositories/product_repository_impl.dart';
@@ -45,7 +56,7 @@ Future<void> init() async {
   sl.registerLazySingleton<ProductRemoteDataSource>(()=> ProductRemoteDataSourceImpl(client: sl()));
   sl.registerLazySingleton<ProductLocalDataSource>(()=> ProductLocalDataSourceImpl(sharedPreferences: sl()));
   // Auth Data Sources
-  sl.registerLazySingleton<UserRemoteDataSource>(()=> UserRemoteDataSourceImpl(client: sl()));
+  sl.registerLazySingleton<ChatRemoteDataSource>(()=> ChatRemoteDataSourceImpl(client: sl()));
 
   //! Features
   // Repositories
@@ -53,6 +64,8 @@ Future<void> init() async {
   sl.registerLazySingleton<ProductRepository>(()=> ProductRepositoryImpl(ProductRemoteDataSourceImpl(client: sl()),ProductLocalDataSourceImpl(sharedPreferences:  sl()),NetworkInfoImpl(sl())));
   // Auth Repositories
   sl.registerLazySingleton<UsersRepository>(()=> UserRepositoryImpl(userRemoteDataSource: UserRemoteDataSourceImpl(client: sl())));
+  // Chat Repo
+  sl.registerLazySingleton<ChatRepository>(()=>ChatRepositoryImpl(ChatRemoteDataSourceImpl(client: sl()), NetworkInfoImpl(sl())));
 
 
 
@@ -67,6 +80,15 @@ Future<void> init() async {
   sl.registerLazySingleton<LoginUsecase>(()=> LoginUsecase(sl()));
   sl.registerLazySingleton<GetUserInfo>(()=> GetUserInfo(sl()));
   // sl.registerLazySingleton(()=> Up)
+
+  // Chat Use Cases
+  sl.registerLazySingleton<DeleteChatUsecase>(()=>DeleteChatUsecase(sl()));
+  sl.registerLazySingleton<GetChatByIdUsecase>(()=>GetChatByIdUsecase(sl()));
+  sl.registerLazySingleton<GetChatsUsecase>(()=>GetChatsUsecase(sl()));
+  sl.registerLazySingleton<GetMessagesUsecase>(()=>GetMessagesUsecase(sl()));
+  sl.registerLazySingleton<InitiateChatUsecase>(()=>InitiateChatUsecase(sl()));
+  sl.registerLazySingleton<SendUseCase>(()=>SendUseCase(sl()));
+  
 
     //BLoc
   sl.registerFactory(()=> HomeBloc(
@@ -83,6 +105,10 @@ Future<void> init() async {
     sl.registerFactory(()=> SignUpBloc(RegisterUser(sl())));
     sl.registerFactory(()=> LoginBloc(LoginUsecase(sl())));
     sl.registerFactory(()=> GetUserBloc(GetUserInfo(sl())));
+
+    // Chat Blocs
+    sl.registerFactory(()=> ChatBloc(GetChatsUsecase(sl()),InitiateChatUsecase(sl())));
+    sl.registerFactory(()=> MessageBloc(GetMessagesUsecase(sl()), SendUseCase(sl())));
   
   //!COre
 

@@ -317,7 +317,7 @@ class _DetailsState extends State<DetailsPage> {
                                         backgroundColor: Color(0xff3F51F3),
                                       ),
                                         onPressed: (){
-                                          Navigator.pushNamed(context, '/chatPage', arguments: widget.item.sellerId);
+                                          Navigator.pushNamed(context, '/chatPage', arguments: widget.item.sellerId,);
                                         },
                                         child: Row(
                                           children: [

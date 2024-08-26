@@ -14,7 +14,7 @@ class UserModel extends UserEntity{
       id : json['_id'],
       name: json['name'],
       email: json['email'],
-      password: json['password'],
+      password: json['password']?? '',
       
     );
   }
@@ -24,7 +24,7 @@ class UserModel extends UserEntity{
     return {
       'name': name,
       'email': email,
-      'password': password,
+      'password': password ?? '',
       // 'access_token': '',
     };
   }

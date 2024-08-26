@@ -1,55 +1,27 @@
-import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/usecases/get_messages_usecase.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/usecases/send.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_event.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/message_bloc/message_bloc_event.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/message_bloc/message_bloc_state.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-// import '../../../domain/entities/chat.dart';
-// import '../../../domain/entities/message.dart';
-// import '../../../domain/usecases/get_chat_messages.dart';
-// import '../../../domain/usecases/send_message.dart';
-
 class MessageBloc extends Bloc<MessageEvent, MessageState> {
-  final GetChatMessages getChatMessages;
-  final SendMessage sendMessage;
+  final GetMessagesUsecase getChatMessages;
+  final SendUseCase sendMessage;
+  MessageBloc(this.getChatMessages,this.sendMessage) : super(MessageInitial()){
+  on<MessageConnection> ((event,emit) async{
+    emit(MessageLoadInProgress());
+    var result = await getChatMessages(event.chat.chatid);
+    result.fold((l)=> emit(MessageLoadFailure(l.message)), (r)=>emit(MessageLoadSuccess(r)));
 
-  MessageBloc({
-    required this.getChatMessages,
-    required this.sendMessage,
-  }) : super(const MessageInitial([])) {
-    on<MessageSocketConnectionRequested>(_onLoadMessageRequested,
-        transformer: restartable());
-    on<MessageSent>(_onSendMessageRequested);
-  }
+  });
+  on<MessageSent>((event,emit) async{
+    emit(MessageLoadInProgress());
+    var result = await sendMessage(SendUseCaseParams(event.chatId,event.type,event.content));
+    result.fold((l)=> emit(MessageSentFailure(l.message)), (r)=>emit(MessageSentSuccess(r.toString())));
+   
 
-  Future<void> _onLoadMessageRequested(MessageSocketConnectionRequested event,
-      Emitter<MessageState> emit) async {
-    emit(const MessagesMessageLoadInProgress([]));
-
-    final messages =
-        await getChatMessages(GetChatMessagesParams(event.chat.id));
-
-    await emit.forEach(messages, onData: (data) {
-      final result = data.fold((l) {
-        return MessageLoadFailure([...state.messages]);
-      }, (r) {
-        if (state.messages.isNotEmpty &&
-            state.messages[state.messages.length - 1] == r) {
-          return MessageLoadSuccess(state.messages);
-        }
-        return MessageLoadSuccess([...state.messages, r]);
-      });
-
-      return result;
-    });
-  }
-
-  Future<void> _onSendMessageRequested(
-      MessageSent event, Emitter<MessageState> emit) async {
-    emit(MessagesMessageLoadInProgress(state.messages));
-
-    final result = await sendMessage(
-        SendMessageParams(event.chat, event.content, event.type));
-
-    emit(result.fold((l) => MessageSentFailure(state.messages),
-        (r) => MessageSentSuccess(state.messages)));
+  });
   }
 }

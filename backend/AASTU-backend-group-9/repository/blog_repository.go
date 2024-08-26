@@ -10,8 +10,6 @@ import (
 	"blog/database"
 	"errors"
 
-	"fmt"
-
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -31,32 +29,47 @@ func NewBlogRepository(db database.Database, collection string) domain.BlogRepos
 }
 
 // CreateBlog inserts a new blog into the MongoDB collection.
-func (r *blogRepository) CreateBlog(ctx context.Context, blog *domain.Blog) error {
+func (r *blogRepository) CreateBlog(ctx context.Context, blog *domain.Blog) *domain.Error {
 	collection := r.database.Collection(r.collection)
 	_, err := collection.InsertOne(ctx, blog)
 
-	return err
+	if err != nil {
+		return &domain.Error{
+			StatusCode: 500,
+			Message:    "failed to create blog",
+			Err:        err}
+	}
+
+	return nil
 }
 
 // GetBlogByID fetches a blog by its ID from the MongoDB collection.
-func (r *blogRepository) GetBlogByID(ctx context.Context, id primitive.ObjectID) (*domain.Blog, error) {
+func (r *blogRepository) GetBlogByID(ctx context.Context, id primitive.ObjectID) (*domain.Blog, *domain.Error) {
 	var blog domain.Blog
 	collection := r.database.Collection(r.collection)
 
 	err := collection.FindOne(ctx, bson.M{"_id": id}).Decode(&blog)
 	if err != nil {
-		return nil, err
+		return nil, &domain.Error{
+			StatusCode: 404,
+			Message:    "blog not found",
+			Err:        err}
 	}
 	return &blog, nil
+
 }
 
 // GetAllBlogs fetches all blogs with pagination and sorting.
-func (r *blogRepository) GetAllBlogs(ctx context.Context, page, limit int, sortBy string) ([]*domain.Blog, error) {
+func (r *blogRepository) GetAllBlogs(ctx context.Context, page, limit int, sortBy string) ([]*domain.Blog, *domain.Error) {
 	var blogs []*domain.Blog
 
 	// Validate pagination inputs
 	if page < 1 || limit < 1 {
-		return nil, fmt.Errorf("invalid pagination parameters: page and limit must be greater than 0")
+		return nil, &domain.Error{
+			StatusCode: 400,
+			Message:    "invalid page or limit value",
+			Err:        nil}
+
 	}
 
 	// Determine the sort field based on the input
@@ -80,7 +93,11 @@ func (r *blogRepository) GetAllBlogs(ctx context.Context, page, limit int, sortB
 	// Execute the query to retrieve the blogs
 	cursor, err := collection.Find(ctx, bson.M{}, findOptions)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch blogs: %w", err)
+		return nil, &domain.Error{
+			StatusCode: 500,
+			Message:    "failed to fetch blogs",
+			Err:        err}
+
 	}
 	defer cursor.Close(ctx)
 
@@ -88,36 +105,60 @@ func (r *blogRepository) GetAllBlogs(ctx context.Context, page, limit int, sortB
 	for cursor.Next(ctx) {
 		var blog domain.Blog
 		if err := cursor.Decode(&blog); err != nil {
-			return nil, fmt.Errorf("failed to decode blog: %w", err)
+			return nil, &domain.Error{
+				StatusCode: 500,
+				Message:    "failed to decode blog",
+				Err:        err}
+
 		}
 		blogs = append(blogs, &blog)
 	}
 
 	// Check for any errors encountered during the iteration
 	if cursor == nil {
-		return nil, fmt.Errorf("cursor iteration error: %w", err)
+		return nil, &domain.Error{
+			StatusCode: 500,
+			Message:    "failed to iterate blogs",
+			Err:        err}
+
 	}
 
 	return blogs, nil
 }
 
 // UpdateBlog updates a blog in the MongoDB collection.
-func (r *blogRepository) UpdateBlog(ctx context.Context, blog *domain.Blog) error {
+func (r *blogRepository) UpdateBlog(ctx context.Context, blog *domain.Blog) *domain.Error {
 	collection := r.database.Collection(r.collection)
 	_, err := collection.UpdateOne(ctx, bson.M{"_id": blog.ID}, bson.M{"$set": blog})
-	return err
+
+	if err != nil {
+		return &domain.Error{
+			StatusCode: 500,
+			Message:    "failed to update blog",
+			Err:        err}
+	}
+	return nil
+
 }
 
 // DeleteBlog deletes a blog by its ID from the MongoDB collection.
-func (r *blogRepository) DeleteBlog(ctx context.Context, id primitive.ObjectID) error {
+func (r *blogRepository) DeleteBlog(ctx context.Context, id primitive.ObjectID) *domain.Error {
 	collection := r.database.Collection(r.collection)
 	_, err := collection.DeleteOne(ctx, bson.M{"_id": id})
-	return err
+
+	if err != nil {
+		return &domain.Error{
+			StatusCode: 500,
+			Message:    "failed to delete blog",
+			Err:        err}
+	}
+
+	return nil
 }
 
 // Repositories/blog_repository.go
 // SearchBlogs searches for blogs based on query and filters.
-func (r *blogRepository) SearchBlogs(ctx context.Context, title string, author string) (*[]domain.Blog, error) {
+func (r *blogRepository) SearchBlogs(ctx context.Context, title string, author string) (*[]domain.Blog, *domain.Error) {
 	filter := bson.M{}
 
 	// Add search filters based on the provided title and author
@@ -132,20 +173,28 @@ func (r *blogRepository) SearchBlogs(ctx context.Context, title string, author s
 	collection := r.database.Collection(r.collection)
 	cursor, err := collection.Find(context.Background(), filter)
 	if err != nil {
-		return nil, err
+		return nil, &domain.Error{
+			StatusCode: 500,
+			Message:    "failed to search blogs",
+			Err:        err}
+
 	}
 	defer cursor.Close(context.Background())
 
 	// Decode the cursor results into the blogs slice
 	if err = cursor.All(context.Background(), &blogs); err != nil {
-		return nil, err
+		return nil, &domain.Error{
+			StatusCode: 500,
+			Message:    "failed to decode blogs",
+			Err:        err}
+
 	}
 
 	return &blogs, nil
 
 }
 
-func (r *blogRepository) FilterBlogs(ctx context.Context, popularity string, tags []string, startDate string, endDate string) ([]*domain.Blog, error) {
+func (r *blogRepository) FilterBlogs(ctx context.Context, popularity string, tags []string, startDate string, endDate string) ([]*domain.Blog, *domain.Error) {
 	var blogs []*domain.Blog
 
 	// Define a filter without conditions initially
@@ -159,7 +208,11 @@ func (r *blogRepository) FilterBlogs(ctx context.Context, popularity string, tag
 	if startDate != "" {
 		startTime, err := time.Parse(time.RFC3339, startDate)
 		if err != nil {
-			return nil, fmt.Errorf("invalid startDate format")
+			return nil, &domain.Error{
+				StatusCode: 400,
+				Message:    "invalid startDate format",
+				Err:        err}
+
 		}
 		filter["created_at"] = bson.M{"$gte": startTime}
 	}
@@ -167,7 +220,11 @@ func (r *blogRepository) FilterBlogs(ctx context.Context, popularity string, tag
 	if endDate != "" {
 		endTime, err := time.Parse(time.RFC3339, endDate)
 		if err != nil {
-			return nil, fmt.Errorf("invalid endDate format")
+			return nil, &domain.Error{
+				StatusCode: 400,
+				Message:    "invalid endDate format",
+				Err:        err}
+
 		}
 		if existingFilter, ok := filter["created_at"].(bson.M); ok {
 			existingFilter["$lte"] = endTime
@@ -197,14 +254,22 @@ func (r *blogRepository) FilterBlogs(ctx context.Context, popularity string, tag
 	collection := r.database.Collection(r.collection)
 	cursor, err := collection.Find(ctx, filter, options.Find().SetSort(sortOptions))
 	if err != nil {
-		return nil, err
+		return nil, &domain.Error{
+			StatusCode: 500,
+			Message:    "failed to filter blogs",
+			Err:        err}
+
 	}
 	defer cursor.Close(ctx)
 
 	for cursor.Next(ctx) {
 		var blog domain.Blog
 		if err := cursor.Decode(&blog); err != nil {
-			return nil, err
+			return nil, &domain.Error{
+				StatusCode: 500,
+				Message:    "failed to decode blog",
+				Err:        err}
+
 		}
 		blogs = append(blogs, &blog)
 	}
@@ -212,34 +277,58 @@ func (r *blogRepository) FilterBlogs(ctx context.Context, popularity string, tag
 	return blogs, nil
 }
 
-func (r *blogRepository) AddComment(ctx context.Context, id primitive.ObjectID, comment *domain.Comment) error {
+func (r *blogRepository) AddComment(ctx context.Context, id primitive.ObjectID, comment *domain.Comment) *domain.Error {
 	filter := bson.M{"_id": id}
 	update := bson.M{"$push": bson.M{"comments": comment}}
 	_, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
-	return err
+	if err != nil {
+		return &domain.Error{
+			StatusCode: 500,
+			Message:    "failed to add comment",
+			Err:        err}
+	}
+	return nil
 }
 
-func (r *blogRepository) HasUserDisliked(ctx context.Context, id primitive.ObjectID, userID string) (bool, error) {
+func (r *blogRepository) HasUserDisliked(ctx context.Context, id primitive.ObjectID, userID string) (bool, *domain.Error) {
 	filter := bson.M{"_id": id, "dislikes": userID}
 	count, err := r.database.Collection(r.collection).CountDocuments(ctx, filter)
-	return count > 0, err
+	if err != nil {
+		return false, &domain.Error{
+			StatusCode: 500,
+			Message:    "failed to check user dislike",
+			Err:        err}
+	}
+	return count > 0, nil
+
 }
 
-func (r *blogRepository) IncrementPopularity(ctx context.Context, id primitive.ObjectID, metric string) error {
+func (r *blogRepository) IncrementPopularity(ctx context.Context, id primitive.ObjectID, metric string) *domain.Error {
 	filter := bson.M{"_id": id}
 	update := bson.M{"$inc": bson.M{metric: 1}}
 	_, err := r.database.Collection(r.collection).UpdateOne(ctx, filter, update)
-	return err
+	if err != nil {
+		return &domain.Error{
+			StatusCode: 500,
+			Message:    "failed to increment popularity",
+			Err:        err}
+	}
+	return nil
+
 }
 
-func (r *blogRepository) DecrementPopularity(ctx context.Context, postID primitive.ObjectID, metric string) error {
+func (r *blogRepository) DecrementPopularity(ctx context.Context, postID primitive.ObjectID, metric string) *domain.Error {
 	collection := r.database.Collection(r.collection)
 
 	// Find the current value of the metric
 	var result bson.M
 	err := collection.FindOne(ctx, bson.M{"_id": postID}).Decode(&result)
 	if err != nil {
-		return err
+		return &domain.Error{
+			StatusCode: 500,
+			Message:    "failed to fetch post",
+			Err:        err}
+
 	}
 
 	// Handle the value according to its type
@@ -249,7 +338,11 @@ func (r *blogRepository) DecrementPopularity(ctx context.Context, postID primiti
 		if intValue, ok := result[metric].(int); ok {
 			currentValue = int32(intValue)
 		} else {
-			return errors.New("unsupported type for popularity metric")
+			return &domain.Error{
+				StatusCode: 500,
+				Message:    "invalid metric type",
+				Err:        errors.New("invalid metric type")}
+
 		}
 	}
 
@@ -260,7 +353,11 @@ func (r *blogRepository) DecrementPopularity(ctx context.Context, postID primiti
 		// Update the metric in the database
 		_, err = collection.UpdateOne(ctx, bson.M{"_id": postID}, bson.M{"$set": bson.M{metric: newValue}})
 		if err != nil {
-			return err
+			return &domain.Error{
+				StatusCode: 500,
+				Message:    "failed to decrement popularity",
+				Err:        err}
+
 		}
 	}
 

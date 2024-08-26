@@ -88,6 +88,10 @@ func (l *LoginUseCase) UpdatePassword(c context.Context, req domain.ChangePasswo
     if err != nil {
         return err
     }
+    _, err = l.UserRepository.UpdateToken(ctx, "", "", userID)
+    if err != nil {
+        return err
+    }
 
     return nil
 }

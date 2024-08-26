@@ -66,7 +66,7 @@ func AuthMiddleWare(accessTokenSecret string) gin.HandlerFunc {
 			return
 		}
 
-		c.Set("AuthorizedUser", &domain.AuthenticatedUser{
+		c.Set("AuthenticatedUser", &domain.AuthenticatedUser{
 			Role : role,
 			Email : email,
 			UserID : userID,

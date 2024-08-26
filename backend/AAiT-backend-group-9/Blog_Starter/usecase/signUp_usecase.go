@@ -1,7 +1,9 @@
 package usecase
 
 import (
+	"Blog_Starter/config"
 	"Blog_Starter/domain"
+	"Blog_Starter/utils"
 	"context"
 	"errors"
 	"strings"
@@ -12,15 +14,20 @@ import (
 )
 
 type SignupUsecase struct {
-	userRepo domain.UserRepository
+	userRepo       domain.UserRepository
+	TokenManager   utils.TokenManager
+	OAuthManager   utils.OAuthManager
 	contextTimeout time.Duration
+	Env            *config.Env
 }
 
-func NewSignUpUsecase(userRepo domain.UserRepository, timeout time.Duration) domain.SignupUsecase {
+func NewSignUpUsecase(userRepo domain.UserRepository, tokenManager utils.TokenManager, oauthManager utils.OAuthManager, env *config.Env, timeout time.Duration) domain.SignupUsecase {
 	return &SignupUsecase{
-		userRepo: userRepo,
+		userRepo:       userRepo,
+		TokenManager:   tokenManager,
+		OAuthManager:   oauthManager,
+		Env:            env,
 		contextTimeout: timeout,
-		
 	}
 }
 
@@ -28,8 +35,7 @@ func NewSignUpUsecase(userRepo domain.UserRepository, timeout time.Duration) dom
 func (s *SignupUsecase) CreateUser(c context.Context, user *domain.UserSignUp) (*domain.User, error) {
 	ctx, cancel := context.WithTimeout(c, s.contextTimeout)
 	defer cancel()
-	
-	//TODO: validation check
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
@@ -106,17 +112,77 @@ func (s *SignupUsecase) VerifyEmail(c context.Context, req *domain.VerifyEmailRe
 func (s *SignupUsecase) ResendOTP(c context.Context, req *domain.ResendOTPRequest) error {
 	ctx, cancel := context.WithTimeout(c, s.contextTimeout)
 	defer cancel()
-	
+
 	user, err := s.userRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
 		return err
 	}
 
 	if user.IsActivated {
-		return errors.New( "failed to resend otp. User account already activated")
+		return errors.New("failed to resend otp. User account already activated")
 	}
 
 	return nil
 }
 
+// CreateTokens implements domain.SignupUsecase.
+func (s *SignupUsecase) CreateTokens(c context.Context, user *domain.User) (*domain.TokenResponse, error) {
+	ctx, cancel := context.WithTimeout(c, s.contextTimeout)
+	defer cancel()
 
+	accessToken, err := s.TokenManager.CreateAccessToken(user, s.Env.AccessTokenSecret, s.Env.AccessTokenExpiryHour)
+	if err != nil {
+		return nil, err
+	}
+	refreshToken, err := s.TokenManager.CreateRefreshToken(user, s.Env.RefreshTokenSecret, s.Env.RefreshTokenExpiryHour)
+	if err != nil {
+		return nil, err
+	}
+
+	userID := user.UserID.Hex()
+	_, err = s.userRepo.UpdateToken(ctx, accessToken, refreshToken, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.TokenResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
+}
+
+func (s *SignupUsecase) HandleFederatedSignup(c context.Context, token string) (*domain.User, error) {
+	// Verify the token with the federated identity provider (e.g., Google)
+	userInfo, err := s.OAuthManager.VerifyFederatedToken(token, s.Env.GoogleClientID)
+	if err != nil {
+		return nil, err
+	}
+
+	userInfo.Email = strings.ToLower(userInfo.Email)
+
+	// Check if the user already exists in the database
+	existingUser, err := s.userRepo.GetUserByEmail(c, userInfo.Email)
+	if err != nil {
+		// User doesn't exist, create a new user
+		newUser := domain.User{
+			UserID:         primitive.NewObjectID(),
+			Name:           userInfo.Name,
+			Username:       userInfo.Name, // Set a default username or customize based on your application
+			Email:          userInfo.Email,
+			Password:       "", // You may leave this empty or handle it differently for federated signup
+			CreatedAt:      time.Now(),
+			IsActivated:    true,                   // Assuming the user is activated upon federated signup
+			ProfilePicture: userInfo.ProfilePicUrl, // Assuming the federated provider provides a profile picture URL
+		}
+
+		// Save the new user to the database
+		_, err := s.userRepo.CreateUser(c, &newUser)
+		if err != nil {
+			return nil, err
+		}
+
+		return &newUser, nil
+	}
+
+	return existingUser, nil
+}

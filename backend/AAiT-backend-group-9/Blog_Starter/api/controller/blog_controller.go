@@ -30,6 +30,15 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
         })
         return
     }
+    user, err := utils.CheckUser(c)
+    if err != nil {
+        c.JSON(http.StatusUnauthorized, domain.Response{
+            Success: false,
+            Message: err.Error(),
+        })
+        return
+    }
+    blog.UserID = user.UserID
 
     blogModel, err := bc.blogUseCase.CreateBlog(c, &blog)
     if err != nil {

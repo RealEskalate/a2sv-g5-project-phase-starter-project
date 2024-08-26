@@ -5,7 +5,9 @@ import (
 	"Blog_Starter/utils"
 	"context"
 	"errors"
+	"fmt"
 	"time"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -38,6 +40,7 @@ func (uc *BlogUseCase) CreateBlog(c context.Context, blog *domain.BlogCreate) (*
 	// check the user existence
 	user, err := uc.userRepo.GetUserByID(ctx, blog.UserID)
 	if err != nil {
+		fmt.Printf("error: %v\n", blog.UserID)
 		return nil, errors.New("user not found")
 	}
 
@@ -52,6 +55,7 @@ func (uc *BlogUseCase) CreateBlog(c context.Context, blog *domain.BlogCreate) (*
 		Content: blog.Content,
 		Tags:    blog.Tags,
 		Author:  user.Username,
+		CreatedAt: time.Now(),
 	}
 	return uc.blogRepo.CreateBlog(ctx, blogModel)
 }
@@ -125,6 +129,7 @@ func (uc *BlogUseCase) UpdateBlog(c context.Context, blog *domain.BlogUpdate, bl
 		Title:   blog.Title,
 		Content: blog.Content,
 		Tags:    blog.Tags,
+		UpdatedAt: time.Now(),
 	}
 	newUpdatedBlog, err := uc.blogRepo.UpdateBlog(ctx, updatedBlog, blogID)
 	if err != nil {
@@ -154,7 +159,7 @@ func (uc *BlogUseCase) DeleteBlog(c context.Context, blogID string, userId strin
 	}
 
 	if existedBlog.UserID != blogUserId && role != "admin" && role != "superAdmin" {
-		return errors.New("user is not the owner of the blog")
+		return errors.New("user is not the owner of the blog, unauthorized to delete blog")
 	}
 	uc.cacheServ.Delete(blogID)
 

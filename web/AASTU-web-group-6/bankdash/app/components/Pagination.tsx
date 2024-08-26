@@ -5,7 +5,7 @@ const Pagination = ({
   updatePage,
   start,
 }: {
-  updatePage: number;
+  updatePage: (newPage: number) => void;
   start: boolean;
 }) => {
   const [page, setPage] = useState(0);

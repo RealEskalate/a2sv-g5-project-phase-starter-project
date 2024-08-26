@@ -94,11 +94,12 @@ const SignUpForm = () => {
           Welcome to Bank <span className="text-[#FFDD00]">Dash.</span>
         </h1>
         <div className="sub font-normal text-base text-white opacity-80">
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor "
+          &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor &quot;
         </div>
+
         <div className="flex w-full gap-4 mt-6">
-          <ProgressComp />
+          <ProgressComp currentStep={step} />
           <div className="cont flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <div className="title text-white text-xl font-medium">Step-1</div>
@@ -508,15 +509,16 @@ const SignUpForm = () => {
             <button
               type="submit"
               onClick={() => {
+                handleSubmit(onSubmit);
                 setFlag(!flag);
               }}
-              disabled={flag}
+              // disabled={flag}
               className=" flex gap-3 items-center bg-[#1814F3] text-white px-6 py-3 rounded-md"
             >
-              <FontAwesomeIcon
+              {/* <FontAwesomeIcon
                 icon={faSpinner}
                 className={flag ? "visible text-2xl animate-spin" : "hidden"}
-              />
+              /> */}
               Submit
             </button>
           )}

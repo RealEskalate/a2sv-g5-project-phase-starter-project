@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import LoginValue from "@/types/LoginValue";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 const LoginForm = () => {
   const [error, setError] = useState("");
@@ -20,18 +22,19 @@ const LoginForm = () => {
   const onSubmit = async (data: LoginValue) => {
     setLoading(true);
     setError("");
+    console.log("login dara", data);
     const result = await signIn("credentials", {
       redirect: false,
       userName: data.userName,
       password: data.password,
     });
+    console.log("Login DATA RESULT", result);
 
     if (result?.error) {
-      console.log(result);
+      console.log("error", result.error);
       setError("Invalid Credential");
       setLoading(false);
     } else {
-      console.log("Login Successful:", result);
       router.push("/");
     }
   };
@@ -87,7 +90,15 @@ const LoginForm = () => {
         </div>
 
         <div className="px-6 py-3 mt-3 flex flex-col bg-[#1814F3] rounded-xl">
-          <button type="submit" disabled={loading} className="text-white">
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex gap-3 items-center justify-center bg-[#1814F3] text-white rounded-md"
+          >
+            <FontAwesomeIcon
+              icon={faSpinner}
+              className={loading ? "visible text-2xl animate-spin" : "hidden"}
+            />
             {loading ? "Loading..." : "Login"}
           </button>
         </div>

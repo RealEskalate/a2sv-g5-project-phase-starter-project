@@ -16,6 +16,7 @@ const useCardDispatch = (accessToken: string) => {
         
 
         console.log(res.content, "myfggggggggggggggg");
+        console.log("Status of Card dispatch",res)
 
         if (res) {
           dispatch(setCards(res.content));

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LoanType, LoanDetail } from "@/types/LoanValue";
+import { LoanType, LoanDetail, ApiResponse } from "@/types/LoanValue";
 
 const API_URL = "https://bank-dashboard-irse.onrender.com/active-loans"; // Adjust this to match your actual API base URL
 
@@ -44,7 +44,7 @@ class TransactionService {
       true
     );
   }
-  public static detailData(accessToken: string): Promise<LoanDetail> {
+  public static detailData(accessToken: string): Promise<ApiResponse> {
     return handleRequest(
       "GET",
       `${API_URL}/detail-data`,

@@ -15,13 +15,22 @@ import {
   TransactionType,
 } from "@/app/Redux/slices/TransactionSlice";
 import { ShimmerVisaCard } from "../Shimmer/ShimmerVisa";
+import useUserDataDispatch from "@/app/Redux/Dispacher/useUserDataDispatch";
 import loading from "@/app/loading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 
 const Center = () => {
+  const { data: session } = useSession();
+  const accessToken = session?.accessToken as string;
+
+  console.log(session?.accessToken, "token");
+  // Update initial card and tran data using the custom hook
+  useCardDispatch(accessToken);
+  useTranDispatch(accessToken);
   const income = useAppSelector((state) => state.transactions.income);
-  const status = useAppSelector((state) => state.transactions.status);
+  console.log(income, "hell");
+
   const CardData: Card[] = useAppSelector((state) => state.cards.cards);
   const TranData: TransactionType[] = useAppSelector(
     (state) => state.transactions.transactions

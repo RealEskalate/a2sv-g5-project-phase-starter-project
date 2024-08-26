@@ -32,7 +32,6 @@ import '../../domain/entities/product_entity.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
-import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   // final UserAccess token;
@@ -48,16 +47,15 @@ class _HomePageState extends State<HomePage> {
     Future<void> _refresh() async {
       context.read<HomeBloc>().add(GetProductsEvent());
       context.read<GetUserBloc>().add(GetUserInfoEvent());
-      var shared_preferences = await SharedPreferences.getInstance();
+      var shared_preferences= await SharedPreferences.getInstance();
 
       return Future.delayed(Duration(seconds: 3));
     }
 
     Future<void> save_id(String id) async {
-      var shared_preferences = await SharedPreferences.getInstance();
-      var save_id = shared_preferences.setString('id', id);
+      var shared_preferences= await SharedPreferences.getInstance();
+      var save_id = shared_preferences.setString('id',id);
     }
-
     const maxNum = 10.0;
     return Scaffold(
       // bottomNavigationBar: NavigationBar(destinations: [
@@ -111,18 +109,13 @@ class _HomePageState extends State<HomePage> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    DateFormat('MMMM dd, yyyy')
-                                        .format(DateTime.now()),
-                                    style: GoogleFonts.syne(
-                                        fontWeight: FontWeight.w500,
-                                        color:
-                                            Color.fromARGB(255, 170, 170, 170)),
-                                  )
-                                ],
+                              Text(
+                                "July 31, 2024",
+                                style: GoogleFonts.syne(
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 170, 170, 170)),
                               ),
+                        
                               Row(children: [
                                 Text("Hello,",
                                     style: GoogleFonts.sora(
@@ -135,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                                       return Text("Fetching User...",
                                           style: GoogleFonts.sora(
                                               fontWeight: FontWeight.w600));
-                                    } else if (state is GetUserLoaded) {
+                                    } else if (state is GetUserLoaded)  {
                                       save_id(state.user.id);
                                       return Text("${state.user.name}",
                                           style: GoogleFonts.sora(
@@ -302,12 +295,12 @@ class _HomePageState extends State<HomePage> {
                               itemBuilder: (context, index) {
                                 return GestureDetector(
                                     onTap: () {
-                                      Navigator.pushNamed(
-                                        context,
-                                        '/detail',
-                                        arguments: state.products[index],
-                                      );
-                                    },
+                                      
+
+                                      Navigator.pushNamed(context, '/detail',
+                                          arguments: state.products[index],);
+                                      },
+                                    
                                     child: OverflowCard(
                                       product: state.products[index],
                                     ));

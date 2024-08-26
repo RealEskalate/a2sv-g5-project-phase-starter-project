@@ -2,9 +2,11 @@ import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/chat_entity.d
 import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_state.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/chat_view.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/bottomnavbar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 
 class Chat extends StatelessWidget {
   const Chat({super.key});
@@ -69,8 +71,15 @@ class Chat extends StatelessWidget {
                     final user = activeUsers[index];
                     return GestureDetector(
                       onTap: () {
-                        // Handle user tap
-                      },
+  // Handle user tap
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ChatView(user: user,),
+    ),
+  );
+},
+
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Column(

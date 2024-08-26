@@ -46,7 +46,11 @@ func main() {
 	authRepository := authMongo.NewAuthStorage(mongoDB.Collection("users"), mongoDB.Collection("tokens"))
 	chatRepository := chatMongo.NewChatRepository(mongoDB)
 	blogRepository := blogMongo.NewBlogStorage(mongoDB)
-	aiService := gemini_ai.NewAIService(gemini_ai.NewModel())
+
+	model, client := gemini_ai.NewModel()
+	defer client.Close()
+
+	aiService := gemini_ai.NewAIService(model)
 
 	authUsecase := auth.NewAuthUserUsecase(authRepository, infrastructure.NewEmail(
 		os.Getenv("USERNAME"),

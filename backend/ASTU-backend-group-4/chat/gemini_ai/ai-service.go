@@ -16,7 +16,7 @@ type AIService struct {
 	model *genai.GenerativeModel
 }
 
-func NewModel() *genai.GenerativeModel {
+func NewModel() (*genai.GenerativeModel, *genai.Client) {
 	ctx := context.Background()
 
 	// Access your API key as an environment variable
@@ -24,11 +24,10 @@ func NewModel() *genai.GenerativeModel {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer client.Close()
 
 	model := client.GenerativeModel("gemini-pro")
 
-	return model
+	return model, client
 }
 
 func NewAIService(model *genai.GenerativeModel) *AIService {

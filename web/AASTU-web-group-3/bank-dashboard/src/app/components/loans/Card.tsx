@@ -28,44 +28,48 @@ const Card = () => {
 
   return (
     <div className="card-holder flex gap-16 px-10 py-4">
-      <div className="flex w-64 border-0 rounded-xl bg-white min-h-32 gap-3 items-center">
-        <div className="icons border-1 rounded-full ml-4 bg-gray-100 h-16 w-16 flex items-center justify-center">
+      <div className="flex w-64 border-0 rounded-xl bg-white dark:bg-darkComponent min-h-32 gap-3 items-center">
+        <div className="icons border-1 rounded-full ml-4 bg-gray-100 dark:bg-darkPage h-16 w-16 flex items-center justify-center">
           <FaUser color="#396AFF" size={30} />
         </div>
         <div className="info">
-          <p className="text-[#718EBF] mt-2">Personal Loans</p>
-          <p className="font-semibold text-xl">${personalLoan}</p>
+          <p className="text-[#718EBF] dark:text-darkText mt-2">Personal Loans</p>
+          <p className="font-semibold text-xl dark:text-darkText">${personalLoan}</p>
         </div>
       </div>
-      <div className="flex w-64 border-0 rounded-xl bg-white min-h-32 gap-3 items-center">
-        <div className="icons border-1 rounded-full ml-4 bg-[#FFF5D9]h-16 w-16 flex items-center justify-center">
+  
+      <div className="flex w-64 border-0 rounded-xl bg-white dark:bg-darkComponent min-h-32 gap-3 items-center">
+        <div className="icons border-1 rounded-full ml-4 bg-[#FFF5D9] dark:bg-darkPage h-16 w-16 flex items-center justify-center">
           <FaBriefcase color="#FFBB38" size={30} />
         </div>
         <div className="info">
-          <p className="text-[#718EBF] mt-2">Business Loans</p>
-          <p className="font-semibold text-xl">${businessLoan}</p>
+          <p className="text-[#718EBF] dark:text-darkText mt-2">Business Loans</p>
+          <p className="font-semibold text-xl dark:text-darkText">${businessLoan}</p>
         </div>
       </div>
-      <div className="flex w-64 border-0 rounded-xl bg-white min-h-32 gap-3 items-center">
-        <div className="icons border-1 rounded-full ml-4 bg-[#FFE0EB] h-16 w-16 flex items-center justify-center">
+  
+      <div className="flex w-64 border-0 rounded-xl bg-white dark:bg-darkComponent min-h-32 gap-3 items-center">
+        <div className="icons border-1 rounded-full ml-4 bg-[#FFE0EB] dark:bg-darkPage h-16 w-16 flex items-center justify-center">
           <FaUser color="#FF82AC" size={30} />
         </div>
         <div className="info">
-          <p className="text-[#718EBF] mt-2">Corporate Loans</p>
-          <p className="font-semibold text-xl">${corporateLoan}</p>
+          <p className="text-[#718EBF] dark:text-darkText mt-2">Corporate Loans</p>
+          <p className="font-semibold text-xl dark:text-darkText">${corporateLoan}</p>
         </div>
       </div>
-      <div className="flex w-64 border-0 rounded-xl bg-white min-h-32 gap-3 items-center">
-        <div className="icons border-1 rounded-full ml-4 bg-[#DCFAF8] h-16 w-16 flex items-center justify-center">
+  
+      <div className="flex w-64 border-0 rounded-xl bg-white dark:bg-darkComponent min-h-32 gap-3 items-center">
+        <div className="icons border-1 rounded-full ml-4 bg-[#DCFAF8] dark:bg-darkPage h-16 w-16 flex items-center justify-center">
           <FaScrewdriverWrench color="#16DBCC" size={30} />
         </div>
         <div className="info">
-          <p className="text-[#718EBF] mt-2">Custom Loan</p>
-          <p className="font-semibold text-xl">Choose Money</p>
+          <p className="text-[#718EBF] dark:text-darkText mt-2">Custom Loan</p>
+          <p className="font-semibold text-xl dark:text-darkText">Choose Money</p>
         </div>
       </div>
     </div>
   );
+  
 };
 
 export default Card;

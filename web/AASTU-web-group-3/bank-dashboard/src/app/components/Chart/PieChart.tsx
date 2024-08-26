@@ -48,7 +48,7 @@ const chartConfig = {
 
 export function PieChartComponent() {
   return (
-    <Card className="flex flex-col lg:mt-9 lg:flex">
+    <Card className="flex flex-col lg:mt-9 lg:flex dark:bg-darkComponent">
       <CardHeader className="items-center pb-0">
         <CardTitle>Expenses Stasitics</CardTitle>
         {/* <CardDescription>January - June 2024</CardDescription> */}

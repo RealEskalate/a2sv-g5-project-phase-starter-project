@@ -79,9 +79,9 @@ const ActiveLoans = () => {
 
   return (
     <div>
-      <h1 className="lg:m-10 text-2xl font-semibold my-4">Active Loans Overview</h1>
-      <section className="border-0 rounded-xl bg-white shadow-md lg:mx-10 p-2">
-        <div className="grid grid-cols-3 lg:grid-cols-7 font-medium text-sky-300 min-h-7 items-center border-b mt-2 px-2">
+      <h1 className="lg:m-10 text-2xl font-semibold my-4 dark:text-darkText">Active Loans Overview</h1>
+      <section className="border-0 rounded-xl bg-white dark:bg-darkComponent shadow-md lg:mx-10 p-2">
+        <div className="grid grid-cols-3 lg:grid-cols-7 font-medium text-sky-300 dark:text-darkAccent min-h-7 items-center border-b dark:border-darkPage mt-2 px-2">
           <div className="hidden md:block">Sl NO</div>
           <div>Loan Amount</div>
           <div>Left To Repay</div>
@@ -90,14 +90,14 @@ const ActiveLoans = () => {
           <div className="hidden md:block">Installment</div>
           <div className="justify-self-center">Repay</div>
         </div>
-
+  
         {isLoadingLoans ? (
-          <div className="text-center my-4">Loading loans...</div>
+          <div className="text-center my-4 dark:text-darkText">Loading loans...</div>
         ) : (
           loansData?.data.content.map((loan, index) => (
             <div
               key={loan.serialNumber}
-              className="grid grid-cols-3 lg:grid-cols-7 border-b min-h-12 items-center"
+              className="grid grid-cols-3 lg:grid-cols-7 border-b dark:border-darkPage min-h-12 items-center dark:text-darkText"
             >
               <div className="hidden md:block">{(page - 1) * 10 + index + 1}</div>
               <div>${loan.loanAmount}</div>
@@ -105,19 +105,19 @@ const ActiveLoans = () => {
               <div className="hidden md:block">{loan.duration} months</div>
               <div className="hidden md:block">{loan.interestRate}%</div>
               <div className={`hidden md:block`}>${loan.installment.toFixed(2)}/month</div>
-              <div className="border border-blue-200 text-center p-1 rounded-lg justify-self-center hover:border-blue-700 w-24 cursor-pointer">
+              <div className="border border-blue-200 dark:border-darkAccent text-center p-1 rounded-lg justify-self-center hover:border-blue-700 dark:hover:border-darkAccent w-24 cursor-pointer">
                 Repay
               </div>
             </div>
           ))
         )}
       </section>
-
+  
       <div className="flex justify-end mt-4 mr-10 items-center">
         <button
           onClick={() => handlePageClick(page - 1)}
           disabled={page === 1}
-          className={`px-4 py-2 rounded mx-1 flex items-center ${page === 1 ? 'text-gray-400' : 'text-blue-600'}`}
+          className={`px-4 py-2 rounded mx-1 flex items-center ${page === 1 ? 'text-gray-400 dark:text-gray-600' : 'text-blue-600 dark:text-darkAccent'}`}
         >
           <FaArrowLeft className="mr-2" />
           Previous
@@ -126,7 +126,7 @@ const ActiveLoans = () => {
         <button
           onClick={() => handlePageClick(page + 1)}
           disabled={page === (loansData?.data.totalPages || 1)}
-          className={`px-4 py-2 rounded mx-1 flex items-center ${page === (loansData?.data.totalPages || 1) ? 'text-gray-400' : 'text-blue-600'}`}
+          className={`px-4 py-2 rounded mx-1 flex items-center ${page === (loansData?.data.totalPages || 1) ? 'text-gray-400 dark:text-gray-600' : 'text-blue-600 dark:text-darkAccent'}`}
         >
           Next
           <FaArrowRight className="ml-2" />
@@ -134,6 +134,7 @@ const ActiveLoans = () => {
       </div>
     </div>
   );
+  
 };
 
 export default ActiveLoans;

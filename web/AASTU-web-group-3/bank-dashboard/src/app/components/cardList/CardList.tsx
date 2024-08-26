@@ -43,25 +43,26 @@ const CardListPage = () => {
   if (error) return <div>Error fetching cards</div>;
 
   return (
-    <div className="card-list-container flex flex-col justify-between h-full">
-      <div className="card-list flex-grow">
-        {data?.content.map((card: Card, index: number) => {
-          const colorOption = colorOptions[index % colorOptions.length]; // Cycle through color options
-
-          return (
-            <CardBox
-              key={index}
-              cardType={card.cardType}
-              bank="CBE Bank"
-              detailsLink="/creditcardpage/xyz"
-              svgColor={colorOption.svgColor}
-              svgBgColor={colorOption.svgBgColor}
-              cardNumber={formatCardNumber(card.semiCardNumber)}
-              NamainCard={card.cardHolder}
-            />
-          );
-        })}
-      </div>
+    <div className="card-list-container flex flex-col justify-between h-full bg-white dark:bg-darkComponent">
+    <div className="card-list flex-grow">
+      {data?.content.map((card: Card, index: number) => {
+        const colorOption = colorOptions[index % colorOptions.length]; // Cycle through color options
+  
+        return (
+          <CardBox
+            key={index}
+            cardType={card.cardType}
+            bank="CBE Bank"
+            detailsLink="/creditcardpage/xyz"
+            svgColor={colorOption.svgColor}
+            svgBgColor={colorOption.svgBgColor}
+            cardNumber={formatCardNumber(card.semiCardNumber)}
+            NamainCard={card.cardHolder}
+          />
+        );
+      })}
+    </div>
+  
 
       {/* <div className="pagination-controls flex justify-center items-center mt-4">
         <button

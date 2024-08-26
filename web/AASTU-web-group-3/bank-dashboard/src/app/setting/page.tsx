@@ -48,8 +48,8 @@ const HomePage = () => {
   };
 
   return (
-    <div className="w-11/12 mt-3 ml-6 bg-white rounded-3xl">
-      <div className="border-[#718EBF] border-b flex justify-between md:justify-start md:gap-3">
+    <div className="w-11/12 mt-3 ml-6 bg-white rounded-3xl dark:bg-[#172941] overflow-hidden">
+      <div className="border-[#718EBF] border-b flex justify-between md:justify-start md:gap-3 dark:bg-[#172941]">
         <div
           onClick={() => setActiveTab("Edit Profile")}
           className={`cursor-pointer text-xl py-4 px-3 ${

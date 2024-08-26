@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -19,6 +19,7 @@ interface StepProps {
 const Step1: React.FC<StepProps> = ({ step }) => {
   const { register, formState: { errors }, setValue } = useFormContext();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   const handleImageClick = () => {
     if (fileInputRef.current) {
@@ -46,9 +47,7 @@ const Step1: React.FC<StepProps> = ({ step }) => {
         'state_changed',
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          if (progress === 100) {
-            alert(`Upload is ${progress}% done`);
-          }
+          setUploadProgress(progress); // Set the progress state
         },
         (error) => {
           console.error('Error during upload:', error);
@@ -58,6 +57,7 @@ const Step1: React.FC<StepProps> = ({ step }) => {
           try {
             const url = await getDownloadURL(uploadTask.snapshot.ref);
             console.log('File available at', url);
+            setUploadProgress(null); // Reset progress after completion
             resolve(url);
           } catch (err) {
             console.error('Error getting download URL:', err);
@@ -83,17 +83,18 @@ const Step1: React.FC<StepProps> = ({ step }) => {
 
   return (
     <>
-      <div className='flex justify-center gap-2 mb-2'>
+      {/* <div className='flex justify-center gap-2 mb-2'>
         <Image src={logo} width={36} height={36} alt='bankdash-logo' />
         <h1 className='font-extrabold text-2xl text-[#343C6A]'>BankDash</h1>
-      </div>
+      </div> */}
       <div className="space-y-4 min-h-[350px] flex flex-col justify-between">
         <h2 className="text-2xl font-semibold">Step {step}: Basic Information</h2>
         <div>
           <label className="block text-sm font-medium">Name <span className="text-red-500">*</span></label>
           <input
             {...register('name', { required: 'Name is required' })}
-            className="mt-1 p-2 block w-full border rounded-md"
+            className="border rounded-md w-full h-12 border-[#CCCCF5] dark:border-darkComponent p-2 bg-white dark:bg-darkPage dark:text-darkText"
+
           />
           {errors.name && <p className="text-red-500 text-sm mt-1">{String(errors.name?.message)}</p>}
         </div>
@@ -107,7 +108,8 @@ const Step1: React.FC<StepProps> = ({ step }) => {
                 message: 'Invalid email address'
               }
             })}
-            className="mt-1 p-2 block w-full border rounded-md"
+            className="border rounded-md w-full h-12 border-[#CCCCF5] dark:border-darkComponent p-2 bg-white dark:bg-darkPage dark:text-darkText"
+
           />
           {errors.email && <p className="text-red-500 text-sm mt-1">{String(errors.email?.message)}</p>}
         </div>
@@ -119,7 +121,8 @@ const Step1: React.FC<StepProps> = ({ step }) => {
               required: 'Date of Birth is required',
               validate: validateAge
             })}
-            className="mt-1 p-2 block w-full border rounded-md"
+            className="border rounded-md w-full h-12 border-[#CCCCF5] dark:border-darkComponent p-2 bg-white dark:bg-darkPage dark:text-darkText"
+
           />
           {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{String(errors.dateOfBirth?.message)}</p>}
         </div>
@@ -128,10 +131,18 @@ const Step1: React.FC<StepProps> = ({ step }) => {
           <input
             type="file"
             ref={fileInputRef}
-            // {...register('profilePictureFile', { required: 'Profile picture is required' })}
             className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
             onChange={handleFileChange}
           />
+          {uploadProgress !== null && (
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+              <div
+                className="bg-blue-600 h-2.5 rounded-full"
+                style={{ width: `${uploadProgress}%` }}
+              ></div>
+              <p className="text-sm mt-1">{Math.round(uploadProgress)}% uploaded</p>
+            </div>
+          )}
           {errors.profilePictureFile && <p className="text-red-500 text-sm mt-1">{String(errors.profilePictureFile?.message)}</p>}
         </div>
       </div>

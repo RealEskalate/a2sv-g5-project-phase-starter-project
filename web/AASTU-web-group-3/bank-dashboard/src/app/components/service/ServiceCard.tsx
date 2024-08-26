@@ -45,39 +45,38 @@ export default function ServiceCard() {
 
   return (
     <>
-    
       {service.map((card, index: number) => (
-        <div key={index} className="body flex  md:w-auto w-auto h-auto p-2 border-[1px] rounded-[10px] m-2 bg-white">
-          <div className="flex items-center rounded-2xl px-5 bg-[#FFE0EB]">
+        <div
+          key={index}
+          className="body flex  h-auto p-2 border-[1px] rounded-[10px] m-2 w-[93%] bg-white dark:bg-darkComponent"
+        >
+          <div className="flex items-center rounded-2xl px-5 bg-[#FFE0EB] dark:bg-darkPage">
             <Image width={18} height={18} src={card.icon} alt="aastu" />
           </div>
           <div className="right w-full flex justify-between items-center p-2">
             <div className="md:w-1/4 flex-shrink-0">
-              <div className="font-normal ">{card.name}</div>
-              <div className="font-normal h-5 flex-grow max-w-xs truncate text-xs text-[#718EBF]">
+              <div className="font-normal dark:text-darkText">{card.name}</div>
+              <div className="font-normal h-5 flex-grow max-w-xs truncate text-xs text-[#718EBF] dark:text-white">
                 {card.details}
               </div>
             </div>
             <div className="hidden md:block md:w-1/6">
-              <div className="font-medium text-sm md:text-[12px]">Status</div>
-              <div className="font-normal text-xs text-[#718EBF]">{card.status}</div>
+              <div className="font-medium text-sm md:text-[12px] dark:text-darkText">Status</div>
+              <div className="font-normal text-xs text-[#718EBF] dark:text-white">{card.status}</div>
             </div>
             <div className="hidden md:block md:w-1/6">
-              <div className="font-medium text-sm md:text-[12px]"> Type</div>
-              <div className="font-normal text-xs text-[#718EBF]">{card.type}</div>
+              <div className="font-medium text-sm md:text-[12px] dark:text-darkText">Type</div>
+              <div className="font-normal text-xs text-[#718EBF] dark:text-white">{card.type}</div>
             </div>
             <div className="hidden md:block md:w-1/6">
-              <div className="font-medium text-sm md:text-[12px]">
-                Number of users
-              </div>
-              <div className="font-normal text-xs text-[#718EBF]">
+              <div className="font-medium text-sm md:text-[12px] dark:text-darkText">Number of users</div>
+              <div className="font-normal text-xs text-[#718EBF] dark:text-white">
                 {card.numberOfUsers}
               </div>
             </div>
-            {/* <div className="md:px-4 md:py-1 md:border  md:border-[#718EBF] md:rounded-full hover:border-[#1814F3] text-center"> */}
             <Link
               href={"/services"}
-              className="md:px-4 md:py-2 md:border  md:border-[#718EBF] md:rounded-full hover:border-[#1814F3] text-center font-normal text-[11px] text-[#1814F3] md:text-[#718EBF] hover:text-[#1814F3]"
+              className="md:px-4 md:py-2 md:border md:border-[#718EBF] dark:border-darkAccent md:rounded-full hover:border-[#1814F3] dark:hover:border-darkAccent text-center font-normal text-[11px] text-[#1814F3] md:text-[#718EBF] dark:text-darkAccent hover:text-[#1814F3] dark:hover:text-darkText"
             >
               View Details
             </Link>
@@ -86,4 +85,5 @@ export default function ServiceCard() {
       ))}
     </>
   );
+  
 }

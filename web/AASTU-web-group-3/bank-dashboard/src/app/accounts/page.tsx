@@ -141,24 +141,24 @@ const Page = () => {
   console.log("cards", cards);
   console.log("all transaction", allTransactions);
   return (
-    <div className="max-w-screen max-h-screen mx-auto px-4 py-4 sm:px-6 sm:py-3 lg:px-4 lg:py-8">
+    <div className="max-w-screen min-h-screen mx-auto px-4 py-4 sm:px-6 sm:py-3 lg:px-4 lg:py-8 dark:bg-[#0f1a2b] dark:text-lightText">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         {dataCorner.map((card) => (
           <div
             key={card.index}
-            className="flex justify-center items-center h-[85px] rounded-2xl shadow-xl bg-white p-4"
+            className="flex justify-center items-center h-[85px] rounded-2xl shadow-xl bg-white dark:bg-darkComponent p-4"
           >
             <div className="flex items-center">
               <Image
                 width={28}
                 height={28}
-                className=" text-gray-500 mr-4"
+                className="text-gray-500 dark:text-lightText mr-4"
                 src={card.icon}
                 alt="Image Icon"
               />
               <div>
-                <h3 className="text-gray-500 text-sm">{card.title}</h3>
-                <p className="text-black text-2xl font-bold">
+                <h3 className="text-gray-500 dark:text-gray-200 text-sm">{card.title}</h3>
+                <p className="text-black dark:text-gray-100 text-2xl font-bold">
                   ${card.salary.toLocaleString()}
                 </p>
               </div>
@@ -166,65 +166,52 @@ const Page = () => {
           </div>
         ))}
       </div>
-
+  
       <div className="flex flex-col md:flex-row justify-between">
-
-        <div className=" w-full md:w-[53%] lg:w-[63%]">
-        <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] text-left px-4 py-2">
-          Last transaction
-        </h1>
-          <div className="rounded-3xl bg-white shadow-xl w-full">
+        <div className="w-full md:w-[53%] lg:w-[63%]">
+          <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] dark:text-gray-100 text-left px-4 py-2">
+            Last transaction
+          </h1>
+          <div className="rounded-3xl bg-white dark:bg-darkComponent shadow-xl w-full">
             <div className="flex flex-col space gap-y-2">
-              {allTransactions.map((transaction, index) => (
+              {allTransactions.slice(0, 3).map((transaction, index) => (
                 <div
                   key={index}
-                  className="flex items-center p-3 bg-white rounded-lg shadow-sm"
+                  className="flex items-center p-3 bg-white dark:bg-darkComponent rounded-lg shadow-sm"
                 >
-                  <div className=" p-3 rounded-full">
+                  <div className="p-3 rounded-full">
                     <Image
                       width={20}
                       height={20}
-                      src={transactions[index].icon}
+                      src={transactions[index % transactions.length ]?.icon}
                       alt={`${transaction.type} Icon`}
                     />
                   </div>
-                  <div className=" flex w-3/4 gap-2 items-center  justify-between ">
+                  <div className="flex w-3/4 gap-2 items-center justify-between">
                     <div className="w-1/2 md:w-1/3 lg:w-1/4">
-                      <p className="text-gray-800 font-medium">
+                      <p className="text-gray-800 dark:text-gray-200 font-medium">
                         {transaction.senderUserName}
                       </p>
-                      <p className="text-gray-400 hidden text-xs sm:block">
+                      <p className="text-gray-400 dark:text-gray-400 hidden text-xs sm:block">
                         {transaction.date}
                       </p>
                     </div>
                     <div className="w-1/3 md:w-1/5 lg:w-1/4 flex">
-                      <p className="text-gray-400 text-xs w-10/12 flex-shrink-0 text-left truncate">
+                      <p className="text-gray-400 dark:text-gray-400 text-xs w-10/12 flex-shrink-0 text-left truncate">
                         {transaction.description}
                       </p>
                     </div>
                     <div className="w-1/5 lg:w-1/4 flex">
-                      <p className="text-gray-400 w-10/12 flex-shrink-0 truncate hidden text-xs lg:block">
+                      <p className="text-gray-400 dark:text-gray-400 w-10/12 flex-shrink-0 truncate hidden text-xs lg:block">
                         {transaction.transactionId}
                       </p>
                     </div>
                     <div className="w-1/5 lg:w-1/4 flex">
                       <p
-                        className={` style={{ color: '#718EBF' }} hidden lg:block font-medium w-10/12 flex-shrink-0 truncate text-xs ${
-                          transaction.type
-                            ? "style={{ color: '#718EBF' }}"
-                            : "text-green-500"
-                        }`}
-                      >
-                        {transaction.type}
-                      </p>
-                      {/* <p className="text-gray-400 w-10/12 flex-shrink-0 truncate hidden text-xs sm:block">{transaction.transactionId}</p> */}
-                    </div>
-                    <div className="w-1/5 lg:w-1/4 flex">
-                      <p
-                        className={`text-400 font-medium w-10/12 text-right ${
+                        className={`text-400 dark:text-gray-100 font-medium w-10/12 text-right ${
                           transaction.amount < 0
-                            ? "text-red-500"
-                            : "text-green-500"
+                            ? "text-red-500 dark:text-red-400"
+                            : "text-green-500 dark:text-green-400"
                         }`}
                       >
                         ${Math.abs(transaction.amount).toLocaleString()}
@@ -235,44 +222,39 @@ const Page = () => {
               ))}
             </div>
           </div>
-            </div>
-
-          <div className="w-full md:w-[43%] lg:w-[35%] rounded-3xl overflow-hidden col-span-1 ">
-            <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] text-left px-4 py-2">
-              my card
-            </h1>
-            {/* <div className="flex items-center justify-center"> */}
-
-            <div className="min-w-60 w-73 lg:w-72 lg:h-48 xl:w-96  xl:h-56  ">
-              <CreditCard
-                name={cards[1]?.cardHolder}
-                balance={formatBalance(cards[1]?.balance)}
-                cardNumber={formatCardNumber(cards[1]?.semiCardNumber)}
-                validDate={formatDate(cards[1]?.expiryDate)}
-                backgroundImg="bg-[linear-gradient(107.38deg,#2D60FF_2.61%,#539BFF_101.2%)]"
-                textColor="text-white"
-                />
-                
-            </div>
-                {/* </div> */}
+        </div>
+  
+        <div className="w-full md:w-[43%] lg:w-[35%] rounded-3xl overflow-hidden col-span-1">
+          <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] dark:text-gray-100 text-left px-4 py-2">
+            My Card
+          </h1>
+          <div className="min-w-60 w-73 lg:w-72 lg:h-48 xl:w-96 xl:h-56">
+            <CreditCard
+              name={cards[1]?.cardHolder}
+              balance={formatBalance(cards[1]?.balance)}
+              cardNumber={formatCardNumber(cards[1]?.semiCardNumber)}
+              validDate={formatDate(cards[1]?.expiryDate)}
+              backgroundImg="bg-[linear-gradient(107.38deg,#2D60FF_2.61%,#539BFF_101.2%)]"
+              textColor="text-white"
+            />
           </div>
+        </div>
       </div>
-
-      <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] px-4 py-7">
+  
+      <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] dark:text-gray-100 px-4 py-7">
         Debit & Credit Overview
       </h1>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 ">
-        <div className="rounded-3xl bg-white shadow-xl p-6 lg:col-span-2 space gap-y-3 h-80">
+  
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="rounded-3xl bg-white dark:bg-darkComponent shadow-xl p-6 lg:col-span-2 space gap-y-3 min-h-80">
           <span className="text-left font-inter text-sm font-normal leading-4 px-6 py-2">
             $7,560 Debited & $5,420 Credited in this Week
           </span>
           <Example />
         </div>
-
-        <div className="rounded-3xl bg-white shadow-md p-6">
-          <h3 className="text-lg font-semibold">Invoices Sent</h3>
-
+  
+        <div className="rounded-3xl bg-white dark:bg-darkComponent shadow-md p-6">
+          <h3 className="text-lg font-semibold dark:text-gray-100">Invoices Sent</h3>
           <div className="flex flex-col space-y-3 mt-3">
             {/* Invoice 1 */}
             <div className="flex justify-between items-center">
@@ -286,7 +268,7 @@ const Page = () => {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-sm font-light text-gray-400">
+                  <p className="text-sm font-light text-gray-400 dark:text-gray-300">
                     Apple Store
                   </p>
                   <small className="text-xs text-blue-500">5h ago</small>
@@ -294,7 +276,7 @@ const Page = () => {
               </div>
               <p className="text-blue-500 font-light ml-auto">$450</p>
             </div>
-
+  
             {/* Invoice 2 */}
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
@@ -308,13 +290,13 @@ const Page = () => {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-sm font-light text-gray-400">Michael</p>
+                  <p className="text-sm font-light text-gray-400 dark:text-gray-300">Michael</p>
                   <small className="text-xs text-blue-500">2 days ago</small>
                 </div>
               </div>
               <p className="text-blue-500 font-light ml-auto">$160</p>
             </div>
-
+  
             {/* Invoice 3 */}
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
@@ -328,7 +310,7 @@ const Page = () => {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-sm font-light text-gray-400">
+                  <p className="text-sm font-light text-gray-400 dark:text-gray-300">
                     Playstation
                   </p>
                   <small className="text-xs text-blue-500">5 days ago</small>
@@ -336,7 +318,7 @@ const Page = () => {
               </div>
               <p className="text-blue-500 font-light ml-auto">$1085</p>
             </div>
-
+  
             {/* Invoice 4 */}
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-2">
@@ -350,7 +332,7 @@ const Page = () => {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-sm font-light text-gray-400">William</p>
+                  <p className="text-sm font-light text-gray-400 dark:text-gray-300">William</p>
                   <small className="text-xs text-blue-500">10 days ago</small>
                 </div>
               </div>
@@ -361,6 +343,7 @@ const Page = () => {
       </div>
     </div>
   );
+  
 };
 
 export default Page;

@@ -39,7 +39,7 @@ const chartConfig = {
 
 export function BarChartComponent() {
   return (
-    <Card className="w-full lg:w-[800px] mb-8 lg:mt-9">
+    <Card className="w-full lg:w-[800px] mb-8 lg:mt-9 dark:bg-darkComponent">
       <CardHeader>
         <CardTitle>Weekly Activity</CardTitle>
         {/* <CardDescription>January - June 2024</CardDescription> */}

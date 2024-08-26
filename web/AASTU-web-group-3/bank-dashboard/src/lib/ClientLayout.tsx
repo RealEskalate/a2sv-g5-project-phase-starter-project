@@ -10,13 +10,13 @@ export default function ClientLayout({
 }) {
   const pathname = usePathname();
 
-  const showSidebarAndNavbar = pathname !== "/auth/signin" && pathname !== "/auth/signup";
+  const showSidebarAndNavbar = pathname !== "/auth/signin" && pathname !== "/auth/signup" && pathname !== "/" ;
   return (
     <>
       {showSidebarAndNavbar && <Sidebar />}
       <div className="flex flex-col flex-grow h-full overflow-hidden md:w-4/5 lg:w-4/5">
         {showSidebarAndNavbar && <Navbar />}
-        <main className="flex-grow overflow-y-auto bg-[#F5F7FA] p-1">
+        <main className="flex-grow overflow-y-auto bg-[#F5F7FA]  dark:bg-[#0f1a2b] p-1">
           {children}
         </main>
       </div>

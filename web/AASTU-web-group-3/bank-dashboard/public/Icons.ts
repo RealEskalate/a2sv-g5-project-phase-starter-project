@@ -34,6 +34,7 @@ export const mobileService = '/icons/google.svg'
 export const user = '/icons/tesla.svg'
 
 
+export const transferingPeoples = '/icons/transferingimage.svg'
 
 
 

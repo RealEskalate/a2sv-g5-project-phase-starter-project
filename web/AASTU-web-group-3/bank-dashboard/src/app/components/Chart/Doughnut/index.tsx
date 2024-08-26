@@ -35,7 +35,7 @@ const options = {
 
 const DoughnutChart = () => {
   return (
-    <div className="w-full h-full flex justify-center items-center">
+    <div className="w-full h-full flex justify-center items-center dark:bg-darkComponent">
       <div className="w-full h-80 md:h-full p-3">
         <Doughnut data={data} options={options} />
       </div>

@@ -65,9 +65,9 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <div className="bg-[#F5F7FA] min-h-screen p-5">
+    <div className="bg-[#F5F7FA] min-h-screen p-5 dark:bg-darkPage">
       <div className="lg:flex lg:space-x-8">
-        <div className="lg:w-2/3 lg:flex lg:space-x-8 overflow-x-auto flex bg-[#F5F7Fa]">
+        <div className="lg:w-2/3 lg:flex lg:space-x-8 overflow-x-auto flex bg-[#F5F7Fa] dark:bg-darkPage">
           <div className="flex-shrink rounded-lg w-full h-60 lg:h-56 lg:w-1/2 lg:rounded-r-none">
             <CreditCard
               name="Karthik P"
@@ -125,7 +125,7 @@ const HomePage: React.FC = () => {
         </div> */}
       </div>
 
-      <div className="mt-5 space-y-5 lg:space-y-0 lg:flex lg:space-x-8 lg:h-[400px]">
+      <div className="mt-5 space-y-5 lg:space-y-0 lg:flex lg:space-x-8 lg:h-[400px] ">
         <div className="rounded-lg h-full flex-1">
           <BarChartComponent />
         </div>
@@ -136,9 +136,9 @@ const HomePage: React.FC = () => {
       </div>
 
       <div className="mt-20 space-y-5 lg:space-y-0 lg:flex lg:space-x-8">
-        <div className="w-full lg:w-1/2 bg-white p-5 rounded-lg border shadow-md lg:mt-40">
+        <div className="w-full lg:w-1/2 bg-white p-5 rounded-lg border shadow-md lg:mt-40 dark:bg-darkComponent">
           <h3 className="text-lg font-semibold">Quick Transfer</h3>
-          <div className="flex justify-center mt-3 space-x-16">
+          <div className="flex justify-center mt-3 space-x-16 ">
             {imageData.map((image, index) => (
               <div key={index} className="flex flex-col items-center">
                 <div className="w-12 h-12 bg-gray-300 rounded-full overflow-hidden">
@@ -161,7 +161,7 @@ const HomePage: React.FC = () => {
               <input
                 type="text"
                 placeholder="525.20"
-                className="w-full p-3 h-12 rounded-3xl border border-gray-300 bg-white"
+                className="w-full p-3 h-12 rounded-3xl border border-gray-300 bg-white dark:bg-darkComponent"
               />
               <button className="flex items-center justify-center absolute top-0 right-0 h-full px-3 bg-[#1814F3] text-white rounded-3xl">
                 <span className="mr-2">Send</span>

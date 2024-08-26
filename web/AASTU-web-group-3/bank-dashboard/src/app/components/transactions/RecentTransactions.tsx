@@ -181,17 +181,21 @@ const RecentTransactions = () => {
   
   
 
-  if (loading) return <Loading />;
+  // if (loading) return <Loading />;
   if (error) return <div>{error}</div>;
 
   return (
-    <div className='mt-4 mx-auto'>
-      <h1 className='text-xl font-semibold mb-2'>Recent Transactions</h1>
-      <div className='border-b flex justify-start gap-4 mb-2'>
+    <div className="mt-4 mx-auto">
+      <h1 className="text-xl font-semibold mb-4 text-[#343C6A] dark:text-white ">Recent Transactions</h1>
+      <div className="border-b border-gray-200 dark:border-darkBorder flex justify-start gap-4 mb-2">
         <div
           onClick={() => setActiveTab('all transactions')}
           className={`cursor-pointer text-sm xl:text-xl 
-            ${activeTab === 'all transactions' ? "text-blue-600 border-blue-600 border-b" : "text-[#718EBF]"}
+            ${
+              activeTab === 'all transactions'
+                ? 'text-blue-600 border-blue-600 border-b dark:text-darkPrimary dark:border-darkPrimary'
+                : 'text-[#718EBF] dark:text-lightText'
+            }
           `}
         >
           All transactions
@@ -199,7 +203,11 @@ const RecentTransactions = () => {
         <div
           onClick={() => setActiveTab('income')}
           className={`cursor-pointer text-sm xl:text-xl 
-            ${activeTab === 'income' ? "text-blue-600 border-blue-600 border-b" : "text-[#718EBF]"}
+            ${
+              activeTab === 'income'
+                ? 'text-blue-600 border-blue-600 border-b dark:text-darkPrimary dark:border-darkPrimary'
+                : 'text-[#718EBF] dark:text-lightText'
+            }
           `}
         >
           Income
@@ -207,58 +215,63 @@ const RecentTransactions = () => {
         <div
           onClick={() => setActiveTab('expenses')}
           className={`cursor-pointer text-sm xl:text-xl 
-            ${activeTab === 'expenses' ? "text-blue-600 border-blue-600 border-b" : "text-[#718EBF]"}
+            ${
+              activeTab === 'expenses'
+                ? 'text-blue-600 border-blue-600 border-b dark:text-darkPrimary dark:border-darkPrimary'
+                : 'text-[#718EBF] dark:text-lightText'
+            }
           `}
         >
           Expenses
         </div>
       </div>
-      <section className="border-0 rounded-xl bg-white shadow-md p-2">
-        <div className="hidden lg:grid lg:grid-cols-7 xl:grid-cols-9 font-medium text-sky-300 text-xs h-7 items-center border-b mt-2">
-          <div className="lg:col-span-2">Description</div>
-          <div className="hidden xl:block xl:col-span-2">Transaction Id</div>
-          <div>Type</div>
-          <div>Sender</div>
-          <div>Date</div>
-          <div>Amount</div>
-          <div className="justify-self-center">Receipt</div>
-        </div>
-        {renderContent().map((transaction, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-7 xl:grid-cols-9 border-b min-h-12 items-center text-xs lg:font-medium xl:text-[18px]"
-          >
-            <div className="flex items-center gap-2 col-span-5 lg:col-span-2 lg:font-medium">
-              {transaction.amount < 0 ? (
-                <FaRegArrowAltCircleUp
-                  color="#718EBF"
-                  className="text-4xl md:text-xl xl:text-3xl"
-                />
-              ) : (
-                <FaRegArrowAltCircleDown
-                  color="#718EBF"
-                  className="text-4xl md:text-xl xl:text-3xl"
-                />
-              )}
-              <span>{transaction.description}</span>
-            </div>
-            <div className="hidden xl:block xl:col-span-2">{transaction.transactionId}</div>
-            <div className="hidden lg:block">{transaction.type}</div>
-            <div className="hidden lg:block">{transaction.senderUserName}</div>
-            <div className="hidden lg:block">{formatDate(transaction.date)}</div>
-            <div
-              className={`col-span-2 lg:col-span-1 justify-self-end lg:justify-self-auto ${
-                transaction.amount < 0 ? "text-red-500" : "text-green-500"
-              }`}
-            >
-              {transaction.amount < 0 ? "-" : "+"}${Math.abs(transaction.amount)}
-            </div>
-            <div className="hidden lg:block first-line:col-span-2 lg:col-span-1 justify-self-end lg:justify-self-auto xl:justify-self-center">
-              View
-            </div>
-          </div>
-        ))}
-      </section>
+      <section className="border-0 rounded-xl bg-white dark:bg-darkComponent shadow-md p-2">
+  <div className="hidden lg:grid lg:grid-cols-7 xl:grid-cols-9 font-medium text-sky-300 dark:text-lightText text-xs lg:text-sm xl:text-base h-7 items-center border-b dark:border-darkBorder mt-2">
+    <div className="lg:col-span-2">Description</div>
+    <div className="hidden xl:block xl:col-span-2">Transaction Id</div>
+    <div>Type</div>
+    <div>Sender</div>
+    <div>Date</div>
+    <div>Amount</div>
+    <div className="justify-self-center">Receipt</div>
+  </div>
+  {renderContent().map((transaction, index) => (
+    <div
+      key={index}
+      className="grid grid-cols-7 xl:grid-cols-9 border-b dark:border-darkBorder min-h-12 items-center text-xs lg:text-sm xl:text-base dark:text-lightText"
+    >
+      <div className="flex items-center gap-2 col-span-5 lg:col-span-2 lg:font-medium">
+        {transaction.amount < 0 ? (
+          <FaRegArrowAltCircleUp
+            color="#718EBF"
+            className="text-4xl md:text-xl xl:text-3xl dark:text-lightText"
+          />
+        ) : (
+          <FaRegArrowAltCircleDown
+            color="#718EBF"
+            className="text-4xl md:text-xl xl:text-3xl dark:text-lightText"
+          />
+        )}
+        <span>{transaction.description}</span>
+      </div>
+      <div className="hidden xl:block xl:col-span-2">{transaction.transactionId}</div>
+      <div className="hidden lg:block">{transaction.type}</div>
+      <div className="hidden lg:block">{transaction.senderUserName}</div>
+      <div className="hidden lg:block sm:text-xs">{formatDate(transaction.date)}</div>
+      <div
+        className={`col-span-2 lg:col-span-1 justify-self-end lg:justify-self-auto ${
+          transaction.amount < 0 ? 'text-red-500 dark:text-red-400' : 'text-green-500 dark:text-green-400'
+        }`}
+      >
+        {transaction.amount < 0 ? '-' : '+'}${Math.abs(transaction.amount)}
+      </div>
+      <div className="hidden lg:block first-line:col-span-2 lg:col-span-1 justify-self-end lg:justify-self-auto xl:justify-self-center">
+        View
+      </div>
+    </div>
+  ))}
+</section>
+
       <div className="flex justify-between items-center mt-4">
         <button
           onClick={handlePrevPage}
@@ -267,9 +280,9 @@ const RecentTransactions = () => {
             (activeTab === 'income' && incomePage === 1) ||
             (activeTab === 'expenses' && expensePage === 1)
           }
-          className="px-4 py-2 bg-blue-600 rounded disabled:bg-blue-400 text-white flex gap-1 items-center"
+          className="px-4 py-2 bg-blue-600 dark:bg-darkPrimary rounded disabled:bg-blue-400 text-white flex gap-1 items-center"
         >
-          <FaLessThan/>
+          <FaLessThan />
           <span> Previous </span>
         </button>
         <div className="flex">{renderPageButtons()}</div>
@@ -280,14 +293,15 @@ const RecentTransactions = () => {
             (activeTab === 'income' && incomePage === incomeData?.data.totalPages) ||
             (activeTab === 'expenses' && expensePage === expenseData?.data.totalPages)
           }
-          className="px-4 py-2 bg-blue-600 rounded disabled:bg-blue-400 text-white flex gap-1 items-center"
+          className="px-4 py-2 bg-blue-600 dark:bg-darkPrimary rounded disabled:bg-blue-400 text-white flex gap-1 items-center"
         >
           <span> Next </span>
-          <FaGreaterThan/>
+          <FaGreaterThan />
         </button>
       </div>
     </div>
   );
+  
 };
 
 export default RecentTransactions;

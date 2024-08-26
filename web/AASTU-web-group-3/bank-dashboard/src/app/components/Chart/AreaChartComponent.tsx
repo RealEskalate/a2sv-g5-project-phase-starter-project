@@ -34,7 +34,7 @@ const chartConfig = {
 
 export function AreaChartComponent() {
   return (
-    <Card className="mt-24 lg:mt-40">
+    <Card className="mt-24 lg:mt-40 dark:bg-darkComponent">
         
       <CardHeader>
         <CardTitle>Balance History</CardTitle>

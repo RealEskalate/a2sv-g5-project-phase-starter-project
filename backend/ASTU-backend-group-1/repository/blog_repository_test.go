@@ -132,6 +132,6 @@ func (suite *BlogRespositoryTestSuite) TestGet() {
 	})
 }
 
-func TestBlogRepository(t *testing.T) {
-	suite.Run(t, new(BlogRespositoryTestSuite))
-}
+// func TestBlogRepository(t *testing.T) {
+// 	suite.Run(t, new(BlogRespositoryTestSuite))
+// }

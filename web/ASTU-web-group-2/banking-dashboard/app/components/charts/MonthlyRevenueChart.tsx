@@ -2,57 +2,22 @@
 import { useRef, useEffect } from "react";
 import { Chart, ChartData, ChartOptions } from "chart.js/auto";
 import LineChartSkeleton from "./LineChartSkeleton";
+import { useSession } from "next-auth/react";
+import { useGetMonthInvestmentHistoryQuery } from "@/lib/service/TransactionService";
+import ErrorImage from "../Error/ErrorImage";
 
 interface CustomCanvasElement extends HTMLCanvasElement {
   chart?: Chart;
 }
 
-// Sample raw data with multiple entries per month
-const rawData = [
-  { month: "2016", balance: 200 },
-  { month: "2016", balance: 0 },
-  { month: "2016", balance: 200 },
-  { month: "2017", balance: 0 },
-  { month: "2017", balance: 200 },
-  { month: "2017", balance: 0 },
-  { month: "2018", balance: 1900 },
-  { month: "2018", balance: 1800 },
-  { month: "2019", balance: 1700 },
-  { month: "2019", balance: 1600 },
-  { month: "2019", balance: 2100 },
-  { month: "2019", balance: 20 },
-  { month: "2020", balance: 1800 },
-  { month: "2020", balance: 1700 },
-  { month: "2020", balance: 2400 },
-  { month: "2021", balance: 2300 },
-  { month: "2021", balance: 2200 },
-  { month: "2021", balance: 0 },
-];
-
-// Function to aggregate data by month
-const aggregateData = (data: { month: string; balance: number }[]) => {
-  const monthMap: { [key: string]: { total: number; count: number } } = {};
-
-  data.forEach((item) => {
-    if (!monthMap[item.month]) {
-      monthMap[item.month] = { total: 0, count: 0 };
-    }
-    monthMap[item.month].total += item.balance;
-    monthMap[item.month].count += 1;
-  });
-
-  return Object.keys(monthMap).map((month) => ({
-    month,
-    balance: monthMap[month].total / monthMap[month].count,
-  }));
-};
-
 function MonthlyRevenueChart() {
   const chartRef = useRef<CustomCanvasElement | null>(null);
+  const { data: session } = useSession();
+  const accessToken = session?.user.accessToken!;
+  const { data, isError, isLoading } = useGetMonthInvestmentHistoryQuery(accessToken);
 
   useEffect(() => {
     if (chartRef.current) {
-      // Destroy the chart instance if it already exists
       if (chartRef.current.chart) {
         chartRef.current.chart.destroy();
       }
@@ -62,24 +27,25 @@ function MonthlyRevenueChart() {
       if (context) {
         const chartItem = context.canvas;
 
-        // Aggregate the raw data
-        const aggregatedData = aggregateData(rawData);
+        // Sort the data from oldest to newest
+        const sortedMonthlyRevenue = data?.data.monthlyRevenue.slice().sort((a:any, b: any) => 
+          new Date(a.time.split('/').reverse().join('-')).getTime() - new Date(b.time.split('/').reverse().join('-')).getTime()
+        );
 
-        // Extract labels and data for the chart
-        const labels = aggregatedData.map((item) => item.month);
-        const data = aggregatedData.map((item) => item.balance);
+        const labels = sortedMonthlyRevenue?.map((item: { time: string }) => item.time);
+        const values = sortedMonthlyRevenue?.map((item: { value: number }) => item.value);
 
         const chartData: ChartData<"line"> = {
           labels: labels,
           datasets: [
             {
-              label: "Average Balance",
-              data: data,
-              fill: false, // Remove background fill
-              borderColor: "#16DBCC", // Change color of the line
+              label: "Monthly Revenue",
+              data: values,
+              fill: false,
+              borderColor: "#16DBCC",
               borderWidth: 4,
-              tension: 0.4, // Set tension to curve the line
-              pointRadius: 0, // Remove points
+              tension: 0.4,
+              pointRadius: 0,
             },
           ],
         };
@@ -100,7 +66,7 @@ function MonthlyRevenueChart() {
                 },
               },
               grid: {
-                display: false, 
+                display: false,
               },
             },
             y: {
@@ -116,7 +82,6 @@ function MonthlyRevenueChart() {
               },
               grid: {
                 color: "rgba(0, 0, 0, 0.1)",
-             
               },
             },
           },
@@ -131,17 +96,22 @@ function MonthlyRevenueChart() {
         chartRef.current.chart = newChart;
       }
     }
-  }, []);
-  // if (true){
-  //   return(
-  //     <LineChartSkeleton />
-  //   )
-  // }
+  }, [data]); // Add data as a dependency
+
+  if (isLoading){
+    return(
+      <LineChartSkeleton />
+    );
+  } 
+
+  if (isError) {
+    return  <div className="text-gray-500 border rounded-[22px] bg-gray-200 p-5 w-full h-auto animate-pulse"><ErrorImage /></div>;
+  }
 
   return (
-        <div className="text-gray-500 border rounded-[22px] bg-white p-5">
-            <canvas ref={chartRef} />
-          </div>
+    <div className="text-gray-500 border rounded-[22px] bg-white p-5">
+      <canvas ref={chartRef} />
+    </div>
   );
 }
 

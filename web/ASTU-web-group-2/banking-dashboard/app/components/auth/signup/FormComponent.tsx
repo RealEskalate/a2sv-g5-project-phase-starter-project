@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { FaPencilAlt } from 'react-icons/fa';
-import { MainData } from './Signup'; // Adjust the import path as necessary
+import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { FaPencilAlt } from "react-icons/fa";
+import { MainData } from "./Signup"; // Adjust the import path as necessary
 
 interface FormValues {
   name: string;
@@ -27,27 +27,43 @@ interface FormComponentProps {
 
 // Define the schema
 const schema = yup.object().shape({
-  name: yup.string().required('Name is required'),
-  email: yup.string().email('Invalid email format').required('Email is required'),
-  dateOfBirth: yup.string().required('Date of Birth is required'),
-  permanentAddress: yup.string().required('Permanent Address is required'),
-  postalCode: yup.string().required('Postal Code is required'),
-  username: yup.string().required('Username is required'),
-  password: yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
-  presentAddress: yup.string().required('Present Address is required'),
-  city: yup.string().required('City is required'),
-  country: yup.string().required('Country is required'),
+  name: yup.string().required("Name is required"),
+  email: yup
+    .string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  dateOfBirth: yup.string().required("Date of Birth is required"),
+  permanentAddress: yup.string().required("Permanent Address is required"),
+  postalCode: yup.string().required("Postal Code is required"),
+  username: yup.string().required("Username is required"),
+  password: yup
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  presentAddress: yup.string().required("Present Address is required"),
+  city: yup.string().required("City is required"),
+  country: yup.string().required("Country is required"),
 });
 
-const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData, setActiveTab }) => {
-  const [selectedImage, setSelectedImage] = useState<string | null>(mainData.profilePicture || "https://cdn-icons-png.flaticon.com/512/3541/3541871.png");
+const FormComponent: React.FC<FormComponentProps> = ({
+  mainData,
+  setMainData,
+  setActiveTab,
+}) => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(
+    mainData.profilePicture ||
+      "https://cdn-icons-png.flaticon.com/512/3541/3541871.png"
+  );
 
-  const { control, formState: { errors } } = useForm<FormValues>({
+  const {
+    control,
+    formState: { errors },
+  } = useForm<FormValues>({
     resolver: yupResolver(schema),
     defaultValues: {
       name: mainData.name,
       email: mainData.email,
-      dateOfBirth: mainData.dateOfBirth.split('T')[0], // Adjust for date format
+      dateOfBirth: mainData.dateOfBirth.split("T")[0], // Adjust for date format
       permanentAddress: mainData.permanentAddress,
       postalCode: mainData.postalCode,
       username: mainData.username,
@@ -56,7 +72,7 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData, se
       city: mainData.city,
       country: mainData.country,
       profilePicture: mainData.profilePicture,
-    }
+    },
   });
 
   // Function to update mainData when input changes
@@ -70,14 +86,14 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData, se
       reader.onload = (e) => {
         const imageResult = e.target?.result as string;
         setSelectedImage(imageResult);
-        handleInputChange('profilePicture', imageResult);
+        handleInputChange("profilePicture", imageResult);
       };
       reader.readAsDataURL(event.target.files[0]);
     }
   };
 
   return (
-    <form className=''>
+    <form className="">
       <div className="flex max-md:flex-col justify-between gap-[2rem]">
         <div className="flex flex-col w-[30rem] max-md:w-full">
           <div className="mb-6 flex justify-center">
@@ -110,7 +126,15 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData, se
         </div>
 
         <div className="flex flex-col w-[100%]">
-          {(['name', 'email', 'dateOfBirth', 'permanentAddress', 'postalCode'] as const).map((field) => (
+          {(
+            [
+              "name",
+              "email",
+              "dateOfBirth",
+              "permanentAddress",
+              "postalCode",
+            ] as const
+          ).map((field) => (
             <div className="mb-4" key={field}>
               <Controller
                 name={field}
@@ -118,11 +142,12 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData, se
                 render={({ field: { value, onChange, ...restField } }) => (
                   <div className="mb-4">
                     <label className="block mb-1 font-400 text-[16px] text-[#232323] capitalize">
-                      {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                      {field.charAt(0).toUpperCase() +
+                        field.slice(1).replace(/([A-Z])/g, " $1")}
                     </label>
                     <input
                       {...restField}
-                      type={field === 'dateOfBirth' ? 'date' : 'text'}
+                      type={field === "dateOfBirth" ? "date" : "text"}
                       placeholder={`Enter your ${field}`}
                       className="w-full p-2 border border-[#DFEAF2] rounded-[15px] focus:outline-none focus:ring-2 focus:ring-blue-200"
                       value={value}
@@ -131,7 +156,11 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData, se
                         handleInputChange(field, e.target.value);
                       }}
                     />
-                    {errors[field] && <p className="text-red-500 text-sm">{errors[field]?.message}</p>}
+                    {errors[field] && (
+                      <p className="text-red-500 text-sm">
+                        {errors[field]?.message}
+                      </p>
+                    )}
                   </div>
                 )}
               />
@@ -139,7 +168,15 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData, se
           ))}
         </div>
         <div className="flex flex-col w-[100%]">
-          {(['username', 'password', 'presentAddress', 'city', 'country'] as const).map((field) => (
+          {(
+            [
+              "username",
+              "password",
+              "presentAddress",
+              "city",
+              "country",
+            ] as const
+          ).map((field) => (
             <div className="mb-4" key={field}>
               <Controller
                 name={field}
@@ -147,11 +184,12 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData, se
                 render={({ field: { value, onChange, ...restField } }) => (
                   <div className="mb-4">
                     <label className="block mb-1 font-400 text-[16px] text-[#232323] capitalize">
-                      {field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                      {field.charAt(0).toUpperCase() +
+                        field.slice(1).replace(/([A-Z])/g, " $1")}
                     </label>
                     <input
                       {...restField}
-                      type={field === 'password' ? 'password' : 'text'}
+                      type={field === "password" ? "password" : "text"}
                       placeholder={`Enter your ${field}`}
                       className="w-full p-2 border border-[#DFEAF2] rounded-[15px] focus:outline-none focus:ring-2 focus:ring-blue-200"
                       value={value}
@@ -160,7 +198,11 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData, se
                         handleInputChange(field, e.target.value);
                       }}
                     />
-                    {errors[field] && <p className="text-red-500 text-sm">{errors[field]?.message}</p>}
+                    {errors[field] && (
+                      <p className="text-red-500 text-sm">
+                        {errors[field]?.message}
+                      </p>
+                    )}
                   </div>
                 )}
               />
@@ -169,7 +211,11 @@ const FormComponent: React.FC<FormComponentProps> = ({ mainData, setMainData, se
         </div>
       </div>
       <div className="flex justify-end mt-6 ">
-        <button type="button" onClick={() => setActiveTab(1)} className="bg-blue-700 md:w-[190px] text-white px-6 py-2 rounded-lg hover:bg-blue-600">
+        <button
+          type="button"
+          onClick={() => setActiveTab(1)}
+          className="bg-blue-700 md:w-[190px] text-white px-6 py-2 rounded-lg hover:bg-blue-600"
+        >
           Next
         </button>
       </div>

@@ -51,6 +51,15 @@ const options = {
   layout: {
     padding: 10,
   },
+  elements: {
+    arc: {
+      borderRadius: (context: { dataIndex: number; }) => {
+        // Define different radii for different slices
+        const radii = [5, 10, 15, 20];
+        return radii[context.dataIndex] || 0;
+      },
+    },
+  },
 };
 
 const ExpenseStatisticsChart: React.FC = () => {
@@ -70,10 +79,8 @@ const ExpenseStatisticsChart: React.FC = () => {
               datalabels: {
                 ...options.plugins.datalabels,
                 formatter: (value: any, context: any) => {
-
                   const label = context.chart.data.labels[context.dataIndex];
-                  return `      ${value}
-${label}`;
+                  return `      ${value}\n${label}`;
                 },
               },
             },
@@ -88,18 +95,11 @@ ${label}`;
     }
   }, []);
 
-  // if (true) {
-  //   return (
-  //     <PieChartSkeleton />
-  //   )
-  // }
-
   return (
-    <div className='bg-white  rounded-3xl lg:h-[322px] h-[261px] flex justify-center items-center'>
+    <div className='bg-white rounded-3xl lg:h-[322px] h-[261px] flex justify-center items-center'>
       <canvas ref={canvasRef} />
     </div>
   );
 };
 
 export default ExpenseStatisticsChart;
-

@@ -64,7 +64,8 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         automaticallyImplyLeading:
-            false, //remove pushnamed navigate back button
+            false,
+        toolbarHeight: 70.0,  //remove pushnamed navigate back button
 
         title: Container(
           width: MediaQuery.of(context).size.width,
@@ -93,18 +94,28 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("July 31, 2024",
-                                style: GoogleFonts.syne(
-                                    fontWeight: FontWeight.w500, fontSize: 15
-                                    // color: Theme.of(context).colorScheme.onSurface,
-                                    )),
+                            Text(
+                              'July 31, 2024',
+                              style: GoogleFonts.syne(
+                                textStyle:TextStyle(
+                                  color:Color.fromRGBO(170, 170, 170, 1),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              
+                            ),
                             Row(children: [
-                              Text("Hello, ",
-                                  style: GoogleFonts.sora(
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 15,
-                                      color:
-                                          Color.fromARGB(255, 143, 138, 138))),
+                              Text(
+                                'Hello,',
+                                style: GoogleFonts.sora(
+                                textStyle:TextStyle(
+                                  color:Color.fromRGBO(102, 102, 102, 1),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 15,
+                                ),
+                              ),          
+                              ),
                               BlocBuilder<GetUserBloc, GetUserState>(
                                 builder: (context, state) {
                                   if (state is GetUserLoading) {
@@ -163,19 +174,21 @@ class _HomePageState extends State<HomePage> {
                   ),
 
                   // -----------chat icon------
-                  Container(
-                      // color: Colors.yellow,
-                      child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/HomeChat');
-                          },
-                          child: Transform.rotate(
-                            angle: 5.5,
-                            child: Icon(
-                              Icons.send_rounded,
-                              size: 30,
-                            ),
-                          ))),
+                  // Container(
+                  //     // color: Colors.yellow,
+                  //     child: GestureDetector(
+                  //         onTap: () {
+                  //           Navigator.pushNamed(context, '/HomeChat');
+                  //         },
+                  //         child: Transform.rotate(
+                  //           angle: 5.5,
+                  //           child: Icon(
+                  //             Icons.send_rounded,
+                  //             size: 30,
+                  //           ),
+                  //         ))),
+                  
+                  
                 ],
               ),
             ],
@@ -184,7 +197,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: SafeArea(
           child: Padding(
-        padding: const EdgeInsets.only(left: 21.0, right: 21.0),
+        padding: EdgeInsets.only(left: 21.0, right: 21.0),
         child: Column(
           children: [
             Row(
@@ -337,12 +350,14 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Available Products",
+                    'Available Products',
+                    
+                    textAlign: TextAlign.left,
                     style: TextStyle(
-                        fontFamily: "Poppins",
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600),
+                      color:Color.fromRGBO(62, 62, 62, 1),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 22,
+                    ),
                   ),
                 ],
               ),

@@ -69,9 +69,11 @@ class Main extends StatelessWidget {
       create: (context) => sl.get<HomeBloc>()..add(GetProductsEvent()),
       
       child: MaterialApp(
-        // theme: lightmode,
-        // darkTheme: darkmode,
-        theme: Provider.of<ThemeProvider>(context).themeData,
+        theme: Provider.of<ThemeProvider>(context).themeData.copyWith(
+        textTheme: GoogleFonts.poppinsTextTheme(
+          Theme.of(context).textTheme,
+        ),
+      ),
         themeMode: ThemeMode.system,
 
         debugShowCheckedModeBanner: false,

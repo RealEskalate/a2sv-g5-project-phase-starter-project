@@ -242,7 +242,6 @@ func (r *MongoBlogRepository) DeleteBlog(blogId, authorId string) error {
 	if err != nil {
 		return err
 	}
-
 	filter := bson.M{"blog_id": id}
 	var blog domain.Blog
 	err = r.BlogCollection.FindOne(context.Background(), filter).Decode(&blog)

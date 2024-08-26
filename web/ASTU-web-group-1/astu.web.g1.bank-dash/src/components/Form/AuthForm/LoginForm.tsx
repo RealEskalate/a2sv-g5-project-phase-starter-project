@@ -108,7 +108,7 @@ const LoginForm = () => {
       </button>
       <div className='w-full mt-5'>
         {`Already have an account?`}
-        <Link href='/api/auth/signup'>
+        <Link href='/api/auth/signup' id='signup-btn'>
           <span className='text-indigo-800 font-[700] ml-1'>SignUp</span>
         </Link>
       </div>

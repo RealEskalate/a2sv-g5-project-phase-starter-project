@@ -11,13 +11,20 @@ import RecentTransctionSkeleton from "../AllSkeletons/RecentTransactionSkeleton/
 const Income = () => {
   const [currentPage, setCurrentPage] = useState(0);
 
-  const { data, isLoading, isFetching } = useGetTransactionIncomeQuery({
+  const { data, isLoading, isFetching, error } = useGetTransactionIncomeQuery({
     page: currentPage,
     size: 5,
   });
 
   if (isLoading || isFetching) {
     return <RecentTransctionSkeleton />; // Display loading state
+  }
+
+  if (data?.data.content.length === 0) {
+    return <div className='h-[30vh] p-5 text-lg font-semibold'>No Transaction found yet</div>;
+  }
+  if (error) {
+    return <div className='h-[30vh] p-5 text-lg font-semibold text-red-600'>Opps Something happens</div>; // Display error state
   }
 
   const currentData = data?.data.content;

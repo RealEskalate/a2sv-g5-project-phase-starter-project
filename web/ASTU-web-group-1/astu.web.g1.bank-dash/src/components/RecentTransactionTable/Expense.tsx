@@ -1,17 +1,17 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import TableButton from "../TableButton/TableButton";
-import RecentTransactionDescription from "./RecentTransactionDescription";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+'use client';
+import React, { useEffect, useState } from 'react';
+import TableButton from '../TableButton/TableButton';
+import RecentTransactionDescription from './RecentTransactionDescription';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   useGetAllTransactionsQuery,
   useGetTransactionExpenseQuery,
   useGetTransactionIncomeQuery,
-} from "@/lib/redux/api/transactionSlice";
-import Pagination from "./Pagination";
-import { TransactionDataType } from "@/types/transaction.types";
-import { number } from "zod";
-import RecentTransctionSkeleton from "../AllSkeletons/RecentTransactionSkeleton/recentTransactionSkeleton";
+} from '@/lib/redux/api/transactionSlice';
+import Pagination from './Pagination';
+import { TransactionDataType } from '@/types/transaction.types';
+import { number } from 'zod';
+import RecentTransctionSkeleton from '../AllSkeletons/RecentTransactionSkeleton/recentTransactionSkeleton';
 
 const Expense = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -26,79 +26,78 @@ const Expense = () => {
     return <RecentTransctionSkeleton />; // Display loading state
   }
 
+  if (data?.data.content.length === 0) {
+    return <div className='h-[30vh] p-5 text-lg font-semibold'>No Transaction found yet</div>;
+  }
+
   if (error || !data) {
-    return <div>Opps Something happens</div>; // Display error state
+    return (
+      <div className='h-[30vh] p-5 text-lg font-semibold text-red-600'>Opps Something happens</div>
+    ); // Display error state
   }
   const currentData = data?.data.content;
   const totalPages = data?.data.totalPages;
 
   return (
     <div>
-      <div className="flex flex-col gap-4">
-        
+      <div className='flex flex-col gap-4'>
         {!currentData || currentData?.length == 0 ? (
           <div>No Expense found.</div>
         ) : (
-          <div className="relative overflow-x-auto bg-white px-4 md:px-6 pt-5 md:pt-6 rounded-2xl md:rounded-2xl">
-            <table className="bg-white px-5 lg:px-11 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-              <thead className=" text-12px md:text-16px font-Lato font-medium text-blue-steel bg-white border-b">
-                <tr className="">
-                  <th scope="col" className="hidden md:table-cell pb-2">
+          <div className='relative overflow-x-auto bg-white px-4 md:px-6 pt-5 md:pt-6 rounded-2xl md:rounded-2xl'>
+            <table className='bg-white px-5 lg:px-11 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400'>
+              <thead className=' text-12px md:text-16px font-Lato font-medium text-blue-steel bg-white border-b'>
+                <tr className=''>
+                  <th scope='col' className='hidden md:table-cell pb-2'>
                     Description
                   </th>
-                  <th scope="col" className=" hidden md:table-cell pb-2">
+                  <th scope='col' className=' hidden md:table-cell pb-2'>
                     Transacton ID
                   </th>
-                  <th scope="col" className="hidden lg:table-cell pb-2">
+                  <th scope='col' className='hidden lg:table-cell pb-2'>
                     Type
                   </th>
-                  <th scope="col" className="hidden lg:table-cell pb-2">
+                  <th scope='col' className='hidden lg:table-cell pb-2'>
                     Card
                   </th>
-                  <th scope="col" className="hidden lg:table-cell pb-2">
+                  <th scope='col' className='hidden lg:table-cell pb-2'>
                     Date
                   </th>
-                  <th scope="col" className="hidden md:table-cell pb-2">
+                  <th scope='col' className='hidden md:table-cell pb-2'>
                     Amount
                   </th>
-                  <th scope="col" className="hidden lg:table-cell pb-2 w-fit">
+                  <th scope='col' className='hidden lg:table-cell pb-2 w-fit'>
                     Recipt
                   </th>
                 </tr>
               </thead>
-              <tbody className="text-12px xl:text-16px text-gray-dark cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700">
+              <tbody className='text-12px xl:text-16px text-gray-dark cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700'>
                 {currentData?.map((datax, index) => (
                   <tr
                     key={index}
-                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className='bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700'
                   >
-                    <td className="py-3">
+                    <td className='py-3'>
                       <RecentTransactionDescription
                         amount={datax.type}
                         description={datax.description}
                       />
                     </td>
-                    <td className="hidden md:table-cell py-3">
-                      {datax.transactionId}
-                    </td>
-                    <td className="hidden lg:table-cell py-3">{datax.type}</td>
-                    <td className="hidden lg:table-cell py-3">
-                      {"1234" + " ****"}
-                    </td>
-                    <td className="hidden lg:table-cell py-3">{datax.date}</td>
+                    <td className='hidden md:table-cell py-3'>{datax.transactionId}</td>
+                    <td className='hidden lg:table-cell py-3'>{datax.type}</td>
+                    <td className='hidden lg:table-cell py-3'>{'1234' + ' ****'}</td>
+                    <td className='hidden lg:table-cell py-3'>{datax.date}</td>
                     <td
                       className={`py-3 ${
-                        datax.type !== 'deposite' ? "text-candyPink" : "text-mintGreen"
+                        datax.type !== 'deposite' ? 'text-candyPink' : 'text-mintGreen'
                       }`}
                     >
-                      {datax.type !== 'deposit'
-                        ? "-$" + (datax.amount)
-                        : "+$" + datax.amount}
+                      {datax.type !== 'deposit' ? '-$' + datax.amount : '+$' + datax.amount}
                     </td>
-                    <td className="hidden lg:table-cell py-3 w-24 md:w-32">
+                    <td className='hidden lg:table-cell py-3 w-24 md:w-32'>
                       <TableButton
-                        text="Download"
-                        classname="px-6 text-[#123288] border-[#123288]"
+                        text='Download'
+                        classname='px-6 text-[#123288] border-[#123288]'
                       />
                     </td>
                   </tr>
@@ -108,7 +107,7 @@ const Expense = () => {
           </div>
         )}
       </div>
-      {typeof totalPages === "number" && totalPages > 0 && (
+      {typeof totalPages === 'number' && totalPages > 0 && (
         <Pagination
           totalPages={totalPages ? totalPages : 0}
           currentPage={currentPage}

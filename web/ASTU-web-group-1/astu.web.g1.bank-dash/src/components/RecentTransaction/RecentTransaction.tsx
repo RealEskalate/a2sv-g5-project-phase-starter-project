@@ -28,6 +28,17 @@ const RecentTransaction = () => {
     );
   }
 
+  if (data?.data.content.length === 0) {
+    return (
+      <div className='w-full h-full'>
+        <h1 className='text-[#333B69] pb-3 font-semibold'>Recent Transaction</h1>
+        <div className='w-full h-[85%] flex justify-center items-center bg-white rounded-3xl text-lg font-semibold'>
+          No Transaction Found
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className='w-full'>
       <h1 className='text-[#333B69] pb-3 font-semibold'>Recent Transaction</h1>

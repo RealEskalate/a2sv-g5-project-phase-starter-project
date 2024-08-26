@@ -4,17 +4,13 @@ import '../../domain/entities/message_entity.dart';
 
 class MessageModel extends MessageEntity {
   const MessageModel({
-    required String messageId,
+    required super.messageId,
     required ChatEntity chat,
-    required String content,
-    required UserEntity sender,
-    required String type,
+    required super.content,
+    required super.sender,
+    required super.type,
   }) : super(
-          messageId: messageId,
           chatEntity: chat,
-          content: content,
-          sender: sender,
-          type: type,
         );
 
   // Factory constructor to create a MessageModel from a JSON map

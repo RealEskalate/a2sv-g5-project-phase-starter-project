@@ -34,7 +34,7 @@ func (rc *ResetPasswordController) ForgotPassword(c *gin.Context) {
 	if _, err := rc.ResetPasswordUsecase.GetOTPByEmail(c, req.Email); err == nil {
 		err = rc.ResetPasswordUsecase.DeleteOtp(c, req.Email)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 	}

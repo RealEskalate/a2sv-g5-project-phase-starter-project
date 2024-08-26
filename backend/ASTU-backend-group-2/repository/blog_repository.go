@@ -6,10 +6,12 @@ import (
 	"time"
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
+	custom_error "github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/errors"
 	mongopagination "github.com/gobeam/mongo-go-pagination"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type blogRepository struct {
@@ -56,6 +58,12 @@ func (br *blogRepository) BatchCreateBlog(c context.Context, newBlogs *[]entitie
 	}
 
 	_, err := collection.InsertMany(c, blogs)
+
+	if err != nil {
+		log.Println("Error inserting blogs:", err)
+		return custom_error.ErrCreatingBlogs
+	}
+
 	return err
 }
 
@@ -146,10 +154,10 @@ func getFiltered(c context.Context, collection *mongo.Collection, filter bson.M,
 	var err error
 	if filter != nil {
 		paginatedData, err = paginated.Aggregate(search, filter, projection, sort)
-		// paginatedData, err = paginated.Aggregate(bson.M{"$match": bson.M{"title": "ale", "$in": bson.M{"tag": []string{}}}})
+
 		if err != nil {
 			log.Println("[REPO] error in GET  Filter", err.Error())
-			return []entities.Blog{}, mongopagination.PaginationData{}, err
+			return []entities.Blog{}, mongopagination.PaginationData{}, custom_error.ErrFilteringBlogs
 		}
 		for _, raw := range paginatedData.Data {
 			var blog entities.Blog
@@ -170,17 +178,15 @@ func (br *blogRepository) GetBlogByID(c context.Context, blogID string, view boo
 	ID, err := primitive.ObjectIDFromHex(blogID)
 
 	if err != nil {
-		return entities.Blog{}, err
+		return entities.Blog{}, custom_error.ErrInvalidID
 	}
 
 	var blog entities.Blog
 
-	// options := options.FindOne()
-
 	err = collection.FindOne(c, bson.M{"_id": ID}).Decode(&blog)
 
 	if err != nil {
-		return entities.Blog{}, err
+		return entities.Blog{}, custom_error.ErrBlogNotFound
 	}
 
 	// increase the view count
@@ -189,8 +195,6 @@ func (br *blogRepository) GetBlogByID(c context.Context, blogID string, view boo
 		blog.ViewCount++
 		blog.UpdatePopularity()
 	}
-
-	// blog.Author = nil
 
 	_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$set": bson.M{"view_count": blog.ViewCount, "popularity": blog.Popularity}})
 
@@ -236,18 +240,16 @@ func (br *blogRepository) UpdateBlog(c context.Context, blogID string, updatedBl
 	ID, err := primitive.ObjectIDFromHex(blogID)
 
 	if err != nil {
-		return entities.Blog{}, err
+		return entities.Blog{}, custom_error.ErrInvalidID
 	}
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
 
-	_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$set": updatedBlog})
+	var blog entities.Blog
+
+	err = collection.FindOneAndUpdate(c, bson.M{"_id": ID}, bson.M{"$set": updatedBlog}, opts).Decode(&blog)
 
 	if err != nil {
-		return entities.Blog{}, err
-	}
-
-	blog, err := br.GetBlogByID(c, blogID, false)
-	if err != nil {
-		return entities.Blog{}, err
+		return entities.Blog{}, custom_error.ErrBlogNotFound
 	}
 
 	blog.Author = nil
@@ -262,17 +264,13 @@ func (br *blogRepository) DeleteBlog(c context.Context, blogID string) error {
 	ID, err := primitive.ObjectIDFromHex(blogID)
 
 	if err != nil {
-		return err
+		return custom_error.ErrInvalidID
 	}
 
 	res, err := collection.DeleteOne(c, bson.M{"_id": ID})
 
-	if err != nil {
-		return err
-	}
-
-	if res.DeletedCount == 0 {
-		return mongo.ErrNoDocuments
+	if err != nil || res.DeletedCount == 0 {
+		return custom_error.ErrBlogNotFound
 	}
 
 	return nil
@@ -314,7 +312,7 @@ func getSortedBlog(c context.Context, collection *mongo.Collection, limit int64,
 	paginatedData, err := mongopagination.New(collection).Context(c).Limit(limit).Page(page).Filter(bson.M{}).Select(project).Sort(sortField, -1).Decode(&blogs).Find()
 
 	if err != nil {
-		return []entities.Blog{}, mongopagination.PaginationData{}, err
+		return []entities.Blog{}, mongopagination.PaginationData{}, custom_error.ErrFilteringBlogs
 	}
 
 	return blogs, paginatedData.Pagination, nil
@@ -327,7 +325,7 @@ func getFilteredBlog(c context.Context, collection *mongo.Collection, limit int6
 	paginatedData, err := mongopagination.New(collection).Context(c).Limit(limit).Page(page).Select(project).Filter(filter).Decode(&blogs).Find()
 
 	if err != nil {
-		return []entities.Blog{}, mongopagination.PaginationData{}, err
+		return []entities.Blog{}, mongopagination.PaginationData{}, custom_error.ErrFilteringBlogs
 	}
 
 	return blogs, paginatedData.Pagination, nil
@@ -338,7 +336,7 @@ func (br *blogRepository) UpdateLikeCount(c context.Context, blogID string, incr
 	// Convert blogID to a MongoDB ObjectID
 	ID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
-		return err
+		return custom_error.ErrInvalidID
 	}
 
 	// Define the aggregation pipeline for updating the counts
@@ -359,7 +357,7 @@ func (br *blogRepository) UpdateLikeCount(c context.Context, blogID string, incr
 	)
 
 	if err != nil {
-		return err
+		return custom_error.ErrUpdatingLikeCount
 	}
 
 	return nil
@@ -371,7 +369,7 @@ func (br *blogRepository) UpdateDislikeCount(c context.Context, blogID string, i
 	// Convert blogID to a MongoDB ObjectID
 	ID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
-		return err
+		return custom_error.ErrInvalidID
 	}
 
 	// Define the aggregation pipeline for updating the counts
@@ -392,7 +390,7 @@ func (br *blogRepository) UpdateDislikeCount(c context.Context, blogID string, i
 	)
 
 	if err != nil {
-		return err
+		return custom_error.ErrUpdatingLikeCount
 	}
 
 	return nil
@@ -402,8 +400,9 @@ func (br *blogRepository) UpdateCommentCount(c context.Context, blogID string, i
 	ID, err := primitive.ObjectIDFromHex(blogID)
 
 	if err != nil {
-		return err
+		return custom_error.ErrInvalidID
 	}
+
 	if increment {
 		_, err = collection.UpdateOne(c, bson.M{"_id": ID}, bson.M{"$inc": bson.M{"comments_count": 1}})
 	} else {

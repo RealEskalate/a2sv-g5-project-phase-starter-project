@@ -79,8 +79,8 @@ func (u *UserUpdate) ToUser() *User {
 
 // user knows the password and wants to update
 type UpdatePassword struct {
-	OldPassword string `json:"old_password" binding:"required"`
-	NewPassword string `json:"new_password" binding:"required"`
+	OldPassword string `json:"old_password" binding:"required,min=4,max=30,StrongPassword"`
+	NewPassword string `json:"new_password" binding:"required,min=4,max=30,StrongPassword"`
 }
 
 // user forgot the password and wants to reset
@@ -128,6 +128,7 @@ type UserRepository interface {
 	GetUserById(c context.Context, userId string) (*User, error)
 	GetUsers(c context.Context, filter bson.M, userFilter UserFilter) (*[]User, mongopagination.PaginationData, error)
 	UpdateUser(c context.Context, userID string, updatedUser *UserUpdate) (*User, error)
+	UpdateLastLogin(c context.Context, userID string) error
 	ActivateUser(c context.Context, userID string) (*User, error)
 	DeleteUser(c context.Context, userID string) error
 	IsUserActive(c context.Context, userID string) (bool, error)

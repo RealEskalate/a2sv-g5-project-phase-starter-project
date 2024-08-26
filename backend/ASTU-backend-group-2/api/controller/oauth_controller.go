@@ -38,7 +38,7 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 		fmt.Println("user from callback", user.Email)
 
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			c.Error(err)
 			return
 		}
 
@@ -76,7 +76,8 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 
 		}
 
-		var refreshData entities.RefreshData
+
+	var refreshData entities.RefreshData
 	refreshData.Id =  primitive.NewObjectID()
 	refreshData.UserId = dbUser.ID.Hex()
 	
@@ -88,6 +89,7 @@ func (oc *OAuthController) OAuthCallback() gin.HandlerFunc {
 		c.JSON(http.StatusInternalServerError, entities.ErrorResponse{Message: err.Error()})
 		return
 	}
+
 
 	refreshToken, err := oc.LoginUsecase.CreateRefreshToken(dbUser, oc.Env.RefreshTokenSecret, oc.Env.RefreshTokenExpiryHour,refreshData.Id.Hex())
 	if err != nil {

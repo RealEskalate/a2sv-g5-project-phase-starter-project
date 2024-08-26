@@ -47,7 +47,10 @@ type Data = {
   data: string;
   refresh_token: string;
 };
-
+type AllowedProperties = {
+  ListCardLoading: () => JSX.Element;
+  // Add other allowed properties here
+};
 type SessionDataType = {
   user: Data;
 };

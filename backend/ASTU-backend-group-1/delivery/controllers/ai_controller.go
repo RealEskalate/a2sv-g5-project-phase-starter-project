@@ -54,3 +54,32 @@ func (c *AIController) Recommendtags(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
+
+func (c *AIController) Sumarize(ctx *gin.Context) {
+	data := infrastructure.Data{}
+	if err := ctx.BindJSON(&data); err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": "invalid data format"})
+		return
+	}
+	resp, err := c.model.Summarize(data)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "no response from the ai model"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"summary": resp})
+}
+func (c *AIController) Chat(ctx *gin.Context) {
+	message := struct {
+		Message string `json:"message,omitempty"`
+	}{}
+	if err := ctx.BindJSON(&message); err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": "invalid data format"})
+		return
+	}
+	resp, err := c.model.Chat(message.Message)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"response": resp})
+}

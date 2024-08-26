@@ -93,7 +93,7 @@ class _searchPageState extends State<searchPage> {
                         margin: EdgeInsets.only(left: 7),
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width *
-                              0.70, //------------->OVERFLOW!!
+                              0.70, 
                           height: 48,
                           child: Container(
                             decoration: BoxDecoration(
@@ -119,6 +119,7 @@ class _searchPageState extends State<searchPage> {
                                   border: InputBorder.none,
                                   hintText: "Leather",
                                   hintStyle: TextStyle(color: Colors.grey),
+                                  contentPadding: EdgeInsets.all(10)
                                 ),
                               ),
                             ),
@@ -127,42 +128,42 @@ class _searchPageState extends State<searchPage> {
                       ),
 
                       SizedBox(
-                        width: 7,
+                        width: 15,
                       ),
 
-                      // ------------------Filter option
                       Container(
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(63, 81, 243, 1),
-                        ),
-                        child: SizedBox(
-                          height: 48,
-                          width: 48,
-                          child: Container(
-                              // color: Colors.blue,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      width: 4,
-                                      color: Color.fromRGBO(63, 81, 243, 1)),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(8))),
-                              child: IconButton(
-                                  onPressed: () {
-                                    showModalBottomSheet(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return const SizedBox(
-                                              height: 338,
-                                              child: about_product());
-                                        });
-                                  },
-                                  icon: Icon(
-                                    Icons.filter_list,
-                                    color: Colors.white,
-                                  ))),
-                        ),
-                      ),
-                    ],
+  decoration: BoxDecoration(
+    color: Color(0xff3F51F3),
+    borderRadius: BorderRadius.circular(7), 
+  ),
+  child: Container(
+    decoration: BoxDecoration(
+      border: Border.all(
+        width: 1,
+        color: Color(0xff3F51F3),
+      ),
+      borderRadius: BorderRadius.circular(10), // Same border radius for inner container
+    ),
+    child: IconButton(
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          builder: (BuildContext context) {
+            return const SizedBox(
+              height: 338,
+              child: about_product(),
+            );
+          },
+        );
+      },
+      icon: Icon(
+        Icons.filter_list,
+        color: Colors.white,
+      ),
+    ),
+  ),
+),
+],
                   ),
                 ),
 

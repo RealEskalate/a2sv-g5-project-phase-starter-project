@@ -64,7 +64,8 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         automaticallyImplyLeading:
-            false, //remove pushnamed navigate back button
+            false,
+        toolbarHeight: 70.0,  //remove pushnamed navigate back button
 
         title: Container(
           width: MediaQuery.of(context).size.width,
@@ -93,22 +94,32 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("July 31, 2024",
-                                style: GoogleFonts.syne(
-                                    fontWeight: FontWeight.w500, fontSize: 15
-                                    // color: Theme.of(context).colorScheme.onSurface,
-                                    )),
+                            Text(
+                              'July 31, 2024',
+                              style: GoogleFonts.syne(
+                                textStyle:TextStyle(
+                                  color:Color.fromRGBO(170, 170, 170, 1),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              
+                            ),
                             Row(children: [
-                              Text("Hello, ",
-                                  style: GoogleFonts.sora(
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 15,
-                                      color:
-                                          Color.fromARGB(255, 143, 138, 138))),
+                              Text(
+                                'Hello,',
+                                style: GoogleFonts.sora(
+                                textStyle:TextStyle(
+                                  color:Color.fromRGBO(102, 102, 102, 1),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 15,
+                                ),
+                              ),          
+                              ),
                               BlocBuilder<GetUserBloc, GetUserState>(
                                 builder: (context, state) {
                                   if (state is GetUserLoading) {
-                                    return Text("estif",
+                                    return Text(" ",
                                         style: GoogleFonts.sora(
                                             fontWeight: FontWeight.w600,
                                             fontSize: 15));
@@ -140,6 +151,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
 
+
                   // --------DARKMODE TOGGLE
                   Container(
                     margin: EdgeInsets.only(right: 15),
@@ -154,105 +166,16 @@ class _HomePageState extends State<HomePage> {
                           Provider.of<ThemeProvider>(context).themeData ==
                                   darkmode
                               ? Icons.wb_sunny // Sun icon for light mode
-                              : Icons.nights_stay, // Moon icon for dark mode
+                              : Icons.nights_stay_outlined, // Moon icon for dark mode
                           size: 30,
                           // color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
                   ),
-
-                  // -----------chat icon------
                   Container(
-                      // color: Colors.yellow,
-                      child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/HomeChat');
-                          },
-                          child: Transform.rotate(
-                            angle: 5.5,
-                            child: Icon(
-                              Icons.send_rounded,
-                              size: 30,
-                            ),
-                          ))),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-      body: SafeArea(
-          child: Padding(
-        padding: const EdgeInsets.only(left: 21.0, right: 21.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.only(top: 4),
-                      child: SizedBox(
-                          width: 80,
-                          height: 80,
-                          child: ImagePickerIconButton()),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/logout');
-                      },
-                      child: Container(
-                        padding: EdgeInsets.only(top: 4, left: 10),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "July 31, 2024",
-                                style: GoogleFonts.syne(
-                                    fontWeight: FontWeight.w500,
-                                    color: Color.fromARGB(255, 170, 170, 170)),
-                              ),
-                              Row(children: [
-                                Text("Hello,",
-                                    style: GoogleFonts.sora(
-                                        fontWeight: FontWeight.w400,
-                                        color: Color.fromARGB(
-                                            255, 102, 102, 102))),
-                                BlocBuilder<GetUserBloc, GetUserState>(
-                                  builder: (context, state) {
-                                    if (state is GetUserLoading) {
-                                      return Text("...",
-                                          style: GoogleFonts.sora(
-                                              fontWeight: FontWeight.w600));
-                                    } else if (state is GetUserLoaded)  {
-                                      save_id(state.user.id);
-                                      return Text("${state.user.name}",
-                                          style: GoogleFonts.sora(
-                                              fontWeight: FontWeight.w600));
-                                    } else {
-                                      return Text('name');
-                                    }
-                                  },
-                                ),
-                              ])
-                            ]),
-                      ),
-                    ),
-                  ],
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                        decoration: BoxDecoration(
-                            // border: Border.all(
-                            // color: Color.fromRGBO(221, 221, 221, 1), width: 2),
-                            borderRadius: BorderRadius.circular(9)),
-                        child: GestureDetector(
+                    margin: EdgeInsets.only(right: 15),
+                    child: GestureDetector(
                           onTap: () {
                             showDialog(
                                 context: context,
@@ -280,57 +203,46 @@ class _HomePageState extends State<HomePage> {
                                       ],
                                     ));
                           },
-                          child: Image(
-                              width: 40,
-                              height: 40,
-                              image: AssetImage(
-                                  'assets/icons8-notification-bell-24.png')),
-                        )),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.05,
-                    ),
-                    Container(
-                        decoration: BoxDecoration(
-                            // border: Border.all(
-                            // color: Color.fromRGBO(221, 221, 221, 1), width: 2),
-                            borderRadius: BorderRadius.circular(9)),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.pushNamed(context, '/HomeChat');
-                          },
-                          child: Image(
-                              width: 30,
-                              height: 30,
-                              image: AssetImage('assets/message.png')),
-                        )),
-                  ],
-                ),
+                          child: Icon(
+                            Icons.logout_outlined,
+                            color: Colors.red,
+                          )),
+                        )
+                        
 
-                //       Container(
-                //         decoration: BoxDecoration(
-                //             // border: Border.all(color: Colors.grey, width: 1),
-                //             borderRadius: BorderRadius.circular(10)),
-                //         // padding: EdgeInsets.only(right: 2),
-                //         child: IconButton(
-                //             onPressed: () {
-                //               Navigator.push(
-                //                 context,
-                //                 PageTransition(
-                //                     alignment: Alignment.bottomCenter,
-                //                     curve: Curves.easeInOut,
-                //                     duration: Duration(milliseconds: 1200),
-                //                     reverseDuration: Duration(milliseconds: 400),
-                //                     type: PageTransitionType.leftToRightPop,
-                //                     child: searchPage(),
-                //                     childCurrent: HomePage()),
-                //               );
-                //             },
-                //             icon: Icon(Icons.messenger_outline_sharp),
-                //             color: Color.fromARGB(255, 217, 217, 217),
-                //             iconSize: 29))
-              ],
-            ),
+                  
 
+
+                  // -----------chat icon------
+                  // Container(
+                  //     // color: Colors.yellow,
+                  //     child: GestureDetector(
+                  //         onTap: () {
+                  //           Navigator.pushNamed(context, '/HomeChat');
+                  //         },
+                  //         child: Transform.rotate(
+                  //           angle: 5.5,
+                  //           child: Icon(
+                  //             Icons.send_rounded,
+                  //             size: 30,
+                  //           ),
+                  //         ))),
+                  
+                  
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+
+                  
+      body: SafeArea(
+          child: Padding(
+        padding: const EdgeInsets.only(left: 21.0, right: 21.0),
+        child: Column(
+          children: [
+            
             Container(
               height: MediaQuery.of(context).size.height * 0.052,
               child: Row(

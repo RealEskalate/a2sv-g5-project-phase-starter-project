@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import '../../../../../core/constants/constants.dart';
 import '../../../../../core/error/exception.dart';
@@ -9,133 +12,162 @@ import '../../model/chat_model.dart';
 import '../../model/message_model.dart';
 import 'remote_data_source.dart';
 
-class RemoteDataSourceImpl extends RemoteDataSource{
-
+class RemoteDataSourceImpl extends RemoteDataSource {
   final http.Client client;
   final String accessToken;
-  RemoteDataSourceImpl(this.accessToken, {required this.client});
+  late IO.Socket socket;
 
-  @override
-  Future<bool> deleteChat(String chatId) async{
-    try{
-   final response = await client.delete(Uri.parse(Urls.getChatById(chatId)),
-       headers: {
-        'Authorization': 'Bearer $accessToken',
-        'Content-Type': 'application/json',
-      },);
-      if(response.statusCode==204){
-        return true;
-      }
-      else{
-        return false;  
-      }
-    }
-    catch(e){
-      throw Exception(e.toString());
-    }
+  final StreamController<MessageModel> _messageStreamController =
+      StreamController<MessageModel>.broadcast();
 
- 
-      
+  RemoteDataSourceImpl({required this.client, required this.accessToken}) {
+    _initializeWebSocket();
   }
 
-@override
-  Future<List<ChatModel>> getAllChats() async{
-    try{
-      final response = await client.get(Uri.parse(Urls.baseChat),
-      headers: {
-        'Authorization': 'Bearer $accessToken',
-        'Content-Type': 'application/json',
-      },);
+  @override
+  Future<List<ChatModel>> getAllChats() async {
+    try {
+      final response = await client.get(
+        Uri.parse(Urls.baseChat),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
 
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         final result = json.decode(response.body)['data'];
-        final List<ChatModel>  answer = [];
+        final List<ChatModel> answer = [];
         result.forEach((json) {
-         answer.add(ChatModel.fromJson(json));});
+          answer.add(ChatModel.fromJson(json));
+        });
 
         return answer;
+      } else {
+        throw Exception();
       }
-      else{
-        throw Exception() ;
-      }
+    } catch (e) {
+      throw ServerException();
     }
-    catch(e){
-    throw ServerException();
-  }}
+  }
 
   @override
-  Future<ChatModel> getChatById(String chatId)async  {
-    try{
-          final response = await http.get(Uri.parse(Urls.getChatById(chatId)),
-    headers: {
-        'Authorization': 'Bearer $accessToken',
-        'Content-Type': 'application/json',
-      },);
-      if(response.statusCode==200){
+  Future<ChatModel> getChatById(String chatId) async {
+    try {
+      final response = await http.get(
+        Uri.parse(Urls.getChatById(chatId)),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {
         final result = json.decode(response.body)['data'];
         return ChatModel.fromJson(result);
+      } else {
+        throw Exception();
       }
-      else{
-        throw Exception() ;
-      }
-    }
-    catch(e){
+    } catch (e) {
       throw Exception(e.toString());
     }
   }
 
   @override
   Future<ChatModel> initiateChat(String recieverId) async {
-    try{
-    final response = await client.post(Uri.parse(Urls.baseChat),
-    headers: {
-        'Authorization': 'Bearer $accessToken',
-        'Content-Type': 'application/json',
-      },
-     body: json.encode({'userId': recieverId})
-    );
-    if(response.statusCode==201){
-      final result = json.decode(response.body)['data'];
-      return ChatModel.fromJson(result);
-    }
-    else{
-      throw Exception() ;
-    }}
-    catch(e){
+    try {
+      final response = await client.post(Uri.parse(Urls.baseChat),
+          headers: {
+            'Authorization': 'Bearer $accessToken',
+            'Content-Type': 'application/json',
+          },
+          body: json.encode({'userId': recieverId}));
+      if (response.statusCode == 201) {
+        final result = json.decode(response.body)['data'];
+        return ChatModel.fromJson(result);
+      } else {
+        throw Exception();
+      }
+    } catch (e) {
       throw Exception(e.toString());
     }
   }
 
-
-Future<List<MessageModel>> getChatMessages(String chatId) async{
-    try{
-     final response = await client.get(Uri.parse(Urls.getChatMessages(chatId)),
-       headers: {
-        'Authorization': 'Bearer $accessToken',
-        'Content-Type': 'application/json',
-      },);
-      if(response.statusCode==200){
+  Future<List<MessageModel>> getChatMessages(String chatId) async {
+    try {
+      final response = await client.get(
+        Uri.parse(Urls.getChatMessages(chatId)),
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+      );
+      if (response.statusCode == 200) {
         final result = json.decode(response.body)['data'];
-        
-        final List<MessageModel>  answer = [];
-          result.forEach((json) {
-         answer.add(MessageModel.fromJson(json));});
+
+        final List<MessageModel> answer = [];
+        result.forEach((json) {
+          answer.add(MessageModel.fromJson(json));
+        });
         return answer;
+      } else {
+        throw Exception();
       }
-      else{
-        throw Exception() ;
-      }
-    }
-    catch(e){
+    } catch (e) {
       throw Exception(e.toString());
     }
- 
-    
   }
 
   @override
-  Future<void> sendMessage(String chatId, String message, String type) {
-    
+  Future<void> sendMessage(String chatId, String message, String type) async {
+    socket.emit('message:send', {
+      'chatId': chatId,
+      'content': message,
+      'type': type,
+    });
+  }
+
+  @override
+  Stream<MessageModel> getMessages() {
+    return _messageStreamController.stream;
+  }
+
+  void _initializeWebSocket() {
+    socket = IO.io(
+      'https://g5-flutter-learning-path-be.onrender.com',
+      <String, dynamic>{
+        'transports': ['websocket'],
+        'extraHeaders': {'Authorization': 'Bearer $accessToken'}
+      },
+    );
+
+    socket.connect();
+
+    socket.onConnect((_) {
+      log('Connected to the socket server');
+    });
+
+    socket.on('message:received', (data) {
+      final message = MessageModel.fromJson(data);
+      _messageStreamController.add(message);
+    });
+
+    socket.on('message:delivered', (data) {
+      log('Message delivered: $data');
+    });
+
+    socket.onDisconnect((_) {
+      dispose();
+    });
+  }
+
+  void dispose() {
+    _messageStreamController.close();
+    socket.disconnect();
+  }
+
+  @override
+  Future<bool> deleteChat(String chatId) {
+    // TODO: implement deleteChat
     throw UnimplementedError();
   }
 }

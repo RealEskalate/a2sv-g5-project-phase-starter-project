@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import '../../../../config/route/route.dart' as route;
 import 'pages.dart';
 
@@ -22,6 +24,7 @@ class _DetailPageState extends State<DetailPage> {
       body: SafeArea(
         child: BlocListener<ProductBloc, ProductState>(
           listener: (context, state) {
+            log('detail + ${state}');
             if (state is ShowMessageState) {
               showCustomSnackBar(context, state.message);
               context.read<ProductBloc>().add(ResetMessageStateEvent());
@@ -39,7 +42,7 @@ class _DetailPageState extends State<DetailPage> {
                   children: [
                     Stack(children: [
                       imageLoader(state.product.imageUrl),
-                      backButton(
+                      BackButtonWidget.backButtonWidget(
                         iconColor: Colors.indigo,
                         onTap: () {
                           Navigator.of(context).pop();
@@ -214,7 +217,7 @@ class _DetailPageState extends State<DetailPage> {
 //                   children: [
 //                     Align(
 //                       alignment: Alignment.topLeft,
-//                       child: backButton(
+//                       child: BackButtonWidget(
 //                         iconColor: Colors.black,
 //                         onTap: () {
 //                           Navigator.of(context).pop();

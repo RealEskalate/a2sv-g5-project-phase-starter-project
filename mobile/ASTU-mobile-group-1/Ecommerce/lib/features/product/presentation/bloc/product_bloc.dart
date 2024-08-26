@@ -36,7 +36,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         _insertProductUsecase = insertProductUsecase,
         _deleteProductUsecase = deleteProductUsecase,
         _inputConverter = inputConverter,
-        super(IntialState()) {
+        super(InitalState()) {
     on<LoadAllProductEvent>(
       _onLoadAllProducts,
       transformer: debounce(

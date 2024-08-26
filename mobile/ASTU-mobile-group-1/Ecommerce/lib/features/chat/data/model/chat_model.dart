@@ -2,7 +2,6 @@ import '../../../auth/domain/entities/user_entity.dart';
 import '../../domain/entities/chat_entity.dart';
 
 class ChatModel extends ChatEntity {
-
   const ChatModel({
     required String chatId,
     required UserEntity user1,
@@ -14,23 +13,19 @@ class ChatModel extends ChatEntity {
     return ChatModel(
       chatId: json['_id'] as String,
       user1: userEntityFromJson(json['user1']),
-      user2:userEntityFromJson(json['user2']),
+      user2: userEntityFromJson(json['user2']),
     );
   }
 
-
   // Static method to convert a ChatEntity to JSON
-   Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       '_id': chatId,
       'user1': userEntityToJson(user1),
       'user2': userEntityToJson(user2),
     };
   }
-
-  
 }
-
 
 // Function to convert UserEntity to JSON
 Map<String, dynamic> userEntityToJson(UserEntity user) {
@@ -38,10 +33,8 @@ Map<String, dynamic> userEntityToJson(UserEntity user) {
     '_id': user.id.toString(),
     'name': user.name.toString(),
     'email': user.email.toString(),
-    
   };
 }
-
 
 // Function to convert JSON to UserEntity
 UserEntity userEntityFromJson(Map<String, dynamic> json) {
@@ -50,5 +43,4 @@ UserEntity userEntityFromJson(Map<String, dynamic> json) {
     name: json['name'].toString(),
     email: json['email'].toString(),
   );
-
 }

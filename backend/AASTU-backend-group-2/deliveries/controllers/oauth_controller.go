@@ -75,6 +75,8 @@ func (oc *OAuthController) HandleGoogleCallback(c *gin.Context) {
 		user.Imageuri = picture
 	}
 
+	user.Oauth = true
+
 	_ = oc.Userusecase.RegisterUser(c, &user)
 
 	logintoken, err := oc.Userusecase.LoginUser(c, user)

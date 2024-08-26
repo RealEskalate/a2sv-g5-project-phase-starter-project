@@ -17,13 +17,8 @@ func NewLikeController(likeusecase domain.LikeUsecase) *LikeController {
 }
 
 func (lc LikeController) CreateLike(c *gin.Context) {
-	role, exists := c.Get("role")
-	if !exists || (role != "user" && role != "admin") {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-		return
-	}
 	postID := c.Param("postID")
-	userID, exists := c.Get("userID")
+	userID, exists := c.Get("userid")
 	userIDString, ok := userID.(string)
 	if !ok || !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "user not found"})
@@ -44,12 +39,7 @@ func (lc LikeController) CreateLike(c *gin.Context) {
 
 func (lc LikeController) DeleteLike(c *gin.Context) {
 
-	role, exists := c.Get("role")
-	if !exists || (role != "user" && role != "admin") {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-		return
-	}
-	likeid, exists := c.Get("userID")
+	likeid, exists := c.Get("userid")
 	likeidstr, ok := likeid.(string)
 	if !ok || !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "like not found"})
@@ -68,12 +58,6 @@ func (lc LikeController) DeleteLike(c *gin.Context) {
 }
 
 func (lc LikeController) GetLikes(c *gin.Context) {
-
-	role, exists := c.Get("role")
-	if !exists || (role != "user" && role != "admin") {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
-		return
-	}
 	postID := c.Param("postID")
 	likes, err := lc.likeusecase.GetLikes(context.TODO(), postID)
 	if err != nil {

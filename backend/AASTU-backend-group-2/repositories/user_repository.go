@@ -37,6 +37,10 @@ func (urepo *UserRepository) UpdateUserDetails(user *domain.User) error {
 		setFields["bio"] = user.Bio
 	}
 
+	if user.UserName != "" {
+		setFields["username"] = user.UserName
+	}
+
 	if user.Imageuri != "" {
 		setFields["imageurl"] = user.Imageuri
 	}
@@ -89,10 +93,12 @@ func (urepo *UserRepository) RegisterUser(user *domain.User) error {
 	user.ID = primitive.NewObjectID()
 	user.IsVerified = false
 
-	password, err := infrastructure.PasswordHasher(user.Password)
-
-	if err != nil {
-		return err
+	if !user.Oauth {
+		password, err := infrastructure.PasswordHasher(user.Password)
+		if err != nil {
+			return err
+		}
+		user.Password = password
 	}
 
 	err = infrastructure.UserVerification(user.Email)
@@ -100,7 +106,6 @@ func (urepo *UserRepository) RegisterUser(user *domain.User) error {
 		return err
 	}
 
-	user.Password = password
 	_, err = urepo.collection.InsertOne(context.TODO(), user)
 
 	return err
@@ -113,7 +118,7 @@ func (urepo *UserRepository) VerifyUserEmail(token string) error {
 	}
 
 	filter := bson.M{"email": email}
-	update := bson.M{"$set": bson.M{"isVerified": true}}
+	update := bson.M{"$set": bson.M{"isverified": true}}
 
 	_, err = urepo.collection.UpdateOne(context.TODO(), filter, update)
 	return err
@@ -127,10 +132,16 @@ func (urepo *UserRepository) LoginUser(user domain.User) (string, error) {
 		return "", err
 	}
 
-	check := infrastructure.PasswordComparator(u.Password, user.Password)
+	if !u.IsVerified {
+		return "", fmt.Errorf("email not verified")
+	}
 
-	if check != nil {
-		return "", check
+	if !u.Oauth {
+		check := infrastructure.PasswordComparator(u.Password, user.Password)
+
+		if check != nil {
+			return "", check
+		}
 	}
 
 	accessToken, err := infrastructure.TokenGenerator(u.ID, u.Email, u.IsAdmin, true)
@@ -168,6 +179,7 @@ func (urepo *UserRepository) ResetPassword(token string, newPassword string) err
 	if err != nil {
 		return err
 	}
+
 	hashedPassword, err := infrastructure.PasswordHasher(newPassword)
 	if err != nil {
 		return err

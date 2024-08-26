@@ -83,7 +83,7 @@ func (_m *BlogUsecase) FilterBlog(c context.Context, tag []string, date time.Tim
 }
 
 // RetrieveBlog provides a mock function with given fields: c, page, sortby, dir
-func (_m *BlogUsecase) RetrieveBlog(c context.Context, page int, sortby string, dir string) ([]domain.Blog, error) {
+func (_m *BlogUsecase) RetrieveBlog(c context.Context, page int, sortby string, dir string) ([]domain.Blog, int, error) {
 	ret := _m.Called(c, page, sortby, dir)
 
 	if len(ret) == 0 {
@@ -91,8 +91,9 @@ func (_m *BlogUsecase) RetrieveBlog(c context.Context, page int, sortby string, 
 	}
 
 	var r0 []domain.Blog
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int, string, string) ([]domain.Blog, error)); ok {
+	var r1 int
+	var r2 error
+	if rf, ok := ret.Get(0).(func(context.Context, int, string, string) ([]domain.Blog, int, error)); ok {
 		return rf(c, page, sortby, dir)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, int, string, string) []domain.Blog); ok {
@@ -103,13 +104,19 @@ func (_m *BlogUsecase) RetrieveBlog(c context.Context, page int, sortby string, 
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int, string, string) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, int, string, string) int); ok {
 		r1 = rf(c, page, sortby, dir)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(int)
 	}
 
-	return r0, r1
+	if rf, ok := ret.Get(2).(func(context.Context, int, string, string) error); ok {
+		r2 = rf(c, page, sortby, dir)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // SearchBlog provides a mock function with given fields: c, postName, authorName

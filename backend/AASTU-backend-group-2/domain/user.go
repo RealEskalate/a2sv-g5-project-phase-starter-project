@@ -18,7 +18,8 @@ type User struct {
 	IsAdmin      bool               `json:"isadmin,omitempty"`
 	JoinedAt     time.Time          `json:"joinedat,omitempty"`
 	RefreshToken string             `json:"refreshtoken,omitempty"`
-	IsVerified   bool               `json:"isVerified,omitempty"`
+	IsVerified   bool               `bson:"isverified,omitempty" json:"isverified,omitempty"`
+	Oauth        bool               `json:"oauth,omitempty"`
 }
 
 type RestRequest struct {

@@ -4,6 +4,7 @@ import (
 	"blog_g2/domain"
 	"context"
 	"errors"
+	"log"
 
 	"time"
 
@@ -14,16 +15,22 @@ import (
 )
 
 type BlogRepository struct {
-	client     *mongo.Client
-	database   *mongo.Database
-	collection *mongo.Collection
+	client            *mongo.Client
+	database          *mongo.Database
+	collection        *mongo.Collection
+	likeCollection    *mongo.Collection
+	dislikeCollection *mongo.Collection
+	commentCollection *mongo.Collection
 }
 
 func NewBlogRepository(mongoClient *mongo.Client) domain.BlogRepository {
 	return &BlogRepository{
-		client:     mongoClient,
-		database:   mongoClient.Database("Blog-manager"),
-		collection: mongoClient.Database("Blog-manager").Collection("Blogs"),
+		client:            mongoClient,
+		database:          mongoClient.Database("Blog-manager"),
+		collection:        mongoClient.Database("Blog-manager").Collection("Blogs"),
+		likeCollection:    mongoClient.Database("Blog-manager").Collection("Likes"),
+		dislikeCollection: mongoClient.Database("Blog-manager").Collection("Dislikes"),
+		commentCollection: mongoClient.Database("Blog-manager").Collection("Comments"),
 	}
 
 }
@@ -31,7 +38,9 @@ func NewBlogRepository(mongoClient *mongo.Client) domain.BlogRepository {
 const perpage = 10
 
 func (br *BlogRepository) CreateBlog(blog *domain.Blog) error {
-	result, err := br.collection.InsertOne(context.TODO(), blog)
+	log.Println(blog)
+	blog.ID = primitive.NewObjectID()
+	result, err := br.collection.InsertOne(context.TODO(), blog, options.InsertOne())
 	if err != nil {
 		return err
 	}
@@ -39,19 +48,25 @@ func (br *BlogRepository) CreateBlog(blog *domain.Blog) error {
 	return nil
 }
 
-func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) ([]domain.Blog, error) {
+func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) ([]domain.Blog, int, error) {
 	if pgnum == 0 {
 		pgnum = 1
 	}
 	sorto := -1
 	skip := perpage * (pgnum - 1)
 
+	count, err := br.collection.CountDocuments(context.TODO(), bson.M{})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("Total documents: %d\n", count)
+
 	if direct == "" {
 		direct = "desc"
 	}
 
 	if direct != "asc" && direct != "desc" {
-		return nil, errors.New("invalid direct parameter")
+		return nil, 0, errors.New("invalid direct parameter")
 	}
 
 	if direct == "asc" {
@@ -63,7 +78,7 @@ func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) 
 	}
 
 	if sortby != "date" && sortby != "popularity" {
-		return nil, errors.New("invalid sortby parameter")
+		return nil, 0, errors.New("invalid sortby parameter")
 	}
 
 	if sortby == "popularity" {
@@ -75,7 +90,7 @@ func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) 
 						{Key: "$add", Value: bson.A{
 							bson.D{{Key: "$multiply", Value: bson.A{"$likes", 1}}},
 							bson.D{{Key: "$multiply", Value: bson.A{"$dislikes", 1}}},
-							bson.D{{Key: "$multiply", Value: bson.A{"$comment", 2}}},
+							bson.D{{Key: "$multiply", Value: bson.A{"$comments", 2}}},
 						}},
 					}},
 				}},
@@ -96,16 +111,16 @@ func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) 
 
 		cursor, err := br.collection.Aggregate(context.Background(), pipeline)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
 		var blogs []domain.Blog
 
 		if err = cursor.All(context.Background(), &blogs); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
-		return blogs, nil
+		return blogs, int(count), nil
 
 	} else if sortby == "date" {
 		findoptions := options.Find()
@@ -115,17 +130,17 @@ func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) 
 
 		cursor, err := br.collection.Find(context.Background(), bson.D{}, findoptions)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
 		var blogs []domain.Blog
 		if err = cursor.All(context.Background(), &blogs); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
-		return blogs, nil
+		return blogs, int(count), nil
 	}
 
-	return nil, errors.New("no blogs found")
+	return nil, 0, errors.New("no blogs found")
 
 }
 
@@ -187,7 +202,7 @@ func (br *BlogRepository) DeleteBlog(blogID string, isAdmin bool, userid string)
 	if err != nil {
 		return err
 	}
-	// Convert the blogID to a MongoDB ObjectID
+	// Convert the userID to a MongoDB ObjectID
 	userID, err := primitive.ObjectIDFromHex(userid)
 	if err != nil {
 		return err
@@ -207,17 +222,64 @@ func (br *BlogRepository) DeleteBlog(blogID string, isAdmin bool, userid string)
 
 	// Check if the user is an admin or the owner of the blog
 	if !isAdmin && existingBlog.UserID != userID {
-		return errors.New("permission denied: you do not have the right to update this blog")
+		return errors.New("permission denied: you do not have the right to delete this blog")
 	}
 
-	query := bson.M{"_id": ID}
-	result, err := br.collection.DeleteOne(context.TODO(), query)
+	// Start a session for transaction
+	session, err := br.collection.Database().Client().StartSession()
 	if err != nil {
 		return err
 	}
+	defer session.EndSession(context.TODO())
 
-	if result.DeletedCount == 0 {
-		return errors.New("no blog with this id exists")
+	err = mongo.WithSession(context.TODO(), session, func(sc mongo.SessionContext) error {
+		// Start the transaction
+		if err := session.StartTransaction(); err != nil {
+			return err
+		}
+
+		// Delete the blog post
+		blogQuery := bson.M{"_id": ID}
+		_, err := br.collection.DeleteOne(sc, blogQuery)
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		// Delete associated comments
+		commentQuery := bson.M{"post_id": ID}
+		_, err = br.commentCollection.DeleteMany(sc, commentQuery)
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		// Delete associated likes
+		likeQuery := bson.M{"post_id": ID}
+		_, err = br.likeCollection.DeleteMany(sc, likeQuery)
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		// Delete associated dislikes
+		dislikeQuery := bson.M{"post_id": ID}
+		_, err = br.dislikeCollection.DeleteMany(sc, dislikeQuery)
+		if err != nil {
+			session.AbortTransaction(sc)
+			return err
+		}
+
+		// Commit the transaction
+		if err := session.CommitTransaction(sc); err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return err
 	}
 
 	return nil

@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../../../core/constants/constants.dart';
 import '../../../../core/util/input_converter.dart';
 import '../../../auth/domain/entities/user_entity.dart';
 import '../../domain/entities/product_entity.dart';
@@ -56,6 +57,14 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
     on<AddProductEvent>((event, emit) {
       emit(NeutralState());
     });
+
+    on<FilterProductEvent>((event, emit) async {
+      final filteredProducts = Urls.allProducts.where((product) {
+        final searchQuery = event.text.toLowerCase();
+        return product.name.toLowerCase().contains(searchQuery);
+      }).toList();
+      emit(LoadedAllProductsState(products: filteredProducts));
+    });
   }
 
   Future<void> _onLoadAllProducts(
@@ -67,6 +76,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
         emit(ErrorState(message: failure.message));
       },
       (data) {
+        Urls.allProducts = data;
         emit(LoadedAllProductsState(products: data));
       },
     );

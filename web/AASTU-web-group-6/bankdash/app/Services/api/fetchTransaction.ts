@@ -4,7 +4,7 @@ const getTransaction = async (page: number, accessToken: string) => {
   try {
     const response = await axios({
       method: "GET",
-      url: `https://bank-dashboard-rsf1.onrender.com/transactions?page=${page}&size=5`,
+      url: `https://bank-dashboard-irse.onrender.com/transactions?page=${page}&size=5`,
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
@@ -25,7 +25,7 @@ const getExpense = async (page: number, accessToken: string) => {
   try {
     const response = await axios({
       method: "GET",
-      url: `https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=${page}&size=5`,
+      url: `https://bank-dashboard-irse.onrender.com/transactions/expenses?page=${page}&size=5`,
       headers: {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",

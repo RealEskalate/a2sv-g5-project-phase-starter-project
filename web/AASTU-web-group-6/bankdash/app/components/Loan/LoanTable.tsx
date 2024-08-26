@@ -204,7 +204,8 @@ const LoanTable = () => {
                             : "bg-gray-300" // Default background if none of the statuses match
                         }`}
                       >
-                        {detail.activeLoneStatus}
+                        {detail.activeLoneStatus.charAt(0).toUpperCase() +
+                          detail.activeLoneStatus.slice(1)}
                       </td>
                       <td>
                         <p className="table-button">Replay</p>

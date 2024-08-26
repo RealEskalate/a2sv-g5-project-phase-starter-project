@@ -27,7 +27,7 @@ const ApplyLoan = () => {
     e.preventDefault();
     try {
       await axios.post(
-        "https://bank-dashboard-rsf1.onrender.com/active-loans",
+        "https://bank-dashboard-irse.onrender.com/active-loans",
         formData,
         {
           headers: {

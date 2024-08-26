@@ -35,7 +35,7 @@ const ModalTrans = ({
     // change to tranService
     try {
       const response = await axios.post(
-        "https://bank-dashboard-rsf1.onrender.com/transactions",
+        "https://bank-dashboard-irse.onrender.com/transactions",
         formData,
         {
           headers: {

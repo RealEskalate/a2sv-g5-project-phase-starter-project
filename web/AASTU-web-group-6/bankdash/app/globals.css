@@ -262,3 +262,25 @@ th {
     scrollbar-width: none; /* Firefox */
   }
 }
+
+.card-loader {
+  perspective: 1000px; /* Creates the 3D space */
+}
+
+.atm-card {
+  animation: rotate-atm-card 2s ease-in-out infinite;
+  transform-style: preserve-3d; /* Enables 3D transformations */
+  border-radius: 8px;
+}
+
+@keyframes rotate-atm-card {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(350deg);
+  }
+  100% {
+    transform: rotate(720deg);
+  }
+}

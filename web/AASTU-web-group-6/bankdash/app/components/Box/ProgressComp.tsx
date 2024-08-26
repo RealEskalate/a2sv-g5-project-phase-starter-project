@@ -16,7 +16,7 @@ export default function ProgressComp() {
 
   return (
     <div className="progress-box flex flex-col  items-start justify-center gap-12">
-      <div className="vert-line h-[208px] z-0 w-[2px] bg-gradient-to-b from-white to-blue-800 rounded-3xl absolute left-[71px]"></div>
+      <div className="vert-line h-[208px] z-0 w-[2px] bg-gradient-to-b from-white to-blue-800 rounded-3xl absolute left-[60px]"></div>
       {[...Array(totalSteps)].map((_, index) => {
         const step = index + 2;
         return (

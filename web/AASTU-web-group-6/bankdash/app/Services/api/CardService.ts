@@ -1,7 +1,7 @@
 // src/services/cardService.ts
 import axios from "axios";
 
-const API_URL = "https://bank-dashboard-rsf1.onrender.com/cards"; // Adjust this to match your actual API base URL
+const API_URL = "https://bank-dashboard-irse.onrender.com/cards"; // Adjust this to match your actual API base URL
 
 interface Card {
   id?: string;

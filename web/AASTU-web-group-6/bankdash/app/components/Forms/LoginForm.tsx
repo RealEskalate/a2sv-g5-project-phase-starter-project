@@ -37,7 +37,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center gap-2 max-w-[408px] min-w-72 p-10 bg-[#ffff] rounded-2xl border-[0.3px] border-solid border-[#1814f326] shadow-sm shadow-blue-100">
+    <div className="flex flex-col justify-center gap-2 max-w-[408px] min-w-72 p-10 bg-[#ffff] rounded-2xl border-[0.3px] border-solid border-[#1814f326] shadow-sm shadow-blue-100 z-20">
       <div className="flex flex-col gap-2 justify-center items-center ">
         <div className="flex items-center circle p-4 pt-5 bg-blue-50 rounded-full">
           <Image src="/assets/logo-blue.svg" width={48} height={48} alt="" />

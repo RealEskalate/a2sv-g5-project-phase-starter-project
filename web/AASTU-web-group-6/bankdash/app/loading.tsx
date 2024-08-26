@@ -1,14 +1,9 @@
-"use client";
-import React from "react";
-import Image from "next/image";
+import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCreditCard,
-  faCreditCardAlt,
-  faSpinner,
-} from "@fortawesome/free-solid-svg-icons";
+import Image from "next/image";
+import React from "react";
 
-const NotFound = () => {
+const loading = () => {
   return (
     <div className="w-full flex flex-col px-6 gap-2 min-h-screen items-center justify-center">
       <div className="b flex items-center justify-center p-2 bg-blue-100 rounded-full">
@@ -23,4 +18,4 @@ const NotFound = () => {
   );
 };
 
-export default NotFound;
+export default loading;

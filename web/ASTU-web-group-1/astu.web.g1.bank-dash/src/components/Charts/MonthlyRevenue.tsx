@@ -61,8 +61,8 @@ const MonthlyRevenue = () => {
       title: {
         display: false,
       },
-      tooltip: {
-        enabled: false, // This will hide the tooltip
+      datalabels: {
+        display: false, // This will hide the tooltip
       },
     },
   };

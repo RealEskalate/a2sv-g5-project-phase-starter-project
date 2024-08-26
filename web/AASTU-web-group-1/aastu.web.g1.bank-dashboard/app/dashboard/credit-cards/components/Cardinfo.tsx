@@ -13,7 +13,7 @@ const Cardinfo = () => {
       >
         <div className="flex-initial w-[2/12] m-3">
           <div
-            className={`font-semibold py-1 px-2 rounded-lg text-sm w-[45px] ${
+            className={`font-semibold py-1 px-2 rounded-lg text-sm w-[45px] min-w-[20px] ${
               isDarkMode
                 ? "text-blue-300 bg-blue-900"
                 : "text-blue-500 bg-opacity-25"

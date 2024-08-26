@@ -45,7 +45,7 @@ const LastTransaction = ({
 
   return (
     <div className={`rounded-xl mb-2 mt-4 min-w-[325px] ${containerClass}`}>
-      <div className="md:grid md:grid-cols-6 flex grid-cols-2 items-center">
+      <div className="md:grid md:grid-cols-6 flex grid-cols-2 items-center justify-between">
         <div className="flex flex-initial col-span-2 m-3">
           <div
             className={`${colorClass} font-semibold py-2 px-2 rounded-lg text-sm w-[45px]`}

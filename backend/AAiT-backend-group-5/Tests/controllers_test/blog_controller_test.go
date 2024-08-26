@@ -234,20 +234,28 @@ func (suite *BlogControllerTestSuite) TestDeleteBlogController_Success() {
 	suite.Equal(http.StatusOK, responseWriter.Code)
 	suite.Contains(responseWriter.Body.String(), "Blog deleted successfully")
 }
-
 func (suite *BlogControllerTestSuite) TestTrackPopularityController_Success() {
 	blogID := "blog123"
 	authorID := "author123"
+	action := "like"
 
 	trackPopularityReq := dtos.TrackPopularityRequest{
-		UserID: authorID,
-		BlogID: blogID,
+		Action: action,
 	}
 
-	suite.mockUsecase.On("TrackPopularity", mock.Anything, trackPopularityReq).Return(nil).Once()
+	// The mock should expect the BlogID and UserID set by the controller
+	expectedPopularityReq := dtos.TrackPopularityRequest{
+		BlogID: blogID,
+		Action: action,
+		UserID: authorID,
+	}
+
+	suite.mockUsecase.On("TrackPopularity", mock.Anything, expectedPopularityReq).Return(nil).Once()
 
 	requestBody, _ := json.Marshal(trackPopularityReq)
+
 	request, _ := http.NewRequest(http.MethodPost, "/blogs/"+blogID+"/popularity", bytes.NewBuffer(requestBody))
+	request.Header.Set("Content-Type", "application/json")
 	responseWriter := httptest.NewRecorder()
 
 	ctx, _ := gin.CreateTestContext(responseWriter)

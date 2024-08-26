@@ -10,6 +10,7 @@ import (
 	interfaces "github.com/aait.backend.g5.main/backend/Domain/Interfaces"
 	models "github.com/aait.backend.g5.main/backend/Domain/Models"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator"
 )
 
 type BlogController struct {
@@ -24,13 +25,14 @@ func NewBlogController(usecase interfaces.BlogUsecase) *BlogController {
 
 func (c *BlogController) CreateBlogController(ctx *gin.Context) {
 	var newBlog dtos.CreateBlogRequest
+	validate := validator.New()
 
 	if err := ctx.ShouldBind(&newBlog); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	if err := newBlog.Validate(); err != nil {
+	if err := validate.Struct(newBlog); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
 		return
 	}
@@ -129,13 +131,14 @@ func (c *BlogController) SearchBlogsController(ctx *gin.Context) {
 func (c *BlogController) UpdateBlogController(ctx *gin.Context) {
 	var updateBlog dtos.UpdateBlogRequest
 	blogID := ctx.Param("id")
+	validate := validator.New()
 
 	if err := ctx.ShouldBind(&updateBlog); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	if err := updateBlog.Validate(); err != nil {
+	if err := validate.Struct(updateBlog); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
 		return
 	}
@@ -163,11 +166,9 @@ func (c *BlogController) UpdateBlogController(ctx *gin.Context) {
 func (c *BlogController) DeleteBlogController(ctx *gin.Context) {
 	blogID := ctx.Param("id")
 	authorID := ctx.GetString("id")
+	validate := validator.New()
 
 	if authorID == "" {
-		fmt.Println("author id", authorID)
-		fmt.Println("blog id", blogID)
-
 		ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
@@ -177,7 +178,7 @@ func (c *BlogController) DeleteBlogController(ctx *gin.Context) {
 		AuthorID: authorID,
 	}
 
-	if err := deleteBlogReq.Validate(); err != nil {
+	if err := validate.Struct(deleteBlogReq); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
 		return
 	}
@@ -192,22 +193,24 @@ func (c *BlogController) DeleteBlogController(ctx *gin.Context) {
 
 func (c *BlogController) TrackPopularityController(ctx *gin.Context) {
 	var blogPopularity dtos.TrackPopularityRequest
+	validate := validator.New()
 
 	if err := ctx.ShouldBind(&blogPopularity); err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	if err := blogPopularity.Validate(); err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
-		return
-	}
-	
 	userID := ctx.GetString("id")
 	blogID := ctx.Param("id")
 
 	blogPopularity.UserID = userID
 	blogPopularity.BlogID = blogID
+
+	if err := validate.Struct(&blogPopularity); err != nil {
+		fmt.Println("Binding Error:", err)
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "One or more fields are missing"})
+		return
+	}
 
 	if err := c.usecase.TrackPopularity(ctx, blogPopularity); err != nil {
 		ctx.IndentedJSON(err.Code, gin.H{"error": err.Message})

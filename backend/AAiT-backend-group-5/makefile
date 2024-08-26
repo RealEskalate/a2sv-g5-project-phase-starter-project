@@ -3,11 +3,11 @@ add:
 push:
 	git push origin ${ORIGIN}
 run:
-	docker compose up --build -d 
+	docker-compose up --build -d 
 up:
-	docker compose up -d 
+	docker-compose up -d 
 stop:
-	docker compose down 
+	docker-compose down 
 logs:
 	docker logs blog-app 
 

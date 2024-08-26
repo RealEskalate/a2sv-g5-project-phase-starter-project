@@ -29,6 +29,17 @@ interface BankServicesResponse {
   };
 }
 
+const Shimmer = () => {
+  return (
+    <div className="animate-pulse space-y-4">
+      <div className="h-6 bg-gray-300 rounded w-1/4"></div>{" "}
+      {/* Simulate title */}
+      <div className="h-52 bg-gradient-to-r from-gray-300 via-gray-200 to-gray-300 rounded-xl"></div>{" "}
+      {/* Simulate chart area */}
+    </div>
+  );
+};
+
 const Services = () => {
   const [bankServices, setBankServices] = useState<BankService[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -78,9 +89,7 @@ const Services = () => {
     pages[i] = i;
   }
 
-  return loading ? (
-    <Loading />
-  ) : (
+  return (
     <div
       className={`p-4 flex flex-col w-full gap-5 lg:p-8 ${
         isDarkMode ? "bg-gray-800 text-gray-300" : "text-gray-900"
@@ -100,14 +109,18 @@ const Services = () => {
         >
           Bank Services List
         </h1>
-        {bankServices.map((items, index) => (
-          <ServiceList
-            icon={items.icon}
-            name={items.name}
-            details={items.details}
-            key={index}
-          />
-        ))}
+        {loading ? (
+          <Shimmer />
+        ) : (
+          bankServices.map((items, index) => (
+            <ServiceList
+              icon={items.icon}
+              name={items.name}
+              details={items.details}
+              key={index}
+            />
+          ))
+        )}
       </div>
 
       {/* Pagination Controls */}

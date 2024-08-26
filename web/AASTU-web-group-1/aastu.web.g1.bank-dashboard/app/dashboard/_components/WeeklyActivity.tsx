@@ -10,7 +10,7 @@ const Shimmer = () => {
   return (
     <div className="animate-pulse flex flex-col space-y-4 p-5">
       <div className="h-6 bg-gray-300 rounded"></div>
-      <div className="h-48 bg-gray-300 rounded"></div>
+      <div className="h-52 bg-gray-300 rounded"></div>
     </div>
   );
 };
@@ -43,7 +43,7 @@ export const WeeklyActivity = ({ onLoadingComplete }: { onLoadingComplete: any }
   return (
     <div className="md:w-2/3 space-y-5">
       <div className="font-inter text-[16px] font-semibold">
-        <h4>Weekly Activity</h4>
+        <h4 className="lg:text-[22px] md:text-lg text-base">Weekly Activity</h4>
       </div>
       <div
         className={`${
@@ -52,7 +52,7 @@ export const WeeklyActivity = ({ onLoadingComplete }: { onLoadingComplete: any }
             : "bg-white text-black "
         }  md:shadow-lg  rounded-xl `}
       >
-        {loading || (weeklyIncome.length === 0 || weeklyWithdraw.length === 0) ? (
+        {loading || weeklyIncome.length === 0 || weeklyWithdraw.length === 0 ? (
           <Shimmer />
         ) : (
           <Barchart

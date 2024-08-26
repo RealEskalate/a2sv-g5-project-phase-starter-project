@@ -1,8 +1,6 @@
 import ky from "ky";
 import { useSession } from "next-auth/react";
 
-
-
 interface Credentials {
   userName: string;
   password: string;
@@ -20,12 +18,15 @@ interface SignInResponse {
   };
 }
 
-export async function signInWithCredentials(credentials: Credentials): Promise<SignInResponse> {
-  return await ky.post(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`, {
-    json: credentials,
-  }).json<SignInResponse>();
+export async function signInWithCredentials(
+  credentials: Credentials
+): Promise<SignInResponse> {
+  return await ky
+    .post(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`, {
+      json: credentials,
+    })
+    .json<SignInResponse>();
 }
-
 
 // export async function changePassword(credentials: any){
 //     console.log(accessToken);
@@ -52,16 +53,44 @@ export async function signInWithCredentials(credentials: Credentials): Promise<S
 //     return res;
 // }
 
+interface returnData {
+  access_token: string;
+  refresh_token: string;
+  data: null;
+}
 
-export async function refreshAccessToken(refreshToken: string): Promise<string | null> {
-    try {
-      const response = await ky.post(`${process.env.NEXT_PUBLIC_BASE_URL}/refresh-token`, {
-        json: { refreshToken },
-      }).json<{ access_token: string }>();
-  
-      return response.access_token;
-    } catch (error) {
-      console.error('Failed to refresh access token:', error);
-      return null;
+export async function refreshAccessToken(
+  refresh_token: string
+): Promise<returnData | null> {
+  console.log("Refresh Token Entering", refresh_token);
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/auth/refresh_token`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${refresh_token}`,
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      const data = await response.json();
+      console.log("Fetched Data from auth.ts", data);
+
+      // Ensure that `data.data` contains both `access_token` and `refresh_token`
+      if (data.data && data.data.access_token && data.data.refresh_token) {
+        return data.data; // Ensure the returnData structure is as expected
+      } else {
+        throw new Error("Missing access or refresh token in response data");
+      }
+    } else {
+      throw new Error(
+        `Failed to refresh token. Status code: ${response.status}`
+      );
     }
+  } catch (error) {
+    console.error("Error refreshing token:", error);
+    return null;
   }
+}

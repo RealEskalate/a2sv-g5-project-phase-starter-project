@@ -1,3 +1,4 @@
+'use client'
 import React from 'react';
 import TrendingTable from './TrendingTable';
 import { useUser } from '@/contexts/UserContext';

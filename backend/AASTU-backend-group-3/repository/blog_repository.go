@@ -96,12 +96,8 @@ func (bc *MongoBlogRepository) UpdateBlog(blog domain.Blog, blogId string) (doma
 	return newBlog, nil
 }
 
-func (bc *MongoBlogRepository) GetBlogByID(id string) (domain.Blog, error) {
-    objectID, err := primitive.ObjectIDFromHex(id)
-    if err != nil {
-        return domain.Blog{}, err
-    }
-    filter := bson.M{"_id": objectID}
+func (bc *MongoBlogRepository) GetBlogByID(id primitive.ObjectID) (domain.Blog, error) {
+    filter := bson.M{"_id": id}
     var blog domain.Blog
 
     er := bc.collection.FindOne(context.Background(), filter).Decode(&blog)
@@ -109,7 +105,7 @@ func (bc *MongoBlogRepository) GetBlogByID(id string) (domain.Blog, error) {
         if er == mongo.ErrNoDocuments {
             return domain.Blog{}, errors.New("blog not found")
         }
-        return domain.Blog{}, err
+        return domain.Blog{}, er
     }
 
     ctx := context.Background()
@@ -152,7 +148,7 @@ func (bc *MongoBlogRepository) GetBlogByID(id string) (domain.Blog, error) {
     }()
 
     update := bson.M{"$inc": bson.M{"viewcount": 1}}
-    _, err = bc.collection.UpdateOne(context.Background(), filter, update)
+    _, err := bc.collection.UpdateOne(context.Background(), filter, update)
     if err != nil {
         return domain.Blog{}, err
     }
@@ -171,8 +167,6 @@ func (bc *MongoBlogRepository) GetBlogByID(id string) (domain.Blog, error) {
     return blog, nil
 }
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func (bc *MongoBlogRepository) GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]domain.Blog, int64, error) {
     var blogs []domain.Blog
@@ -290,9 +284,6 @@ func containsExactMatch(tags []string, tag string) bool {
     }
     return false
 }
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 func (bc *MongoBlogRepository) GetUserBlogs(userID string) ([]domain.Blog, error) {
 	var blogs []domain.Blog

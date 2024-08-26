@@ -25,6 +25,7 @@ type Blog struct {
 
 
 type BlogResponse struct {
+	ID            primitive.ObjectID `json:"id" bson:"_id,omitempty"`           // Unique identifier for the blog post
 	Title         string    `json:"title"`          // Title of the blog post
     Content       string    `json:"content"`        // Content of the blog post
     AuthorID      string    `json:"author_id"`      // ID of the user who created the post
@@ -39,6 +40,7 @@ type BlogResponse struct {
 // when unmarshaling give blog response
 func (b *Blog) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&BlogResponse{
+		ID:			b.ID,
 		Title:         b.Title,
 		Content:       b.Content,
 		AuthorID:      b.AuthorID,
@@ -58,7 +60,7 @@ type BlogRepository interface {
 	CreateBlog(username, userID string,blog Blog) (Blog, error)
 	DeleteBlog( id string) (Blog, error)
 	UpdateBlog( blog Blog, blogId string) (Blog, error)
-	GetBlogByID( id string) (Blog, error)
+	GetBlogByID( id primitive.ObjectID) (Blog, error)
 	GetBlogs(page, limit int64, sortBy, tag, authorName string) ([]Blog, int64, error)
 	GetUserBlogs(userID string) ([]Blog, error)
 

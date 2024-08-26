@@ -7,7 +7,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import RecentTransactionSkeleton from "../recent-transaction/RecentTransactionSkeleton";
-import EmptyShow from "../emptyShowingImage/EmptyShow";
+import ErrorImage from "../Error/ErrorImage";
 
 const icons = [
   "/assets/cardlist/card1.svg",
@@ -29,23 +29,24 @@ interface FullCard extends Card {
 const CardList = () => {
   const { data: session, status } = useSession();
   const accessToken = session?.user.accessToken!;
-
+  
   const {
-    data: cardsData,
-    isLoading,
-    error,
-  } = useGetAllCardInfoQuery({ token: accessToken, size: 5 });
+    data: allCardsDataWithContent,
+    isLoading: isLoading,
+    isError: isError,
+  } = useGetAllCardInfoQuery({
+    token :accessToken,
+    size: 10,
+  });
   const [cardDetails, setCardDetails] = useState<FullCard[]>([]);
-  const [
-    retrieveCardInfo,
-    { data: cardDetailsData, error: retrieveCardInfoError },
-  ] = useLazyRetiriveCardInfoQuery();
-
+  const [retrieveCardInfo, { data: cardDetailsData, error: retrieveCardInfoError }] = useLazyRetiriveCardInfoQuery();
+  
   useEffect(() => {
     const fetchFullCardDetails = async () => {
-      if (cardsData && Array.isArray(cardsData) && cardsData.length > 0) {
+      if (allCardsDataWithContent && Array.isArray(allCardsDataWithContent.content) && allCardsDataWithContent.content.length > 0) {
+        const cardsData = allCardsDataWithContent.content
         const limitedData = cardsData.slice(0, 3);
-
+        
         const fullCardsPromises = limitedData.map(async (card: Card) => {
           try {
             const { data: cardDetails } = await retrieveCardInfo({
@@ -74,18 +75,18 @@ const CardList = () => {
     };
 
     fetchFullCardDetails();
-  }, [cardsData, accessToken, retrieveCardInfo]);
+  }, [allCardsDataWithContent, accessToken, retrieveCardInfo]);
 
   if (isLoading) {
     return <RecentTransactionSkeleton />;
   }
 
-  if (error) {
+  if (isError) {
     return <div>Error fetching cards</div>;
   }
 
-  if (!cardsData || cardsData.length === 0) {
-    return <div>No cards available</div>;
+  if (!allCardsDataWithContent || allCardsDataWithContent.length === 0) {
+    return <div><ErrorImage /></div>;
   }
 
   const displayedCards = cardDetails.length > 0 ? cardDetails.slice(0, 3) : [];
@@ -93,9 +94,7 @@ const CardList = () => {
   return (
     <div className="sm:w-[475px] md:w-[730px]">
       {displayedCards.length === 0 ? (
-        <div>
-          <EmptyShow text="No Cards available" />
-        </div>
+        <div><RecentTransactionSkeleton /></div>
       ) : (
         displayedCards.map((card: FullCard) => (
           <div

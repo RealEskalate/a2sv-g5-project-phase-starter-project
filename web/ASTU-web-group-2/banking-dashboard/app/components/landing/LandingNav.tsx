@@ -41,10 +41,13 @@ const LandingNav: React.FC<LandingNavProps> = ({
   };
 
   return (
-    <m.header className={`bg-[#083E9E] text-white flex justify-center items-center sm:justify-between p-2 sm:p-4 sm:pr-6 relative`}>
-      <Link href="/" className="font-extrabold text-[25px] cursor-pointer">
-        BankDash
-      </Link>
+    <m.header 
+     
+
+
+      className={`bg-[#083E9E] text-white flex justify-center items-center sm:justify-between p-2 sm:p-4 relative z-[800]`}
+    >
+      <Link href="/" className="font-extrabold text-[25px] cursor-pointer">BankDash</Link>
 
       {/* Desktop Navigation Links */}
       <div className="hidden sm:flex gap-10 items-center">
@@ -78,61 +81,28 @@ const LandingNav: React.FC<LandingNavProps> = ({
           className={`absolute right-5 ${isMenuVisible&&"hidden"}`}
           onClick={toggleMenu}
         />
+
+        <div
+          className={`${
+            isMenuVisible
+              ? "absolute right-[-20px] bg-white mt-1 top-full text-[#083E9E] rounded-lg p-2"
+              : "hidden"
+          } sm:flex sm:flex-row gap-20 mr-10`}
+        >
+          <div className="mb-2 sm:mb-0 cursor-pointer" onClick={() => scrollToRef(homeRef)}>Home</div>
+          <div className="mb-2 sm:mb-0 cursor-pointer" onClick={() => scrollToRef(servicesRef)}>Services</div>
+          <div className="mb-2 sm:mb-0 cursor-pointer" onClick={() => scrollToRef(aboutRef)}>About Us</div>
+          {status === "authenticated" ? (
+            <Link href="/dashboard">
+              <div className="mb-2 sm:mb-0">Dashboard</div>
+            </Link>
+          ) : (
+            <div onClick={toggleSignInModal} className="mb-2 sm:mb-0 cursor-pointer">
+              Login
+            </div>
+          )}
+        </div>
       </div>
-
-      {/* Overlay for Sidebar */}
-      <AnimatePresence>
-        {isMenuVisible && (
-          <m.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-[700]"
-            onClick={toggleMenu}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Sidebar Menu */}
-      <AnimatePresence>
-        {isMenuVisible && (
-          <m.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ duration: 0.3 }}
-            className="fixed right-0 top-0 h-full z-[800] flex flex-col items-center gap-4 p-4 w-64 bg-[#002970ce] sm:hidden"
-          >
-            <div className="flex justify-end self-end">
-              <AiOutlineClose
-                size={25}
-                className="cursor-pointer text-white"
-                onClick={toggleMenu}
-              />
-            </div>
-            <div className="cursor-pointer text-white" onClick={() => {scrollToRef(homeRef); toggleMenu();}}>
-              Home
-            </div>
-            <div className="cursor-pointer text-white" onClick={() => {scrollToRef(servicesRef); toggleMenu();}}>
-              Services
-            </div>
-            <div className="cursor-pointer text-white" onClick={() => {scrollToRef(aboutRef); toggleMenu();}}>
-              About Us
-            </div>
-            {status === "authenticated" ? (
-              <Link href="/dashboard">
-                <div className="cursor-pointer text-white">Dashboard</div>
-              </Link>
-            ) : (
-              <div onClick={() => {toggleSignInModal(); toggleMenu();}} className="cursor-pointer text-white">
-                Login
-              </div>
-            )}
-          </m.div>
-        )}
-      </AnimatePresence>
-
       {isSignInModalVisible && <SignIn onClose={toggleSignInModal} />}
     </m.header>
   );

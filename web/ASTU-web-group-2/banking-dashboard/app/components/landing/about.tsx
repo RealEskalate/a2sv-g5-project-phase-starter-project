@@ -68,7 +68,7 @@ const About: React.FC = () => {
             width={0}
             height={0}
             alt="about"
-            className="w-full h-auto max-w-xs md:max-w-md"
+            className="w-full h-auto max-w-xs md:max-w-md "
           />
         </div>
         <p className="text-md text-gray-700 text-center">

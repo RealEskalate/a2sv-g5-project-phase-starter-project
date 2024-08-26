@@ -35,7 +35,7 @@ const Contact = () => {
       <div className="flex flex-col items-center justify-center w-1/2 gap-10">
         <div className="flex justify-center">
           <span className="text-4xl mt-4 font-black text-[#202430] dark:text-[#cdd6f4]">
-            Welcome Back,
+            Welcome
           </span>
         </div>
         <div className="flex justify-between w-2/3">

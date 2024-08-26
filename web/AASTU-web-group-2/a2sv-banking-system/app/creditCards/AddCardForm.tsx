@@ -34,7 +34,7 @@ const AddCardForm = ({
   });
 
   return (
-    <div className="bg-white p-5 flex-col gap-7 w-full rounded-xl flex  h-full dark:bg-[#050914] dark:border dark:border-[#333B69]">
+    <div className="bg-white p-5 flex-col gap-7 w-full rounded-xl flex  h-full dark:bg-[#020817] dark:border dark:border-[#333B69]">
       <p className="text-xs text-[#718EBF] leading-5 lg:text-base dark:text-[#b7b8cb]">
         Credit Card generally means a plastic card issued by Scheduled
         Commercial Banks assigned to a Cardholder, with a credit limit, that can

@@ -11,7 +11,7 @@ export const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, children }) => 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white dark:bg-[#050914] dark:border dark:border-[#333B69] rounded-lg shadow-lg p-6 w-full max-w-xl relative">
+      <div className="bg-white dark:bg-[#050914] dark:border dark:border-[#333B69] rounded-lg shadow-lg p-6 w-full max-w-lg relative">
         {children}
         <button
           onClick={onClose}

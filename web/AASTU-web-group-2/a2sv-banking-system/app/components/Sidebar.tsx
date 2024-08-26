@@ -27,7 +27,7 @@ map.set("/dashboard", "Dashboard");
 map.set("/transactions", "Transactions");
 map.set("/accounts", "Accounts");
 map.set("/investments", "Investments");
-map.set("/creditCards", "Credit Cards");
+map.set("/creditCards", "Cards");
 map.set("/loans", "Loans");
 map.set("/bankingServices", "Services");
 map.set("/bankingSettings", "Settings");
@@ -63,7 +63,7 @@ const [active, setActive] = useState(map.get(pathName));
     },
     {
       id: 5,
-      text: "Credit Cards",
+      text: "Cards",
       destination: "./creditCards",
       icon: MdCreditCard,
     },

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../pages/dm_page.dart';
+
 class ConversationCard extends StatelessWidget {
   final String userImage;
   final String userName;
@@ -52,11 +54,22 @@ class ConversationCard extends StatelessWidget {
           ),
         ],
       ),
-      title: Text(
-        userName,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
+      title: GestureDetector(
+        onTap: () {
+          print('Tapped');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DmPage(),
+            ),
+          );
+        },
+        child: Text(
+          userName,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
         ),
       ),
       subtitle: Text(

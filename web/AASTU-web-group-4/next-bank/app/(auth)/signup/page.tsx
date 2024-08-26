@@ -53,7 +53,7 @@ const SignupForm = () => {
   const handlePreviousStep = () => setStep((prevStep) => prevStep - 1);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-dark">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-dark dark:text-white">
       <form onSubmit={handleSubmit(onSubmit)} className="max-w-3xl mx-auto p-3 bg-white dark:bg-gray-900 shadow-md rounded-lg">
         <div className="flex justify-center items-center m-2">
           <Image src={logo.icon} alt="Logo" height={60} width={60} />
@@ -74,7 +74,7 @@ const SignupForm = () => {
                 id="name"
                 placeholder="ex: John"
                 {...register("name", { required: "Name is required" })}
-                className="border border-gray-300 dark:text-black dark:bg-white rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border border-gray-300 dark:text-white dark:bg-black rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.name && <p className="text-red-500 mt-1">{errors.name.message}</p>}
             </div>
@@ -92,7 +92,7 @@ const SignupForm = () => {
                     message: "Invalid email format",
                   },
                 })}
-                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-white dark:bg-black border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.email && <p className="text-red-500 mt-1">{errors.email.message}</p>}
             </div>
@@ -103,7 +103,7 @@ const SignupForm = () => {
                 type="date"
                 id="dateOfBirth"
                 {...register("dateOfBirth", { required: "Date of Birth is required" })}
-                className="border dark:text-black dark:bg-white border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
+                className="border dark:text-white dark:bg-black border-gray-300 rounded-lg p-3 mt-1 w-full focus:outline-none focus:border-blue-500"
               />
               {errors.dateOfBirth && <p className="text-red-500 mt-1">{errors.dateOfBirth.message}</p>}
             </div>

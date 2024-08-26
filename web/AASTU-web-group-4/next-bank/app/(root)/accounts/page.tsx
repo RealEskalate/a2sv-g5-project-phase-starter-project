@@ -119,21 +119,21 @@ const Accounts = () => {
 
         {/* Bottom Section */}
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 sm:gap-8 mt-8">
-          <div className="lg:col-span-7 flex flex-col">
+          <div className="lg:col-span-7 flex flex-col h-full">
             <h2 className="text-lg font-semibold mb-4 dark:text-blue-500">
               Debit & Credit Overview
             </h2>
-            <div>
+            <div className='flex-1'>
               <AccountBarChart />
             </div>
           </div>
-          <div className="lg:col-span-3 flex flex-col">
+          <div className="lg:col-span-3 flex flex-col h-full">
             <h2 className="text-lg font-semibold mb-4">Invoices Sent</h2>
             <div className="h-36 overflow-y-auto">
               <InvoicesCard />
             </div>
             {/* <h2 className="text-lg font-semibold mb-4">Currency Converter</h2> */}
-            <div>
+            <div className="mb-1">
               <h2 className="text-lg font-semibold mt-2 mb-4">Currency Converter</h2>
               <CurrencyConverter/>
             </div>

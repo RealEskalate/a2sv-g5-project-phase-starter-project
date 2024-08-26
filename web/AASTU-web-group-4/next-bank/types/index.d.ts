@@ -223,7 +223,6 @@ declare interface PaginationProps {
   page: number;
   totalPages: number;
 }
-
 declare interface PlaidLinkProps {
   user: User;
   variant?: "primary" | "ghost";

@@ -102,6 +102,7 @@ const LoginForm = () => {
       <button
         type='submit'
         className='bg-[#1814f3] text-white text-center px-10 py-3 font-Lato font-bold rounded-lg w-full mt-4'
+        id='login-btn'
       >
         {isLoading ? <Loader className='animate-spin w-full' /> : 'Login'}
       </button>

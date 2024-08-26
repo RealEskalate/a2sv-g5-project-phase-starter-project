@@ -12,7 +12,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, onTabChange }) => {
       {tabs.map((tab) => (
         <button
           key={tab}
-          className={`font-medium ${activeTab === tab ? 'text-[#1814F3] border-b-2 border-[#1814F3]' : 'text-[#718EBF] dark:text-[#9faaeb]' }`}
+          className={`font-black ${activeTab === tab ? 'text-[#1814F3] border-b-2 border-[#1814F3]' : 'text-[#718EBF] dark:text-[#9faaeb]' }`}
           onClick={() => onTabChange(tab)}
         >
           {tab}

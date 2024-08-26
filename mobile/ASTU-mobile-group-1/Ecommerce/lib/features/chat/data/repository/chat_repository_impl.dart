@@ -94,4 +94,8 @@ class ChatRepositoryImpl implements ChatRepository {
       return Left(ServerFailure(error.toString()));
     }
   }
+
+  void updateAccessToken(String newToken) {
+    _remoteDataSource.updateAccessToken(newToken);
+  }
 }

@@ -14,7 +14,7 @@ import 'remote_data_source.dart';
 
 class RemoteDataSourceImpl extends RemoteDataSource {
   final http.Client client;
-  final String accessToken;
+  String accessToken;
   late IO.Socket socket;
 
   final StreamController<MessageModel> _messageStreamController =
@@ -22,6 +22,11 @@ class RemoteDataSourceImpl extends RemoteDataSource {
 
   RemoteDataSourceImpl({required this.client, required this.accessToken}) {
     _initializeWebSocket();
+  }
+
+  @override
+  Future<void> updateAccessToken(String token) async {
+    accessToken = token;
   }
 
   @override
@@ -123,6 +128,11 @@ class RemoteDataSourceImpl extends RemoteDataSource {
       'chatId': chatId,
       'content': message,
       'type': type,
+    });
+    log('message sent');
+
+    socket.on('message:delivered', (data) {
+      log('Message delivered: $data');
     });
   }
 

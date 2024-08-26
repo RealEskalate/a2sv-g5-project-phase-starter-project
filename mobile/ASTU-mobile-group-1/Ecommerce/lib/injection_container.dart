@@ -58,7 +58,7 @@ Future<void> init() async {
   sl.registerLazySingleton<RemoteDataSource>(() => RemoteDataSourceImpl(
       client: sl(),
       accessToken:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJiQGdtYWlsLmNvbSIsInN1YiI6IjY2YzQ4Mjg3NjE5OGYxNTBlNjQzY2M5YiIsImlhdCI6MTcyNDYxNDcyNywiZXhwIjoxNzI1MDQ2NzI3fQ.-ispT0AF7tTEpKmX2GBqqVfhR6r-hPWyf1hyGbjA3Q0'));
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRzYWFAZ21haWwuY29tIiwic3ViIjoiNjZjYzQ0YjVkYWI0M2MxYTJlOTgwMWQ3IiwiaWF0IjoxNzI0NjY3MzIwLCJleHAiOjE3MjUwOTkzMjB9.IG8rdq73PEgIfMnMTcsv8RotByAo0jdNkpc7PfqRrpk'));
 
   // auth Feature
 

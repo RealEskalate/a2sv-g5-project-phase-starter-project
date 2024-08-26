@@ -15,6 +15,7 @@ import 'auth_local_data_source.dart';
 abstract class AuthRemoteDataSource {
   Future<SignedInModel> signIn(SignInModel signIn);
   Future<bool> signUp(SignUpModel signUp);
+
   Future<UserModel> getUser();
 }
 
@@ -74,11 +75,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
         return SignedInModel.fromJson(jsonResponse);
       } else {
-        throw ServerException();
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+        String errorMessage;
+        if (jsonResponse['message'] is List) {
+          errorMessage = (jsonResponse['message'] as List).join('\n');
+        } else {
+          errorMessage = jsonResponse['message'] as String;
+        }
+
+        if (errorMessage == 'Unauthorized') {
+          throw UnknownException();
+        }
+        throw ServerException(message: errorMessage);
       }
-    } catch (_) {
-      throw ServerException(
-          message: 'Wrong email or password. Please try again.');
+    } on ServerException catch (e) {
+      throw ServerException(message: e.message);
+    } catch (e) {
+      throw ServerException();
     }
   }
 

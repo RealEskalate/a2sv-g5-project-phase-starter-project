@@ -111,6 +111,7 @@ export default function Home() {
     event.preventDefault();
   
     if (activeIndex < 0 || !transfer[activeIndex]) {
+      alert("You have to choose a user and Enter data.")
       console.error('Invalid index or no transfer data available');
       return;
     }
@@ -129,7 +130,8 @@ export default function Home() {
       console.log(transactionDetails);
       const response = await postTransaction(transactionDetails, access_token);
       if (response.success === true){
-        setShowDialog(true); // Show the dialog on success
+        // setShowDialog(true); // Show the dialog on success
+        console.log("yppapfda;kfjda;lkj")
         alert("success")
         console.log('Transaction successful:', response);
       }
@@ -174,8 +176,8 @@ export default function Home() {
                 ))}
                 
               </CarouselContent>
-              <CarouselPrevious children={undefined} className=" rounded-full"/>
-              <CarouselNext children={undefined} className=" rounded-full"/>
+              <CarouselPrevious children={undefined} className=" md:rounded-full overflow-hidden"/>
+              <CarouselNext children={undefined} className=" md:rounded-full overflow-hidden"/>
             </Carousel>
 
             

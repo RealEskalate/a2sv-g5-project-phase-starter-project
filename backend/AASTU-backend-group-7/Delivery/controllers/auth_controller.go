@@ -204,7 +204,7 @@ const resetTemplate = `
 
     <div class="container">
         <h1>Reset Password</h1>
-        <form id="reset-form" method="post" action="auth/forget-password/{{ .ResetToken }}">
+        <form id="reset-form" method="post" action="/auth/forget-password/{{ .ResetToken }}">
             <div id="error-container" class="error-message"></div>
             <label for="password">New Password:</label>
             <div class="password-container">

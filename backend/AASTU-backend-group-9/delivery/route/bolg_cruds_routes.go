@@ -22,8 +22,6 @@ func RegisterBlogRoutes(env *config.Env, timeout time.Duration, db database.Data
 	blogRepo := repository.NewBlogRepository(db, "blogs")
 	popuRepo := repository.NewPopularityRepository(db, "popularity")
 	commentRepo := repository.NewCommentRepository(db, "comments")
-	// blogUse := usecase.NewBlogUsecase(blogRepo, timeout)
-	// popuUse := usecase.NewPopularityUsecase(popuRepo, timeout)
 	blogController := &controller.BlogController{
 		BlogUsecase: usecase.NewBlogUsecase(blogRepo, popuRepo, commentRepo, timeout),
 		Env:         env,
@@ -37,8 +35,6 @@ func RegisterBlogRoutes(env *config.Env, timeout time.Duration, db database.Data
 		blogRoutes.PUT("/:id", blogController.UpdateBlog)
 		blogRoutes.DELETE("/:id", blogController.DeleteBlog)
 		blogRoutes.GET("/search", blogController.SearchBlogs)
-		// blogRoutes.GET("/filter/tags", blogController.FilterBlogsByTags)
-		// blogRoutes.GET("/filter/date", blogController.FilterBlogsByDate)
 		blogRoutes.GET("/filter/popularity", blogController.FilterBlogs)
 		blogRoutes.POST("/:id/view", blogController.TrackView)
 		blogRoutes.POST("/:id/like", blogController.TrackLike)

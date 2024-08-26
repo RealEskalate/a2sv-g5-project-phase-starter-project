@@ -1,6 +1,5 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
-import 'dart:math';
 import 'dart:io';
 import 'package:ecommerce_app_ca_tdd/extra/icon_img.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/domain/entities/product_entity.dart';
@@ -30,22 +29,18 @@ class AddUpdate extends StatefulWidget {
 
 class _AddUpdateState extends State<AddUpdate> {
   TextEditingController name_input = TextEditingController();
-
   TextEditingController category_input = TextEditingController();
-
   TextEditingController description_input = TextEditingController();
-
   TextEditingController price_input = TextEditingController();
 
   File? newImage;
   String pathofimg = '';
 
-  //
   final ImagePicker picker = ImagePicker();
 
   Future chooseImage() async {
     final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+        await picker.pickImage(source: ImageSource.gallery);
     if (pickedImage == null) return;
     setState(() {
       pathofimg = pickedImage.path;
@@ -74,12 +69,12 @@ class _AddUpdateState extends State<AddUpdate> {
                   color: Color.fromARGB(255, 63, 81, 243),
                   size: 20,
                 )),
-            const Center(
-              child: Text("Add Product"),
+            Center(
+              child: Text("Add Product", style: GoogleFonts.poppins()),
             ),
-            const SizedBox(
-              height: 60,
+            SizedBox(
               width: 60,
+              height: 60,
             )
           ],
         ),
@@ -368,7 +363,6 @@ class _AddUpdateState extends State<AddUpdate> {
           ),
         ),
       ),
-      // body: Text()
     );
   }
-} // End of AddUpdate Class
+}

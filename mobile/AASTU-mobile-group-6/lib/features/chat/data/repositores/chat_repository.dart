@@ -4,9 +4,11 @@ import 'package:ecommerce_app_ca_tdd/core/errors/failure/failures.dart';
 import 'package:ecommerce_app_ca_tdd/core/network/network_info.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/data/data_sources/remote_data_source/remote_data_source.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/data/models/chat_models.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/data/models/message_model.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/chat_entity.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/message.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/domain/repository/repository.dart';
-import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/HomeChat.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/pages/HomeChat.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
   final ChatRemoteDataSource remoteDataSource;
@@ -46,7 +48,7 @@ class ChatRepositoryImpl implements ChatRepository {
 
 
   @override
-  Future<Either<Failure,List<ChatModel>>> getChatMessages(String chatId) async {
+  Future<Either<Failure,Stream<MessageModel>>> getChatMessages(String chatId) async {
     if(await networkInfo.isConnected){
        try{
         final product = await remoteDataSource.getChatMessages(chatId);
@@ -60,7 +62,7 @@ class ChatRepositoryImpl implements ChatRepository {
   }// Get Product impl
 
   @override
-  Future<Either<Failure,String>> initiateChat(String userId) async {
+  Future<Either<Failure,ChatEntity>> initiateChat(String userId) async {
     try{
         final results = await remoteDataSource.initiateChat(userId);
         return Right(results);
@@ -79,5 +81,17 @@ class ChatRepositoryImpl implements ChatRepository {
         return Left(ServerFailure('Server: Failed to delete product'));
       } 
       } // Delete Product impl
+
+  @override
+  Future<Either<Failure, Unit>> sendChat(
+      String chatId, String message, String type) async {
+    try{
+      remoteDataSource.sendMessage(chatId, message, type);
+      return const Right(unit);
+
+    }on Exception {
+        return Left(ServerFailure('Server: Failed to delete product'));
+      } 
+    }
   
 }

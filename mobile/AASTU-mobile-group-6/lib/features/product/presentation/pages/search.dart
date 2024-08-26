@@ -37,6 +37,11 @@ class _searchPageState extends State<searchPage> {
     return Future.delayed(Duration(seconds: 3));
   }
 
+  void _performSearch() {
+    final search = search_term.text;
+    context.read<SearchBloc>().add(SearchProductEvent(search));
+  }
+
   @override
   Widget build(BuildContext context) {
     BlocProvider(
@@ -61,7 +66,7 @@ class _searchPageState extends State<searchPage> {
                   size: 20,
                 )),
              Center(
-              child: Text("Search  Product",
+              child: Text("Search Product",
               style: GoogleFonts.poppins(),
               ),
             ),
@@ -72,7 +77,6 @@ class _searchPageState extends State<searchPage> {
           ],
         ),
       ),
-
       body: SingleChildScrollView(
         child: Center(
           child: Container(

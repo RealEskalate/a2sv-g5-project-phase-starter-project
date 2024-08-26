@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_bloc.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/models/product_models.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/detail_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/detail_event.dart';
@@ -248,7 +250,8 @@ class _DetailsState extends State<DetailsPage> {
                                                           Color>(Colors.red),
                                                 ),
                                                 onPressed: onPress,
-                                                child: Text("Delete"),
+                                                child: Text("Delete",
+                                                style: TextStyle(color: Colors.red),),
                                               ),
                                             ],
                                           ),
@@ -319,7 +322,9 @@ class _DetailsState extends State<DetailsPage> {
                                         backgroundColor: Color(0xff3F51F3),
                                       ),
                                         onPressed: (){
-                                          Navigator.pushNamed(context, '/chatPage', arguments: widget.item.sellerId);
+                                          BlocProvider.of<ChatBloc>(context).add(InitiateChatEvent(widget.item.sellerId.id));
+                                          // context.read<ChatBloc>().add(InitiateChatEvent(widget.item.sellerId.id));
+                                          Navigator.pushNamed(context, '/chatPage', arguments: {widget.item.sellerId.id, ''});
                                         },
                                         child: Row(
                                           children: [

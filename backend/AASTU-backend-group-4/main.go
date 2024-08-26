@@ -49,7 +49,7 @@ func main() {
 	likeRepo := like_repository.NewLikeRepository(db.Collection("likes"))
 	aiService := infrastructure.NewGenAIService()
 
-	blogUsecase := blog_usecase.NewBlogUsecase(blogRepo, commRepo, likeRepo, aiService, time.Duration(7*env.ContextTimeout))
+	blogUsecase := blog_usecase.NewBlogUsecase(blogRepo, commRepo, likeRepo, aiService, time.Duration(env.ContextTimeout))
 	blogController := blog_controller.NewBlogController(blogUsecase)
 
 	r := gin.Default()

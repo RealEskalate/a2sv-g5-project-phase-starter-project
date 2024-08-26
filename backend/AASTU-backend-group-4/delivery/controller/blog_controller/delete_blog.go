@@ -26,8 +26,5 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	err = bc.usecase.DeleteBlog(context.Background(), userID, blogID, isAdmin)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Blog deleted successfully"})
 }

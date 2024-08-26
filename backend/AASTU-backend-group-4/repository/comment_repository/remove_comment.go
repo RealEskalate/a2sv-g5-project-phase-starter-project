@@ -1,6 +1,7 @@
 package comment_repository
 
 import (
+	"blog-api/domain"
 	"context"
 	"errors"
 
@@ -8,18 +9,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (cr *CommentRepository) RemoveComment(ctx context.Context, userID, commentID primitive.ObjectID, isAdmin bool) error {
-	filter := bson.M{"_id": commentID}
+func (cr *CommentRepository) RemoveComment(ctx context.Context, userID, blogID primitive.ObjectID, isAdmin bool) error {
+	var comment domain.Comment
 
-	existingComment, err := cr.GetCommentByID(ctx, commentID)
-	if err != nil {
-		return errors.New("comment with that ID doesn't exist")
+	filter := bson.M{"blog_id": blogID, "user_id": userID}
+	cr.collection.FindOne(ctx, filter).Decode(&comment)
+	if !isAdmin && comment.UserID != userID {
+		return errors.New("only the user or an admin can remove this comment")
 	}
 
-	if !isAdmin && existingComment.UserID != userID {
-		return errors.New("only the user or admin can remove this like")
-	}
-
-	_, err = cr.collection.DeleteOne(ctx, filter)
+	_, err := cr.collection.DeleteOne(ctx, filter)
 	return err
 }

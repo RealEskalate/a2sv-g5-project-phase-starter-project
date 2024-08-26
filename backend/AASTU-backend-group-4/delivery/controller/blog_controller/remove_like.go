@@ -9,11 +9,11 @@ import (
 )
 
 func (bc *BlogController) Removelike(c *gin.Context) {
-	likeIDParam := c.Param("id")
+	blogid := c.Param("id")
 	userID := c.GetString("user_id")
 	isAdmin := c.GetBool("is_admin")
 
-	likeID, err := primitive.ObjectIDFromHex(likeIDParam)
+	blogID, err := primitive.ObjectIDFromHex(blogid)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
 		return
@@ -24,7 +24,7 @@ func (bc *BlogController) Removelike(c *gin.Context) {
 		return
 	}
 
-	err = bc.usecase.RemoveLike(context.Background(), userId, likeID, isAdmin)
+	err = bc.usecase.RemoveLike(context.Background(), userId, blogID, isAdmin)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

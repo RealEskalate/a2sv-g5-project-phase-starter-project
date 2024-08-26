@@ -1,4 +1,9 @@
+import 'dart:ffi';
+
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/message_bloc/message_bloc_bloc.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/message_bloc/message_bloc_event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatBottomAppBar extends StatefulWidget{
   final TextEditingController messageController;
@@ -10,8 +15,8 @@ class ChatBottomAppBar extends StatefulWidget{
 
   ChatBottomAppBar({
     required this.messageController,
-    required this.onSend,
     required this.onCamera,
+    required this.onSend,
     required this.onGallery,
     required this.onAudio,
     required this.onFile,
@@ -22,6 +27,7 @@ class ChatBottomAppBar extends StatefulWidget{
 
 }
 class _ChatBottomAppBarState extends State<ChatBottomAppBar>{
+  
   bool _isTextFieldEmpty = true;
   
   @override
@@ -43,6 +49,11 @@ class _ChatBottomAppBarState extends State<ChatBottomAppBar>{
 
   @override
   Widget build(BuildContext context) {
+     void onSendAction (String chatID,TextEditingController _messageController,String type){
+    context.read<MessageBloc>().add(MessageSent(chatID, _messageController.text, 'text'));
+    _messageController.clear();
+  }
+   
     return BottomAppBar(
       shadowColor: Colors.grey,
       elevation: 10,
@@ -70,7 +81,7 @@ class _ChatBottomAppBarState extends State<ChatBottomAppBar>{
                 filled: true,
                 contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               suffixIcon: IconButton(
-                            onPressed: _isTextFieldEmpty ? widget.onGallery : widget.onSend, 
+                            onPressed: _isTextFieldEmpty ? widget.onGallery : widget.onSend,
                             icon: Icon(_isTextFieldEmpty ? Icons.photo : Icons.send, color: _isTextFieldEmpty ? Colors.blue : Colors.blue,)),
                             ),
               )

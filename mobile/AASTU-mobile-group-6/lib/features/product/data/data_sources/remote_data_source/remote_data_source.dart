@@ -89,6 +89,9 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
     };
     final response = await client.get(Uri.parse(url),headers: head);
 
+    print(response.statusCode);
+    print(response.body);
+
     if (response.statusCode == 200) {
       return (jsonDecode(response.body)['data'] as List)
           .map((e) => ProductModel.fromJson(e))

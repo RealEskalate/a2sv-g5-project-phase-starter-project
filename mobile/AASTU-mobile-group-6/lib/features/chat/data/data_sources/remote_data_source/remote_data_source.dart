@@ -46,7 +46,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     };
     var url = 'https://g5-flutter-learning-path-be.onrender.com/api/v3/chats';
     final response = await client.delete(Uri.parse(url+'/$chatId'),headers: head);
-    print(response.statusCode);
+    // print(response.statusCode);
     if (response.statusCode == 200) {
       return 'Product deleted successfully';
     } else {
@@ -65,7 +65,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
 
     var url = 'https://g5-flutter-learning-path-be.onrender.com/api/v3/chats';
     final response = await client.get(Uri.parse(url),headers: head);
-    print(response.statusCode);
+    // print(response.statusCode);
     if (response.statusCode == 200) {
      return (jsonDecode(response.body)['data'] as List)
           .map((e) => ChatEntity.fromJson(e))
@@ -85,7 +85,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     };
     var url = 'https://g5-flutter-learning-path-be.onrender.com/api/v3/chats';
     final response = await client.get(Uri.parse(url+'/$id'),headers: head);
-    print(response.statusCode);
+    // print(response.statusCode);
     if (response.statusCode == 200) {
       return ChatEntity.fromJson(jsonDecode(response.body)['data']);
     } else {
@@ -112,7 +112,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
           streamSocket.addResponse(MessageModel.fromJson(message));
         }
       } else {
-        print(response.body);
+        // print(response.body);
         throw ServerException();
       }
     });
@@ -153,8 +153,10 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         });
     var url = 'https://g5-flutter-learning-path-be.onrender.com/api/v3/chats';
     final response = await client.post(Uri.parse(url),headers: head,body: body);
+    print(response.statusCode); 
     if (response.statusCode == 201) {
       var data = jsonDecode(response.body);
+      print(data);
       return ChatEntity.fromJson(data['data']);
     } else {
       throw Exception('Failed to initiate chat');

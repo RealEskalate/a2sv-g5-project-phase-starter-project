@@ -24,7 +24,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource{
     
     var body = user.toJsonentitiy();
 
-    final response = await client.post(Uri.parse('https://g5-flutter-learning-path-be.onrender.com/api/v2/auth/login'),body: body);
+    final response = await client.post(Uri.parse('https://g5-flutter-learning-path-be.onrender.com/api/v3/auth/login'),body: body);
 
     
       if (response.statusCode==201){
@@ -48,7 +48,7 @@ class UserRemoteDataSourceImpl extends UserRemoteDataSource{
   var body = user.toJson();
 
 
-    final response = await client.post(Uri.parse('https://g5-flutter-learning-path-be.onrender.com/api/v2/auth/register'),body: body);
+    final response = await client.post(Uri.parse('https://g5-flutter-learning-path-be.onrender.com/api/v3/auth/register'),body: body);
     print(response.statusCode);
     if (response.statusCode==201){
       

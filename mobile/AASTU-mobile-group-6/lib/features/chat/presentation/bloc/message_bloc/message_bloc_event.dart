@@ -19,7 +19,7 @@ class MessageSent extends MessageEvent {
   final String content;
   final String type;
 
-  const MessageSent(
+  MessageSent(
     this.chatId,
     this.content,
     this.type,

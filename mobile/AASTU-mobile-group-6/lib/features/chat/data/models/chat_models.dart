@@ -16,9 +16,9 @@ class ChatModel extends ChatEntity {
 
   factory ChatModel.fromJson(Map<String, dynamic> json) {
     return ChatModel(
-      chatId: json['chatId'] as String,
-      user2: UserModel.fromJson(json['sender']),
-      user1: UserModel.fromJson(json['chat']['user1']),
+      chatId: json['chatId'],
+      user2: UserModel.fromJson(json['user2']),
+      user1: UserModel.fromJson(json['user1']),
     );
   }
 

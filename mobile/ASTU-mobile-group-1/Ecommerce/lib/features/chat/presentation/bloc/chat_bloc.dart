@@ -24,7 +24,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     on<StartChat>((event, emit) async {
       final eitherResult = await getMessagesUseCase();
-
       eitherResult.fold(
         (failure) {
           // Handle failure, e.g., emit an error state

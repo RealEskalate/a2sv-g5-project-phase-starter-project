@@ -100,5 +100,13 @@ func (uc *UserController) DemoteUser(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "demoted "})
+}
 
+func (uc *UserController) ForgetPassword(ctx *gin.Context) {
+	// email := ctx.Param("email")
+	var email string
+	if err := ctx.ShouldBindJSON(&email); err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+	}
+	uc.authuserusecase.ForgetPassword(ctx, email)
 }

@@ -3,10 +3,13 @@ package auth
 import (
 	"context"
 	"crypto/sha1"
+	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -121,7 +124,6 @@ func (au *AuthUserUsecase) Activate(ctx context.Context, userID string, token st
 	if expectedToken != token {
 		return err
 	}
-
 	user.IsActive = true
 	user.UpdatedAt = time.Now()
 
@@ -171,6 +173,7 @@ func (au *AuthUserUsecase) GenerateToken(user User, tokenType string) (string, e
 		return "", err
 	}
 	return tokenString, nil
+
 }
 
 func (au *AuthUserUsecase) PromoteUser(ctx context.Context, userID string) error {
@@ -208,4 +211,56 @@ func (au *AuthUserUsecase) DemoteUser(ctx context.Context, userID string) error 
 		return err
 	}
 	return nil
+}
+
+////
+
+func (au *AuthUserUsecase) GenerateTokenForReset(ctx context.Context, email string) (string, string) {
+	timeStamp := fmt.Sprint(time.Now().Unix())
+	data := email + timeStamp + os.Getenv("SECRET_KEY")
+	hash := sha256.New()
+	hash.Write([]byte(data))
+	token := hex.EncodeToString(hash.Sum(nil))
+
+	return token, timeStamp
+}
+
+func (au *AuthUserUsecase) ForgetPassword(ctx context.Context, email string) error {
+	token, timeStamp := au.GenerateTokenForReset(ctx, email)
+
+	// send the token to that email
+	from := os.Getenv("FROM")
+	link := fmt.Sprintf("http://localhost:8000/v1/auth/reset/%s/%s/%s", email, timeStamp, token)
+	au.emailService.SendEmail(from, email, fmt.Sprintf("click the link to activate your password %s ", link), "Reset password")
+	return nil
+}
+
+func (au *AuthUserUsecase) ResetPassword(ctx context.Context, email, token, timeStamp, password, newPassword string) error {
+	if au.IsTokenExpired(timeStamp) {
+		return fmt.Errorf("token expired")
+	}
+
+	if !au.IsTokenValied(ctx, token, email) {
+		return fmt.Errorf("invalied token")
+	}
+
+	if password != newPassword {
+		return fmt.Errorf("the passwords have to be identical")
+	}
+	return nil
+}
+
+func (au *AuthUserUsecase) IsTokenExpired(timeStamp string) bool {
+	ts, err := strconv.ParseInt(timeStamp, 10, 64)
+
+	if err != nil {
+		return true
+	}
+	tokenTime := time.Unix(ts, 0)
+	return time.Since(tokenTime) > 1*time.Hour
+}
+
+func (au *AuthUserUsecase) IsTokenValied(ctx context.Context, token, email string) bool {
+	tk, _ := au.GenerateTokenForReset(ctx, email)
+	return tk == token
 }

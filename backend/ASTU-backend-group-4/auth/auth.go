@@ -53,4 +53,6 @@ type AuthServices interface {
 	GenerateActivateToken(hashedpassword string, updatedat time.Time) string
 	PromoteUser(ctx context.Context, userID string) error
 	DemoteUser(ctx context.Context, userID string) error
+	ResetPassword(ctx context.Context, email, token, timeStamp, password, newPassword string) error
+	ForgetPassword(ctx context.Context, email string)
 }

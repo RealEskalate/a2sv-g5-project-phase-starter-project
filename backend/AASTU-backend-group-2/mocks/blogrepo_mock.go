@@ -81,7 +81,7 @@ func (_m *BlogRepository) FilterBlog(tag []string, date time.Time) ([]domain.Blo
 }
 
 // RetrieveBlog provides a mock function with given fields: pgnum, sortby, dir
-func (_m *BlogRepository) RetrieveBlog(pgnum int, sortby string, dir string) ([]domain.Blog, error) {
+func (_m *BlogRepository) RetrieveBlog(pgnum int, sortby string, dir string) ([]domain.Blog, int, error) {
 	ret := _m.Called(pgnum, sortby, dir)
 
 	if len(ret) == 0 {
@@ -89,8 +89,9 @@ func (_m *BlogRepository) RetrieveBlog(pgnum int, sortby string, dir string) ([]
 	}
 
 	var r0 []domain.Blog
-	var r1 error
-	if rf, ok := ret.Get(0).(func(int, string, string) ([]domain.Blog, error)); ok {
+	var r1 int
+	var r2 error
+	if rf, ok := ret.Get(0).(func(int, string, string) ([]domain.Blog, int, error)); ok {
 		return rf(pgnum, sortby, dir)
 	}
 	if rf, ok := ret.Get(0).(func(int, string, string) []domain.Blog); ok {
@@ -101,13 +102,19 @@ func (_m *BlogRepository) RetrieveBlog(pgnum int, sortby string, dir string) ([]
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(int, string, string) error); ok {
+	if rf, ok := ret.Get(1).(func(int, string, string) int); ok {
 		r1 = rf(pgnum, sortby, dir)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(int)
 	}
 
-	return r0, r1
+	if rf, ok := ret.Get(2).(func(int, string, string) error); ok {
+		r2 = rf(pgnum, sortby, dir)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // SearchBlog provides a mock function with given fields: postName, authorName

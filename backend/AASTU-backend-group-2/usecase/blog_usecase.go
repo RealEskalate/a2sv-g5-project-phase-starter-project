@@ -32,7 +32,7 @@ func (br *BlogUsecase) CreateBlog(c context.Context, blog *domain.Blog) error {
 	return br.BlogRepo.CreateBlog(blog)
 }
 
-func (br *BlogUsecase) RetrieveBlog(c context.Context, page int, sortby string, dire string) ([]domain.Blog, error) {
+func (br *BlogUsecase) RetrieveBlog(c context.Context, page int, sortby string, dire string) ([]domain.Blog, int, error) {
 	_, cancel := context.WithTimeout(c, br.contextTimeout)
 	defer cancel()
 

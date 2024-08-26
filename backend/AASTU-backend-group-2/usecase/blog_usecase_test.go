@@ -51,11 +51,12 @@ func (s *BlogUseCasetestSuite) TestCreateBlog() {
 
 // TestRetrieveBlog tests the RetrieveBlog method
 func (s *BlogUseCasetestSuite) TestRetrieveBlog() {
-	s.mockBlogRepository.On("RetrieveBlog", 1, "popularity", "asc").Return([]domain.Blog{}, nil)
+	s.mockBlogRepository.On("RetrieveBlog", 1, "popularity", "asc").Return([]domain.Blog{}, 0, nil)
 
-	blogs, err := s.BlogUsecase.RetrieveBlog(context.Background(), 1, "popularity", "asc")
+	blogs, count, err := s.BlogUsecase.RetrieveBlog(context.Background(), 1, "popularity", "asc")
 	s.NoError(err)
 	s.Equal([]domain.Blog{}, blogs)
+	s.Equal(0, count)
 }
 
 // TestUpdateBlog tests the UpdateBlog method

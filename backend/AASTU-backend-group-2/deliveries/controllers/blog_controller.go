@@ -3,6 +3,7 @@ package controllers
 import (
 	"blog_g2/domain"
 	"blog_g2/infrastructure"
+	"math"
 
 	"log"
 
@@ -72,15 +73,18 @@ func (controller *BlogController) RetrieveBlog(c *gin.Context) {
 	pages, _ := strconv.Atoi(c.Query("page"))
 	sortby := c.DefaultQuery("sortby", "")
 	sortdire := c.DefaultQuery("sortdir", "")
-	blogs, err := controller.Blogusecase.RetrieveBlog(c, pages, sortby, sortdire)
+	blogs, count, err := controller.Blogusecase.RetrieveBlog(c, pages, sortby, sortdire)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
+	if pages == 0 {
+		pages = 1
+	}
 
-	c.JSON(200, blogs)
+	c.JSON(200, gin.H{"total results": count, "total pages": math.Ceil(float64(count) / 10), "current page": pages, "blogs": blogs})
 }
 
 func (controller *BlogController) UpdateBlog(c *gin.Context) {
@@ -175,8 +179,8 @@ func (h *BlogController) GeneratePost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"title":   post.Title,
+	c.IndentedJSON(http.StatusOK, gin.H{
 		"content": post.Content,
+		"title":   post.Title,
 	})
 }

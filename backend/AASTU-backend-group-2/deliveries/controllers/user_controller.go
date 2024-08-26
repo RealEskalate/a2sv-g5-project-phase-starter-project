@@ -113,6 +113,11 @@ func (uc *UserController) LoginUser(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "Please provide all fields"})
 		return
 	}
+	_, err := mail.ParseAddress(user.Email)
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid email address"})
+		return
+	}
 	token, err := uc.Userusecase.LoginUser(c, user)
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
@@ -128,6 +133,12 @@ func (uc *UserController) ForgotPassword(c *gin.Context) {
 	var info domain.RestRequest
 	if err := c.BindJSON(&info); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	_, erro := mail.ParseAddress(info.Email)
+	if erro != nil {
+		c.JSON(400, gin.H{"error": "Invalid email address"})
 		return
 	}
 
@@ -150,6 +161,11 @@ func (uc *UserController) ResetPassword(c *gin.Context) {
 	var info domain.RestRequest
 	if err := c.BindJSON(&info); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := infrastructure.PasswordValidator(info.NewPassword); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 

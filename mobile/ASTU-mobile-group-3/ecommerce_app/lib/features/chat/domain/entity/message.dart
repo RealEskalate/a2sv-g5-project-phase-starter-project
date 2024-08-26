@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../../auth/data/model/user_model.dart';
+import '../../../auth/data/model/user_model.dart';
 import '../../../auth/domain/entities/user_entity.dart';
 import 'chat.dart';
 

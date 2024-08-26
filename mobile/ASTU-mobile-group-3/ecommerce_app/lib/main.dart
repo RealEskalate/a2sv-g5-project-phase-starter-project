@@ -7,6 +7,9 @@ import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/cubit/user_input_validation_cubit.dart';
 import 'features/auth/presentation/page/login_page.dart';
 import 'features/auth/presentation/page/signup_page.dart';
+import 'features/chat/presentation/bloc/chat_bloc.dart';
+import 'features/chat/presentation/pages/chat_list.dart';
+import 'features/chat/presentation/pages/chat_room.dart';
 import 'features/product/presentation/bloc/cubit/input_validation_cubit.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
 import 'features/product/presentation/pages/add_product_page.dart';
@@ -41,12 +44,17 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) => locator<UserInputValidationCubit>(),
+        ),
+        BlocProvider(
+          create: (_) => locator<ChatBloc>(),
         )
       ],
       child: MaterialApp(
         theme: MyTheme.lightTheme,
         routes: {
           AddProductPage.routes: (context) => AddProductPage(),
+          ChatList.routes: (context) => const ChatList(),
+          ChatRoom.routes: (context) => const ChatRoom(),
           ProductListPage.routes: (context) => const ProductListPage(),
           SingleProduct.routes: (context) => SingleProduct(),
           SearchProduct.routes: (context) => const SearchProduct(),

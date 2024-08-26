@@ -1,50 +1,40 @@
 import 'package:custom_clippers/custom_clippers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math' as math;
 
+import '../../domain/entity/chat.dart';
+import '../bloc/chat_bloc.dart';
+import '../bloc/chat_event.dart';
+import '../bloc/chat_state.dart';
 import '../widgets/messages.dart';
 import '../widgets/reusable_textfield.dart';
 
-class ChatRoom extends StatelessWidget {
+class ChatRoom extends StatefulWidget {
+  static const String routes = '/chat_room';
+
   const ChatRoom({super.key});
+
+  @override
+  State<ChatRoom> createState() => _ChatRoomState();
+}
+
+class _ChatRoomState extends State<ChatRoom> {
+  @override
+  void initState() {
+    final chatBloc = BlocProvider.of<ChatBloc>(context);
+
+    chatBloc.add(ConnectServerEvent());
+    chatBloc.add(SendMessage('', '', ''));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     TextEditingController messageController = TextEditingController();
-    // Static list of chat messages data
-    final List<Map<String, dynamic>> messagesData = [
-      {
-        'messageType': MessageType.receive,
-        'message': "Hey there!",
-        'timeStamp': "10:00 AM",
-        'isImage': false,
-      },
-      {
-        'messageType': MessageType.send,
-        'message': "Hello! How are you?",
-        'timeStamp': "10:02 AM",
-        'isImage': false,
-      },
-      {
-        'messageType': MessageType.receive,
-        'message': "I'm good, thanks! How about you?",
-        'timeStamp': "10:05 AM",
-        'isImage': false,
-      },
-      {
-        'messageType': MessageType.send,
-        'message': "Doing well! Just working on a project.",
-        'timeStamp': "10:07 AM",
-        'isImage': false,
-      },
-      {
-        'messageType': MessageType.receive,
-        'message': "That sounds interesting! What's it about?",
-        'timeStamp': "10:10 AM",
-        'isImage': false,
-      },
-    ];
+
+    final args = ModalRoute.of(context)!.settings.arguments as ChatEntity;
 
     return Scaffold(
       appBar: AppBar(
@@ -52,7 +42,15 @@ class ChatRoom extends StatelessWidget {
         backgroundColor: Colors.white,
         title: Row(
           children: [
-            const Icon(CupertinoIcons.chevron_back),
+            IconButton(
+              icon: const Icon(CupertinoIcons.chevron_back),
+              onPressed: () {
+                final chatBloc = BlocProvider.of<ChatBloc>(context);
+
+                chatBloc.add(LoadChatRooms());
+                Navigator.pop(context);
+              },
+            ),
             Container(
               height: 50,
               width: 50,
@@ -62,19 +60,21 @@ class ChatRoom extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(50),
-                child: Image.asset("assets/images/Memoji Boys 6-18.png"),
+                child: Image.asset('assets/images/Memoji Boys 6-18.png'),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(left: 18.0),
+            Padding(
+              padding: const EdgeInsets.only(left: 18.0),
               child: Column(
                 children: [
                   Text(
-                    "Sabila Sayma",
-                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+                    args.user2.name,
+                    // "Sabila Sayma",
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w500, fontSize: 18),
                   ),
-                  Text(
-                    "8 members, 5 online",
+                  const Text(
+                    '8 members, 5 online',
                     style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 12,
@@ -100,79 +100,86 @@ class ChatRoom extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: messagesData.length,
-                itemBuilder: (context, index) {
-                  final data = messagesData[index];
-                  final isReceive = data['messageType'] == MessageType.receive;
-                  return Row(
-                    mainAxisAlignment: isReceive
-                        ? MainAxisAlignment.start
-                        : MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      if (isReceive)
-                        const Padding(
-                          padding: EdgeInsets.only(left: 10),
-                          child: CircleAvatar(
-                            backgroundImage: AssetImage(
-                              "assets/images/Memoji Boys 6-18.png",
+          BlocConsumer<ChatBloc, ChatState>(
+            listener: (context, state) {
+              // TODO: implement listener
+            },
+            builder: (context, state) {
+              if (state is MessagesLoaded) {
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: ListView.builder(
+                      reverse: true,
+                      shrinkWrap: true,
+                      itemCount: state.messages.length,
+                      itemBuilder: (context, index) {
+                        final data = state.messages[index];
+
+                        final isReceive = data.sender.id == args.user1.id;
+                        return Row(
+                          mainAxisAlignment: isReceive
+                              ? MainAxisAlignment.start
+                              : MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (isReceive)
+                              const Padding(
+                                padding: EdgeInsets.only(left: 10),
+                                child: CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                    'assets/images/Memoji Boys 6-18.png',
+                                  ),
+                                  radius: 25,
+                                ),
+                              ),
+                            Flexible(
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                    left: isReceive ? 10 : 0,
+                                    right: isReceive ? 0 : 10,
+                                    top: 18),
+                                child: ChatMessage(
+                                  messageType: data.sender.id == args.user1.id
+                                      ? MessageType.receive
+                                      : MessageType.send,
+                                  message: data.content,
+                                  timeStamp:
+                                      '${TimeOfDay.now().hour.toString()}:${TimeOfDay.now().minute.toString()}',
+                                  isImage: false,
+                                ),
+                              ),
                             ),
-                            radius: 25,
-                          ),
-                        ),
-                      Flexible(
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              left: isReceive ? 10 : 0,
-                              right: isReceive ? 0 : 10,
-                              top: 18),
-                          child: ChatMessage(
-                            messageType: data['messageType'],
-                            message: data['message'],
-                            timeStamp: data['timeStamp'],
-                            isImage: data['isImage'],
-                          ),
-                        ),
-                      ),
-                      if (!isReceive)
-                        const Padding(
-                          padding: EdgeInsets.only(right: 10),
-                          child: CircleAvatar(
-                            backgroundImage: AssetImage(
-                              "assets/images/Memoji Boys 6-18.png",
-                            ),
-                            radius: 25,
-                          ),
-                        ),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                const Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Type a message',
+                            if (!isReceive)
+                              const Padding(
+                                padding: EdgeInsets.only(right: 10),
+                                child: CircleAvatar(
+                                  backgroundImage: AssetImage(
+                                    'assets/images/Memoji Boys 6-18.png',
+                                  ),
+                                  radius: 25,
+                                ),
+                              ),
+                          ],
+                        );
+                      },
                     ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: () {},
-                ),
-              ],
-            ),
+                );
+              } else {
+                return Container(
+                  child: const Center(
+                      child: Text(
+                    'No Chat History',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                  )),
+                );
+              }
+            },
           ),
+          const SizedBox(
+            height: 68,
+          )
         ],
       ),
       bottomSheet: Container(
@@ -185,12 +192,22 @@ class ChatRoom extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Transform.rotate(
-                    angle: -math.pi / 5.7,
+                    angle: math.pi / 2.7,
                     child: const Icon(Icons.attach_file_outlined)),
               ),
               Expanded(
                 child: ReusableTextField(
-                  hint: "Write your message",
+                  onsubmit: () {
+                    // print("object");
+
+                    final chatBloc = BlocProvider.of<ChatBloc>(context);
+
+                    chatBloc.add(SendMessage(
+                        args.chatId, messageController.text, 'text'));
+
+                    messageController.clear();
+                  },
+                  hint: 'Write your message',
                   textEditingController: messageController,
                   textInputType: TextInputType.text,
                 ),

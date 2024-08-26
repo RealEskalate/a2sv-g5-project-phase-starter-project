@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/themes/themes.dart';
+import '../../../chat/presentation/bloc/chat_bloc.dart';
+import '../../../chat/presentation/bloc/chat_event.dart';
+import '../../../chat/presentation/bloc/chat_state.dart';
 import '../bloc/product_bloc.dart';
 import '../bloc/product_events.dart';
 import '../bloc/product_states.dart';
+import '../widgets/loading_dialog.dart';
 import '../widgets/product_widgets.dart';
 import 'update_product_page.dart';
 
 // ignore: must_be_immutable
 class SingleProduct extends StatelessWidget {
   static String routes = '/single_product';
+  String? sellerId;
   List<List<int>> size = [
     [1, 39],
     [0, 40],
@@ -132,6 +137,7 @@ class SingleProduct extends StatelessWidget {
                     BlocBuilder<ProductBloc, ProductStates>(
                       builder: (context, state) {
                         if (state is LoadedSingleProductState) {
+                          sellerId = state.productEntity.seller.id;
                           return ConstrainedBox(
                             constraints: BoxConstraints(
                                 maxWidth:
@@ -289,37 +295,72 @@ class SingleProduct extends StatelessWidget {
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    OutlineCustomButton(
-                      press: () {
-                        final result =
-                            BlocProvider.of<ProductBloc>(context).state;
-                        if (result is LoadedSingleProductState) {
-                          String id = result.productEntity.id;
-                          BlocProvider.of<ProductBloc>(context)
-                              .add(DeleteProductEvent(id: id));
-                        }
-                      },
-                      label: 'DELETE',
-                    ),
-                    FillCustomButton(
+                    Expanded(
+                      child: OutlineCustomButton(
                         press: () {
-                          final state =
+                          final result =
                               BlocProvider.of<ProductBloc>(context).state;
-                          if (state is LoadedSingleProductState) {
-                            BlocProvider.of<ProductBloc>(context).add(
-                              GetSingleProductEvents(
-                                  id: state.productEntity.id),
-                            );
+                          if (result is LoadedSingleProductState) {
+                            String id = result.productEntity.id;
+                            BlocProvider.of<ProductBloc>(context)
+                                .add(DeleteProductEvent(id: id));
                           }
-
-                          Navigator.pushNamed(
-                              context, UpdateProductPage.routes);
                         },
-                        label: 'UPDATE'),
+                        label: 'DELETE',
+                      ),
+                    ),
+                    Expanded(
+                      child: BlocConsumer<ChatBloc, ChatState>(
+                        listener: (context, state) {
+                          if (state is ChatLoaded) {
+                            Navigator.pop(context);
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Chat Room Created')));
+                          } else if (state is ChatLoading) {
+                            showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return const LoadingDialog();
+                                });
+                          }
+                        },
+                        builder: (context, state) {
+                          return FillCustomButton(
+                              press: () {
+                                if (sellerId != null) {
+                                  final chatBloc =
+                                      BlocProvider.of<ChatBloc>(context);
+
+                                  chatBloc.add(CreateChatRoom(sellerId!));
+                                }
+                              },
+                              label: 'Chat');
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: FillCustomButton(
+                          press: () {
+                            final state =
+                                BlocProvider.of<ProductBloc>(context).state;
+                            if (state is LoadedSingleProductState) {
+                              BlocProvider.of<ProductBloc>(context).add(
+                                GetSingleProductEvents(
+                                    id: state.productEntity.id),
+                              );
+                            }
+
+                            Navigator.pushNamed(
+                                context, UpdateProductPage.routes);
+                          },
+                          label: 'UPDATE'),
+                    ),
                   ],
                 ),
               ),

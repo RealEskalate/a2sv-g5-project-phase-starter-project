@@ -1,6 +1,5 @@
 // chat_event.dart
 import 'package:equatable/equatable.dart';
-import '../../domain/entity/chat.dart';
 import '../../domain/entity/message.dart';
 
 abstract class ChatEvent extends Equatable {
@@ -22,22 +21,23 @@ class LoadMessages extends ChatEvent {
 }
 
 class CreateChatRoom extends ChatEvent {
-  final ChatEntity chat;
+  final String userId;
 
-  CreateChatRoom(this.chat);
+  CreateChatRoom(this.userId);
 
   @override
-  List<Object?> get props => [chat];
+  List<Object?> get props => [userId];
 }
 
 class SendMessage extends ChatEvent {
   final String chatId;
-  final MessageEntity message;
+  final String content;
+  final String type;
 
-  SendMessage(this.chatId, this.message);
+  SendMessage(this.chatId, this.content, this.type);
 
   @override
-  List<Object?> get props => [chatId, message];
+  List<Object?> get props => [chatId, content, type];
 }
 
 class AcknowledgeMessageDelivery extends ChatEvent {

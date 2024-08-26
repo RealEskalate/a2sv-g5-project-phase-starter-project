@@ -121,16 +121,7 @@ const Page = () => {
               response = await getTransactions(0, 100, access_token);
           }
 
-          if ("data" in response) {
-            setTransactions(response.data.content);
-          } else if ("transactions" in response) {
-            const allTransactions = response.transactions.flatMap(
-              (transactionResponse) => transactionResponse.data.content
-            );
-            setTransactions(allTransactions);
-          } else {
-            console.error("Unknown response type:", response);
-          }
+          setTransactions(response.data.content);
         }
       } catch (error) {
         console.error("Error fetching transactions:", error);

@@ -9,10 +9,14 @@ import { useState } from "react";
 
 export default function ProgressComp({ currentStep }: { currentStep: any }) {
   const totalSteps = 3;
-  const menuStep = ["Basic Information","Address Information","Personal Information"]
+  const menuStep = [
+    "Basic Information",
+    "Address Information",
+    "Personal Information",
+  ];
 
   // Helper to determine if the circle should be active or not
-  console.log(currentStep)
+  console.log(currentStep);
   const isActive = (step: number) => step <= currentStep;
 
   return (
@@ -29,7 +33,7 @@ export default function ProgressComp({ currentStep }: { currentStep: any }) {
                 ? "bg-blue-800 text-white border-gray-50"
                 : "bg-white text-blue-950 border-white"
             } border-2 border-solid`}
-            onClick={() => setCurrentStep(step)}
+            // onClick={() => setCurrentStep(step)}
           >
             <FontAwesomeIcon
               icon={isActive(step) ? faCheck : faDotCircle}

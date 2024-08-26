@@ -1,34 +1,37 @@
-"use client";
-
 import React from "react";
-import { useRouter, usePathname } from "next/navigation";
 
 interface MenuItem {
   label: string;
-  url: string;
+  url: string; // Removed as we're no longer using URL routing
+  section: string;
 }
 
-const Navigation: React.FC = () => {
-  const router = useRouter();
-  const pathname = usePathname();
+interface NavigationProps {
+  activeSection: string;
+  setActiveSection: (section: string) => void;
+}
 
+const Navigation: React.FC<NavigationProps> = ({
+  activeSection,
+  setActiveSection,
+}) => {
   const menuItems: MenuItem[] = [
-    { label: "Edit Profile", url: "/settings/editprofile" },
-    { label: "Preferences", url: "/settings/preference" },
-    { label: "Security", url: "/settings/security" },
+    { label: "Edit Profile", section: "editprofile" },
+    { label: "Preferences", section: "preference" },
+    { label: "Security", section: "security" },
   ];
 
-  const isActive = (path: string) => pathname === path;
-
   return (
-    <div className=" w-full max-h-16 flex font-Inter justify-between items-center border-b dark:border-gray-500 xs:mt-6 sm:mt-2 pt-4 px-2 min-h-6">
-      <div className="flex space-x-8 px-7">
+    <div className="w-full max-h-16 flex font-Inter justify-between items-center border-b dark:border-gray-500 xs:mt-6 sm:mt-2 pt-4 px-2 min-h-6">
+      <div className="flex xxs:px-1 xxs:w-full xxs:justify-between xxs:gap-2 xs:justify-normal xs:px-4 md:px-7 md:gap-8">
         {menuItems.map((item, index) => (
           <button
             key={index}
-            onClick={() => router.push(item.url)}
-            className={`border-b-[6px] rounded cursor-pointer w-24 dark:text-white ${
-              isActive(item.url) ? "border-[#1814F3]" : "border-transparent"
+            onClick={() => setActiveSection(item.section)}
+            className={`border-b-[6px] rounded cursor-pointer font-Inter xxs:w-fit xxs:text-base md:text-lg md:w-24 dark:text-white ${
+              activeSection === item.section
+                ? "border-[#1814F3]"
+                : "border-transparent"
             }`}
           >
             {item.label}

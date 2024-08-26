@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import NavBar from "./components/Layout/NavBar";
-import Sidebar from "./components/Layout/Sidebar";
 import { usePathname } from "next/navigation";
 import LayoutProvider from "./Provider/LayoutProvider";
 import ReduxProvider from "./Redux/ReduxProvider";

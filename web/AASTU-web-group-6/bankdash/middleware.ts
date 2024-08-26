@@ -14,5 +14,15 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/settings"], // Protect all routes except login and signup
+  matcher: ["/kj"],
+  // matcher: [
+  //   "/",
+  //   "/transaction",
+  //   "/account",
+  //   "/investment",
+  //   "/credit-cards",
+  //   "/loan",
+  //   "/service",
+  //   "/settings/:path*",
+  // ],
 };

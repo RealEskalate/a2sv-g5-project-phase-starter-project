@@ -1,10 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 import { useForm } from "react-hook-form";
 import UserService from "@/app/Services/api/userService";
+import { useAppSelector } from "@/app/Redux/store/store";
+import UserValue from "@/types/UserValue"; // Make sure to import UserValue type
 
 type FormData = {
   name: string;
@@ -22,14 +24,50 @@ type FormData = {
 };
 
 const EditProfileForm = () => {
-  const { register, handleSubmit } = useForm<FormData>();
+  const userData: UserValue | null = useAppSelector((state) => state.user.user); // Assuming state.user.user contains the UserValue type
+  const { register, handleSubmit, reset } = useForm<FormData>({
+    defaultValues: {
+      name: "",
+      email: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+      dateOfBirth: "",
+      permanentAddress: "",
+      postalCode: "",
+      presentAddress: "",
+      city: "",
+      country: "",
+      profilePicture: "",
+    },
+  });
+
+  useEffect(() => {
+    if (userData) {
+      reset({
+        name: userData.name,
+        email: userData.email,
+        username: userData.username,
+        dateOfBirth: userData.dateOfBirth,
+        permanentAddress: userData.permanentAddress,
+        postalCode: userData.postalCode,
+        presentAddress: userData.presentAddress,
+        city: userData.city,
+        country: userData.country,
+        profilePicture: userData.profilePicture,
+      });
+    }
+  }, [userData, reset]);
 
   const onSubmit = async (data: FormData) => {
-    const { confirmPassword, ...userData } = data;
-    console.log("Updating user profile:", userData);
+    const { confirmPassword, ...updatedUserData } = data;
+    console.log("Updating user profile:", updatedUserData);
 
     try {
-      const responseData = await UserService.update(userData, "accessToken"); // Call the update method
+      const responseData = await UserService.update(
+        updatedUserData,
+        "accessToken"
+      ); // Call the update method
       if (responseData.success) {
         console.log("Profile update successful:", responseData.message);
       } else {
@@ -45,7 +83,7 @@ const EditProfileForm = () => {
       <div className="flex justify-center xs:w-full md:w-fit md:pl-5">
         <div className="relative h-fit flex justify-center">
           <Image
-            src="/assets/profile-1.png"
+            src={userData?.profilePicture || "/assets/profile-1.png"}
             width={132}
             height={130}
             alt="Profile"

@@ -1,17 +1,26 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import ToggleButton from "../Button/ToggleButton";
-import UserService  from "@/app/Services/api/userService";
+import UserService from "@/app/Services/api/userService";
+import { useAppSelector } from "@/app/Redux/store/store";
 
 const PreferencesForm = () => {
+  const userData = useAppSelector((state) => state.user);
+
   const [preferences, setPreferences] = React.useState({
     currency: "USD",
-    sentOrReceiveDigitalCurrency: true,
+    sentOrReceiveDigitalCurrency: false,
     receiveMerchantOrder: false,
-    accountRecommendations: true,
+    accountRecommendations: false,
     timeZone: "(GMT-12:00) International Date Line West",
     twoFactorAuthentication: false,
   });
+
+  useEffect(() => {
+    if (userData.preferences) {
+      setPreferences(userData.preferences);
+    }
+  }, [userData.preferences]);
 
   const handleToggle = (key: keyof typeof preferences, value: boolean) => {
     setPreferences((prev) => ({ ...prev, [key]: value }));
@@ -19,8 +28,12 @@ const PreferencesForm = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    console.log("PREFERENCE", preferences);
     try {
-      const response = await UserService.updatePreference(preferences,"accessToken");
+      const response = await UserService.updatePreference(
+        preferences,
+        "accessToken"
+      );
       console.log("Preferences updated:", response);
     } catch (error) {
       console.error("Error updating preferences:", error);
@@ -28,31 +41,43 @@ const PreferencesForm = () => {
   };
 
   return (
-    <form className="mt-8 space-y-6 px-3 py-4" onSubmit={handleSubmit}>
+    <form
+      className="flex flex-col justify-start mt-6 space-y-6 py-4"
+      onSubmit={handleSubmit}
+    >
       <div className="flex flex-wrap gap-x-6">
-        <div className="w-[510px] min-w-72 flex flex-col">
+        <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
           <label className="mb-1 text-sm font-medium text-slate-700">
             Currency
           </label>
-          <input
-            type="text"
-            placeholder={preferences.currency}
-            readOnly
-            className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
-
-          />
+          <select
+            id="currency"
+            name="currency"
+            className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE] mt-1 block w-full text-sm"
+            value={preferences.currency}
+            onChange={(e) =>
+              setPreferences({ ...preferences, currency: e.target.value })
+            }
+          >
+            <option value="USD">USD - US Dollar</option>
+            <option value="EUR">EUR - Euro</option>
+            <option value="GBP">GBP - British Pound</option>
+            <option value="JPY">JPY - Japanese Yen</option>
+            <option value="CNY">CNY - Chinese Yuan</option>
+            <option value="INR">INR - Indian Rupee</option>
+            <option value="ETB">ETB - Ethiopian Birr</option>
+          </select>
         </div>
 
-        <div className="w-[510px] min-w-72 flex flex-col">
+        <div className="xxs:w-full sm:w-[250px] lg:w-[280px] xl:w-[380px] flex flex-col">
           <label className="mb-1 text-sm font-medium text-slate-700">
             Time Zone
           </label>
           <input
             type="text"
-            placeholder={preferences.timeZone}
+            value={preferences.timeZone}
             readOnly
             className="p-3 border-2 border-gray-200 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-[#4640DE]  "
-
           />
         </div>
       </div>
@@ -93,19 +118,19 @@ const PreferencesForm = () => {
               }
               initialChecked={preferences.accountRecommendations}
             />
-            <span className="ml-3 text-sm text-gray-700">
+            <span className="ml-3 text-sm font-Inter text-wrap text-gray-700">
               There are recommendations for my account
             </span>
           </div>
         </div>
       </div>
 
-      <div className="flex lg:justify-end mt-3 sm:w-full sm:justify-end">
+      <div className="flex justify-end mt-3 w-full sm:justify-end">
         <button
+          className="px-4 py-2 bg-[#1814F3] text-white rounded-md hover:bg-[#0702db] transition-all duration-300"
           type="submit"
-          className="xs:w-full xs:mx-2 sm:w-[192px] py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
         >
-          Save
+          Save Changes
         </button>
       </div>
     </form>

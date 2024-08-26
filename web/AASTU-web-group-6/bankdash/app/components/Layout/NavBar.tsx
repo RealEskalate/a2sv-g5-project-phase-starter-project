@@ -8,19 +8,18 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useAppDispatch, useAppSelector } from "@/app/Redux/store/store";
 import { toggleDarkMode } from "@/app/Redux/slices/darkModeSlice";
-import { usePathname } from "next/navigation"; // Import usePathname from Next.js
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 
 const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
   const isDarkMode = useAppSelector((state) => state.darkMode.darkMode);
   const dispatch = useAppDispatch();
-  const pathname = usePathname(); // Get the current route path
-
+  const pathname = usePathname();
+  const userData = useAppSelector((state) => state.user);
   const onDarkMode = () => {
     dispatch(toggleDarkMode());
   };
 
-  // Map routes to titles
   const pageTitles: { [key: string]: string } = {
     "/": "Overview",
     "/transaction": "Transactions",
@@ -34,7 +33,6 @@ const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
     "/login": "LogOut",
   };
 
-  // Fallback to "Overview" if the route doesn't match
   const currentPageTitle = pageTitles[pathname] || "Overview";
 
   return (
@@ -52,7 +50,7 @@ const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
         {currentPageTitle}
       </h1>
       <div className="flex justify-end gap-5  ">
-        <div className="search-box relative flex gap-2 items-center text-base text-[#8BA3CB] dark:text-gray-400 xxs:bg-white xxs:dark:bg-[#232328] xxs:fixed xxs:top-16 xxs:w-full xxs:left-0 xxs:px-4 xxs:py-2 xxs:pb-4 xxs:shadow-sm xxs:grow sm:px-[4%] md:static md:top-0 md:left-0 md:shadow-none md:bg-transparent md:p-0">
+        <div className="search-box relative flex gap-2 items-center text-base text-[#8BA3CB] dark:text-gray-400 xxs:bg-white xxs:dark:bg-[#232328] xxs:fixed xxs:top-16 xxs:w-full xxs:left-0 xxs:px-2 xxs:py-2 xxs:pb-4 xxs:shadow-sm xxs:grow sm:px-[4%] md:static md:top-0 md:left-0 md:shadow-none md:bg-transparent md:p-0">
           <FontAwesomeIcon
             icon={faSearch}
             className="relative xxs:left-10 md:left-12 text-xl"
@@ -87,10 +85,10 @@ const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
         <button>
           <Image
             className="rounded-full"
-            src="/assets/profile-1.png"
+            src={userData.user?.profilePicture || "/assets/profile-1.png"}
             alt="user image"
-            width={32}
-            height={32}
+            width={64}
+            height={64}
           />
         </button>
       </div>

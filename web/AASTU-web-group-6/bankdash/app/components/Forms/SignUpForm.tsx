@@ -91,9 +91,10 @@ const SignUpForm = () => {
           Welcome to Bank <span className="text-[#FFDD00]">Dash.</span>
         </h1>
         <div className="sub font-normal text-base text-white opacity-80">
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor "
+          &quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor &quot;
         </div>
+
         <div className="flex w-full gap-4 mt-6">
           <ProgressComp currentStep={step} />
           <div className="cont flex flex-col gap-6">

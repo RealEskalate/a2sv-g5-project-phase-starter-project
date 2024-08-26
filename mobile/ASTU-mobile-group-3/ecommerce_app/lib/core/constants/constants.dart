@@ -25,7 +25,7 @@ class AppData {
 
   static const String registerUser = '$baseUrlV2/auth/register';
   static const String logInUser = '$baseUrlV2/auth/login';
-  static const String allProductUrl = '$baseUrlV2/products';
+  static const String allProductUrl = '$baseUrlV3/products';
   //! json information
   static const Map<String, String> jsonHeader = {
     'Content-Type': 'application/json'

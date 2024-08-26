@@ -4,14 +4,14 @@ class ReusableTextField extends StatelessWidget {
   final String hint;
   final TextEditingController textEditingController;
   final TextInputType textInputType;
-  final String? Function(String?)? validator;
+  final VoidCallback? onsubmit;
 
   const ReusableTextField({
     Key? key,
     required this.hint,
     required this.textEditingController,
     required this.textInputType,
-    this.validator, // Optional validator parameter
+    this.onsubmit,
   }) : super(key: key);
 
   @override
@@ -24,23 +24,25 @@ class ReusableTextField extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 20),
-          child: TextFormField(
-            keyboardType: textInputType,
-            controller: textEditingController,
-            validator: validator, // Apply the validator here
-            decoration: InputDecoration(
-              suffixIcon: Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Icon(Icons.file_copy),
+        child: TextField(
+          keyboardType: textInputType,
+          controller: textEditingController,
+          decoration: InputDecoration(
+            suffixIcon: Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.send_outlined,
+                  size: 35,
+                ),
+                onPressed: onsubmit,
               ),
-              hintText: hint,
-              contentPadding: const EdgeInsetsDirectional.only(start: 4),
-              hintStyle: const TextStyle(color: Color(0xffC1C1C1)),
-              border: InputBorder.none,
-              isDense: true,
             ),
+            hintText: hint,
+            contentPadding: const EdgeInsetsDirectional.only(start: 4),
+            hintStyle: const TextStyle(color: Color(0xffC1C1C1)),
+            border: InputBorder.none,
+            isDense: true,
           ),
         ),
       ),

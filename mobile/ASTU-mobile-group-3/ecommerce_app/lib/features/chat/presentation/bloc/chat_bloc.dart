@@ -1,9 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:ecommerce_app/features/chat/presentation/bloc/chat_event.dart';
-import 'package:ecommerce_app/features/chat/presentation/bloc/chat_state.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-import '../../../../core/constants/constants.dart';
 import '../../data/data_resources/socket_io_sesrvice.dart';
 import '../../domain/usecases/AcknowledgeMessageDeliveryUseCase.dart';
 import '../../domain/usecases/CreateChatRoomUseCase.dart';
@@ -11,6 +8,8 @@ import '../../domain/usecases/OnMessageReceivedUseCase.dart';
 import '../../domain/usecases/RetrieveChatRoomsUseCase.dart';
 import '../../domain/usecases/RetrieveMessagesUseCase.dart';
 import '../../domain/usecases/SendMessageUseCase.dart';
+import 'chat_event.dart';
+import 'chat_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final AcknowledgeMessageDeliveryUseCase acknowledgeMessageDeliveryUseCase;
@@ -72,8 +71,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) async {
     emit(ChatLoading());
     try {
-      await createChatRoomUseCase.call(event.chat);
-      add(LoadChatRooms()); // Refresh the chat rooms list
+      await createChatRoomUseCase.call(event.userId);
+      add(LoadChatRooms());
     } catch (e) {
       emit(ChatError('Failed to create chat room'));
     }
@@ -112,9 +111,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     ConnectServerEvent event,
     Emitter<ChatState> emit,
   ) {
-    String Token =
-        "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRhZ2ltQGdtYWlsLmNvbSIsInN1YiI6IjY2Y2EyODBhZjk4ZDMyYzY4ZWFkY2UxNSIsImlhdCI6MTcyNDUyNDU4NCwiZXhwIjoxNzI0OTU2NTg0fQ.P435ttt-_a53CUjJ7ZFeoaDvm-MNmcZapRBUkkqY7eM";
-
     socketIOService.connect();
 
     socketIOService.socket.onConnect((_) {

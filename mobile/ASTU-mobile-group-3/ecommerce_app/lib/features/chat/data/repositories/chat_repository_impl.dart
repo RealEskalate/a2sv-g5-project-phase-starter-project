@@ -24,8 +24,8 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<void> createChatRoom(ChatEntity chat) async {
-    await chatRemoteDataSource.createChatRoom(chat);
+  Future<void> createChatRoom(String userId) async {
+    await chatRemoteDataSource.createChatRoom(userId);
   }
 
   @override
@@ -41,14 +41,15 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<void> sendMessage(String chatId, String content, String type) {
+  Future<void> sendMessage(String chatId, String content, String type) async {
     // TODO: implement sendMessage
-    throw UnimplementedError();
+    // throw UnimplementedError();
+    await socketIOService.emitSendMessage(chatId, content, type);
   }
 
   // @override
   // Future<void> sendMessage(String chatId, String content, String type) async {
-  //   await socketIOService.emitSendMessage(chatId, content, type);
+  // await socketIOService.emitSendMessage(chatId, content, type);
   // }
 
   // @override

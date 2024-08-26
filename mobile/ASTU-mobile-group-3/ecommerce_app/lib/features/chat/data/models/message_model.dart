@@ -13,7 +13,9 @@ class MessageModel extends MessageEntity {
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
       messageId: json['messageId'],
-      sender: UserModel.fromSellerJson(json['sender']),
+      sender: UserModel.fromSellerJson(
+        (json['sender']),
+      ),
       chat: ChatModel.fromJson(json['chat']),
       content: json['content'],
     );

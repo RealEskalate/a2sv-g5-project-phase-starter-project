@@ -1,4 +1,3 @@
-import '../entity/chat.dart';
 import '../repository/chat_repository.dart';
 
 class CreateChatRoomUseCase {
@@ -6,7 +5,7 @@ class CreateChatRoomUseCase {
 
   CreateChatRoomUseCase(this.repository);
 
-  Future<void> call(ChatEntity chat) async {
-    await repository.createChatRoom(chat);
+  Future<void> call(String userId) async {
+    await repository.createChatRoom(userId);
   }
 }

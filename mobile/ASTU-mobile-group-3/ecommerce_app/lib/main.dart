@@ -8,6 +8,8 @@ import 'features/auth/presentation/bloc/cubit/user_input_validation_cubit.dart';
 import 'features/auth/presentation/page/login_page.dart';
 import 'features/auth/presentation/page/signup_page.dart';
 import 'features/chat/presentation/bloc/chat_bloc.dart';
+import 'features/chat/presentation/pages/chat_list.dart';
+import 'features/chat/presentation/pages/chat_room.dart';
 import 'features/product/presentation/bloc/cubit/input_validation_cubit.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
 import 'features/product/presentation/pages/add_product_page.dart';
@@ -15,10 +17,8 @@ import 'features/product/presentation/pages/product_list_page.dart';
 import 'features/product/presentation/pages/search_product_page.dart';
 import 'features/product/presentation/pages/single_product_page.dart';
 import 'features/product/presentation/pages/update_product_page.dart';
+import 'landing_page.dart';
 import 'splash_page.dart';
-
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'dart:developer';
 
 void main() async {
   WidgetsFlutterBinding().ensureSemantics();
@@ -53,13 +53,16 @@ class MyApp extends StatelessWidget {
         theme: MyTheme.lightTheme,
         routes: {
           AddProductPage.routes: (context) => AddProductPage(),
+          ChatList.routes: (context) => const ChatList(),
+          ChatRoom.routes: (context) => const ChatRoom(),
           ProductListPage.routes: (context) => const ProductListPage(),
           SingleProduct.routes: (context) => SingleProduct(),
           SearchProduct.routes: (context) => const SearchProduct(),
           SplashPage.routes: (context) => const SplashPage(),
           LoginPage.routes: (context) => LoginPage(),
           SignUpPage.routes: (context) => SignUpPage(),
-          UpdateProductPage.routes: (context) => UpdateProductPage()
+          UpdateProductPage.routes: (context) => UpdateProductPage(),
+          LandingPage.routes: (context) => const LandingPage()
         },
         initialRoute: SplashPage.routes,
       ),

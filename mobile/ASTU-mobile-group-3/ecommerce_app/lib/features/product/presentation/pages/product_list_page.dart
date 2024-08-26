@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/page/login_page.dart';
@@ -9,7 +10,11 @@ import '../widgets/product_widgets.dart';
 
 class ProductListPage extends StatelessWidget {
   static String routes = '/product_list_page';
-  const ProductListPage({super.key});
+  final DateTime now = DateTime.now();
+  
+
+  ProductListPage({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +45,7 @@ class ProductListPage extends StatelessWidget {
                 BlocBuilder<AuthBloc, AuthState>(
                   builder: (context, state) {
                     String name = 'Sir';
+                    String day = '${DateFormat('MMMM').format(now)} ${now.day}, ${now.year}';
                     String email = '...@gmail.com';
                     if (state is GetMeSuccessState) {
                       name = state.user.name;
@@ -67,7 +73,7 @@ class ProductListPage extends StatelessWidget {
                             });
                       },
                       userName: name,
-                      day: email,
+                      day: day,
                     );
                   },
                 ),

@@ -1931,6 +1931,42 @@ class MockInputValidationCubit extends _i1.Mock
       ) as _i22.Future<void>);
 }
 
+/// A class which mocks [GetMeUsecase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetMeUsecase extends _i1.Mock implements _i12.GetMeUsecase {
+  MockGetMeUsecase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i8.AuthRepository get authRepository => (super.noSuchMethod(
+        Invocation.getter(#authRepository),
+        returnValue: _FakeAuthRepository_7(
+          this,
+          Invocation.getter(#authRepository),
+        ),
+      ) as _i8.AuthRepository);
+
+  @override
+  _i22.Future<_i2.Either<_i23.Failure, _i29.UserEntity>> execute() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #execute,
+          [],
+        ),
+        returnValue:
+            _i22.Future<_i2.Either<_i23.Failure, _i29.UserEntity>>.value(
+                _FakeEither_0<_i23.Failure, _i29.UserEntity>(
+          this,
+          Invocation.method(
+            #execute,
+            [],
+          ),
+        )),
+      ) as _i22.Future<_i2.Either<_i23.Failure, _i29.UserEntity>>);
+}
+
 /// A class which mocks [UserInputValidationCubit].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -2075,42 +2111,6 @@ class MockUserInputValidationCubit extends _i1.Mock
         returnValue: _i22.Future<void>.value(),
         returnValueForMissingStub: _i22.Future<void>.value(),
       ) as _i22.Future<void>);
-}
-
-/// A class which mocks [GetMeUsecase].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockGetMeUsecase extends _i1.Mock implements _i12.GetMeUsecase {
-  MockGetMeUsecase() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i8.AuthRepository get authRepository => (super.noSuchMethod(
-        Invocation.getter(#authRepository),
-        returnValue: _FakeAuthRepository_7(
-          this,
-          Invocation.getter(#authRepository),
-        ),
-      ) as _i8.AuthRepository);
-
-  @override
-  _i22.Future<_i2.Either<_i23.Failure, _i29.UserEntity>> execute() =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #execute,
-          [],
-        ),
-        returnValue:
-            _i22.Future<_i2.Either<_i23.Failure, _i29.UserEntity>>.value(
-                _FakeEither_0<_i23.Failure, _i29.UserEntity>(
-          this,
-          Invocation.method(
-            #execute,
-            [],
-          ),
-        )),
-      ) as _i22.Future<_i2.Either<_i23.Failure, _i29.UserEntity>>);
 }
 
 /// A class which mocks [ChatRepository].

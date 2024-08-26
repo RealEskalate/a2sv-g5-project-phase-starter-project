@@ -85,7 +85,7 @@ class _SplashPageState extends State<SplashPage>
                   ),
                 ),
                 Text(
-                  'ECCOMMERCE APP',
+                  'ECOMMERCE APP',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                       color: Colors.white,

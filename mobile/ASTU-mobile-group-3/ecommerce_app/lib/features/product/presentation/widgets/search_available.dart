@@ -18,19 +18,20 @@ class SearchNavigator extends StatelessWidget {
         children: [
           const Text(
             'Available Product',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 24, fontFamily: 'Poppins'),
           ),
           Container(
             decoration: BoxDecoration(
-                border: Border.all(color: MyTheme.ecGrey, width: 2),
-                borderRadius: BorderRadius.circular(16)),
+                border:  Border.all(color: const Color(0XFFD9D9D9), ),
+                borderRadius: BorderRadius.circular(10)),
             child: IconButton(
               onPressed: () {
                 Navigator.pushNamed(context, SearchProduct.routes);
               },
               icon: const Icon(
-                Icons.search,
-                color: MyTheme.ecGrey,
+                 Icons.search_outlined,
+                 
+                 size: 30,
               ),
             ),
           ),

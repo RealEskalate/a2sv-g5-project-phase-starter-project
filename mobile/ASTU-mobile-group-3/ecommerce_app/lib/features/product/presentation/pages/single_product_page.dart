@@ -295,7 +295,7 @@ class SingleProduct extends StatelessWidget {
               ),
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -312,6 +312,9 @@ class SingleProduct extends StatelessWidget {
                         },
                         label: 'DELETE',
                       ),
+                    ),
+                    SizedBox(
+                      width: 10,
                     ),
                     Expanded(
                       child: BlocConsumer<ChatBloc, ChatState>(
@@ -340,9 +343,12 @@ class SingleProduct extends StatelessWidget {
                                   chatBloc.add(CreateChatRoom(sellerId!));
                                 }
                               },
-                              label: 'Chat');
+                              label: 'CHAT');
                         },
                       ),
+                    ),
+                    SizedBox(
+                      width: 10,
                     ),
                     Expanded(
                       child: FillCustomButton(

@@ -43,7 +43,7 @@ const LandingNav: React.FC<LandingNavProps> = ({ bgWhite, homeRef, servicesRef, 
      
 
 
-      className={`bg-[#083E9E] text-white flex justify-center items-center sm:justify-between p-2 sm:p-4 relative`}
+      className={`bg-[#083E9E] text-white flex justify-center items-center sm:justify-between p-2 sm:p-4 relative z-50`}
     >
       <Link href="/" className="font-extrabold text-[25px] cursor-pointer">BankDash</Link>
 
@@ -60,7 +60,7 @@ const LandingNav: React.FC<LandingNavProps> = ({ bgWhite, homeRef, servicesRef, 
         <div
           className={`${
             isMenuVisible
-              ? "absolute right-[-20px] bg-white mt-1 top-full text-[#083E9E] z-50 rounded-lg p-2"
+              ? "absolute right-[-20px] bg-white mt-1 top-full text-[#083E9E] rounded-lg p-2"
               : "hidden"
           } sm:flex sm:flex-row gap-20 mr-10`}
         >

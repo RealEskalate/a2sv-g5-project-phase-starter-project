@@ -57,14 +57,20 @@ func NewAuthRepository(user_collection Domain.Collection, token_collection Domai
 	}
 }
 
-// login
-func (ar *authRepository) Login(ctx context.Context, user *Domain.User) (Domain.Tokens, error, int) {
+// login.
+func (ar *authRepository) Login(ctx context.Context, user *Dtos.LoginUserDto) (Domain.Tokens, error, int) {
 	ar.mu.RLock()
 	defer ar.mu.RUnlock()
 
-	filter := bson.D{{"email", user.Email}}
+	filter := bson.D{
+		{Key: "$or", Value: bson.A{
+			bson.D{{Key: "username", Value: user.UserName}},
+			bson.D{{Key: "email", Value: user.Email}},
+		}},
+	}
 	var existingUser Domain.User
 	err := ar.UserCollection.FindOne(ctx, filter).Decode(&existingUser)
+	fmt.Print("existingUser", existingUser)
 
 	if err != nil || !password_services.CompareHashAndPasswordCustom(existingUser.Password, user.Password) {
 		fmt.Printf("Login Called:%v, %v", existingUser.Password, user.Password)

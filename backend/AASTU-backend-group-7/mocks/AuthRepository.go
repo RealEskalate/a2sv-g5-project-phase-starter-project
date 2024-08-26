@@ -163,7 +163,7 @@ func (_m *AuthRepository) GoogleLogin(ctx context.Context) string {
 }
 
 // Login provides a mock function with given fields: ctx, user
-func (_m *AuthRepository) Login(ctx context.Context, user *Domain.User) (Domain.Tokens, error, int) {
+func (_m *AuthRepository) Login(ctx context.Context, user *Dtos.LoginUserDto) (Domain.Tokens, error, int) {
 	ret := _m.Called(ctx, user)
 
 	if len(ret) == 0 {
@@ -173,22 +173,22 @@ func (_m *AuthRepository) Login(ctx context.Context, user *Domain.User) (Domain.
 	var r0 Domain.Tokens
 	var r1 error
 	var r2 int
-	if rf, ok := ret.Get(0).(func(context.Context, *Domain.User) (Domain.Tokens, error, int)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *Dtos.LoginUserDto) (Domain.Tokens, error, int)); ok {
 		return rf(ctx, user)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, *Domain.User) Domain.Tokens); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *Dtos.LoginUserDto) Domain.Tokens); ok {
 		r0 = rf(ctx, user)
 	} else {
 		r0 = ret.Get(0).(Domain.Tokens)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, *Domain.User) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, *Dtos.LoginUserDto) error); ok {
 		r1 = rf(ctx, user)
 	} else {
 		r1 = ret.Error(1)
 	}
 
-	if rf, ok := ret.Get(2).(func(context.Context, *Domain.User) int); ok {
+	if rf, ok := ret.Get(2).(func(context.Context, *Dtos.LoginUserDto) int); ok {
 		r2 = rf(ctx, user)
 	} else {
 		r2 = ret.Get(2).(int)

@@ -3,6 +3,7 @@ package auth_middleware
 import (
 	"blogapp/Config"
 	"blogapp/Domain"
+	"blogapp/Repositories"
 	"fmt"
 	"net/http"
 	"strings"
@@ -80,13 +81,14 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func IsAdminMiddleware() gin.HandlerFunc {
+func IsAdminMiddleware(user_repo *Repositories.UserRepository) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		claim := c.MustGet("claim").(*Domain.AccessClaims)
 		role := claim.Role
-
-		if role == "admin" {
+		user, _, _ := user_repo.GetUsersById(c, claim.ID, *claim)
+		if user.Role == "admin" || role == "admin" {
+			// if role == "admin" {
 			c.Next()
 		} else {
 			c.JSON(401, gin.H{"error": "Unauthorized"})

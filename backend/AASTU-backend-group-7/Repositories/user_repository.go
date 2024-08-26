@@ -19,15 +19,15 @@ import (
 	"github.com/go-playground/validator"
 )
 
-type userRepository struct {
+type UserRepository struct {
 	validator       *validator.Validate
 	collection      Domain.Collection
 	TokenRepository Domain.RefreshRepository
 	mu              sync.RWMutex
 }
 
-func NewUserRepository(_collection Domain.Collection, token_collection Domain.Collection) *userRepository {
-	return &userRepository{
+func NewUserRepository(_collection Domain.Collection, token_collection Domain.Collection) *UserRepository {
+	return &UserRepository{
 		validator:       validator.New(),
 		collection:      _collection,
 		TokenRepository: NewRefreshRepository(token_collection),
@@ -36,7 +36,7 @@ func NewUserRepository(_collection Domain.Collection, token_collection Domain.Co
 }
 
 // create user
-func (us *userRepository) CreateUser(ctx context.Context, user *Domain.User) (Domain.OmitedUser, error, int) {
+func (us *UserRepository) CreateUser(ctx context.Context, user *Domain.User) (Domain.OmitedUser, error, int) {
 	us.mu.RLock()
 	defer us.mu.RUnlock()
 
@@ -74,7 +74,7 @@ func (us *userRepository) CreateUser(ctx context.Context, user *Domain.User) (Do
 }
 
 // get all users
-func (us *userRepository) GetUsers(ctx context.Context) ([]*Domain.OmitedUser, error, int) {
+func (us *UserRepository) GetUsers(ctx context.Context) ([]*Domain.OmitedUser, error, int) {
 	us.mu.RLock()
 	defer us.mu.RUnlock()
 	var results []*Domain.OmitedUser
@@ -125,7 +125,7 @@ func (us *userRepository) GetUsers(ctx context.Context) ([]*Domain.OmitedUser, e
 }
 
 // get user by id
-func (us *userRepository) GetUsersById(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
+func (us *UserRepository) GetUsersById(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
 	us.mu.RLock()
 	defer us.mu.RUnlock()
 
@@ -146,7 +146,7 @@ func (us *userRepository) GetUsersById(ctx context.Context, id primitive.ObjectI
 
 // update user by id
 // uncessesary route should be removed
-func (us *userRepository) UpdateUsersById(ctx context.Context, id primitive.ObjectID, user Domain.User, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
+func (us *UserRepository) UpdateUsersById(ctx context.Context, id primitive.ObjectID, user Domain.User, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
 	us.mu.RLock()
 	defer us.mu.RUnlock()
 
@@ -218,7 +218,7 @@ func (us *userRepository) UpdateUsersById(ctx context.Context, id primitive.Obje
 }
 
 // delete user by id
-func (us *userRepository) DeleteUsersById(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (error, int) {
+func (us *UserRepository) DeleteUsersById(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (error, int) {
 	us.mu.RLock()
 	defer us.mu.RUnlock()
 
@@ -246,7 +246,7 @@ func (us *userRepository) DeleteUsersById(ctx context.Context, id primitive.Obje
 	return nil, 200
 }
 
-func (us *userRepository) PromoteUser(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
+func (us *UserRepository) PromoteUser(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
 	us.mu.RLock()
 	defer us.mu.RUnlock()
 	if current_user.Role != "admin" || current_user.ID == id {
@@ -276,7 +276,7 @@ func (us *userRepository) PromoteUser(ctx context.Context, id primitive.ObjectID
 	return result, nil, 200
 }
 
-func (us *userRepository) DemoteUser(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
+func (us *UserRepository) DemoteUser(ctx context.Context, id primitive.ObjectID, current_user Domain.AccessClaims) (Domain.OmitedUser, error, int) {
 	us.mu.RLock()
 	defer us.mu.RUnlock()
 	if current_user.Role != "admin" || current_user.ID == id {
@@ -306,7 +306,7 @@ func (us *userRepository) DemoteUser(ctx context.Context, id primitive.ObjectID,
 	return result, nil, 200
 }
 
-func (us *userRepository) ChangePassByEmail(ctx context.Context, email string, password string) (Domain.OmitedUser, error, int) {
+func (us *UserRepository) ChangePassByEmail(ctx context.Context, email string, password string) (Domain.OmitedUser, error, int) {
 	us.mu.RLock()
 	defer us.mu.RUnlock()
 
@@ -334,7 +334,7 @@ func (us *userRepository) ChangePassByEmail(ctx context.Context, email string, p
 }
 
 // find by email
-func (us *userRepository) FindByEmail(ctx context.Context, email string) (Domain.OmitedUser, error, int) {
+func (us *UserRepository) FindByEmail(ctx context.Context, email string) (Domain.OmitedUser, error, int) {
 	us.mu.RLock()
 	defer us.mu.RUnlock()
 	filter := bson.D{{"email", email}}

@@ -9,7 +9,7 @@ import (
 )
 
 type AuthRepository interface {
-	Login(ctx context.Context, user *User) (Tokens, error, int)
+	Login(ctx context.Context, user *Dtos.LoginUserDto) (Tokens, error, int)
 	Register(ctx context.Context, user *Dtos.RegisterUserDto) (*OmitedUser, error, int)
 	Logout(ctx context.Context, user_id primitive.ObjectID) (error, int)
 	GoogleLogin(ctx context.Context) string
@@ -22,7 +22,7 @@ type AuthRepository interface {
 }
 
 type AuthUseCase interface {
-	Login(c *gin.Context, user *User) (Tokens, error, int)
+	Login(c *gin.Context, user *Dtos.LoginUserDto) (Tokens, error, int)
 	Register(c *gin.Context, user *Dtos.RegisterUserDto) (*OmitedUser, error, int)
 	Logout(c *gin.Context, user_id primitive.ObjectID) (error, int)
 	GoogleLogin(c *gin.Context) string

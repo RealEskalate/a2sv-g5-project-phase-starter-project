@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -28,11 +30,11 @@ type Config struct {
 }
 
 func LoadEnv() (*Config, error) {
-	// err := godotenv.Load("/etc/secrets/env")
-	// if err != nil {
-	// 	log.Fatal("Error loading .env file")
-	// 	return nil, err
-	// }
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+		return nil, err
+	}
 
 	dbURL := os.Getenv("DATABASE_URL")
 	portStr := os.Getenv("PORT")

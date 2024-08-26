@@ -81,14 +81,7 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
     access = session?.user?.accessToken;
   }
 
-  const { data, isError, isLoading } = useGetAllTransactionQuery(access);
-
-  if (isLoading) {
-    return <p>loading...</p>;
-  }
-  if (isError) {
-    return <p>Error</p>;
-  }
+  const { data, isError, isLoading } = useGetAllTransactionQuery(access)
 
   let transactions: { content: Item[]; totalPages: number } = data?.data || "";
 

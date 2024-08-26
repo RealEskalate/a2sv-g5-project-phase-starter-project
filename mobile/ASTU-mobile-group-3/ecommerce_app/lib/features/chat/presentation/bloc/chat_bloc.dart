@@ -104,6 +104,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     MessageReceived event,
     Emitter<ChatState> emit,
   ) {
+    print(event.message);
     add(MessageReceived(event.message));
   }
 
@@ -113,7 +114,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) {
     socketIOService.connect();
 
-    socketIOService.socket.onConnect((_) {
+    socketIOService.socket!.onConnect((_) {
       print('Connected to the socket server');
     });
   }

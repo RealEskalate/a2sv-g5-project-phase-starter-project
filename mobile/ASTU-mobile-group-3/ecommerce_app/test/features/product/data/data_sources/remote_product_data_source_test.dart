@@ -151,7 +151,7 @@ void main() {
     test('Should success', () async {
       when(mockAuthLocalDataSource.getToken())
           .thenAnswer((_) async => const TokenModel(token: AuthData.token));
-      const fakePath = '/home/chera/Downloads/certificate.jpg';
+      const fakePath = 'assets/images/logo.png';
 
       final uri = Uri.parse(AppData.baseUrl);
       final request = http.MultipartRequest('POST', uri);
@@ -193,7 +193,7 @@ void main() {
     test('Should success', () async {
       when(mockAuthLocalDataSource.getToken())
           .thenAnswer((_) async => const TokenModel(token: AuthData.token));
-      const fakePath = '/home/chera/Downloads/certificate.jpg';
+      const fakePath = 'assets/images/logo.png';
 
       final uri = Uri.parse(AppData.baseUrl);
       final request = http.MultipartRequest('POST', uri);

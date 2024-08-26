@@ -55,14 +55,14 @@ export function DialogDemo() {
   return (
     <div className="p-0">
       <DialogContent className="sm:max-w-[425px] max-h-full">
-        <div className="bg-gray-100 p-6 rounded-lg shadow-md"> 
+        <div className="bg-gray-100 dark:bg-black-2 p-6 rounded-lg shadow-md"> 
           <div className="flex flex-col items-center mb-6"> {/* Center align the top section */}
             <Image
               src="/Images/profilepic.jpeg"
               alt="User Profile"
               width={80} // Increased image size
               height={80}
-              className="rounded-full mb-3"
+              className="rounded-full mb-3 aspect-square object-cover"
             />
             <h2 className="text-xl font-bold mb-1">{info?.name}</h2> {/* Reduced font size */}
             <p className="text-gray-500 text-sm">@{info?.email}</p> {/* Reduced font size */}

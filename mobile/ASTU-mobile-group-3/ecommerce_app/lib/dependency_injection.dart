@@ -9,6 +9,7 @@ import 'features/auth/data/data_source/auth_local_data_source.dart';
 import 'features/auth/data/data_source/remote_auth_data_source.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
+import 'features/auth/domain/usecases/get_me_usecase.dart';
 import 'features/auth/domain/usecases/log_in_usecase.dart';
 import 'features/auth/domain/usecases/log_out_usecase.dart';
 import 'features/auth/domain/usecases/sign_up_usecase.dart';
@@ -87,6 +88,7 @@ Future<void> init() async {
   locator.registerLazySingleton(() => LogInUsecase(authRepository: locator()));
   locator.registerLazySingleton(() => SignUpUsecase(authRepository: locator()));
   locator.registerLazySingleton(() => LogOutUsecase(repository: locator()));
+  locator.registerLazySingleton(() => GetMeUsecase(authRepository: locator()));
 
   // bloc
   locator.registerFactory(
@@ -99,10 +101,14 @@ Future<void> init() async {
     ),
   );
 
-  locator.registerFactory(() => AuthBloc(
+  locator.registerFactory(
+    () => AuthBloc(
       logInUsecase: locator(),
       signUpUsecase: locator(),
-      logOutUsecase: locator()));
+      logOutUsecase: locator(),
+      getMeUsecase: locator(),
+    ),
+  );
   locator.registerFactory(() => InputValidationCubit(locator()));
   locator.registerFactory(
       () => UserInputValidationCubit(inputDataValidator: locator()));

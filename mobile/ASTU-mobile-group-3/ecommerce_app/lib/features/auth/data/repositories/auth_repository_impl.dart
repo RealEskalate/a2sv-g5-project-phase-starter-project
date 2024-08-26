@@ -55,4 +55,19 @@ class AuthRepositoryImpl extends AuthRepository {
       return Left(CacheFailure(AppData.getMessage(AppData.logoutError)));
     }
   }
+
+  @override
+  Future<Either<Failure, UserEntity>> getMe() async {
+    try {
+      final token = await authLocalDataSource.getToken();
+
+      final user = await remoteAuthDataSource.getMe(token);
+
+      return Right(user.toEntity());
+    } on CacheException {
+      return Left(CacheFailure(AppData.getMessage(AppData.cacheError)));
+    } on ServerException {
+      return Left(ServerFailure(AppData.getMessage(AppData.serverError)));
+    }
+  }
 }

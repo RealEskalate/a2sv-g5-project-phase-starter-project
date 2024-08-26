@@ -1,8 +1,12 @@
 // ignore: depend_on_referenced_packages
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:http/http.dart';
 
 import '../../domain/entities/user_entity.dart';
+import '../../domain/usecases/get_me_usecase.dart';
 import '../../domain/usecases/log_in_usecase.dart';
 import '../../domain/usecases/log_out_usecase.dart';
 import '../../domain/usecases/sign_up_usecase.dart';
@@ -14,10 +18,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final SignUpUsecase signUpUsecase;
   final LogInUsecase logInUsecase;
   final LogOutUsecase logOutUsecase;
+  final GetMeUsecase getMeUsecase;
   AuthBloc(
       {required this.signUpUsecase,
       required this.logInUsecase,
-      required this.logOutUsecase})
+      required this.logOutUsecase,
+      required this.getMeUsecase})
       : super(AuthInitial()) {
     on<LogInEvent>((event, emit) async {
       emit(AuthLoadingstate());
@@ -59,6 +65,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(LogoutFailedState(message: failure.message));
       }, (data) {
         emit(LogoutSuccess());
+      });
+    });
+
+    on<GetMeEvent>((event, emit) async {
+      emit(AuthLoadingstate());
+
+      final result = await getMeUsecase.execute();
+      result.fold((failure) {
+        emit(LogoutFailedState(message: failure.message));
+      }, (data) {
+        emit(GetMeSuccessState(user: data));
       });
     });
   }

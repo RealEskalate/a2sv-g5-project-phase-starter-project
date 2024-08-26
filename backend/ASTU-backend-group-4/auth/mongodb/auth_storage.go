@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/auth"
 	"go.mongodb.org/mongo-driver/bson"
@@ -53,6 +54,11 @@ func (au *AuthUserImple) UpdateUser(ctx context.Context, user auth.User) (auth.U
 		{Key: "name", Value: user.Name},
 		{Key: "username", Value: user.Username},
 		{Key: "email", Value: user.Email},
+		{Key: "isactive", Value: user.IsActive},
+		{Key: "isadmin", Value: user.IsAdmin},
+		{Key: "createdat", Value: user.CreatedAt},
+		{Key: "updatedat", Value: user.UpdatedAt},
+		{Key: "issupper", Value: user.IsSupper},
 	}}}
 
 	result, err := au.usercollection.UpdateOne(ctx, filter, update)
@@ -64,6 +70,7 @@ func (au *AuthUserImple) UpdateUser(ctx context.Context, user auth.User) (auth.U
 	if result.MatchedCount != 1 {
 		return auth.User{}, auth.ErrNoUserWithId
 	}
+	fmt.Println("UPDATED", user)
 	return user, nil
 }
 
@@ -93,6 +100,7 @@ func (au *AuthUserImple) GetUserByID(ctx context.Context, id string) (auth.User,
 	if err != nil {
 		return auth.User{}, auth.ErrNoUserWithId
 	}
+	fmt.Println(user)
 	return user, nil
 }
 

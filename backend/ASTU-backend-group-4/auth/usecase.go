@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -78,10 +77,11 @@ func (au *AuthUserUsecase) RegisterUser(ctx context.Context, user User) error {
 	user.Password = string(hashedpassword)
 	user.IsActive = false
 	user.Email = strings.ToLower(user.Email)
+	user.Username = strings.ToLower(user.Username)
 	// user.IsAdmin = false	activationLink := fmt.Sprintf("http://localhost/activate/%s/%s", user.ID, tokenString)
 
-	user.CreatedAt = time.Now()
-	user.UpdatedAt = time.Now()
+	user.CreatedAt = time.Now().UTC()
+	user.UpdatedAt = time.Now().UTC()
 	// if the user is first user is make it admin and super admin
 	count, err := au.repository.GetCollectionCount(ctx)
 	if err != nil {
@@ -100,7 +100,7 @@ func (au *AuthUserUsecase) RegisterUser(ctx context.Context, user User) error {
 	from := os.Getenv("FROM")
 	tokenString := au.GenerateActivateToken(user.Password, user.UpdatedAt)
 
-	activationLink := fmt.Sprintf("http://localhost/activate/%s/%s", user.ID, tokenString)
+	activationLink := fmt.Sprintf("http://localhost:8000/v1/auth/activate/%s/%s", user.ID, tokenString)
 	au.emailService.SendEmail(from, user.Email, fmt.Sprintf("click the link to activate you account %s", activationLink), "Account Activation")
 
 	return nil
@@ -114,24 +114,31 @@ func (au *AuthUserUsecase) UpdateProfile(ctx context.Context, user User) error {
 	return nil
 }
 
-func (au *AuthUserUsecase) Activate(ctx context.Context, userID string, token string) error {
+func (au *AuthUserUsecase) Activate(ctx context.Context, userID string, token string) (User, error) {
 	user, err := au.repository.GetUserByID(ctx, userID)
+	x := user
+	fmt.Println("fetched", user, err)
 	if err != nil {
-		return err
+		return User{}, err
 	}
 	expectedToken := au.GenerateActivateToken(user.Password, user.UpdatedAt)
 
 	if expectedToken != token {
-		return err
+		fmt.Println(expectedToken, token)
+		return User{}, errors.New("invalid token")
 	}
 	user.IsActive = true
 	user.UpdatedAt = time.Now()
 
-	_, err = au.repository.UpdateUser(ctx, user)
+	fmt.Println("updated", user)
+	user, err = au.repository.UpdateUser(ctx, user)
+	fmt.Println("updated", user)
+
 	if err != nil {
-		return err
+		return User{}, err
 	}
-	return nil
+
+	return x, nil
 }
 
 func (au *AuthUserUsecase) Logout(ctx context.Context, userID string) {
@@ -143,7 +150,8 @@ func (au *AuthUserUsecase) Logout(ctx context.Context, userID string) {
 }
 
 func (au *AuthUserUsecase) GenerateActivateToken(hashedpassword string, updatedat time.Time) string {
-	token := hashedpassword + updatedat.String()
+	token := hashedpassword + updatedat.Format("2006-01-02 15:04:05")
+	fmt.Println("Token generated", token)
 	hasher := sha1.New()
 	hasher.Write([]byte(token))
 
@@ -191,6 +199,7 @@ func (au *AuthUserUsecase) PromoteUser(ctx context.Context, userID string) error
 	if err != nil {
 		return err
 	}
+	fmt.Println(user)
 	return nil
 }
 
@@ -215,56 +224,49 @@ func (au *AuthUserUsecase) DemoteUser(ctx context.Context, userID string) error 
 
 ////
 
-func (au *AuthUserUsecase) GenerateTokenForReset(ctx context.Context, email string) (string, string) {
-	timeStamp := fmt.Sprint(time.Now().Unix())
-	data := email + timeStamp + os.Getenv("SECRET_KEY")
+func (au *AuthUserUsecase) GenerateTokenForReset(ctx context.Context, updatedat, hashedpassword, currenttime string) string {
+	data := hashedpassword + updatedat + currenttime
 	hash := sha256.New()
 	hash.Write([]byte(data))
 	token := hex.EncodeToString(hash.Sum(nil))
 
-	return token, timeStamp
+	return token
 }
 
-func (au *AuthUserUsecase) ForgetPassword(ctx context.Context, email string) error {
-	_, err := au.repository.GetUserByEmail(ctx, email)
+func (au *AuthUserUsecase) ForgetPassword(ctx context.Context, email Email) error {
+	user, err := au.repository.GetUserByEmail(ctx, email.User_email)
 	if err != nil {
 		return ErrNoUserWithEmail
 	}
-	token, timeStamp := au.GenerateTokenForReset(ctx, email)
+	currenttime := time.Now().String()
+	token := au.GenerateTokenForReset(ctx, user.UpdatedAt.String(), user.Password, currenttime)
 
+	URLSafe := base64.URLEncoding.EncodeToString([]byte(currenttime))
 	// send the token to that email
 	from := os.Getenv("FROM")
-	link := fmt.Sprintf("http://localhost:8000/v1/auth/reset/%s/%s/%s", email, timeStamp, token)
-	au.emailService.SendEmail(from, email, fmt.Sprintf("click the link to activate your password %s ", link), "Reset password")
+	link := fmt.Sprintf("http://localhost:8000/v1/auth/reset/%s/%s/%s", user.ID, URLSafe, token)
+	au.emailService.SendEmail(from, email.User_email, fmt.Sprintf("click the link to activate your password %s ", link), "Reset password")
 	return nil
 }
 
-func (au *AuthUserUsecase) ResetPassword(ctx context.Context, email, token, timeStamp, password, newPassword string) error {
-	if au.IsTokenExpired(timeStamp) {
-		return fmt.Errorf("token expired")
-	}
+// func (au *AuthUserUsecase) ResetPassword(ctx context.Context, userid, token, password, newPassword string) error {
+// 	user, err := au.repository.GetUserByID(ctx, userid)
 
-	if !au.IsTokenValied(ctx, token, email) {
-		return fmt.Errorf("invalied token")
-	}
+// 	expectedToken := au.GenerateTokenForReset(ctx, user.UpdatedAt.String(), user.Password, theTime)
 
-	if password != newPassword {
-		return fmt.Errorf("the passwords have to be identical")
-	}
-	return nil
-}
+// }
 
-func (au *AuthUserUsecase) IsTokenExpired(timeStamp string) bool {
-	ts, err := strconv.ParseInt(timeStamp, 10, 64)
+// func (au *AuthUserUsecase) IsTokenExpired(timeStamp string) bool {
+// 	ts, err := strconv.ParseInt(timeStamp, 10, 64)
 
-	if err != nil {
-		return true
-	}
-	tokenTime := time.Unix(ts, 0)
-	return time.Since(tokenTime) > 1*time.Hour
-}
+// 	if err != nil {
+// 		return true
+// 	}
+// 	tokenTime := time.Unix(ts, 0)
+// 	return time.Since(tokenTime) > 1*time.Hour
+// }
 
-func (au *AuthUserUsecase) IsTokenValied(ctx context.Context, token, email string) bool {
-	tk, _ := au.GenerateTokenForReset(ctx, email)
-	return tk == token
-}
+// func (au *AuthUserUsecase) IsTokenValied(ctx context.Context, token, email string) bool {
+// 	tk, _ := au.GenerateTokenForReset(ctx, email)
+// 	return tk == token
+// }

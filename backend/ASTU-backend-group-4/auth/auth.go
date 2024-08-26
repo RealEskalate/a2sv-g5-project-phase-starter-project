@@ -13,7 +13,7 @@ type User struct {
 	Password  string    `json:"password"`
 	IsActive  bool      `json:"isactive"`
 	IsAdmin   bool      `json:"isadmin"`
-	IsSupper  bool      `json:"issuper"`
+	IsSupper  bool      `json:"issupper"`
 	CreatedAt time.Time `json:"createdat"`
 	UpdatedAt time.Time `json:"updatedat"`
 }
@@ -22,6 +22,10 @@ type Token struct {
 	ID           string `json:"id" bson:"_id"`
 	UserId       string `json:"userid"`
 	RefreshToken string `json:"refresh_token"`
+}
+
+type Email struct {
+	User_email string `json:"email"`
 }
 
 type LoginForm struct {
@@ -47,12 +51,12 @@ type AuthServices interface {
 	Login(ctx context.Context, info LoginForm) (string, string, error)
 	RegisterUser(ctx context.Context, user User) error
 	UpdateProfile(ctx context.Context, user User) error
-	Activate(ctx context.Context, userID string, token string) error
+	Activate(ctx context.Context, userID string, token string) (User, error)
 	Logout(ctx context.Context, userID string)
 	GenerateToken(user User, tokentype string) (string, error)
 	GenerateActivateToken(hashedpassword string, updatedat time.Time) string
 	PromoteUser(ctx context.Context, userID string) error
 	DemoteUser(ctx context.Context, userID string) error
-	ForgetPassword(ctx context.Context, email string) error
+	ForgetPassword(ctx context.Context, email Email) error
 	ResetPassword(ctx context.Context, email, token, timeStamp, password, newPassword string) error
 }

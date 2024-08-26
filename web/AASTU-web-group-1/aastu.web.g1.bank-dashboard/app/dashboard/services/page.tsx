@@ -112,58 +112,64 @@ const Services = () => {
         {loading ? (
           <Shimmer />
         ) : (
-          bankServices.map((items, index) => (
-            <ServiceList
-              icon={items.icon}
-              name={items.name}
-              details={items.details}
-              key={index}
-            />
-          ))
+          <div>
+            {bankServices.map((items, index) => (
+              <ServiceList
+                icon={items.icon}
+                name={items.name}
+                details={items.details}
+                key={index}
+              />
+            ))}
+            {/* Pagination Controls */}
+            <div className="flex justify-center gap-2 mt-4">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 0}
+                className={`flex items-center justify-center px-2 py-1 rounded ${
+                  isDarkMode
+                    ? "bg-gray-700 text-gray-300"
+                    : "bg-gray-200 text-gray-900"
+                } ${currentPage === 0 && "opacity-50 cursor-not-allowed"}`}
+              >
+                <span>&lt;</span> <span> Previous</span>
+              </button>
+              <div className="flex gap-1 self-center ">
+                {pages.map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`flex items-center justify-center px-2 py-1 rounded ${
+                      isDarkMode
+                        ? "bg-gray-700 text-gray-300"
+                        : "bg-gray-200 text-gray-900"
+                    } ${
+                      currentPage === page - 1 &&
+                      "opacity-50 cursor-not-allowed"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages - 1}
+                className={`px-2 py-1 rounded ${
+                  isDarkMode
+                    ? "bg-gray-700 text-gray-300"
+                    : "bg-gray-200 text-gray-900"
+                } ${
+                  currentPage === totalPages - 1 &&
+                  "opacity-50 cursor-not-allowed"
+                }`}
+              >
+                <span>Next</span>
+                <span> &gt;</span>
+              </button>
+            </div>
+          </div>
         )}
-      </div>
-
-      {/* Pagination Controls */}
-      <div className="flex justify-center gap-2 mt-4">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 0}
-          className={`px-2 py-1 rounded ${
-            isDarkMode
-              ? "bg-gray-700 text-gray-300"
-              : "bg-gray-200 text-gray-900"
-          } ${currentPage === 0 && "opacity-50 cursor-not-allowed"}`}
-        >
-          Previous
-        </button>
-        <div className="flex gap-1 self-center ">
-          {pages.map((page) => (
-            <button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`px-2 py-1 rounded ${
-                isDarkMode
-                  ? "bg-gray-700 text-gray-300"
-                  : "bg-gray-200 text-gray-900"
-              } ${currentPage === page - 1 && "opacity-50 cursor-not-allowed"}`}
-            >
-              {page}
-            </button>
-          ))}
-        </div>
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages - 1}
-          className={`px-2 py-1 rounded ${
-            isDarkMode
-              ? "bg-gray-700 text-gray-300"
-              : "bg-gray-200 text-gray-900"
-          } ${
-            currentPage === totalPages - 1 && "opacity-50 cursor-not-allowed"
-          }`}
-        >
-          Next
-        </button>
       </div>
     </div>
   );

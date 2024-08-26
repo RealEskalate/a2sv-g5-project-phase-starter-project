@@ -37,7 +37,7 @@ func SetUpBlogRouter(r *gin.RouterGroup, blogController *BlogController) {
 	r.POST("/:id/likes", blogController.LikeBlog)
 	r.POST("/:id/dislikes", blogController.DislikeBlog)
 	r.DELETE("/:id/likes", blogController.UnLikeBlog)
-	r.DELETE("/:id/dislike", blogController.UnDislikeBlog)
+	r.DELETE("/:id/dislikes", blogController.UnDislikeBlog)
 }
 
 func SetUpAuthRouter(r *gin.RouterGroup, userController *UserController) {

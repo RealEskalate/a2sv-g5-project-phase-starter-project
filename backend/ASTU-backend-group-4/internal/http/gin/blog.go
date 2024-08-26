@@ -223,9 +223,9 @@ func (bc *BlogController) DeleteComment(c *gin.Context) {
 	err := bc.blogUseCase.DeleteComment(c.Request.Context(), commentID, userID)
 	if err != nil {
 		if errors.Is(err, auth.ErrNoUserWithId) {
-			c.AbortWithStatusJSON(http.StatusNotFound, err)
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		} else if errors.Is(err, blogDomain.ErrCommentNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, err)
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		} else {
 			log.Default().Println("Error trying to delete comment", err, "ID:", commentID)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
@@ -243,9 +243,11 @@ func (bc *BlogController) LikeBlog(c *gin.Context) {
 	err := bc.blogUseCase.LikeBlog(c.Request.Context(), userID, blogID)
 	if err != nil {
 		if errors.Is(err, auth.ErrNoUserWithId) {
-			c.AbortWithStatusJSON(http.StatusNotFound, err)
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		} else if errors.Is(err, blogDomain.ErrBlogNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, err)
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		} else if errors.Is(err, blogDomain.ErrAlreadyLiked) {
+			c.AbortWithStatusJSON(http.StatusConflict, gin.H{"message": err.Error()})
 		} else {
 			log.Default().Println("Error trying to like blog", err, "ID:", blogID)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
@@ -263,9 +265,11 @@ func (bc *BlogController) DislikeBlog(c *gin.Context) {
 	err := bc.blogUseCase.DislikeBlog(c.Request.Context(), userID, blogID)
 	if err != nil {
 		if errors.Is(err, auth.ErrNoUserWithId) {
-			c.AbortWithStatusJSON(http.StatusNotFound, err)
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		} else if errors.Is(err, blogDomain.ErrBlogNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, err)
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		} else if errors.Is(err, blogDomain.ErrAlreadyDisliked) {
+			c.AbortWithStatusJSON(http.StatusConflict, gin.H{"message": err.Error()})
 		} else {
 			log.Default().Println("Error trying to dislike blog", err, "ID:", blogID)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
@@ -282,6 +286,10 @@ func (bc *BlogController) UnLikeBlog(c *gin.Context) {
 
 	err := bc.blogUseCase.UnLikeBlog(c.Request.Context(), userID, blogID)
 	if err != nil {
+		if errors.Is(err, blogDomain.ErrLikeNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": err.Error()})
+			return
+		}
 		log.Default().Println("Error trying to unlike blog", err, "ID:", blogID)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return
@@ -296,6 +304,10 @@ func (bc *BlogController) UnDislikeBlog(c *gin.Context) {
 
 	err := bc.blogUseCase.UnDislikeBlog(c.Request.Context(), userID, blogID)
 	if err != nil {
+		if errors.Is(err, blogDomain.ErrDislikeNotFound) {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": err.Error()})
+			return
+		}
 		log.Default().Println("Error trying to undislike blog", err, "ID:", blogID)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return

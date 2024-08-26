@@ -84,6 +84,7 @@ Future<void> setUpLocator() async {
     final service = await SocketService.create();
     return service;
   });
+   
   locator.registerFactory(() => SocketBloc(locator<SocketService>()));
   await locator.allReady();
 

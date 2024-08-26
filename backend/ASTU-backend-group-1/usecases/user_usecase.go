@@ -24,43 +24,43 @@ func (useCase *userUsecase) Get() ([]domain.User, error) {
 	return useCase.userRepository.Get(domain.UserFilterOption{})
 }
 
-func (useCase *userUsecase) LoginUser(uname string, password string, email string) (string, error) {
+func (useCase *userUsecase) LoginUser(uname string, password string, email string) (string, string, error) {
 	if uname != "" {
 		user, err := useCase.GetByUsername(uname)
 		if err != nil {
-			return "", err
+			return "", "", err
 		}
 		if user.IsActive == false {
-			return "", errors.New("Account not activated")
+			return "", "", errors.New("Account not activated")
 		}
 		accesstoken, refreshToken, err := infrastructure.GenerateToken(&user, password)
 		if err != nil {
-			return "", err
+			return "", "", err
 		}
 		user.RefreshToken = refreshToken
 		useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken, IsAdmin: user.IsAdmin})
 
-		return accesstoken, nil
+		return accesstoken, refreshToken, nil
 	} else if email != "" {
 		user, err := useCase.GetByEmail(email)
 
 		if err != nil {
-			return "", err
+			return "", "", err
 		}
 		if user.IsActive == false {
-			return "", errors.New("Account not activated")
+			return "", "", errors.New("Account not activated")
 		}
 		accesstoken, refreshToken, err := infrastructure.GenerateToken(&user, password)
 		if err != nil {
-			return "", err
+			return "", "", err
 		}
 		log.Println(user)
 		user.RefreshToken = refreshToken
 		useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken, IsAdmin: user.IsAdmin})
 
-		return accesstoken, nil
+		return accesstoken, refreshToken, nil
 	} else {
-		return "", errors.New("Invalid login credentials")
+		return "", "", errors.New("Invalid login credentials")
 	}
 }
 
@@ -184,8 +184,12 @@ func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 		if err != nil {
 			return domain.User{}, err
 		}
+		// link := "`http://localhost:8000/`users/accountVerification/?email=" + u.Email + "&token=" + string(confirmationToken)
 		link := config_domain.Domain + "/users/accountVerification/?email=" + u.Email + "&token=" + string(confirmationToken)
 		err = infrastructure.SendEmail(u.Email, "Registration Confirmation", "This sign up Confirmation email to verify: ", link)
+		if err != nil {
+			return nUser, err
+		}
 	}
 	if err != nil {
 		return domain.User{}, err

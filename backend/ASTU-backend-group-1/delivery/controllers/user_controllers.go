@@ -22,6 +22,7 @@ func NewUserController(userUsecase domain.UserUsecase) *UserController {
 	return &UserController{
 		userUsecase: userUsecase,
 	}
+
 }
 
 // Register godoc
@@ -164,12 +165,24 @@ func (c *UserController) LoginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	access_token, err := c.userUsecase.LoginUser(user.Username, user.Password,user.Email)
+	access_token, refreshToken, err := c.userUsecase.LoginUser(user.Username, user.Password, user.Email)
 	if err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, gin.H{"access_token": access_token})
+	ctx.IndentedJSON(http.StatusOK, gin.H{"access_token": access_token, "refresh_token": refreshToken})
+}
+
+//logout user
+
+func (c *UserController) LogoutUser(ctx *gin.Context) {
+	email := ctx.MustGet("claims").(*domain.Claims).Email
+	err := c.userUsecase.Logout(email)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
+
 }
 
 // GetUsers godoc
@@ -183,15 +196,6 @@ func (c *UserController) LoginUser(ctx *gin.Context) {
 // @Failure      404 {object} map[string]string "error"
 // @Router       /users [get]
 // logout user
-func (c *UserController) LogoutUser(ctx *gin.Context) {
-	email := ctx.MustGet("claims").(*domain.Claims).Email
-	err := c.userUsecase.Logout(email)
-	if err != nil {
-		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
-	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
-}
-
 func (c *UserController) GetUsers(ctx *gin.Context) {
 	username := ctx.Query("username")
 	email := ctx.Query("email")
@@ -258,7 +262,7 @@ func (c *UserController) DeleteUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusNoContent, gin.H{"message":"user deleted from database"})
+	ctx.JSON(http.StatusNoContent, gin.H{"message": "user deleted from database"})
 }
 
 // UpdateUser godoc
@@ -294,7 +298,7 @@ func (c *UserController) ChangePassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	_ ,err := c.userUsecase.ChangePassword(userdata.Email, userdata.OldPassword, userdata.NewPassword)
+	_, err := c.userUsecase.ChangePassword(userdata.Email, userdata.OldPassword, userdata.NewPassword)
 	if err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
@@ -362,20 +366,18 @@ func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
 				ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "password is incorrect"})
 				return
 			}
-
-			newToken, refresh, err := infrastructure.GenerateToken(&TheUser, NUID.Password)
+			newAccessToken, newRefreshToken, err := infrastructure.GenerateToken(&TheUser, NUID.Password)
 			if err != nil {
 				ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err})
 				return
 			}
-			ctx.IndentedJSON(200, gin.H{"refreshed access token": newToken})
-			TheUser.RefreshToken = refresh
-			_, err = c.userUsecase.UpdateUser(TheUser.ID, domain.User{RefreshToken: refresh})
+			ctx.IndentedJSON(200, gin.H{"access_token": newAccessToken, "refresh_token": newRefreshToken})
+			TheUser.RefreshToken = newRefreshToken
+			_, err = c.userUsecase.UpdateUser(TheUser.ID, domain.User{RefreshToken: newRefreshToken})
 			if err != nil {
 				ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": err})
 				return
 			}
-
 		} else {
 			ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": "Token is expired"})
 		}

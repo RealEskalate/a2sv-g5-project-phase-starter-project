@@ -15,11 +15,9 @@ import (
 // @Property FirstName string "First name of the user"
 // @Property LastName string "Last name of the user"
 // @Property Password string "Password of the user"
-// @Property VerifyToken string "Verification token"
-// @Property RefreshToken string "Refresh token"
-// @Property ExpirationDate string "Expiration date of the token" format(date-time)
-// @Property IsAdmin bool "Is the user an admin"
-// @Property IsActive bool "Is the user active"
+
+
+
 type User struct {
 	ID             string    `bson:"_id" json:"id"`
 	Username       string    `json:"username"`
@@ -63,7 +61,7 @@ type UserUsecase interface {
 	AccountVerification(uemail string, confirmationToken string) error
 	ResetPassword(email string, token string, password string) (string, error)
 	ForgetPassword(email string) (string, error)
-	LoginUser(uname string, password string,email string) (string, error)
+	LoginUser(uname string, password string,email string) (string,string, error)
 	Logout(email string) error
 	DemoteUser(userId string) (User, error)
 	PromteUser(userId string) (User, error)

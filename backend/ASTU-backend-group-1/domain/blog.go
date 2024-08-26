@@ -6,37 +6,43 @@ import (
 
 type Reply struct {
 	ReplyId  string `json:"reply_id,omitempty" bson:"reply_id,omitempty" `
-	AuthorId string `json:"author_id,omitempty" bson:"author_id,omitempty"`
-	Content  string `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
+	AuthorId string `json:"author_id,omitempty" bson:"author_id,omitempty" `
+
+	BlogId    string `json:"blog_id,omitempty" bson:"blog_id,omitempty" `
+	CommentId string `json:"comment_id,omitempty" bson:"comment_id,omitempty" `
+	Content   string `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
 
 	Likes    []string `json:"likes,omitempty" bson:"likes,omitempty"`
 	Dislikes []string `json:"dislikes,omitempty" bson:"dislikes,omitempty"`
-	Views    []string `json:"views,omitempty" bson:"views,omitempty"`
+	Views    int      `json:"views,omitempty" bson:"views,omitempty"`
 }
 
 type Comment struct {
 	CommentId string `json:"comment_id,omitempty" bson:"comment_id,omitempty" `
 	AuthorId  string `json:"author_id,omitempty" bson:"author_id,omitempty"`
-	Content   string `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
+
+	BlogId  string `json:"blog_id,omitempty" bson:"blog_id,omitempty" `
+	Content string `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
 
 	Likes    []string `json:"likes,omitempty" bson:"likes,omitempty"`
 	Dislikes []string `json:"dislikes,omitempty" bson:"dislikes,omitempty"`
-	Replies  []Reply  `json:"replies,omitempty" bson:"replies,omitempty"`
-	Views    []string `json:"views,omitempty" bson:"views,omitempty"`
+	Replies  int      `json:"replies,omitempty" bson:"replies,omitempty"`
+	Views    int      `json:"views,omitempty" bson:"views,omitempty"`
 }
 
 type Blog struct {
-	Id       string    `json:"id,omitempty" bson:"_id,omitempty"`
+	BlogId   string    `json:"blog_id,omitempty" bson:"blog_id,omitempty" `
 	AuthorId string    `json:"author_id,omitempty" bson:"author_id,omitempty" `
-	Title    string    `json:"title,omitempty" bson:"title,omitempty" binding:"required"`
-	Content  string    `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
 	Date     time.Time `json:"date,omitempty" bson:"date,omitempty" `
-	Tags     []string  `json:"tags,omitempty" bson:"tags,omitempty" binding:"required"`
 
-	Likes    []string  `json:"likes,omitempty" bson:"likes,omitempty"  `
-	Dislikes []string  `json:"dislikes,omitempty" bson:"dislikes,omitempty"  `
-	Comments []Comment `json:"comments,omitempty" bson:"comments,omitempty"`
-	Views    []string  `json:"views,omitempty" bson:"views,omitempty"  `
+	Title   string   `json:"title,omitempty" bson:"title,omitempty" binding:"required"`
+	Content string   `json:"content,omitempty" bson:"content,omitempty" binding:"required"`
+	Tags    []string `json:"tags,omitempty" bson:"tags,omitempty" binding:"required"`
+
+	Likes    []string `json:"likes,omitempty" bson:"likes,omitempty"  `
+	Dislikes []string `json:"dislikes,omitempty" bson:"dislikes,omitempty"  `
+	Comments int      `json:"comments,omitempty" bson:"comments,omitempty"`
+	Views    int      `json:"views,omitempty" bson:"views,omitempty"  `
 }
 
 type BlogFilters struct {
@@ -59,20 +65,20 @@ type BlogRepository interface {
 	DeleteBlog(blogId, authorId string) error
 	FindPopularBlog() ([]Blog, error)
 	GetBlogById(blogid string) (Blog, error)
-	LikeOrDislikeBlog(blogId, userId string, like int) error
+	LikeOrDislikeBlog(blogId, userId string, like int) (string, error)
 
-	// TODO: To like or dislike something you have to view it
-
-	// information: 1 for like -1,for dislike others,view
-
-	// TODO: to comment or reply to comment you have to view the blog then the comment
-	AddComment(blogId string, comment Comment) error
-	GetAllComments(blogId string) ([]Comment, error)
+	AddComment(blogid string, comment Comment) error
+	GetAllComments(blogId string,opt PaginationInfo) ([]Comment, error)
 	GetCommentById(blogId, commentId string) (Comment, error)
 	LikeOrDislikeComment(blogId, commentId, userId string, like int) error
+	UpdateComment(blogId, commentId,authorId string, updateData Comment) (Comment, error) 
+	DeleteComment(blogId, commentId,authorId string) error 
 
-	ReplyToComment(blogId, commentId string, reply Reply) error
-	GetAllRepliesForComment(blogId, commentId string) ([]Reply, error)
-	GetReplyById(blogId, commentId, replyId string) (Reply, error)
-	LikeOrDislikeReply(blogId, commentId, replyId, userId string, like int) error
+
+	AddReply(blogId, commentId string, reply Reply) error
+	GetAllReplies(blogId,commentId string,opt PaginationInfo) ([]Reply, error)
+	GetReplyById(blogId,commentId,replyId string) (Reply, error)
+	LikeOrDislikeReply(blogId,commentId,replyId, userId string, like int) error
+	UpdateReply(blogId, commentId, replyId,authorId string, updateData Reply) (Reply, error) 
+	DeleteReply(blogId, commentId, replyId,authorId string) error 
 }

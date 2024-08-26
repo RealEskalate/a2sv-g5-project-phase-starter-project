@@ -67,7 +67,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
 
   if (submissionResult) {
     return (
-      <div className="mr-4 lg:w-[800px] w-[330px] md:w-[380px] p-6 border-[1px] m:h-[720px] md:h-[470px] rounded-xl md:px-20 md:py-40 mb-5 flex flex-col items-center justify-center dark:border-[1px] dark:border-gray-700">
+      <div className="mr-4 2xl:w-[800px] xl:w-[600px] lg:w[600px] w-[330px] md:w-[400px] p-6 border-[1px] m:h-[720px] md:h-[470px] rounded-xl md:px-20 md:py-40 mb-5 flex flex-col items-center justify-center dark:border-[1px] dark:border-gray-700">
         {error ? (
           <></>
           // HEY YO NATI BOY UP THE ERROR COMPONENT HERE 
@@ -95,7 +95,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
 
   return (
     <div className={`mr-4 ${Loading ? "animate-pulse opacity-50 pointer-events-none" : ""}`}>
-      <div className="bg-white lg:w-[800px] w-[330px]  sm:h-[720px] md:h-[470px] p-7 dark:border-[1px] dark:border-gray-700 rounded-xl dark:bg-dark dark:text-white">
+      <div className="bg-white 2xl:w-[800px] xl:w-[600px] lg:w[600px] w-[330px] md:w-[400px] sm:h-[720px] md:h-[470px] p-7 dark:border-[1px] dark:border-gray-700 rounded-xl dark:bg-dark dark:text-white">
         <p className="text-[17px] text-[#718EBF]">
           Credit Card generally means a plastic card issued by Scheduled
           Commercial Banks assigned to a Cardholder, with a credit limit, that
@@ -214,7 +214,7 @@ const AddNewCard: React.FC<TokenProp> = ({ token }) => {
             )}
           </div>
 
-          <div className="md:mt-4 md:ml-36 lg:ml-56">
+          <div className="md:mt-4 md:ml-10 2xl:ml-56">
             <button
               type="submit"
               className="rounded-xl text-[16px] px-7 text-center bg-[#1814F3] dark:bg-blue-700 text-white w-[95%] md:w-[auto] mt-4 p-2"

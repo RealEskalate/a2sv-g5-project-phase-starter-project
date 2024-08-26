@@ -9,6 +9,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import notify from "@/utils/notify";
 import { useState } from "react";
+import Image from "next/image";
 
 const schema = z.object({
   userName: z.string().min(1, { message: "User name field is required" }),
@@ -38,28 +39,39 @@ const SignIn = ({ onClose }: { onClose: () => void }) => {
       notify.error("Invalid Credentials");
     } else {
       notify.success("Successfully logged in");
-    
+
       router.push("/dashboard");
     }
     setLoading(false);
   };
 
   return (
-    <div 
+    <div
       onClick={onClose}
       className="fixed inset-0 backdrop-blur w-full h-full flex justify-center items-center z-[1000]"
     >
-      <div 
-        className="relative w-[500px] rounded-3xl p-[2rem] bg-white shadow-md border-[3px]" 
+      <div
+        className="relative w-[500px] rounded-3xl p-[2rem] bg-white shadow-md border-[3px]"
         onClick={(e) => e.stopPropagation()} // Prevent clicks inside the modal from closing it
       >
-        <div className={`${inter.className} flex justify-center pt-8 pb-10 rounded-3xl`}>
+        <div
+          className={`${inter.className} flex justify-center pt-8 pb-10 rounded-3xl`}
+        >
           <div className="flex flex-col gap-6 w-full">
             <div className="text-center text-[32px] font-black text-[#25324B]">
               Welcome Back,
             </div>
             <div className="flex justify-between items-center my-4">
               <div className="border-t border-[#D6DDEB] w-2/6"></div>
+              <div className="flex gap-3 text-[#25324B] font-bold text-xl items-center">
+                <Image
+                  src={"/assets/navbar/credit-card.svg"}
+                  width={30}
+                  height={30}
+                  alt="signIn"
+                />
+                <h1>BankDash</h1>
+              </div>
               <div className="border-t border-[#D6DDEB] w-2/6"></div>
             </div>
             <form
@@ -85,10 +97,7 @@ const SignIn = ({ onClose }: { onClose: () => void }) => {
                   aria-describedby="userNameError"
                 />
                 {errors.userName && (
-                  <p
-                    id="userNameError"
-                    className="text-red-700 text-sm mt-1"
-                  >
+                  <p id="userNameError" className="text-red-700 text-sm mt-1">
                     {errors.userName.message}
                   </p>
                 )}
@@ -111,10 +120,7 @@ const SignIn = ({ onClose }: { onClose: () => void }) => {
                   aria-describedby="passwordError"
                 />
                 {errors.password && (
-                  <p
-                    id="passwordError"
-                    className="text-red-700 text-sm mt-1"
-                  >
+                  <p id="passwordError" className="text-red-700 text-sm mt-1">
                     {errors.password.message}
                   </p>
                 )}

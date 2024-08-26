@@ -10,7 +10,11 @@ import { useEffect } from "react";
 const Setting = () => {
   const { isDarkMode } = useUser();
   return (
-    <div className="flex justify-center w-full mt-5 md:ml-5">
+    <div
+      className={`${
+        isDarkMode && "dark"
+      } flex justify-center w-full mt-5 md:ml-5`}
+    >
       <Tabs
         defaultValue="editProfile"
         className={`w-full max-w-full md:max-w-[1100px] p-4 rounded-2xl ${

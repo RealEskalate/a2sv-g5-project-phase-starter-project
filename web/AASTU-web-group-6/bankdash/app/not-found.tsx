@@ -10,15 +10,11 @@ import {
 
 const NotFound = () => {
   return (
-    <div className="w-full flex flex-col px-6 gap-2 min-h-screen items-center justify-center">
-      <div className="b flex items-center justify-center p-2 bg-blue-100 rounded-full">
-        <div className="card-loader p-6 bg-blue-200 rounded-full">
-          <FontAwesomeIcon
-            icon={faCreditCard}
-            className="atm-card text-[42px] text-[#1814f6]"
-          />
-        </div>
-      </div>
+    <div className="w-full flex flex-col px-6 gap-4 min-h-screen items-center justify-center">
+      <Image src={"/assets/pageNotFound.svg"} height={300} width={300} alt="" />
+      <h2 className="text-3xl text-gray-500 dark:text-white">
+        404 (page not found)
+      </h2>
     </div>
   );
 };

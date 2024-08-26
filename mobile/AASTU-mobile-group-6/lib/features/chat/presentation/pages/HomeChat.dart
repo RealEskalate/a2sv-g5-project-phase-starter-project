@@ -2,6 +2,7 @@ import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/chat_entity.d
 import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_state.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/chatView.dart';
 import 'package:flutter/material.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/bottomnavbar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -66,9 +67,15 @@ class Chat extends StatelessWidget {
               itemBuilder: (context, index) {
                 final user = activeUsers[index];
                 return GestureDetector(
-                  onTap: () {
-                    // Handle user tap
-                  },
+               onTap: () {
+  // Handle user tap
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatView(user: user,),
+                  ),
+                );
+              },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -145,7 +152,7 @@ Widget _duplicate(
   String peekMessage,
 ) {
   return GestureDetector(
-    onTap: () => Navigator.pushNamed(context, '/chatPage',arguments: {'',chat.chatid},),
+    onTap: () => Navigator.pushNamed(context, '/chatPage',arguments: chat,),
     child: Container(
       margin: EdgeInsets.only(bottom: 30),
       width: MediaQuery.of(context).size.width * 0.95,

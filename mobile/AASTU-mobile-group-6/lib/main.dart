@@ -108,7 +108,7 @@ class Main extends StatelessWidget {
               },
             );
           } else if (settings.name == '/chatPage') {
-            // final item = settings.arguments as SellerModel;
+            final chat = settings.arguments as ChatEntity;
             return MaterialPageRoute(
               builder: (context) {
                 return MultiBlocProvider(
@@ -119,9 +119,12 @@ class Main extends StatelessWidget {
                     ),
                     // BlocProvider(
                     //     create: (context) => sl.get<ChatBloc>()
-                    //       ..add(InitiateChatEvent(item.id))),
+                    //       ..add(InitiateChatEvent(chat.user1.id)),),
                   ],
-                  child: ChatPage(),
+                  child: ChatPage(
+                    chat:chat,
+
+                  ),
                 );
               },
             );

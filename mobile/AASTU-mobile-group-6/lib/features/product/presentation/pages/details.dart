@@ -41,7 +41,7 @@ class _DetailsState extends State<DetailsPage> {
     };
 
     return BlocProvider(
-      create: (context) => sl.get<DetailBloc>(),
+      create: (context) => sl.get<ChatBloc>(),
       child: Scaffold(
       bottomNavigationBar: Bottomnavbar(),
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -325,14 +325,20 @@ class _DetailsState extends State<DetailsPage> {
                                         backgroundColor: Color(0xff3F51F3),
                                       ),
                                         onPressed: (){
-                                         context.read<ChatBloc>().add(InitiateChatEvent(widget.item.sellerId.id));
+                                         BlocProvider.of<ChatBloc>(context).add(InitiateChatEvent(widget.item.sellerId.id));
                                          BlocListener<ChatBloc, ChatState>(
+
                                            listener: (context, state){
+
+                                            print("Chat state: $state");
                                              if (state is ChatInitateLoaded){
-                                               Navigator.pushNamed(context, '/chatPage', arguments: {widget.item.sellerId.id, state.chat.chatid});
+
+                                               Navigator.pushNamed(context, '/chatPage', arguments: state.chat);
                                              }
-                                             else{
+                                             else if (state is ChatInitateFailure){
                                                 showError(context, "Failed to initiate chat");
+                                             }else{
+                                               print("Chat state: $state");
                                              }
                                            },);
                                           // context.read<ChatBloc>().add(InitiateChatEvent(widget.item.sellerId.id));

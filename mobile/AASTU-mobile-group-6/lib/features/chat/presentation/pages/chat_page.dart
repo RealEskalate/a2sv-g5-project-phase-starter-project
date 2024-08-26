@@ -22,11 +22,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
+  final ChatEntity chat;
+
+
+  ChatPage({super.key, required this.chat});
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
-  // final ChatEntity chat;
-  // Dummy data for chat
+
   final String ownerId = '1';
+
   final List<MessageType> chats = [
   ];
 
@@ -43,21 +53,12 @@ class ChatPage extends StatelessWidget {
     '1',
   ];
 
-  ChatPage({super.key});
   @override
   Widget build(BuildContext context) {
     final route = ModalRoute.of(context);
-    if (route == null || route.settings.arguments == null) {
-      return Scaffold(
-        body: Center(
-          child: Text("No chat Availbale"),
-        ),
-      );
-    }
-    final arguments = route.settings.arguments as Map<String, dynamic>;
-    print(arguments);
-    final SellerModel seller = arguments[''];
-    final String chatId = arguments['chatId'];
+
+    final String seller = widget.chat.user2.name;
+    final chatID = widget.chat.chatid;
 
     
     // context.read<MessageBloc>().add(MessageConnection(chat));
@@ -65,40 +66,42 @@ class ChatPage extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
           appBar:
-              ChatAppBar(seller.name, 'last seen yesterday', "image.jpg"),
+              ChatAppBar(seller, 'last seen yesterday',''),
           body: Container(
             color: Colors.white,
             child: Column(
               children: [
-                // ChatBody to display the chat messages
                 Expanded(
-                  child: ChatBody(
-                    ownerId: ownerId,
-                    senderIds: senderIds,
-                    chats: chats,
-                  ),
-                ),
-    
+            child:  ChatBody(ownerId: widget.chat.user2.id,senderIds: [widget.chat.user2.id,widget.chat.user1.id],)
+              
+            
+          ),
                 ChatBottomAppBar(
                   messageController: _messageController,
                   onSend: () {
-                    BlocListener<ChatBloc,ChatState>(
+                    setState(() {
+                      if (_messageController.text.isNotEmpty){
+                        chats.add(MessageType(content: _messageController.text,type: 'text'));
+                      }
+                      
+                    });
+                    context.read<MessageBloc>().add(MessageSent(chatID, _messageController.text, 'text'));
+                    BlocListener<MessageBloc,MessageState>(
                       listener: (context, state){
-                        if (state is ChatInitateLoaded){
-                          print('Chat initiated');
-                          chats.add(MessageType(content: _messageController.text,type: 'text'));
-                          context.read<MessageBloc>().add(
-                            MessageSent(
-                              state.chat.chatid,
-                              _messageController.text,
-                              'text',
-                            ),
-                          );
+                        if (state is MessageInitial){
+                         setState(() {
+                            if (_messageController.text.isNotEmpty){
+                              chats.add(MessageType(content: _messageController.text,type: 'text'));
+                            }
+                            
+                          });
+                          
     
                         }
                       }
                       );
-                      _messageController.clear();
+                      
+
                     
                     print('Send button pressed');
                   },

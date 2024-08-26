@@ -6,8 +6,6 @@ import 'core/constants/constants.dart';
 import 'core/themes/themes.dart';
 import 'dependency_injection.dart';
 import 'features/auth/presentation/page/login_page.dart';
-import 'features/chat/presentation/pages/chat_list.dart';
-import 'features/product/presentation/pages/product_list_page.dart';
 import 'landing_page.dart';
 
 class SplashPage extends StatefulWidget {

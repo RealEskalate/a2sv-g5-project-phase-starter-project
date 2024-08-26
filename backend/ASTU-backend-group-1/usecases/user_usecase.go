@@ -179,6 +179,9 @@ func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	}
 	u.VerifyToken = string(confirmationToken)
 	nUser, err := useCase.userRepository.Create(u)
+	if err != nil {
+		return domain.User{}, err
+	}
 	config, err := config.LoadConfig()
 	if err != nil {
 		return domain.User{}, err

@@ -86,7 +86,6 @@ func privateBlogRouter(router *gin.RouterGroup, blogController *blogcontroller.B
 	router.POST("/blogs/views", blogController.AddView)
 
 	router.GET("/blogs/search", blogController.SearchBlog)
-	router.GET("/blogs/filter", blogController.FilterBlog)
 
 	router.GET("/blogs/tags", blogController.GetTags)
 	router.POST("/blogs/tags", blogController.InsertTag)

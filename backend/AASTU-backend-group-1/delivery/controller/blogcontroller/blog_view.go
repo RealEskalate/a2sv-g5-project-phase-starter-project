@@ -32,7 +32,7 @@ func (b *BlogController) AddView(ctx *gin.Context) {
 			ctx.JSON(http.StatusBadRequest, domain.APIResponse{
 				Status:  http.StatusBadRequest,
 				Message: "Invalid request",
-				Error:   "invalid id",
+				Error:   "invalid id" + idHex,
 			})
 			return
 		}

@@ -40,6 +40,7 @@ func (b *BlogController) SearchBlog(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, domain.APIResponse{
 		Status:  http.StatusOK,
 		Message: "Success",
+		Count:   len(blogs),
 		Data:    blogs,
 	})
 }

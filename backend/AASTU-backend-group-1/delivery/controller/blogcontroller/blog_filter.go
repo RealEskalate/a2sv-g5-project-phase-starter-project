@@ -2,7 +2,7 @@ package blogcontroller
 
 import (
 	"blogs/config"
-	"log"
+	"blogs/domain"
 	"net/http"
 	"time"
 
@@ -16,8 +16,13 @@ func (b *BlogController) FilterBlog(ctx *gin.Context) {
 		DateTo   string   `json:"date_to"`
 	}
 
-	if err := ctx.ShouldBindJSON(&filter); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	err := ctx.ShouldBindJSON(&filter)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+			Status:  http.StatusBadRequest,
+			Message: "Invalid Request",
+			Error:   err.Error(),
+		})
 		return
 	}
 
@@ -28,7 +33,11 @@ func (b *BlogController) FilterBlog(ctx *gin.Context) {
 		var err error
 		dateFrom, err = time.Parse(time.RFC3339, filter.DateFrom)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_from"})
+			ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+				Status:  http.StatusBadRequest,
+				Message: "Invalid Request",
+				Error:   "invalid date_from",
+			})
 			return
 		}
 	}
@@ -39,7 +48,11 @@ func (b *BlogController) FilterBlog(ctx *gin.Context) {
 		var err error
 		dateTo, err = time.Parse(time.RFC3339, filter.DateTo)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid date_to"})
+			ctx.JSON(http.StatusBadRequest, domain.APIResponse{
+				Status:  http.StatusBadRequest,
+				Message: "Invalid Request",
+				Error:   "invalid date_to",
+			})
 			return
 		}
 	}
@@ -52,15 +65,17 @@ func (b *BlogController) FilterBlog(ctx *gin.Context) {
 	if err != nil {
 		code := config.GetStatusCode(err)
 
-		if code == http.StatusInternalServerError {
-			log.Println(err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
-			return
-		}
-
-		ctx.JSON(code, gin.H{"error": err.Error()})
+		ctx.JSON(code, domain.APIResponse{
+			Status:  code,
+			Message: "Cannot filter blogs",
+			Error:   err.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"counts": len(blogs), "data": blogs})
+	ctx.JSON(http.StatusOK, domain.APIResponse{
+		Status: http.StatusOK,
+		Count:  len(blogs),
+		Data:   blogs,
+	})
 }

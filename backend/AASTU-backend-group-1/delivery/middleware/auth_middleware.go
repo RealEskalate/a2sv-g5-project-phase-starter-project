@@ -45,7 +45,16 @@ func AuthMiddleware(authType string) gin.HandlerFunc {
 		}
 
 		// validate token
-		claims, err := config.ValidateToken(token, authType)
+		var claims domain.Claims
+		var err error
+		if authType == "access" {
+			claims = &domain.LoginClaims{Type: "access"}
+			err = config.ValidateToken(token, claims)
+		} else {
+			claims = &domain.LoginClaims{Type: "refresh"}
+			err = config.ValidateToken(token, claims)
+		}
+
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, domain.APIResponse{
 				Status:  http.StatusUnauthorized,

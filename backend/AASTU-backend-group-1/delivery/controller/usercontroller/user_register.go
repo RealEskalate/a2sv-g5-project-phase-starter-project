@@ -104,7 +104,6 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 		Address:    userData.Address,
 		Role:       "user",
 		JoinedDate: time.Now(),
-		IsVerified: false,
 	}
 
 	if avatarPath != "" {
@@ -125,6 +124,6 @@ func (u *UserController) RegisterUser(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusCreated, domain.APIResponse{
 		Status:  http.StatusCreated,
-		Message: "User registered successfully",
+		Message: "Verification email has been sent",
 	})
 }

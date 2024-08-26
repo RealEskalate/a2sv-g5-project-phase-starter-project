@@ -149,7 +149,6 @@ func (ur *UserRepository) UpdateProfile(usernameoremail string, user *domain.Use
 			"role":        user.Role,
 			"address":     user.Address,
 			"joined_date": user.JoinedDate,
-			"is_verified": user.IsVerified,
 		},
 	}
 

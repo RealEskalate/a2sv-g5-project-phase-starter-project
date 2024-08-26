@@ -105,7 +105,7 @@ func (b *BlogUsecase) GetBlogComments(blogID string) ([]*domain.Comment, error) 
 	return comments, nil
 }
 
-func (b *BlogUsecase) DeleteComment(commentID string,claim *domain.LoginClaims) error {
+func (b *BlogUsecase) DeleteComment(commentID string, claim *domain.LoginClaims) error {
 
 	comment, err := b.BlogRepo.GetCommentByID(commentID)
 	if err != nil {
@@ -116,8 +116,8 @@ func (b *BlogUsecase) DeleteComment(commentID string,claim *domain.LoginClaims) 
 		return err
 	}
 
-	if comment.Author != claim.Username {
-		return err
+	if comment.Author != claim.Username && claim.Role == "user" {
+		return config.ErrOnlyAuthorOrAdminDel
 	}
 
 	id := comment.BlogID

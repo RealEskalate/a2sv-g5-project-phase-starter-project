@@ -1,13 +1,15 @@
 package domain
 
 import (
+	"time"
+
 	"github.com/golang-jwt/jwt"
 )
 
 type Claims interface {
 	Valid() error
-	GetUsername() string
-	SetExpiresAt(expiry int64)
+	SetExpiry()
+	GetSecretKey() []byte
 }
 
 type LoginClaims struct {
@@ -24,7 +26,7 @@ type PasswordResetClaims struct {
 }
 
 type RegisterClaims struct {
-	Username string `json:"username"`
+	User `json:"username"`
 	jwt.StandardClaims
 }
 
@@ -40,26 +42,44 @@ func (c *RegisterClaims) Valid() error {
 	return c.StandardClaims.Valid()
 }
 
-func (c *LoginClaims) GetUsername() string {
-	return c.Username
+func (c *LoginClaims) SetExpiry() {
+	var expiry time.Duration
+	if c.Type == "refresh" {
+		expiry = time.Hour * 24 * 7
+	} else {
+		expiry = time.Minute * 15
+	}
+
+	c.ExpiresAt = time.Now().Add(expiry).Unix()
 }
 
-func (c *PasswordResetClaims) GetUsername() string {
-	return c.Username
+func (c *PasswordResetClaims) SetExpiry() {
+	c.ExpiresAt = time.Now().Add(time.Hour).Unix()
 }
 
-func (c *RegisterClaims) GetUsername() string {
-	return c.Username
+func (c *RegisterClaims) SetExpiry() {
+	c.ExpiresAt = time.Now().Add(time.Hour * 24).Unix()
 }
 
-func (c *LoginClaims) SetExpiresAt(expiry int64) {
-	c.StandardClaims.ExpiresAt = expiry
+func (c *LoginClaims) GetSecretKey() []byte {
+	if c.Type == "refresh" {
+		return []byte("my-refresh-secret-key")
+	} else {
+		return []byte("my-access-secret-key")
+	}
 }
 
-func (c *PasswordResetClaims) SetExpiresAt(expiry int64) {
-	c.StandardClaims.ExpiresAt = expiry
+func (c *PasswordResetClaims) GetSecretKey() []byte {
+	return []byte("my-password-reset-secret-key")
 }
 
-func (c *RegisterClaims) SetExpiresAt(expiry int64) {
-	c.StandardClaims.ExpiresAt = expiry
+func (c *RegisterClaims) GetSecretKey() []byte {
+	return []byte("my-register-secret-key")
+}
+
+func (c *LoginClaims) ToToken() *Token {
+	return &Token{
+		Username:  c.Username,
+		ExpiresAt: c.ExpiresAt,
+	}
 }

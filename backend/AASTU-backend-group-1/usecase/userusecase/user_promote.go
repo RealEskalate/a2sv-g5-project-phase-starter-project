@@ -15,10 +15,6 @@ func (u *UserUsecase) PromoteUser(username string, promoted bool, claims *domain
 		return config.ErrUserCantPromote
 	}
 
-	if !user.IsVerified {
-		return config.ErrUserNotVerified
-	}
-
 	if user.Password == "" {
 		return config.ErrUserCantBePromoted
 	}

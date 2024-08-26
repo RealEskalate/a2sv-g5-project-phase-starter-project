@@ -94,7 +94,6 @@ func HandleGoogleCallback(ctx context.Context, code string) (*domain.User, error
 		Email:      googleUser.Email,
 		Avatar:     googleUser.Avatar,
 		JoinedDate: time.Now(),
-		IsVerified: true,
 		Role:       "user",
 	}
 

@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"group3-blogApi/domain"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"

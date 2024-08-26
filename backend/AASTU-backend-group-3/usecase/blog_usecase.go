@@ -1,8 +1,9 @@
 package usecase
 
 import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"group3-blogApi/domain"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type BlogUsecaseImpl struct {

@@ -9,7 +9,7 @@ func (uc *UserUsecase) GetMyProfile(userID string) (domain.User, *domain.CustomE
 	if err != nil {
 		return domain.User{}, domain.ErrNotFound
 	}
-	return user, nil
+	return user, &domain.CustomError{}
 }
 
 func (uc *UserUsecase) GetUsers() ([]domain.User, *domain.CustomError) {
@@ -17,7 +17,8 @@ func (uc *UserUsecase) GetUsers() ([]domain.User, *domain.CustomError) {
 	if err != nil {
 		return nil, domain.ErrNotFound
 	}
-	return users, nil
+	
+	return users, &domain.CustomError{} 
 }
 
 func (uc *UserUsecase) DeleteUser(userID string) (domain.User, *domain.CustomError) {
@@ -25,7 +26,7 @@ func (uc *UserUsecase) DeleteUser(userID string) (domain.User, *domain.CustomErr
 	if err != nil {
 		return domain.User{}, domain.ErrFailedToDeleteUser
 	}
-	return user, nil
+	return user, &domain.CustomError{}
 }
 
 func (uc *UserUsecase) UpdateUserRole(userID, role string) (domain.User, *domain.CustomError) {
@@ -40,7 +41,7 @@ func (uc *UserUsecase) UpdateUserRole(userID, role string) (domain.User, *domain
 	if err != nil {
 		return domain.User{}, domain.ErrFailedToUpdateUser
 	}
-	return user, nil
+	return user, &domain.CustomError{}
 }
 
 func (uc *UserUsecase) DeleteMyAccount(userID string) *domain.CustomError {
@@ -48,7 +49,7 @@ func (uc *UserUsecase) DeleteMyAccount(userID string) *domain.CustomError {
 	if err != nil {
 		return domain.ErrFailedToDeleteAccount
 	}
-	return nil
+	return &domain.CustomError{}
 }
 
 func (uc *UserUsecase) UploadImage(userID string, imagePath string) *domain.CustomError {
@@ -56,7 +57,7 @@ func (uc *UserUsecase) UploadImage(userID string, imagePath string) *domain.Cust
 	if err != nil {
 		return domain.ErrFailedToUploadImage
 	}
-	return nil
+	return &domain.CustomError{}
 }
 
 func (uc *UserUsecase) UpdateMyProfile(user domain.User, UserID string) *domain.CustomError {
@@ -68,5 +69,5 @@ func (uc *UserUsecase) UpdateMyProfile(user domain.User, UserID string) *domain.
 	if err != nil {
 		return domain.ErrFailedToUpdateProfile
 	}
-	return nil
+	return &domain.CustomError{}
 }

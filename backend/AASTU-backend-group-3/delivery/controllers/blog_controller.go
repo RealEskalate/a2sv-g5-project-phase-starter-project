@@ -96,7 +96,7 @@ func (c *BlogController) GetBlogByID(ctx *gin.Context) {
 
 func (c *BlogController) GetBlogs(ctx *gin.Context) {
 	var page int64 = 1   // Default to page 1
-	var limit int64 = 2 // Default to limit 2
+	var limit int64 = 20 // Default to limit 2
 	var sortBy string
 	var tag string
 	var authorName string

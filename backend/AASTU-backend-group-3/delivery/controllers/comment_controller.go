@@ -110,30 +110,37 @@ func (c *CommentController) GetCommentByID(ctx *gin.Context) {
 }
 
 func (c *CommentController) GetComments(ctx *gin.Context) {
-	postID := ctx.Param("postID")
-	page := ctx.DefaultQuery("page", "1")
-	limit := ctx.DefaultQuery("limit", "10")
+    postID := ctx.Param("postID")
+    page := ctx.DefaultQuery("page", "1")
+    limit := ctx.DefaultQuery("limit", "10")
 
-	pageInt, err := strconv.Atoi(page)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+    pageInt, err := strconv.Atoi(page)
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+        return
+    }
 
-	limitInt, err := strconv.Atoi(limit)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+    limitInt, err := strconv.Atoi(limit)
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit number"})
+        return
+    }
 
-	comments, err := c.commentUsecase.GetComments(postID, pageInt, limitInt)
-	if (err != &domain.CustomError{}) {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+    comments, err := c.commentUsecase.GetComments(postID, pageInt, limitInt)
+    if err != nil {
+        // Check if it's a CustomError
+        if customErr, ok := err.(*domain.CustomError); ok {
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": customErr.Message})
+        } else {
+            // Handle generic errors
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+        }
+        return
+    }
 
-	ctx.JSON(http.StatusOK, comments)
+    ctx.JSON(http.StatusOK, comments)
 }
+
 
 func (c *CommentController) CreateReply(ctx *gin.Context) {
 	var reply domain.Reply

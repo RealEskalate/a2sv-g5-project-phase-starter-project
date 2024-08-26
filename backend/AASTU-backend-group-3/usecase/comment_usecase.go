@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"group3-blogApi/domain"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -86,6 +87,7 @@ func (u *commentUsecase) GetComments(postID string, page, limit int) ([]domain.C
 	if err != nil {
 		return nil, domain.ErrFailedToGetComments
 	}
+	fmt.Println(comments,"***********//////////////////Usecase")
 	return convertComments(comments), nil
 }
 

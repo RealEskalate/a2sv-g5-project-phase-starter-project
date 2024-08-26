@@ -55,7 +55,7 @@ func SendActivationEmail(email, token string) error {
 	m.SetHeader("Subject", "Account Activation")
 
 
-	m.SetBody("text/html", fmt.Sprintf("Click <a href=\"http://127.0.0.1:8080/auth/activate/?token=%s&Email=%s\">here</a> to activate your account.", token, email))
+	m.SetBody("text/html", fmt.Sprintf("Click <a href=\"http://127.0.0.1:3000/auth/activate/ActivatedAccount/?token=%s&Email=%s\">here</a> to activate your account.", token, email))
 
 	d := gomail.NewDialer("smtp.gmail.com", 587, "bereket.meng@gmail.com", "xjbs vduu hkjd lqlf")
 

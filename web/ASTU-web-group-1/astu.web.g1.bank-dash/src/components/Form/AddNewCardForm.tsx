@@ -9,6 +9,7 @@ import { useSession } from 'next-auth/react';
 import { useToast } from '../ui/use-toast';
 import { Loader } from 'lucide-react';
 import { toastSuccess } from '../Toastify/Toastify';
+import { useRouter } from 'next/navigation';
 // import { useRouter } from "next/navigation";
 
 const cardSchema = z.object({
@@ -30,6 +31,7 @@ const AddNewCardForm = () => {
     mode: 'onTouched',
   });
   const { errors } = formState;
+  const router = useRouter();
   const onSubmit = async (data: any) => {
     setIsLoading(true);
     const accessToken = session.data?.accessToken;
@@ -50,6 +52,7 @@ const AddNewCardForm = () => {
     reset();
     console.log(result, 'card res');
     if (result.id) {
+      router.refresh();
       toastSuccess('Your card has been added successfully.');
     }
   };

@@ -116,7 +116,12 @@ export default function Sidebar() {
               </p>
             </div>
             {data.map((ele) => (
-              <Link href={ele.url} key={ele.title} onClick={handleClick} id={`${ele.title}-icon`}>
+              <Link
+                href={ele.url}
+                key={ele.title}
+                onClick={handleClick}
+                id={`${ele.title.replace(/\s/g, '')}-icon`}
+              >
                 <SideBarItems Icon={ele.icon} title={ele.title} active={ele.url === asPath} />
               </Link>
             ))}

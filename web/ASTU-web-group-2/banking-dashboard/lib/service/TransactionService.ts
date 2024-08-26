@@ -57,6 +57,19 @@ export const transactionApi = createApi({
         },
       }),
     }),
+    getMonthInvestmentHistory: builder.query({
+      query: (accessToken: string) => ({
+        url: "/user/random-investment-data",
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        params: {
+          years: 1,
+          months: 10,
+        },
+      }),
+    }),
   }),
 });
 
@@ -66,4 +79,5 @@ export const {
   useGetExpensesQuery,
   useGetBalanceHistoryQuery,
   useGetInvestmentHistoryQuery,
+  useGetMonthInvestmentHistoryQuery
 } = transactionApi;

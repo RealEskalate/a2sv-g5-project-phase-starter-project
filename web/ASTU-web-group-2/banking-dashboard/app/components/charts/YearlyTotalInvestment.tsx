@@ -104,7 +104,7 @@ function YearlyTotalInvestment() {
     return(
       <LineChartSkeleton />
     )
-  }
+  } 
   if (isError) {
     return  <div className="text-gray-500 border rounded-[22px] bg-gray-200 p-5 w-full h-auto animate-pulse"><ErrorImage /></div>;
   }

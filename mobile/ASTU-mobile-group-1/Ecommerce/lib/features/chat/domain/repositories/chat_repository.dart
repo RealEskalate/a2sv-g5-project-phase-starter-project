@@ -10,4 +10,8 @@ abstract class ChatRepository {
   Future<Either<Failure, ChatEntity>> myChatbyId(String chatId);
   Future<Either<Failure, List<ChatEntity>>> myChat();
   Future<Either<Failure, bool>> deleteChat(String chatId);
+  Future<void> sendMessage(
+      {required String chatId, required String message, required String type});
+
+  Future<Either<Failure, Stream<MessageEntity>>> getMessages();
 }

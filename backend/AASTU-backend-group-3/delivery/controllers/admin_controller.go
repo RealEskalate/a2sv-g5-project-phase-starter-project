@@ -8,9 +8,9 @@ import (
 
 func (uc *UserController) GetMyProfile(c *gin.Context) {
 	userID := c.GetString("user_id")
-	user, err := uc.UserUsecase.GetMyProfile(userID)
-	if err != nil {
-		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+	user, uerr := uc.UserUsecase.GetMyProfile(userID)
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 	c.JSON(200, gin.H{"message": "Welcome to your profile", "user": user})
@@ -24,9 +24,9 @@ func(uc* UserController) GetUsers(c *gin.Context){
 		return
 	}
 
-	users, err := uc.UserUsecase.GetUsers()
-	if err != nil {
-		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+	users, uerr := uc.UserUsecase.GetUsers()
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 	c.JSON(200, gin.H{"users": users})
@@ -36,9 +36,9 @@ func(uc* UserController) GetUser(c *gin.Context){
 	var user domain.User
 	Role := c.GetString("role")
 	userID := c.Param("id")
-	user, err := uc.UserUsecase.GetMyProfile(userID)
-	if err != nil {
-		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+	user, uerr := uc.UserUsecase.GetMyProfile(userID)
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 
@@ -57,9 +57,9 @@ func(uc* UserController) DeleteUser(c *gin.Context){
 	var user domain.User
 	Role := c.GetString("role")
 	userID := c.Param("id")
-	user, err := uc.UserUsecase.GetMyProfile(userID)
-	if err != nil {
-		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+	user, uerr := uc.UserUsecase.GetMyProfile(userID)
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 
@@ -70,9 +70,9 @@ func(uc* UserController) DeleteUser(c *gin.Context){
 		return
 	}
 	
-	deletedUser, err := uc.UserUsecase.DeleteUser(userID)
-	if err != nil {
-		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+	deletedUser, uerr := uc.UserUsecase.DeleteUser(userID)
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 	c.JSON(200, gin.H{"message": "User deleted successfully", "user": deletedUser})
@@ -97,9 +97,9 @@ func(uc* UserController) UpdateUserRole(c *gin.Context){
 	}
 		
 
-	updatedUser, err := uc.UserUsecase.UpdateUserRole(userID, role.Role)
-	if err != nil {
-		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+	updatedUser, uerr := uc.UserUsecase.UpdateUserRole(userID, role.Role)
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 	updatedUser.Role = role.Role
@@ -110,9 +110,9 @@ func(uc* UserController) UpdateUserRole(c *gin.Context){
 func(uc* UserController) DeleteMyAccount(c *gin.Context){
 	userID := c.GetString("user_id")
 
-	user, err := uc.UserUsecase.GetMyProfile(userID)
-	if err != nil {
-		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+	user, uerr := uc.UserUsecase.GetMyProfile(userID)
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 
@@ -121,11 +121,8 @@ func(uc* UserController) DeleteMyAccount(c *gin.Context){
 		return
 	}
 
-
-	err = uc.UserUsecase.DeleteMyAccount(userID)
-
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if uerr = uc.UserUsecase.DeleteMyAccount(userID); uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 	c.JSON(200, gin.H{"message": "Account deleted successfully"})
@@ -140,9 +137,9 @@ func (uc *UserController) UploadImage(c *gin.Context) {
 	
 	userID := c.GetString("user_id")
 
-	user, err := uc.UserUsecase.GetMyProfile(userID)
-	if err != nil {
-		c.JSON(400, gin.H{"error": "User not found"})
+	user, uerr := uc.UserUsecase.GetMyProfile(userID)
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 	if user.ID.Hex() != userID {
@@ -156,11 +153,11 @@ func (uc *UserController) UploadImage(c *gin.Context) {
 	}
 
 
-	err = uc.UserUsecase.UploadImage(userID, Image.Image)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if uerr = uc.UserUsecase.UploadImage(userID, Image.Image); uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
+
 	c.JSON(200, gin.H{"message": "Image uploaded successfully"})
 }
 
@@ -172,9 +169,8 @@ func (uc *UserController) UpdateMyProfile(c *gin.Context) {
 		return
 	}
 
-	err := uc.UserUsecase.UpdateMyProfile(user, userID)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if uerr := uc.UserUsecase.UpdateMyProfile(user, userID); uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 	c.JSON(200, gin.H{"message": "Profile updated successfully"})

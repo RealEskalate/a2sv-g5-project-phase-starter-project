@@ -36,6 +36,11 @@ class _searchPageState extends State<searchPage> {
     return Future.delayed(Duration(seconds: 3));
   }
 
+  void _performSearch() {
+    final search = search_term.text;
+    context.read<SearchBloc>().add(SearchProductEvent(search));
+  }
+
   @override
   Widget build(BuildContext context) {
     BlocProvider(
@@ -57,7 +62,7 @@ class _searchPageState extends State<searchPage> {
                   size: 20,
                 )),
              Center(
-              child: Text("Search  Product",
+              child: Text("Search Product",
               style: GoogleFonts.poppins(),
               ),
             ),
@@ -68,72 +73,59 @@ class _searchPageState extends State<searchPage> {
           ],
         ),
       ),
-
       body: SingleChildScrollView(
         child: Container(
           margin: EdgeInsets.only(left: 32, right: 24),
           child: Column(
             children: [
               Row(
-                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    width: 300,
-                    height: 48,
+                  Flexible(
                     child: Container(
+                      height: 48,
                       decoration: BoxDecoration(
-                          border: Border.all(
-                              color: Color.fromRGBO(217, 217, 217, 1)),
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(8))),
-                      child:  Expanded(
-                        child: TextField(
-                          controller: search_term,
-                          decoration: InputDecoration(
-                            suffixIcon: IconButton(onPressed: (){
-                              final search = search_term.text;
-                              context.read<SearchBloc>().add(SearchProductEvent(search));
-                            }, icon: Icon(Icons.arrow_forward_ios)),
-                            border: InputBorder.none,
-                            hintText: "  Leather",
-                            hintStyle: TextStyle(
-                              color: Colors.grey.shade400
-                            )
+                        border: Border.all(color: Color.fromRGBO(217, 217, 217, 1)),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                      ),
+                      child: TextField(
+                        controller: search_term,
+                        decoration: InputDecoration(
+                          suffixIcon: IconButton(
+                            onPressed: _performSearch,
+                            icon: Icon(Icons.arrow_forward_ios),
                           ),
+                          border: InputBorder.none,
+                          hintText: "  Leather",
+                          hintStyle: TextStyle(color: Colors.grey.shade400),
                         ),
+                        onSubmitted: (value) {
+                          _performSearch();
+                        },
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: 7,
-                  ),
+                  SizedBox(width: 7),
                   Container(
+                    height: 48,
+                    width: 48,
                     decoration: BoxDecoration(
                       color: Color.fromRGBO(63, 81, 243, 1),
+                      border: Border.all(
+                        width: 4,
+                        color: Color.fromRGBO(63, 81, 243, 1),
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
                     ),
-                    child: SizedBox(
-                      height: 48,
-                      width: 48,
-                      child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  width: 4,
-                                  color: Color.fromRGBO(63, 81, 243, 1)),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(8))),
-                          child: IconButton(
-                              onPressed: () {
-                                showModalBottomSheet(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return const SizedBox(
-                                          height: 338, child: about_product());
-                                    });
-                              },
-                              icon: Icon(
-                                Icons.filter_list,
-                                color: Colors.white,
-                              ))),
+                    child: IconButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return const SizedBox(height: 338, child: about_product());
+                          },
+                        );
+                      },
+                      icon: Icon(Icons.filter_list, color: Colors.white),
                     ),
                   ),
                 ],
@@ -179,7 +171,6 @@ class _searchPageState extends State<searchPage> {
                   }
                 },
               ),
-              
               //
             ],
           ),

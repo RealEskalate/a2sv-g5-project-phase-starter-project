@@ -187,6 +187,150 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.only(left: 21.0, right: 21.0),
         child: Column(
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: 4),
+                      child: SizedBox(
+                          width: 80,
+                          height: 80,
+                          child: ImagePickerIconButton()),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/logout');
+                      },
+                      child: Container(
+                        padding: EdgeInsets.only(top: 4, left: 10),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "July 31, 2024",
+                                style: GoogleFonts.syne(
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 170, 170, 170)),
+                              ),
+                              Row(children: [
+                                Text("Hello,",
+                                    style: GoogleFonts.sora(
+                                        fontWeight: FontWeight.w400,
+                                        color: Color.fromARGB(
+                                            255, 102, 102, 102))),
+                                BlocBuilder<GetUserBloc, GetUserState>(
+                                  builder: (context, state) {
+                                    if (state is GetUserLoading) {
+                                      return Text("...",
+                                          style: GoogleFonts.sora(
+                                              fontWeight: FontWeight.w600));
+                                    } else if (state is GetUserLoaded)  {
+                                      save_id(state.user.id);
+                                      return Text("${state.user.name}",
+                                          style: GoogleFonts.sora(
+                                              fontWeight: FontWeight.w600));
+                                    } else {
+                                      return Text('name');
+                                    }
+                                  },
+                                ),
+                              ])
+                            ]),
+                      ),
+                    ),
+                  ],
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                        decoration: BoxDecoration(
+                            // border: Border.all(
+                            // color: Color.fromRGBO(221, 221, 221, 1), width: 2),
+                            borderRadius: BorderRadius.circular(9)),
+                        child: GestureDetector(
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                      title: Text(
+                                        "Are you sure you want to logout ?",
+                                        style:
+                                            GoogleFonts.poppins(fontSize: 15),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                            child: Text("Cancel")),
+                                        TextButton(
+                                            onPressed: () {
+                                              logOut();
+                                              Navigator.pushNamedAndRemoveUntil(
+                                                  context,
+                                                  '/login',
+                                                  (route) => true);
+                                            },
+                                            child: Text("Log-Out"))
+                                      ],
+                                    ));
+                          },
+                          child: Image(
+                              width: 40,
+                              height: 40,
+                              image: AssetImage(
+                                  'assets/icons8-notification-bell-24.png')),
+                        )),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.05,
+                    ),
+                    Container(
+                        decoration: BoxDecoration(
+                            // border: Border.all(
+                            // color: Color.fromRGBO(221, 221, 221, 1), width: 2),
+                            borderRadius: BorderRadius.circular(9)),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(context, '/HomeChat');
+                          },
+                          child: Image(
+                              width: 30,
+                              height: 30,
+                              image: AssetImage('assets/message.png')),
+                        )),
+                  ],
+                ),
+
+                //       Container(
+                //         decoration: BoxDecoration(
+                //             // border: Border.all(color: Colors.grey, width: 1),
+                //             borderRadius: BorderRadius.circular(10)),
+                //         // padding: EdgeInsets.only(right: 2),
+                //         child: IconButton(
+                //             onPressed: () {
+                //               Navigator.push(
+                //                 context,
+                //                 PageTransition(
+                //                     alignment: Alignment.bottomCenter,
+                //                     curve: Curves.easeInOut,
+                //                     duration: Duration(milliseconds: 1200),
+                //                     reverseDuration: Duration(milliseconds: 400),
+                //                     type: PageTransitionType.leftToRightPop,
+                //                     child: searchPage(),
+                //                     childCurrent: HomePage()),
+                //               );
+                //             },
+                //             icon: Icon(Icons.messenger_outline_sharp),
+                //             color: Color.fromARGB(255, 217, 217, 217),
+                //             iconSize: 29))
+              ],
+            ),
+
             Container(
               height: MediaQuery.of(context).size.height * 0.052,
               child: Row(
@@ -225,21 +369,25 @@ class _HomePageState extends State<HomePage> {
                           child: RefreshIndicator(
                             color: Theme.of(context).colorScheme.onSurface,
                             onRefresh: _refresh,
-                            child: ListView.builder(
-                              itemCount: state.products.length,
-                              itemBuilder: (context, index) {
-                                return GestureDetector(
-                                    onTap: () {
-                                      Navigator.pushNamed(
-                                        context,
-                                        '/detail',
-                                        arguments: state.products[index],
-                                      );
-                                    },
-                                    child: OverflowCard(
-                                      product: state.products[index],
-                                    ));
-                              },
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 75),
+                              child: ListView.builder(
+                                itemCount: state.products.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                      onTap: () {
+                                        
+                              
+                                        Navigator.pushNamed(context, '/detail',
+                                            arguments: state.products[index],);
+                                        },
+                                      
+                                      child: OverflowCard(
+                                        product: state.products[index],
+                                      ));
+                                      
+                                },
+                              ),
                             ),
                           ),
                         ),
@@ -251,8 +399,11 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ],
+        
         ),
-      )),
+    
+      )
+      ),
     );
   }
 }

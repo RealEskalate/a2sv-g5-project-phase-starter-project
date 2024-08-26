@@ -53,8 +53,8 @@ func main() {
 	aiService := gemini_ai.NewAIService(model)
 
 	authUsecase := auth.NewAuthUserUsecase(authRepository, infrastructure.NewEmail(
-		os.Getenv("USERNAME"),
-		os.Getenv("PASSWORD"),
+		os.Getenv("EMAIL_USERNAME"),
+		os.Getenv("EMAIL_PASSWORD"),
 		os.Getenv("SMTP_HOST"),
 		os.Getenv("SMTP_PORT"),
 	))

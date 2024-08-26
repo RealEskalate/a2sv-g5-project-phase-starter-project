@@ -41,8 +41,8 @@ func SetUpBlogRouter(r *gin.RouterGroup, blogController *BlogController) {
 }
 
 func SetUpAuthRouter(r *gin.RouterGroup, userController *UserController) {
-	r.POST("/login", AuthMiddleware(), userController.Login)
-	r.POST("/register", AuthMiddleware(), userController.RegisterUser)
+	r.POST("/login", userController.Login)
+	r.POST("/register", userController.RegisterUser)
 	r.PUT("/profile", AuthMiddleware(), userController.UpdateProfile)
 	r.POST("/activate/:userID/:token", userController.ActivateUser)
 	r.POST("/logout", AuthMiddleware(), userController.Logout)

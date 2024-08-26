@@ -331,7 +331,6 @@ func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
 		fmt.Println("this is the refresh claims", refreshClaims)
 
 		if refreshClaims.ExpiresAt < time.Now().Unix() {
-
 			_, err := c.userUsecase.Update(TheUser.ID, domain.User{RefreshToken: ""})
 			if err != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})

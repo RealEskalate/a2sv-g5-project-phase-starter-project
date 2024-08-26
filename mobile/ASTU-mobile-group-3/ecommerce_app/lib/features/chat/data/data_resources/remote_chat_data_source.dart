@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import '../../../../core/constants/constants.dart';
 import '../../../auth/data/data_source/auth_local_data_source.dart';
@@ -31,6 +32,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+
       data['data']
           .forEach((el) async => {chatRooms.add(ChatEntity.fromJson(el))});
       return chatRooms;

@@ -46,7 +46,8 @@ import 'package:shared_preferences/shared_preferences.dart';
     AuthBloc,
     ProductBloc,
     InputValidationCubit,
-    UserInputValidationCubit
+    UserInputValidationCubit,
+
   ],
   customMocks: [MockSpec<http.Client>(as: #MockHttpClient)],
 )

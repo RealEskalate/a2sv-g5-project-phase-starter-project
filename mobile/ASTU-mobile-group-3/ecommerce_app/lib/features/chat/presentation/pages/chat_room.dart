@@ -110,6 +110,7 @@ class _ChatRoomState extends State<ChatRoom> {
                   child: Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: ListView.builder(
+                      reverse: true,
                       shrinkWrap: true,
                       itemCount: state.messages.length,
                       itemBuilder: (context, index) {

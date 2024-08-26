@@ -8,8 +8,11 @@ import '../bloc/chat_bloc.dart';
 import '../widget/user_profile.dart';
 import 'individiual_chat_screen.dart';
 
+import '../bloc/chat_bloc.dart';
+
 class ChatHomeScreen extends StatefulWidget {
   const ChatHomeScreen({super.key});
+
 
   @override
   State<ChatHomeScreen> createState() => _ChatHomeScreenState();
@@ -18,17 +21,28 @@ class ChatHomeScreen extends StatefulWidget {
 class _ChatHomeScreenState extends State<ChatHomeScreen> {
   @override
   void initState() {
-    context.read<ChatBloc>().add(StartChat());
+    // context.read<ChatBloc>().add(StartChat());
+    context.read<ChatBloc>().add(GetAllChatEvent());
+    
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ChatBloc, ChatState>(
+    return BlocConsumer<ChatBloc, ChatState>(
       listener: (context, state) {
-        log('from the home $state');
+        // log('from the home $state');
       },
-      child: Scaffold(
+      builder: (context,state){
+        if(state is ChatFailureState){
+          return Center(child: Text('Error: ${state.message}'));
+        }
+        else if(state is! LoadedAllChatState){
+          return Center(child: CircularProgressIndicator());
+
+        }
+   
+      return Scaffold(
           backgroundColor: ChatColors.lightBlueColor,
           appBar: AppBar(
             leading: IconButton(
@@ -79,14 +93,14 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                 child: ListView.builder(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  itemCount: 100,
+                  itemCount: state.allChats.length,
                   itemBuilder: (context, index) => ListTile(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => const IndividiualChatScreen(),
                       ));
                     },
-                    title: const Text('Alex Lindrson'),
+                    title:  Text(state.allChats[index].user2.name),
                     subtitle: const Text('How are you?'),
                     leading: showUser(),
                     trailing: Column(
@@ -103,7 +117,8 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                 ),
               ),
             )
-          ])),
+          ]));
+             },
     );
   }
 }

@@ -19,3 +19,5 @@ class NewMessageReceivedEvent extends ChatEvent {
 
   NewMessageReceivedEvent({required this.message});
 }
+
+final class GetAllChatEvent extends ChatEvent{}

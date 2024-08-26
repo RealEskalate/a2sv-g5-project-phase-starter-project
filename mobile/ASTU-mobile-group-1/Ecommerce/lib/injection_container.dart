@@ -21,6 +21,7 @@ import 'features/chat/data/data_source/remote_data_source/remote_data_source_imp
 import 'features/chat/data/repository/chat_repository_impl.dart';
 import 'features/chat/domain/repositories/chat_repository.dart';
 import 'features/chat/domain/usecases/get_message_usecase.dart';
+import 'features/chat/domain/usecases/my_chat_usecase.dart';
 import 'features/chat/domain/usecases/send_message_usecase.dart';
 import 'features/chat/presentation/bloc/chat_bloc.dart';
 import 'features/product/data/data_sources/local_data_source.dart';
@@ -46,10 +47,13 @@ Future<void> init() async {
   sl.registerFactory(() => ChatBloc(
         getMessagesUseCase: sl(),
         sendMessageUseCase: sl(),
+        myChatUsecase: sl(),
+
       ));
   // usecase
   sl.registerFactory(() => GetMessageUsecase(chatRepository: sl()));
   sl.registerFactory(() => SendMessageUsecase(chatRepository: sl()));
+  sl.registerLazySingleton(() => MyChatUsecase(chatRepository: sl()));
 
   // repository
   sl.registerLazySingleton<ChatRepository>(

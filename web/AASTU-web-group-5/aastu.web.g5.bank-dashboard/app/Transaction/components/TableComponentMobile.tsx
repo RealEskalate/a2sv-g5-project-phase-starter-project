@@ -37,7 +37,7 @@ const TableCard: React.FC<TableCardProps> = ({ data }) => {
     return (
       <div className="flex justify-between items-center mt-4 space-x-2">
         <button
-          className="flex items-center text-gray-600 p-2 hover:text-blue-500 disabled:opacity-50"
+          className="flex items-center text-gray-400 dark:text-gray-600 p-2 hover:text-blue-500 dark:hover:text-blue-400 disabled:opacity-50"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 0}
         >
@@ -50,7 +50,7 @@ const TableCard: React.FC<TableCardProps> = ({ data }) => {
             <button
               key={page}
               onClick={() => onPageChange(page)}
-              className={`p-2 text-sm ${page === currentPage ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-600 hover:text-white transition-colors`}
+              className={`p-2 text-sm ${page === currentPage ? 'bg-blue-500 text-white dark:bg-blue-600 dark:text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'} hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500 dark:hover:text-white transition-colors`}
             >
               {page + 1}
             </button>
@@ -58,7 +58,7 @@ const TableCard: React.FC<TableCardProps> = ({ data }) => {
         </div>
 
         <button
-          className="flex items-center text-gray-600 p-2 hover:text-blue-500 disabled:opacity-50"
+          className="flex items-center text-gray-400 dark:text-gray-600 p-2 hover:text-blue-500 dark:hover:text-blue-400 disabled:opacity-50"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages - 1}
         >
@@ -70,7 +70,7 @@ const TableCard: React.FC<TableCardProps> = ({ data }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 bg-white shadow-md rounded-lg">
+    <div className="flex flex-col gap-4 p-4 bg-white dark:bg-gray-900 shadow-md dark:shadow-gray-800 rounded-lg">
       {paginatedData.map((item, index) => {
         const amount = item.column6;
         const isPositive = item.column3 === "deposit" || amount > 0;
@@ -78,10 +78,10 @@ const TableCard: React.FC<TableCardProps> = ({ data }) => {
         const icon = isPositive ? <FaArrowUp className={`text-xl ${amountColor}`} /> : <FaArrowDown className={`text-xl ${amountColor}`} />;
 
         return (
-          <div key={index} className="flex items-center justify-between p-4 border rounded-lg bg-gray-100">
+          <div key={index} className="flex items-center justify-between p-4 border rounded-lg bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700">
             <div className="flex-1 flex flex-col">
-              <div className="text-sm font-semibold">{item.column1}</div>
-              <div className="text-xs text-gray-500">{item.column5}</div>
+              <div className="text-sm font-semibold text-gray-800 dark:text-gray-200">{item.column1}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">{item.column5}</div>
             </div>
             <div className="flex items-center space-x-2">
               {icon}

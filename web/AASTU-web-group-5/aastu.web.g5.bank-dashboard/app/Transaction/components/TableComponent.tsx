@@ -1,4 +1,3 @@
-// components/TableComponent.tsx
 "use client";
 import React from "react";
 import {
@@ -16,7 +15,7 @@ interface TableProps {
 }
 
 export function TableComponent({ columns, data }: TableProps) {
-  console.log(data,22222)
+  console.log(data, 22222);
   const tableInstance = useReactTable({
     data,
     columns,
@@ -29,15 +28,15 @@ export function TableComponent({ columns, data }: TableProps) {
   });
 
   return (
-    <div className="overflow-x-auto ">
-      <table className="min-w-full bg-white dark:bg-gray-800 dark:text-white border rounded-[25px]">
-        <thead className="text-[#718EBF] font-Inter ">
+    <div className="overflow-x-auto">
+      <table className="min-w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-white border rounded-[25px]">
+        <thead className="text-[#718EBF] dark:text-[#A0AEC0] font-Inter">
           {tableInstance.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="text-left p-2 border-b border-gray-300"
+                  className="text-left p-2 border-b border-gray-300 dark:border-gray-700"
                 >
                   {header.isPlaceholder
                     ? null
@@ -56,7 +55,7 @@ export function TableComponent({ columns, data }: TableProps) {
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className="p-2 border-b border-gray-300 text-sm text-gray-700 dark:text-white"
+                  className="p-2 border-b border-gray-300 dark:border-gray-700 text-sm"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
@@ -99,7 +98,7 @@ function Pagination({ table }: PaginationProps) {
   return (
     <div className="flex justify-end items-center mt-4 space-x-2">
       <button
-        className="flex items-center text-gray-600 p-2 hover:text-blue-500 disabled:opacity-50"
+        className="flex items-center text-gray-600 dark:text-gray-400 p-2 hover:text-blue-500 dark:hover:text-blue-300 disabled:opacity-50"
         onClick={() => table.previousPage()}
         disabled={!table.getCanPreviousPage()}
       >
@@ -111,7 +110,7 @@ function Pagination({ table }: PaginationProps) {
         {pageIndex > 0 && startPage > 0 && (
           <button
             onClick={() => table.setPageIndex(0)}
-            className={`p-2 text-sm ${pageIndex === 0 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-600 hover:text-white transition-colors`}
+            className={`p-2 text-sm ${pageIndex === 0 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'} hover:bg-blue-600 hover:text-white transition-colors`}
           >
             1
           </button>
@@ -120,7 +119,7 @@ function Pagination({ table }: PaginationProps) {
           <button
             key={page}
             onClick={() => table.setPageIndex(page)}
-            className={`p-2 text-sm ${page === pageIndex ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-600 hover:text-white transition-colors`}
+            className={`p-2 text-sm ${page === pageIndex ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'} hover:bg-blue-600 hover:text-white transition-colors`}
           >
             {page + 1}
           </button>
@@ -128,7 +127,7 @@ function Pagination({ table }: PaginationProps) {
         {pageCount > endPage + 1 && (
           <button
             onClick={() => table.setPageIndex(pageCount - 1)}
-            className={`p-2 text-sm ${pageIndex === pageCount - 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'} hover:bg-blue-600 hover:text-white transition-colors`}
+            className={`p-2 text-sm ${pageIndex === pageCount - 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'} hover:bg-blue-600 hover:text-white transition-colors`}
           >
             {pageCount}
           </button>
@@ -136,7 +135,7 @@ function Pagination({ table }: PaginationProps) {
       </div>
 
       <button
-        className="flex items-center text-gray-600 p-2 hover:text-blue-500 disabled:opacity-50"
+        className="flex items-center text-gray-600 dark:text-gray-400 p-2 hover:text-blue-500 dark:hover:text-blue-300 disabled:opacity-50"
         onClick={() => table.nextPage()}
         disabled={!table.getCanNextPage()}
       >
@@ -146,4 +145,5 @@ function Pagination({ table }: PaginationProps) {
     </div>
   );
 }
+
 export default TableComponent;

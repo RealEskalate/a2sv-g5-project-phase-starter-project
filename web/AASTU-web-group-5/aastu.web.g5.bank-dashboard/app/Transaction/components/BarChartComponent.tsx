@@ -69,24 +69,26 @@ export function BarChartComponent() {
   };
 
   return (
-    <Card className="dark:bg-gray-800">
+    <Card className="dark:bg-gray-800 bg-white">
       <CardContent>
         <ChartContainer config={chartConfig}>
           <BarChart data={chartData} onMouseLeave={handleMouseLeave}>
-            <CartesianGrid vertical={false} horizontal={false} />
+            <CartesianGrid vertical={false} horizontal={false} strokeDasharray="3 3" stroke="#ccc" />
             <XAxis
               dataKey="month"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
               tickFormatter={(value) => value.slice(0, 3)}
+              stroke="#666" // XAxis label color
+              className="dark:text-gray-400"
             />
             
             <Bar dataKey="desktop" radius={10}>
               {chartData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={activeIndex === index ? "#12887E33" : "#EDF0F7"}
+                  fill={activeIndex === index ? "#12887E" : "#EDF0F7"}
                   onMouseEnter={() => handleMouseEnter(index)}
                 />
               ))}
@@ -99,9 +101,9 @@ export function BarChartComponent() {
                       x={x}
                       y={y}
                       dy={-10}
-                      fill="black"
+                      fill={activeIndex === index ? "white" : "black"}
                       fontSize={12}
-                      textAnchor="top"
+                      textAnchor="middle"
                     >
                       {value}
                     </text>

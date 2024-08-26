@@ -210,8 +210,8 @@ const Transactions: React.FC = () => {
         <div className="flex flex-row justify-start items-center mb-4 overflow-x-auto">
           <a
             href="#"
-            className={`text-lg font-normal text-[#343C6A] mx-2 transition-all ${
-              activeLink === "recent" ? "font-bold" : ""
+            className={`text-lg font-normal mx-2 transition-all ${
+              activeLink === "recent" ? "text-blue-500 font-bold border-b-2 border-blue-500" : "text-[#343C6A]"
             }`}
             onClick={() => handleLinkClick("recent")}
           >
@@ -219,8 +219,8 @@ const Transactions: React.FC = () => {
           </a>
           <a
             href="#"
-            className={`text-lg font-normal text-[#343C6A] mx-2 transition-all ${
-              activeLink === "income" ? "font-bold" : ""
+            className={`text-lg font-normal mx-2 transition-all ${
+              activeLink === "income" ? "text-blue-500 font-bold border-b-2 border-blue-500" : "text-[#343C6A]"
             }`}
             onClick={() => handleLinkClick("income")}
           >
@@ -228,8 +228,8 @@ const Transactions: React.FC = () => {
           </a>
           <a
             href="#"
-            className={`text-lg font-normal text-[#343C6A] mx-2 transition-all ${
-              activeLink === "expenses" ? "font-bold" : ""
+            className={`text-lg font-normal mx-2 transition-all ${
+              activeLink === "expenses" ? "text-blue-500 font-bold border-b-2 border-blue-500" : "text-[#343C6A]"
             }`}
             onClick={() => handleLinkClick("expenses")}
           >

@@ -1,18 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Card from "../../components/card/Card";
-import CreditCard from "../../components/creditCard/CreditCard";
+import Card from "../../components/virtualCards/card/Card";
+import CreditCard from "../../components/virtualCards/creditCard/CreditCard";
 import ExpenseStatisticsChart from "../../components/charts/ExpenseStatisticsChart";
-import CardList from "../../components/cardList/cardList";
+import CardList from "../../components/virtualCards/cardList/cardList";
 import CardExpenseStatisticsChart from "../../components/charts/CardExpenseStatisticsChart";
-import AddNewCard from "../../components/addNewCard/AddNewCard";
-import CardSetting from "../../components/CardSetting/CardSetting";
-import CardForCreditCards from "@/app/components/card/CardForCreditCards";
+import AddNewCard from "../../components/virtualCards/addNewCard/AddNewCard";
+import CardSetting from "../../components/virtualCards/CardSetting/CardSetting";
+import CardForCreditCards from "@/app/components/virtualCards/card/CardForCreditCards";
 import CardDisplay, {
   CardData,
   formatCardNumber,
   card,
-} from "../../components/cardDisplay/CardDisplay";
+} from "../../components/virtualCards/cardDisplay/CardDisplay";
 import {
   useGetAllCardInfoQuery,
   useRetiriveCardInfoQuery,
@@ -20,14 +20,13 @@ import {
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import ErrorImage from "@/app/components/Error/ErrorImage";
-import ComponentSkeleton from "@/app/components/card/ComponentSkeleton";
+import ComponentSkeleton from "@/app/components/virtualCards/card/ComponentSkeleton";
 
 const CreditCardsPage = () => {
   const { data: session, status } = useSession();
   // const router = useRouter();
 
   useEffect(() => {}, [status, session]);
-  console.log(session, status);
   // if (!session?.user) router.push("/login");
 
   const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);

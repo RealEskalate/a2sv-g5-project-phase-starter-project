@@ -4,8 +4,8 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { defaultItems } from "./lastTransactionItems";
-import RecentTransactionSkeleton from "../recent-transaction/RecentTransactionSkeleton";
-import ErrorImage from "../Error/ErrorImage";
+import RecentTransactionSkeleton from "../../recent-transaction/RecentTransactionSkeleton";
+import ErrorImage from "../../Error/ErrorImage";
 
 export type Item = {
   transactionId: string;

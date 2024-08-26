@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import CreditCard from "../creditCard/CreditCard";
+import CreditCard from "../../virtualCards/creditCard/CreditCard";
 import { useState, useEffect } from "react";
 import {
   useGetAllCardInfoQuery,
@@ -10,7 +10,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 import ComponentSkeleton from "../card/ComponentSkeleton";
-import EmptyShow from "../emptyShowingImage/EmptyShow";
+import EmptyShow from "../../emptyShowingImage/EmptyShow";
 export interface card {
   card: string;
   id: string;
@@ -40,7 +40,7 @@ const CardDisplay = ({ numofcard }: { numofcard: number }) => {
   const [selectedCardIds, setSelectedCardIds] = useState<string[]>([]);
 
   const token = session?.user.accessToken || "";
-  console.log("Access token: ", token);
+  
 
   const {
     data: allCardsDataWithContent,

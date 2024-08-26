@@ -1,7 +1,7 @@
 import React from "react";
 import InfoboxForServicePage from "../../components/infobox/InfoboxForServicePage";
 import BankServicesList from "../../components/bankServicesList/BankServicesList";
-import Card from "../../components/card/Card";
+import Card from "../../components/virtualCards/card/Card";
 
 const ServicesPage = () => {
   return (

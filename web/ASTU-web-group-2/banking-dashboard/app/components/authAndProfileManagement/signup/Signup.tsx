@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import FormComponent from './FormComponent'; // Adjust the import path as necessary
 import YourFormComponent from './Preference';
-import SignIn from '../../signIn/SignIn';
+import SignIn from '../signIn/SignIn';
 
 interface Preference {
   currency: string;
@@ -56,9 +56,7 @@ const Signup = () => {
   const [mainData, setMainData] = useState<MainData>(defaultMainData);
   const [isSignInModalVisible, setIsSignInModalVisible] = useState<boolean>(false);
 
-  useEffect(() => {
-    console.log(mainData);
-  }, [mainData]);
+
   const toggleSignInModal = () => {
     setIsSignInModalVisible(!isSignInModalVisible);
   };

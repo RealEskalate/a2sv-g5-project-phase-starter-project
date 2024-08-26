@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import InputMoney from "../inputMoney/InputMoney";
-import PersonCard from "../personCard/PersonCard";
+import PersonCard from "../virtualCards/personCard/PersonCard";
 import CardGridSkeleton from "./CardGridSkeleton";
 
 const SendMoney = () => {

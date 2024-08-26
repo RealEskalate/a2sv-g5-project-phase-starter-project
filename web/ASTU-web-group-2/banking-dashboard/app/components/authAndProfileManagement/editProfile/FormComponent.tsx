@@ -88,7 +88,6 @@ const FormComponent: React.FC = () => {
           accessToken: session.user.accessToken,
           updatedUser: updatedUser,
         }).unwrap();
-        console.log("Updated User:", response);
         dispatch(setUser(response.data));
         notify.success("Profile updated successfully");
         // Show success message or handle successful update

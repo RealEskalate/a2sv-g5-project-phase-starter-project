@@ -62,12 +62,10 @@ const YourFormComponent = () => {
       
       try {
         if (session?.user?.accessToken) {
-          console.log("Updated User:",  session?.user?.accessToken);
           const response = await updatePreference({
             accessToken: session?.user?.accessToken,
             updatedPreference: updatedUser.preference,
           }).unwrap();
-          console.log("Updated User:", response);
           dispatch(setUser(updatedUser));
           notify.success("Profile updated successfully");
           // Show success message or handle successful update

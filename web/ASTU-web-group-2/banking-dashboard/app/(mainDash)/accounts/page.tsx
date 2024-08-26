@@ -1,24 +1,24 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Infobox from "../../components/infobox/Infobox";
-import LastTransaction from "../../components/lastTransaction/LastTransaction";
-import Card from "../../components/card/Card";
-import CreditCard from "../../components/creditCard/CreditCard";
-import CardForCreditCards from "../../components/card/CardForCreditCards";
+import LastTransaction from "../../components/transactions/lastTransaction/LastTransaction";
+import Card from "../../components/virtualCards/card/Card";
+import CreditCard from "../../components/virtualCards/creditCard/CreditCard";
+import CardForCreditCards from "../../components/virtualCards/card/CardForCreditCards";
 import DebitCreditOverviewChart from "../../components/charts/DebitCreditOverviewChart";
 import InvoicesSent from "../../components/InvoiceSend/InvoiceSent";
 import CardDisplay, {
   CardData,
   formatCardNumber,
   card,
-} from "@/app/components/cardDisplay/CardDisplay";
+} from "@/app/components/virtualCards/cardDisplay/CardDisplay";
 
 import {
   useGetAllCardInfoQuery,
   useRetiriveCardInfoQuery,
 } from "@/lib/service/CardService";
 import { useSession } from "next-auth/react";
-import CardSkeleton from "@/app/components/creditCard/CardSkeleton";
+import CardSkeleton from "@/app/components/virtualCards/creditCard/CardSkeleton";
 
 // import { useRouter } from "next/navigation";
 

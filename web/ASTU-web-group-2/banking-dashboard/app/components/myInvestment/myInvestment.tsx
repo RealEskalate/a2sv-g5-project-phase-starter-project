@@ -1,6 +1,6 @@
 import React from 'react'
 import LoanTableSkeleton from '../activeLoans/LoanTableSkeleton';
-import ComponentSkeleton from '../card/ComponentSkeleton';
+import ComponentSkeleton from '../virtualCards/card/ComponentSkeleton';
 import RecentTransactionSkeleton from '../recent-transaction/RecentTransactionSkeleton';
 
 const recentlistitems = [

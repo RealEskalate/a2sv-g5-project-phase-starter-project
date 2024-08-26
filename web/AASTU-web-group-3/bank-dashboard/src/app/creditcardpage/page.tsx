@@ -13,27 +13,9 @@ import {
 import { Card } from "../../lib/redux/types/cards";
 import Loading from "../loading";
 import Link from "next/link";
+import { cardStyles } from "@/lib/CardColor";
 
-const cardStyles = {
-  Debit: {
-    backgroundImg:
-      "bg-[linear-gradient(107.38deg,#2D60FF_2.61%,#539BFF_101.2%)]",
-    textColor: "text-white",
-  },
-  Primary: {
-    backgroundImg:
-      "bg-[linear-gradient(107.38deg,#4C49ED_2.61%,#0A06F4_101.2%)]",
-    textColor: "text-white",
-  },
-  Visa: {
-    backgroundImg: "bg-black",
-    textColor: "text-white",
-  },
-  Secondary: {
-    backgroundImg: "bg-gray-200",
-    textColor: "text-black",
-  },
-};
+
 
 const CreditCardPage = () => {
   const { data, error, isLoading } = useGetCardsQuery({ page: 0, size: 10 });

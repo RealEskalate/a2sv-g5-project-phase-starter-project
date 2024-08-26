@@ -48,6 +48,7 @@ const Example = () => {
         withdraw: Expence.data.content[index]?.amount || 0,
       }));
       data.push(...mappedData);
+      
     }
   }, [Income, Expence]);
 

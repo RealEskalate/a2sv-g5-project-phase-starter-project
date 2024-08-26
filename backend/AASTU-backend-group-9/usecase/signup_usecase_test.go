@@ -61,7 +61,7 @@ func TestSendOTP(t *testing.T) {
         mockOTPRepo.On("GetOTPByEmail", mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Once()
         mockOTPRepo.On("SaveOTP", mock.Anything, mock.AnythingOfType("*domain.OTP")).Return(nil).Once()
 
-        err := su.SendOTP(context.TODO(), &mockUser, "smtpusername", "smtppassword")
+        err := su.SendOTP(context.TODO(), &mockUser, "smtpusername", "smtppassword","deviceID")
 
         assert.NoError(t, err)
         mockOTPRepo.AssertExpectations(t)
@@ -71,7 +71,7 @@ func TestSendOTP(t *testing.T) {
         mockOTPRepo.On("GetOTPByEmail", mock.Anything, mock.AnythingOfType("string")).Return(nil, nil).Once()
         mockOTPRepo.On("SaveOTP", mock.Anything, mock.AnythingOfType("*domain.OTP")).Return(errors.New("unexpected error")).Once()
 
-        err := su.SendOTP(context.TODO(), &mockUser, "smtpusername", "smtppassword")
+        err := su.SendOTP(context.TODO(), &mockUser, "smtpusername", "smtppassword","deviceID")
 
         assert.Error(t, err)
         mockOTPRepo.AssertExpectations(t)

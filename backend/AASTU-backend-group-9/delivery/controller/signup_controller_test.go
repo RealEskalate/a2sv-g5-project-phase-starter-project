@@ -54,7 +54,7 @@ func (suite *SignupControllerSuite) TestSignup() {
 		}
 		suite.SignupUsecase.On("GetUserByEmail", mock.Anything, user.Email).Return(nil, nil).Once()
 		suite.SignupUsecase.On("GetUserByUsername", mock.Anything, user.Username).Return(nil, nil).Once()
-		suite.SignupUsecase.On("SendOTP", mock.Anything, &user, "username", "password").Return(nil).Once()
+		suite.SignupUsecase.On("SendOTP", mock.Anything, &user, "username", "password","1533777cbe5eb51a9de765ea723f093bb753862f1a1e9245124dc5ce21eee04f").Return(nil).Once()
 		payload, _ := json.Marshal(user)
 		c.Request = httptest.NewRequest(http.MethodPost, "/signup", bytes.NewBuffer(payload))
 		suite.SignupController.Signup(c)
@@ -112,7 +112,7 @@ func (suite *SignupControllerSuite) TestSignup() {
 		user.Username = "non-existing-username"
 		suite.SignupUsecase.On("GetUserByEmail", mock.Anything, user.Email).Return(nil, nil).Once()
 		suite.SignupUsecase.On("GetUserByUsername", mock.Anything, user.Username).Return(nil, nil).Once()
-		suite.SignupUsecase.On("SendOTP", mock.Anything, &user, "username", "password").Return(errors.New("error")).Once()
+		suite.SignupUsecase.On("SendOTP", mock.Anything, &user, "username", "password","1533777cbe5eb51a9de765ea723f093bb753862f1a1e9245124dc5ce21eee04f").Return(errors.New("error")).Once()
 		payload, _ := json.Marshal(user)
 		c.Request = httptest.NewRequest(http.MethodPost, "/signup", bytes.NewBuffer(payload))
 		suite.SignupController.Signup(c)

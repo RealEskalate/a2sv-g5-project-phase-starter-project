@@ -38,7 +38,7 @@ func (suite *LogoutUsecaseSuite) TestLogout_Success() {
     suite.tokenRepoMock.On("FindTokenByRefreshToken", ctx, refreshToken).Return(token, nil)
     suite.tokenRepoMock.On("DeleteToken", ctx, token.ID).Return(nil)
 
-    err := suite.logoutUsecase.Logout(ctx, refreshToken)
+    err := suite.logoutUsecase.Logout(ctx, refreshToken,"DeviceId")
 
     assert.NoError(suite.T(), err)
     suite.tokenRepoMock.AssertExpectations(suite.T())
@@ -51,7 +51,7 @@ func (suite *LogoutUsecaseSuite) TestLogout_Failure() {
 
     suite.tokenRepoMock.On("FindTokenByRefreshToken", ctx, refreshToken).Return(nil, errors.New("token not found"))
 
-    err := suite.logoutUsecase.Logout(ctx, refreshToken)
+    err := suite.logoutUsecase.Logout(ctx, refreshToken,"deliceId")
 
     assert.Error(suite.T(), err)
     assert.Equal(suite.T(), "token not found", err.Error())

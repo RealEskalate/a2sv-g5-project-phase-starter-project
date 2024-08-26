@@ -1,4 +1,3 @@
-
 // Register User - POST Request
 export const registerUser = async (userData: any) => {
   try {
@@ -10,22 +9,21 @@ export const registerUser = async (userData: any) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
-      });
-  
-      console.log("response:",response)
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to register user');
       }
-  
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
+    );
+
+    console.log("response:", response);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to register user");
     }
 
-
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
 };
 
 // Refresh Token - POST Request
@@ -39,19 +37,19 @@ export const refreshToken = async (tokenData: any) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(tokenData),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to refresh token');
       }
-  
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to refresh token");
     }
 
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
 };
 
 // Login User - POST Request

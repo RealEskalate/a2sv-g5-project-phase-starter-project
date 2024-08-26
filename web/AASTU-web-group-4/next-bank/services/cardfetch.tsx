@@ -29,16 +29,13 @@ export const getAllCards = async (token: string) => {
 // Get Card by ID - GET Request
 export const getCardById = async (id: string, token: string) => {
   try {
-    const response = await fetch(
-      `https://next-bank.onrender.com/cards/${id}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`https://next-bank.onrender.com/cards/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to fetch card with ID: ${id}`);
@@ -80,16 +77,13 @@ export const createCard = async (cardData: any, token: string) => {
 // Delete Card by ID - DELETE Request
 export const deleteCardById = async (id: string, token: string) => {
   try {
-    const response = await fetch(
-      `https://next-bank.onrender.com/cards/${id}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await fetch(`https://next-bank.onrender.com/cards/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to delete card with ID: ${id}`);

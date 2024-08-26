@@ -59,7 +59,7 @@ const TransferPage: React.FC = () => {
                 <option value="deposit">Deposit</option>
                 <option value="service">Service</option>
               </select>
-              {/* {errors.type && <p className="text-red-500 text-xs italic">{errors.type.message}</p>} */}
+              {errors.type && <p className="text-red-500 text-xs italic">{typeof errors.type.message === "string" && errors.type.message}</p>}
             </div>
             <div>
               <label htmlFor="description" className="block text-black text-sm font-bold mb-1">Description (optional):</label>
@@ -80,7 +80,7 @@ const TransferPage: React.FC = () => {
                 placeholder="Enter amount"
                 required
               />
-              {/* {errors.amount && <p className="text-red-500 text-xs italic">{errors.amount.message}</p>} */}
+              {errors.amount && <p className="text-red-500 text-xs italic">{errors.amount.message as string}</p>}
             </div>
             <div>
               <label htmlFor="receiverUserName" className="block text-black text-sm font-bold mb-1">Receiver Username:</label>
@@ -92,7 +92,7 @@ const TransferPage: React.FC = () => {
                 placeholder="Enter receiver's username"
                 required
               />
-              {/* {errors.receiverUserName && <p className="text-red-500 text-xs italic">{errors.receiverUserName.message}</p>} */}
+              {errors.receiverUserName && <p className="text-red-500 text-xs italic">{errors.receiverUserName.message as string}</p>}
             </div>
             <div className="flex items-center justify-center mt-4">
               <button

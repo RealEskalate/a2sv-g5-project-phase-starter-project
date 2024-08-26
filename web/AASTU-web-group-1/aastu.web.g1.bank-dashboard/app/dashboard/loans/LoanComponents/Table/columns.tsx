@@ -3,7 +3,7 @@ import {Table,TableBody, TableCell, TableFooter, TableHead,TableHeader,TableRow,
 import {getLoansAll} from '@/lib/loanApies';
 import { useState, useEffect } from "react";
 import { useUser } from "@/contexts/UserContext";
-import { Loading } from "@/app/dashboard/_components/Loading";
+import TableShimmer  from "./TableShimmer";
 import {
   Pagination,
   PaginationContent,
@@ -50,7 +50,7 @@ export function TableDemo() {
       return Array.from({ length: pagesToShow }, (_, index) => {
         const page = startPage + index;
         return (
-          <PaginationItem key={page} onClick={() => handlePageChange(page)} className={`${ isDarkMode ? "bg-gray-600 text-gray-50" : " bg-gray-200"} rounded-lg mx-1`} >
+          <PaginationItem key={page} onClick={() => handlePageChange(page)} className={`${ isDarkMode ? "bg-gray-950 text-gray-50" : " bg-gray-200"} rounded-lg mx-1`} >
             <PaginationLink {...(page === currentPage ? { isActive: true } : {})} className={`${page === currentPage ? (
               isDarkMode ? "text-gray-900" : "bg-slate-700 text-white"):("") }`}>
             {page}
@@ -80,25 +80,25 @@ export function TableDemo() {
 
 
     return (
-      loading ? (<Loading/>): 
+      loading ? (<TableShimmer/>): 
         (
-        <div className="flex flex-col justify-center rounded-2xl bg-transparent">
-          <Table className="bg-white w-[90%] mx-auto rounded-2xl my-4" >
-            <TableHeader className="p-10">
+        <div className="flex flex-col justify-center rounded-2xl bg-transparent scrollbar-hidden">
+          <Table className={`w-[80%] md:w-full mx-auto rounded-2xl my-4 ${isDarkMode? "bg-gray-950 text-white":"bg-white"}`} >
+            <TableHeader className={`${isDarkMode?"border-gray-700":""} p-10`}>
               <TableRow className="text-[#243a61] font-[600] p-10">
-                <TableHead className="hidden md:table-cell text-center" >SL No</TableHead>
-                <TableHead className="text-center" >Loan Money</TableHead>
-                <TableHead className="text-center">Left to repay</TableHead>
-                <TableHead className="hidden md:table-cell text-center">Duration</TableHead>
-                <TableHead className="hidden md:table-cell text-center">Interest rate</TableHead>
-                <TableHead className="hidden md:table-cell text-center">Installment</TableHead>
-                <TableHead className="text-center">Repay</TableHead>
+                <TableHead className={`hidden md:table-cell text-center ${isDarkMode? "text-white":"text-gray-900"}`} >SL No</TableHead>
+                <TableHead className={`text-center ${isDarkMode? "text-white":"text-gray-900"}`} >Loan Money</TableHead>
+                <TableHead className={`text-center ${isDarkMode? "text-white":"text-gray-900"}`}>Left to repay</TableHead>
+                <TableHead className={`hidden md:table-cell text-center ${isDarkMode? "text-white":"text-gray-900"}`}>Duration</TableHead>
+                <TableHead className={`hidden md:table-cell text-center ${isDarkMode? "text-white":"text-gray-900"}`}>Interest rate</TableHead>
+                <TableHead className={`hidden md:table-cell text-center ${isDarkMode? "text-white":"text-gray-900"}`}>Installment</TableHead>
+                <TableHead className={`text-center ${isDarkMode? "text-white":"text-gray-900"} rounded-tr-xl `}>Repay</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody >
               {table.map((Invoice:any,idx:number) => (
-                <TableRow key={idx} className={ idx%2==0 ? ("bg-[#dfdfdf59]"):("bg-white")} >
+                <TableRow key={idx} className={ `${isDarkMode ? idx%2==0 ? "bg-gray-900 border-gray-700":"bg-gray-800 border-gray-700":idx%2==0 ? "bg-[#dfdfdf59]":"bg-white" } `} >
                   <TableCell className="hidden md:table-cell text-center ">{idx+1}</TableCell>
                   <TableCell className="text-center">{Invoice.loanAmount}</TableCell>
                   <TableCell className="text-center">{Invoice.amountLeftToRepay}</TableCell>
@@ -114,25 +114,27 @@ export function TableDemo() {
               ))}
             </TableBody>
 
-            <TableFooter className="text-red-500">
+            <TableFooter className={`${isDarkMode? "text-red-300 bg-gray-950 border-gray-700":"text-red-700"} `}>
               <TableRow className="table-cell md:hidden">
-              <TableCell className="hidden md:table-cell">Total</TableCell>
+              <TableCell className="hidden md:table-cell rounded-bl-xl">Total</TableCell>
               </TableRow>
               <TableRow >  
-                <TableCell className="hidden md:table-cell text-center">Total</TableCell> 
+                <TableCell className="hidden md:table-cell text-center rounded-bl-2xl">Total</TableCell> 
                 <TableCell className="text-center">{table.map((a:any) => a.loanAmount).reduce(function(a:number, b:number){return a + b;})}</TableCell>
-                <TableCell colSpan={3} className="hidden md:table-cell text-center">{table.map((a:any) => a.amountLeftToRepay).reduce(function(a:number, b:number){return a + b;})}</TableCell>
-                <TableCell className="text-center" >{table.map((a:any) => a.installment).reduce(function(a:number, b:number){return a + b;})}</TableCell>
+                <TableCell className="hidden md:table-cell text-center">{table.map((a:any) => a.amountLeftToRepay).reduce(function(a:number, b:number){return a + b;})}</TableCell>
+                <TableCell colSpan={2} className="hidden md:table-cell"></TableCell>
+                <TableCell className=" text-center" >{table.map((a:any) => a.installment).reduce(function(a:number, b:number){return a + b;})}</TableCell>
+                <TableCell className="rounded-br-2xl hidden md:table-cell"></TableCell>
               </TableRow>
             </TableFooter>
           </Table>
           <Pagination className="mx-auto">
-            <PaginationContent className="hover:cursor-pointer">
-              <PaginationItem className={`${ isDarkMode ? "bg-gray-600 text-gray-50" : "bg-gray-200"} rounded-xl`} >
+            <PaginationContent className="hover:cursor-pointer mx-auto">
+              <PaginationItem className={`${ isDarkMode ? "bg-gray-950 text-gray-50" : "bg-gray-200"} rounded-xl`} >
                 <PaginationPrevious onClick={handlePreviousPage} aria-disabled={currentPage === 1}/>
               </PaginationItem>
               {renderPageButtons()}
-              <PaginationItem className={`${ isDarkMode ? "bg-gray-600 text-gray-50" : "bg-gray-200"} rounded-lg`}>
+              <PaginationItem className={`${ isDarkMode ? "bg-gray-950 text-gray-50" : "bg-gray-200"} rounded-lg`}>
                 <PaginationNext onClick={handleNextPage} aria-disabled={currentPage === totalPages} />
               </PaginationItem>
             </PaginationContent>

@@ -4,7 +4,6 @@ import {Table, TableBody, TableCell, TableHead,TableHeader,TableRow,} from "@/co
 import { getTrendingData } from "@/lib/investmentapies";
 import { useState,useEffect } from "react";
 import { useUser } from "@/contexts/UserContext";
-
 export default function TrendingTable() {
   const { isDarkMode } = useUser();
   const [trendingArray, setTrendingArray] = useState([]);
@@ -32,52 +31,50 @@ export default function TrendingTable() {
 
   },[])
 
-  return (
-    <div className={`text-sm md:text-lg ${isDarkMode ? "text-gray-200" : "text-black"}`}>
+  return ( 
+    loading? (
+      <div className="w-full mx-auto md:mx-0">
+        <div className={`h-10 w-full ${isDarkMode ? "bg-gray-950" : "bg-gray-300"} animate-pulse rounded-md mb-2`}></div>
+        <div className={`h-10 w-full ${isDarkMode ? "bg-gray-950" : "bg-gray-300"} animate-pulse rounded-md mb-2`}></div>
+        <div className={`h-10 w-full ${isDarkMode ? "bg-gray-950" : "bg-gray-300"} animate-pulse rounded-md mb-2`}></div>
+        <div className={`h-10 w-full ${isDarkMode ? "bg-gray-950" : "bg-gray-300"} animate-pulse rounded-md mb-2`}></div>
+        <div className={`h-10 w-full ${isDarkMode ? "bg-gray-950" : "bg-gray-300"} animate-pulse rounded-md mb-2`}></div>
+        <div className={`h-10 w-full ${isDarkMode ? "bg-gray-950" : "bg-gray-300"} animate-pulse rounded-md mb-2`}></div>
+      </div>
+    ):
+    (<div className={`text-sm md:text-lg ${isDarkMode ? "text-gray-200" : "text-black"}`}>
       <Table className={`${isDarkMode ? "bg-gray-800" : "bg-white"} rounded-2xl`}>
-        <TableHeader>
-          <TableRow>
-            <TableHead className={`text-sm md:text-lg text-center ${isDarkMode ? "text-gray-400" : "text-black"}`}>
+        <TableHeader className={`${isDarkMode ? "bg-[#1a1d2288] rounded-xl":"bg-transparent"} text-white`}>
+          <TableRow className={`"bg-transparent ${isDarkMode? "border-b-gray-700": ""}`}>
+            <TableHead className={`text-sm md:text-lg text-center ${isDarkMode ? "text-white rounded-tl-xl " : "text-black"}`}>
               SL No
             </TableHead>
-            <TableHead className={`text-sm md:text-lg text-center ${isDarkMode ? "text-gray-400" : "text-black"}`}>
+            <TableHead className={`text-sm md:text-lg text-center ${isDarkMode ? "text-white" : "text-black"}`}>
               Name
             </TableHead>
-            <TableHead className={`text-sm md:text-lg text-center ${ isDarkMode ? "text-gray-400" : "text-black"}`}>
+            <TableHead className={`text-sm md:text-lg text-center ${ isDarkMode ? "text-white " : "text-black"} rounded-tr-xl`}>
               Type
             </TableHead>
           </TableRow>
         </TableHeader>
-        
-          {loading ? (
-            <TableBody className="animate-pulse gap-2" >
-              {
-                Array.from({length:5}).map(() =>(
-                  <TableRow >
-                    <TableCell className={ `${isDarkMode ? "bg-gray-700":"bg-gray-200"} h-[25px]  rounded mx-auto my-2`} colSpan={3}></TableCell>
-                    
-                  </TableRow> ))
-              }
-            </TableBody>
-          ):(
             <TableBody>
               {
                 trendingArray.map((item:any, idx:number) => (
-                  <TableRow key={item.id}>
-                    <TableCell className={`${isDarkMode ? "text-gray-300" : "text-black"} text-center`}>
+                  <TableRow key={item.id} className={`"bg-transparent ${isDarkMode? "border-b-gray-700": ""}`}>
+                    <TableCell className={`${isDarkMode ? "text-white" : "text-black"} text-center`}>
                       {idx+1}
                     </TableCell>
-                    <TableCell className={`${isDarkMode ? "text-gray-300" : "text-black"} text-center`}>
+                    <TableCell className={`${isDarkMode ? "text-white" : "text-black"} text-center`}>
                       {item.companyName}
                     </TableCell>
-                    <TableCell className={`${isDarkMode ? "text-gray-300" : "text-black"} text-center`}>
+                    <TableCell className={`${isDarkMode ? "text-white" : "text-black"} text-center`}>
                       {item.type}
                     </TableCell>
                   </TableRow> ))
               }
             </TableBody>
-        )}
       </Table>
-    </div>
+    </div>)
+    
   );
 }

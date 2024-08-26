@@ -5,7 +5,7 @@ export  async function getInvestmentData(year:number, months:number) {
     try {
         const session = await getSession();
         const accessToken = session?.user.accessToken;
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/random-investment-data?years=${year}&months=${months}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/user/random-investment-data?years=${year}&months=${months}`, {
             method: "GET",
             cache: "reload",
             headers: {
@@ -39,7 +39,7 @@ export async function getTrendingData() {
         }).then((res)=>(res.json()));
 
         if (response.success){
-            console.log(response.data);
+            // console.log(response.data);
             return response.data;
         }
     }catch(error){

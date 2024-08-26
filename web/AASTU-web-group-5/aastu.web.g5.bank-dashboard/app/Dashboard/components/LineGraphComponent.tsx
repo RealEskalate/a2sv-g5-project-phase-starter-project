@@ -65,7 +65,7 @@ const LineGraphComponent = () => {
               const newAccessToken = refreshedTokens.access_token;
 
               // Retry the original request with the new access token
-              const retryResponse = await axios.get('https://bank-dashboard-o9tl.onrender.com/transactions/balance-history', {
+              const retryResponse = await axios.get('https://bank-dashboard-rsf1.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=6', {
                 headers: {
                   Authorization: `Bearer ${newAccessToken}`,
                 },
@@ -99,16 +99,16 @@ const LineGraphComponent = () => {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="w-full h-64">
+    <div className="w-full h-64 bg-white dark:bg-gray-800 border dark:border-white">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={chartData}
           margin={{ top: 16, left: 4, right: 8, bottom: 4 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="time" />
-          <YAxis />
-          <Tooltip />
+          <CartesianGrid strokeDasharray="3 3" stroke="#666666" />
+          <XAxis dataKey="time" tick={{ fill: '#666666' }} axisLine={{ stroke: '#666666' }} />
+          <YAxis tick={{ fill: '#666666' }} axisLine={{ stroke: '#666666' }} />
+          <Tooltip contentStyle={{ backgroundColor: '#333333', borderColor: '#666666' }} labelStyle={{ color: '#ffffff' }} />
           <Area
             dataKey="value"
             type="monotone"

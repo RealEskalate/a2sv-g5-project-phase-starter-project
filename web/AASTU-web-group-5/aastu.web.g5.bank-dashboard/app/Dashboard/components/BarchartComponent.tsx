@@ -1,16 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TrendingUp } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 import axios from "axios";
 import { useSession } from "next-auth/react";
@@ -28,13 +19,14 @@ const chartConfig = {
 };
 
 interface ExtendedUser {
-	name?: string;
-	email?: string;
-	image?: string;
-	accessToken?: string;
+  name?: string;
+  email?: string;
+  image?: string;
+  accessToken?: string;
 }
+
 // Helper function to get day of the week from a date
-const getDayName = (dateString) => {
+const getDayName = (dateString: string) => {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-US", { weekday: "short" });
 };
@@ -50,7 +42,7 @@ export default function Component() {
     { day: "Sat", debited: 0, credited: 0 },
     { day: "Sun", debited: 0, credited: 0 },
   ]);
-  const user = session.user as ExtendedUser
+  const user = session.user as ExtendedUser;
 
   useEffect(() => {
     const token = `Bearer ${user?.accessToken}`;
@@ -81,25 +73,25 @@ export default function Component() {
         const incomesData = incomesResponse.data.data.content;
 
         // Initialize a map to accumulate debited and credited amounts by day
-        const dataMap = {
-          Mon: { debited: 12000, credited: 10000},
-          Tue: { debited: 15000, credited: 10000},
-          Wed: { debited: 2344, credited: 7000 },
-          Thu: { debited: 3345, credited: 9000},
-          Fri: { debited: 12340, credited: 1000 },
-          Sat: { debited: 8000, credited: 5000 },
-          Sun: { debited:5000, credited: 6000},
+        const dataMap: Record<string, { debited: number; credited: number }> = {
+          Mon: { debited: 0, credited: 0 },
+          Tue: { debited: 0, credited: 0 },
+          Wed: { debited: 0, credited: 0 },
+          Thu: { debited: 0, credited: 0 },
+          Fri: { debited: 0, credited: 0 },
+          Sat: { debited: 0, credited: 0 },
+          Sun: { debited: 0, credited: 0 },
         };
 
         // Accumulate expenses and incomes by day
-        expensesData.forEach((expense) => {
+        expensesData.forEach((expense: any) => {
           const day = getDayName(expense.date);
           if (dataMap[day]) {
             dataMap[day].debited += expense.amount;
           }
         });
 
-        incomesData.forEach((income) => {
+        incomesData.forEach((income: any) => {
           const day = getDayName(income.date);
           if (dataMap[day]) {
             dataMap[day].credited += income.amount;
@@ -122,19 +114,18 @@ export default function Component() {
     fetchData();
   }, [session, user?.accessToken]);
 
-
   return (
-    <Card className="relative h-[364px] bg-white w-full">
+    <Card className="relative h-[364px] w-full bg-white dark:bg-gray-300 border dark:border-white">
       {/* Color Titles at the Top Right */}
-      <div className="absolute top-0 right-0 p-2 flex gap-2 bg-white">
-        <span className="flex text-sm items-center gap-1">
+      <div className="absolute top-0 right-0 p-2 flex gap-2 bg-white dark:bg-gray-300">
+        <span className="flex text-sm items-center gap-1 text-[#343C6A] dark:text-white">
           <span
             className="w-3 h-3 inline-block rounded-full"
             style={{ backgroundColor: chartConfig.debited.color }}
           ></span>
           {chartConfig.debited.label}
         </span>
-        <span className="flex text-sm items-center gap-1">
+        <span className="flex text-sm items-center gap-1 text-[#343C6A] dark:text-white">
           <span
             className="w-3 h-3 inline-block rounded-full"
             style={{ backgroundColor: chartConfig.credited.color }}
@@ -143,26 +134,27 @@ export default function Component() {
         </span>
       </div>
 
-      <CardContent className="flex  flex-col h-[calc(100%-2rem)] w-full">
+      <CardContent className="flex flex-col h-[calc(100%-2rem)] w-full">
         {/* Bar Chart */}
         <div className="pt-7 w-full flex-1 h-[calc(100%-2rem)] pb-0">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" strokeWidth={0.5} />
+              <CartesianGrid strokeDasharray="3 3" strokeWidth={0.5} stroke="#ffffff" />
               <XAxis
                 dataKey="day"
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, fill: '#ffffff' }}
                 strokeWidth={0.5}
+                stroke="#ffffff"
               />
               <YAxis
                 width={70} // Increased width for better visibility of large numbers
                 tickMargin={10}
-                tick={{ fontSize: 9 }} // Adjust font size if necessary
+                tick={{ fontSize: 9, fill: '#ffffff' }} // Adjust font size if necessary
                 strokeWidth={0.5}
-                // padding={{ right: 10 }} // Adding padding for better visibility
+                stroke="#ffffff"
               />
               {/* <Tooltip /> */}
               <Bar

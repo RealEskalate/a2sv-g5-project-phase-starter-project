@@ -126,9 +126,8 @@ export function PieChartComponent() {
       <text
         x={x}
         y={y}
-        fill="#fff"
+        className="text-xs font-semibold text-gray-800 dark:text-gray-200"
         textAnchor="middle"
-        className="text-xs font-semibold"
         dominantBaseline="central"
       >
         <tspan x={x} dy="-1.2em">{name}</tspan>
@@ -151,6 +150,7 @@ export function PieChartComponent() {
           endAngle={endAngle}
           outerRadius={hoverRadius}
           fill={fill}
+          className="transition-all duration-200 dark:fill-opacity-80"
         />
         <Sector
           cx={cx}
@@ -173,10 +173,10 @@ export function PieChartComponent() {
     setActiveIndex(0);
   };
 
-  if (error) return <p>Error: {error}</p>;
+  if (error) return <p className="text-red-500 dark:text-red-300">Error: {error}</p>;
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex justify-center items-center h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <PieChart width={300} height={300}>
         <Pie
           data={filteredData}

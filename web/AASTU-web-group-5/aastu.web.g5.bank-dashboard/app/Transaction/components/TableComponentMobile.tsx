@@ -70,7 +70,7 @@ const TableCard: React.FC<TableCardProps> = ({ data }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 bg-white shadow-md rounded-lg">
+    <div className="flex flex-col gap-4 p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg">
       {paginatedData.map((item, index) => {
         const amount = item.column6;
         const isPositive = item.column3 === "deposit" || amount > 0;

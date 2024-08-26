@@ -70,7 +70,7 @@ const LastTrans = ({
       <p className="hidden lg:block font-inter font-normal lg:text-[12px] xl:text-base text-[#718EBF] dark:text-gray-300 w-[10%]">
         123***
       </p>
-      <p className="hidden lg:block font-inter font-normal lg:text-[12px] xl:text-base text-[#718EBF] dark:text-gray-200w-[15%]">
+      <p className="hidden lg:block font-inter font-normal lg:text-[12px] xl:text-base text-[#718EBF] dark:text-gray-200 w-[15%]">
         completed
       </p>
 

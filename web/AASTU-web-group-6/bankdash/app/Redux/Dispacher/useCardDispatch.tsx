@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useAppDispatch } from "@/app/Redux/store/store";
 import { setCards, setStatus, setError } from "@/app/Redux/slices/cardSlice";
 import CardService from "@/app/Services/api/CardService";
+import TransactionService from "@/app/Services/api/transactionApi";
 
 const useCardDispatch = (accessToken: string) => {
   const dispatch = useAppDispatch();
@@ -12,6 +13,8 @@ const useCardDispatch = (accessToken: string) => {
       try {
         dispatch(setStatus("loading"));
         const res: any = await CardService.getAllCards(accessToken);
+        
+
         console.log(res.content, "myfggggggggggggggg");
         console.log("Status of Card dispatch",res)
 

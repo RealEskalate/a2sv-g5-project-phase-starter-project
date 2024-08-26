@@ -9,6 +9,20 @@ import { useSelector, useDispatch } from "react-redux";
 import { setUser } from "../redux/slice/userSlice";
 import { RootState } from "../redux/store";
 import User from "../../type/user";
+import { Audio } from 'react-loader-spinner';
+import { LoaderProvider } from "react-loader-ts";
+import { useLoader, Loader } from "react-loader-ts";
+import "react-loader-ts/lib/esm/styles/global.css";
+
+
+
+ function Spinner() {
+  return (
+    <LoaderProvider>
+      <Loader />
+    </LoaderProvider>
+  );
+}
 
 interface ExtendedUser {
 	name?: string;
@@ -16,6 +30,7 @@ interface ExtendedUser {
 	image?: string;
 	accessToken?: string;
 }
+
 
 interface FormData {
 	currency: string;
@@ -30,7 +45,7 @@ function Preference() {
 	const { data: session } = useSession();
 	const [successMessage, setSuccessMessage] = useState("");
 	const [apiError, setApiError] = useState("");
-
+	const [loading, setLoading] = useState(false);
 	const user = useSelector((state: RootState) => state.user as User);
 	const darkMode = useSelector((state: RootState) => state.theme.darkMode);
 	const dispatch = useDispatch();
@@ -72,6 +87,7 @@ function Preference() {
 		setAccountRecommendations(!accountRecommendations);
 
 	const onSubmit: SubmitHandler<FormData> = async (data) => {
+		setLoading(true);
 		setSuccessMessage("");
 		setApiError("");
 		console.log(users.accessToken, "access token ");
@@ -112,6 +128,8 @@ function Preference() {
 				error.response?.data?.message || "Failed to update preferences."
 			);
 		}
+		setLoading(false);
+
 	};
 
 	return (
@@ -192,14 +210,18 @@ function Preference() {
 				<div className="text-green-500 mt-2">{successMessage}</div>
 			)}
 			<div className="flex justify-end mt-16 md:mt-18">
-				<button
-					type="submit"
-					className={`border-none w-full h-12 rounded-full md:w-[12rem] text-[13px] md:text-base ${
-						darkMode ? "bg-blue-500 text-white" : "bg-blue-700 text-white"
-					}`}
-				>
-					Save
-				</button>
+			<button
+        type="submit"
+        className={`border-none w-full h-12 rounded-full md:w-[12rem] text-[13px] md:text-base ${
+          darkMode ? "bg-blue-500 text-white" : "bg-blue-700 text-white"
+        }`}
+        disabled={loading} 
+      >
+        {loading ? (
+			    <Spinner/>  ) : (
+          'Save'
+        )}
+      </button>
 			</div>
 		</form>
 	);

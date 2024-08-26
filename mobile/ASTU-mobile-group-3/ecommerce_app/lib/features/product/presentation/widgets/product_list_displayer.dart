@@ -48,7 +48,10 @@ class ProductListDisplayer extends StatelessWidget {
             return ListView.builder(
               itemCount: 10,
               itemBuilder: (context, index) {
-                return const SkeletonLoading();
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: ShimmerList(),
+                );
               },
             );
           } else {

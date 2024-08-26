@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 export const getAllCards = async (token: string) => {
   try {
     const response = await fetch(
-      "https://web-team-g4.onrender.com/cards?page=0&size=10",
+      "https://next-bank.onrender.com/cards?page=0&size=10",
       {
         method: "GET",
         headers: {
@@ -30,7 +30,7 @@ export const getAllCards = async (token: string) => {
 export const getCardById = async (id: string, token: string) => {
   try {
     const response = await fetch(
-      `https://web-team-g4.onrender.com/cards/${id}`,
+      `https://next-bank.onrender.com/cards/${id}`,
       {
         method: "GET",
         headers: {
@@ -55,7 +55,7 @@ export const getCardById = async (id: string, token: string) => {
 // Create a New Card - POST Request
 export const createCard = async (cardData: any, token: string) => {
   try {
-    const response = await fetch("https://web-team-g4.onrender.com/cards", {
+    const response = await fetch("https://next-bank.onrender.com/cards", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -81,7 +81,7 @@ export const createCard = async (cardData: any, token: string) => {
 export const deleteCardById = async (id: string, token: string) => {
   try {
     const response = await fetch(
-      `https://web-team-g4.onrender.com/cards/${id}`,
+      `https://next-bank.onrender.com/cards/${id}`,
       {
         method: "DELETE",
         headers: {

@@ -55,7 +55,7 @@ func (tagController *TagController) CreateTag(c *gin.Context) {
 // DeleteTag function
 func (tagController *TagController) DeleteTag(c *gin.Context) {
 	slug := c.Param("slug")
-
+	
 
 	err, statuscode := tagController.tagUseCase.DeleteTag(c, slug)
 	if err != nil {

@@ -9,7 +9,7 @@ import (
 
 func BlogRouter() {
 	user_repo := Repositories.NewUserRepository(BlogCollections.Users, BlogCollections.RefreshTokens)
-	postRouter := Router.Group("/blog", auth_middleware.AuthMiddleware(), auth_middleware.IsAdminMiddleware(user_repo))
+	postRouter := Router.Group("/blog", auth_middleware.AuthMiddleware())
 	{
 		blogrepo := Repositories.NewBlogrepository(BlogCollections)
 		blogusecase := usecases.NewBlogUseCase(blogrepo)

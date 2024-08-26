@@ -3,6 +3,7 @@ package controllers
 import (
 	"blogapp/Domain"
 	jwtservice "blogapp/Infrastructure/jwt_service"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,7 +44,8 @@ func (r *RefreshController) Refresh(c *gin.Context) {
 
 	// verify the refresh token
 	err = jwtservice.VerifyRefreshToken(refreshToken, accessClaims.ID)
-
+	
+	fmt.Println("refresh token", refreshToken)
 	if err != nil {
 		c.JSON(401, gin.H{"error": err.Error()})
 		return

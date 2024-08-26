@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func CreateAccessToken(existingUser Domain.User) (string, error) {
+var CreateAccessToken = func(existingUser Domain.User) (string, error) {
 	userclaims := &Domain.AccessClaims{
 		ID:   existingUser.ID,
 		Role: existingUser.Role,
@@ -45,7 +45,7 @@ func CreateRefreshToken(existingUser Domain.User) (refreshToken string, err erro
 	return jwtToken, err
 }
 
-func VerifyRefreshToken(tokenString string, userid primitive.ObjectID) error {
+var VerifyRefreshToken = func(tokenString string, userid primitive.ObjectID) error {
 	fmt.Println("inside verify refresh token")
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(Config.JwtSecret), nil

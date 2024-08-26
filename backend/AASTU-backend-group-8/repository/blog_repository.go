@@ -14,7 +14,7 @@ import (
 
 type BlogRepository struct {
 	collection domain.Collection
-	mutex 	sync.RWMutex
+	mutex      sync.RWMutex
 }
 
 // // Search implements domain.BlogRepositoryInterface.
@@ -25,8 +25,8 @@ type BlogRepository struct {
 func NewBlogRepository(col domain.Collection) *BlogRepository {
 	return &BlogRepository{
 		collection: col,
-		mutex: sync.RWMutex{},
-}
+		mutex:      sync.RWMutex{},
+	}
 }
 
 func (r *BlogRepository) Save(blog *domain.BlogPost) (string, error) {
@@ -143,4 +143,92 @@ func (r *BlogRepository) Delete(id primitive.ObjectID) error {
 
 	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": id})
 	return err
+}
+func (r *BlogRepository) HasUserLiked(blogID, userID primitive.ObjectID) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": blogID, "likes": userID}
+	count, err := r.collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+func (r *BlogRepository) HasUserDisliked(blogID, userID primitive.ObjectID) (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"_id": blogID, "dislikes": userID}
+	count, err := r.collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+func (r *BlogRepository) UpdateLikeDislikeCount(blogID, userID primitive.ObjectID, like bool) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var update bson.M
+	if like {
+		update = bson.M{
+			"$inc":  bson.M{"like_count": 1},
+			"$push": bson.M{"likes": userID},
+		}
+	} else {
+		update = bson.M{
+			"$inc":  bson.M{"dislike_count": 1},
+			"$push": bson.M{"dislikes": userID},
+		}
+	}
+
+	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": blogID}, update)
+	return err
+}
+
+func (r *BlogRepository) ToggleLikeDislike(blogID, userID primitive.ObjectID, like bool) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var update bson.M
+	if like {
+		update = bson.M{
+			"$inc": bson.M{
+				"like_count":    1,
+				"dislike_count": -1,
+			},
+			"$push": bson.M{"likes": userID},
+			"$pull": bson.M{"dislikes": userID},
+		}
+	} else {
+		update = bson.M{
+			"$inc": bson.M{
+				"dislike_count": 1,
+				"like_count":    -1,
+			},
+			"$push": bson.M{"dislikes": userID},
+			"$pull": bson.M{"likes": userID},
+		}
+	}
+
+	_, err := r.collection.UpdateOne(ctx, bson.M{"_id": blogID}, update)
+	return err
+}
+func (r *BlogRepository) AddComment(blogID primitive.ObjectID, comment domain.Comment) error {
+	filter := bson.M{"_id": blogID}
+	fmt.Println(comment)
+	update := bson.M{"$push": bson.M{"comments": comment}}
+
+	_, err := r.collection.UpdateOne(context.TODO(), filter, update)
+	return err
+}
+
+func (r *BlogRepository) GetBlogPostByID(blogID primitive.ObjectID) (domain.BlogPost, error) {
+	var blogPost domain.BlogPost
+	filter := bson.M{"_id": blogID}
+	err := r.collection.FindOne(context.TODO(), filter).Decode(&blogPost)
+	return blogPost, err
 }

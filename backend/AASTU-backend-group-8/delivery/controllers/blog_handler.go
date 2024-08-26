@@ -163,3 +163,74 @@ func (bc *BlogController) DeleteBlogPost(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Blog post deleted successfully"})
 }
+
+// 	c.JSON(http.StatusOK, blogPost)
+// }
+
+// Handler to like a blog post
+func (bc *BlogController) LikeBlogPost(c *gin.Context) {
+	blogIDParam := c.Param("id")
+	blogID, err := primitive.ObjectIDFromHex(blogIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
+		return
+	}
+
+	userID := c.MustGet("userID").(primitive.ObjectID) // Already a valid ObjectID
+	// Assume userID is obtained from JWT middleware
+
+	err = bc.blogUsecase.LikeBlogPost(blogID, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Blog post liked successfully"})
+}
+
+func (bc *BlogController) DislikeBlogPost(c *gin.Context) {
+	blogIDParam := c.Param("id")
+	blogID, err := primitive.ObjectIDFromHex(blogIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
+		return
+	}
+
+	userID := c.MustGet("userID").(primitive.ObjectID) // Already a valid ObjectID
+	// Assume userID is obtained from JWT middleware
+
+	err = bc.blogUsecase.DislikeBlogPost(blogID, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Blog post disliked successfully"})
+}
+
+// Handler to add a comment to a blog post
+func (bc *BlogController) AddComment(c *gin.Context) {
+	blogIDParam := c.Param("id")
+	blogID, err := primitive.ObjectIDFromHex(blogIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid blog ID"})
+		return
+	}
+
+	var comment domain.Comment
+	if err := c.ShouldBindJSON(&comment); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid comment data"})
+		return
+	}
+
+	comment.UserID = c.MustGet("userID").(primitive.ObjectID) // Assume userID is obtained from JWT middleware
+	comment.CreatedAt = time.Now()
+
+	err = bc.blogUsecase.AddCommentToBlogPost(blogID, comment)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to add comment"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
+}

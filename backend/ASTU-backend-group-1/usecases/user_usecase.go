@@ -238,6 +238,9 @@ func (useCase *userUsecase) PromteUser(username string) (domain.User, error) {
 	if user.IsAdmin {
 		return user, fmt.Errorf("user is already an admin")
 	}
+	if !user.IsActive {
+		return user, fmt.Errorf("the account is not activated")
+	}
 	if err != nil {
 		return user, fmt.Errorf("user not found")
 	}
@@ -254,12 +257,13 @@ func (useCase *userUsecase) PromteUser(username string) (domain.User, error) {
 }
 func (useCase *userUsecase) DemoteUser(username string) (domain.User, error) {
 	user, err := useCase.GetByUsername(username)
-	if !user.IsAdmin {
-		return user, errors.New("user is not an admin")
-	}
 	if err != nil {
 		return user, fmt.Errorf("user not found")
 	}
+	if !user.IsAdmin {
+		return user, errors.New("user is not an admin")
+	}
+
 	user, err = useCase.userRepository.Update(user.ID, domain.User{IsAdmin: false})
 	if err != nil {
 		return user, fmt.Errorf("user not found")
@@ -273,11 +277,15 @@ func (useCase *userUsecase) DemoteUser(username string) (domain.User, error) {
 }
 func (useCase *userUsecase) PromteUserByEmail(email string) (domain.User, error) {
 	user, err := useCase.GetByEmail(email)
+	if err != nil {
+		return user, fmt.Errorf("user not found")
+	}
 	if user.IsAdmin {
 		return user, fmt.Errorf("user is already an admin")
 	}
-	if err != nil {
-		return user, fmt.Errorf("user not found")
+
+	if !user.IsActive {
+		return user, fmt.Errorf("the account is not activated")
 	}
 	user, err = useCase.userRepository.Update(user.ID, domain.User{IsAdmin: true})
 	if err != nil {

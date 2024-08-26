@@ -34,7 +34,7 @@ class _SplashPageState extends State<SplashPage> {
             if (state is SignedInState) {
               context.read<AuthBloc>().add(GetUserEvent());
             } else if (state is UserIsReady) {
-              Navigator.pushReplacementNamed(context, route.homePage);
+              Navigator.pushReplacementNamed(context, route.bottomNav);
             } else if (state is SignInState) {
               Navigator.pushReplacementNamed(context, route.signInPage);
             }

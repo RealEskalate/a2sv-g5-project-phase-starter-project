@@ -100,7 +100,10 @@ class MyAppBar extends StatelessWidget {
     return SafeArea(
       child: Row(
         children: [
-        IconButton(onPressed: (){}, icon: const Icon(Icons.arrow_back)),
+        IconButton(onPressed: (){
+          Navigator.pop(context);
+
+        }, icon: const Icon(Icons.arrow_back)),
         showUser(),
         const Column(
           children: [

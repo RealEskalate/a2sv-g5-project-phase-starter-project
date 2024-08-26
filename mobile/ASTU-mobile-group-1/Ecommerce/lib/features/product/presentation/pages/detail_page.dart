@@ -32,7 +32,7 @@ class _DetailPageState extends State<DetailPage> {
               showCustomSnackBar(context, state.message);
               context.read<ProductBloc>().add(LoadAllProductEvent());
             } else if (state is LoadedAllProductsState) {
-              Navigator.pushReplacementNamed(context, route.homePage);
+              Navigator.pushReplacementNamed(context, route.bottomNav);
             }
           },
           child: BlocBuilder<ProductBloc, ProductState>(

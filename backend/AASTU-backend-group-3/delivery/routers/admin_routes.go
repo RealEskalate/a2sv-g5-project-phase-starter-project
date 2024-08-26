@@ -26,7 +26,7 @@ func SetUpAdmin(router *gin.Engine) {
 
 	// Set up admin routes
 	admin := router.Group("/admin")
-	// admin.Use(infrastracture.AuthMiddleware()) // Ensure AuthMiddleware is properly defined
+	admin.Use(infrastracture.AuthMiddleware()) // Ensure AuthMiddleware is properly defined
 	{
 		// Admin Profile Routes
 		admin.GET("/me", infrastracture.RoleMiddleware("admin"), adminController.GetMyProfile)

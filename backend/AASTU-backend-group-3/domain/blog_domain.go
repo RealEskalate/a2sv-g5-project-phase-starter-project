@@ -2,6 +2,7 @@ package domain
 
 import (
 	"encoding/json"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -14,15 +15,20 @@ type Blog struct {
 	Tags          []string            `json:"tags"`                    // Tags associated with the blog post
 	CreatedAt     primitive.Timestamp `bson:"createdAt" json:"createdAt"`
 	UpdatedAt     primitive.Timestamp `bson:"updatedAt" json:"-"`
+
 	LikesCount    int                 `json:"likes_count"`    // Number of likes the blog post has received
 	DislikesCount int                 `json:"dislikes_count"` // Number of dislikes the blog post has received
 	ViewCount     int                 `json:"view_count"`     // Number of views the blog post has received
 	CommentsCount int                 `json:"comments_count"` // Number of comments the blog post has received
 	Comment       []Comment           `json:"comments"`
 	Visibility    string              `bson:"visibility" json:"-"`
+
+	Image		 string    `json:"image"`
+
 }
 
 type BlogResponse struct {
+
 	ID            primitive.ObjectID  `json:"id" bson:"_id,omitempty"` // Unique identifier for the blog post
 	Title         string              `json:"title"`                   // Title of the blog post
 	Content       string              `json:"content"`                 // Content of the blog post
@@ -33,11 +39,14 @@ type BlogResponse struct {
 	DislikesCount int                 `json:"dislikes_count"` // Number of dislikes the blog post has received
 	ViewCount     int                 `json:"view_count"`     // Number of views the blog post has received
 	CommentsCount int                 `json:"comments_count"` // Number of comments the blog post has received
+	Image		 string    `json:"image"`
+
 }
 
 // when unmarshaling give blog response
 func (b *Blog) MarshalJSON() ([]byte, error) {
 	return json.Marshal(&BlogResponse{
+
 		ID:            b.ID,
 		Title:         b.Title,
 		Content:       b.Content,
@@ -48,6 +57,8 @@ func (b *Blog) MarshalJSON() ([]byte, error) {
 		DislikesCount: b.DislikesCount,
 		ViewCount:     b.ViewCount,
 		CommentsCount: b.CommentsCount,
+		Image:         b.Image,
+		AuterName:    b.AutorName,
 	})
 }
 

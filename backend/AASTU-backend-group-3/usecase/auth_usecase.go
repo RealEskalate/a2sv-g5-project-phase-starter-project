@@ -52,10 +52,23 @@ func (u *UserUsecase) Login(user *domain.User, deviceID string) (domain.LogInRes
 		return domain.LogInResponse{}, domain.ErrInternalServer
 	}
 
+	
+
 	return domain.LogInResponse{
 		AccessToken:  accessToken,
 		RefreshToken: newRefreshToken.Token,
+
+		User:         domain.ReturnUser{
+			ID:       existingUser.ID,
+			Username: existingUser.Username,
+			Email:    existingUser.Email,
+			Bio:      existingUser.Bio,
+			Role:     existingUser.Role,
+			CreatedAt: existingUser.CreatedAt,
+			IsActive: existingUser.IsActive,
+		},
 	}, &domain.CustomError{}
+
 }
 
 func (u *UserUsecase) Logout(userID, deviceID, token string) *domain.CustomError {

@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:ecommerce_app_ca_tdd/features/chat/socket_n/chatbox.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/models/product_models.dart';
-import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/HomeChat.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/pages/HomeChat.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/bottomnavbar.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/data/models/user_access.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/data/models/user_model.dart';

@@ -39,3 +39,20 @@ class Message extends Equatable{
   }
   
 }
+class MessageType{
+  final String type;
+  final String content;
+  MessageType({required this.type,required this.content});
+  @override
+  // TODO: implement props
+  Map<String, dynamic> toJson() {
+    return {
+      'type': 'text',
+      'content': content
+    };
+
+  }
+  List<Object?> get props => [type, content];
+                                  
+                                
+}

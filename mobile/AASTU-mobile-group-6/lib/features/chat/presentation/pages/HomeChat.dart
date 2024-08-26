@@ -93,16 +93,19 @@ class Chat extends StatelessWidget {
                   },
                 ),
               ),
-              BlocBuilder<ChatBloc, ChatState>(
-                builder: (context, state) {
-                  
-                  if (state is ChatLoaded && state.messages.length>0){
-                  return RefreshIndicator(
-                    onRefresh: ()async{
-                      context.read<ChatBloc>().add(ListAllMessagesEvent());},
-                      
-                    child: Container(
-                      child: SingleChildScrollView(
+              
+              Expanded(
+                child: BlocBuilder<ChatBloc, ChatState>(
+                  builder: (context, state) {
+                    
+                    if (state is ChatLoaded && state.messages.length>0){
+                    return RefreshIndicator(
+                      onRefresh: ()async{
+                        context.read<ChatBloc>().add(ListAllMessagesEvent());},
+                        
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
                         child: ListView.builder(
                           itemCount: state.messages.length,
                           itemBuilder: (context,index){
@@ -112,22 +115,22 @@ class Chat extends StatelessWidget {
                               item,
                               'assets/av1.png',
                                'How are you today?');
-                      
+                                                
                           }),
-                      ),
-                    )
-                  );}else if (state is ChatLoaded && state.messages.length==0){
-                    return Center(child: Text("No Chats Availble"),);
-              
-                  }
-                  else{
-                    return RefreshIndicator(child:  Container(), 
-                    onRefresh:()async{
-                      context.read<ChatBloc>().add(ListAllMessagesEvent());},
-                    );
-                   
-                  }
-                },
+                      )
+                    );}else if (state is ChatLoaded && state.messages.length==0){
+                      return Center(child: Text("No Chats Availble"),);
+                
+                    }
+                    else{
+                      return RefreshIndicator(child:  Container(), 
+                      onRefresh:()async{
+                        context.read<ChatBloc>().add(ListAllMessagesEvent());},
+                      );
+                     
+                    }
+                  },
+                ),
               ),
             ],
           ),
@@ -146,7 +149,7 @@ Widget _duplicate(
   String peekMessage,
 ) {
   return GestureDetector(
-    onTap: () => Navigator.pushNamed(context, '/chatPage',arguments: chat),
+    onTap: () => Navigator.pushNamed(context, '/chatPage',arguments: {'',chat.chatid},),
     child: Container(
       margin: EdgeInsets.only(bottom: 30),
       width: MediaQuery.of(context).size.width * 0.95,
@@ -154,7 +157,7 @@ Widget _duplicate(
       child: Row(
         children: [
           CircleAvatar(
-            backgroundColor: Colors.yellow,
+            backgroundColor: Colors.white,
             radius: 30,
             child: Icon(
               Icons.person,

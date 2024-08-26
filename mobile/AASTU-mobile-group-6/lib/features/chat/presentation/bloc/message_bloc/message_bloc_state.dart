@@ -1,4 +1,5 @@
 import 'package:ecommerce_app_ca_tdd/core/errors/failure/failures.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/data/models/message_model.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/message.dart';
 import 'package:equatable/equatable.dart';
 
@@ -22,7 +23,7 @@ class MessageLoadInProgress extends MessageState {
 }
 
 class MessageLoadSuccess extends MessageState {
-  final List<Message> messages;
+  final Stream<MessageModel> messages;
   const MessageLoadSuccess(this.messages);
 
   @override

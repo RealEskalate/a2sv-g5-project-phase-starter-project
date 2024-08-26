@@ -9,7 +9,7 @@ import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/message_blo
 import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/message_bloc/message_bloc_state.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/socket_n/chatbox.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/models/seller_model.dart';
-import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/HomeChat.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/pages/HomeChat.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/chat_appbar.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/chat_body.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/chat_bottom_appbar.dart';
@@ -20,22 +20,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 class ChatPage extends StatelessWidget {
+  final List<String> params = [];
   final SellerModel sellerID;
+  final String cht;
   final TextEditingController _messageController = TextEditingController();
   // final ChatEntity chat;
   // Dummy data for chat
   final String ownerId = '1';
-  final List<String> chats = [
-    'Hey, how are you?',
-    'I\'m good, thanks! How about you?',
-    'Doing well, just working on some projects.',
-    'That sounds interesting! What kind of projects?',
-    'I\'m working on a Flutter app, it\'s quite fun!',
-    'That\'s awesome! Flutter is really powerful.',
-    'Yeah, I love how easy it is to build UI with Flutter.',
-    'I totally agree! What feature are you working on?',
-    'I\'m implementing a chat feature, just like this one!',
-    'Nice! I can\'t wait to see the final product.',
+  final List<MessageType> chats = [
   ];
 
   final List<String> senderIds = [
@@ -51,16 +43,22 @@ class ChatPage extends StatelessWidget {
     '1',
   ];
 
-  ChatPage({super.key, required this.sellerID});
-  // void sendMessage(){
-  //   if (_messageController.text.isNotEmpty){
-  //     final message = Message(messageid: messageid, sender: , uniqueChat: uniqueChat, type: type, content: content)
-  //     SocketService().sendMessage(message);
-  //   }
-  // }
+  ChatPage({super.key, required this.sellerID,required this.cht});
   @override
   Widget build(BuildContext context) {
-    context.read<ChatBloc>().add(InitiateChatEvent(sellerID.id));
+    final route = ModalRoute.of(context);
+
+    if (route == null || route.settings.arguments == null) {
+      // debugPrint("bbb");
+      return Scaffold(
+        body: Center(
+          child: Text("No chat Availbale"),
+        ),
+      );
+    }
+
+    final chat = route.settings.arguments as ChatEntity;
+    
     // context.read<MessageBloc>().add(MessageConnection(chat));
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -87,6 +85,7 @@ class ChatPage extends StatelessWidget {
                       listener: (context, state){
                         if (state is ChatInitateLoaded){
                           print('Chat initiated');
+                          chats.add(MessageType(content: _messageController.text,type: 'text'));
                           context.read<MessageBloc>().add(
                             MessageSent(
                               state.chat.chatid,
@@ -133,3 +132,4 @@ Future<String> getSenderId() async {
   var prefs = await SharedPreferences.getInstance();
   return prefs.getString('id')!;
 }
+

@@ -4,10 +4,11 @@ import 'package:ecommerce_app_ca_tdd/core/errors/failure/failures.dart';
 import 'package:ecommerce_app_ca_tdd/core/network/network_info.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/data/data_sources/remote_data_source/remote_data_source.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/data/models/chat_models.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/data/models/message_model.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/chat_entity.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/message.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/domain/repository/repository.dart';
-import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/HomeChat.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/pages/HomeChat.dart';
 
 class ChatRepositoryImpl implements ChatRepository {
   final ChatRemoteDataSource remoteDataSource;
@@ -47,7 +48,7 @@ class ChatRepositoryImpl implements ChatRepository {
 
 
   @override
-  Future<Either<Failure,List<Message>>> getChatMessages(String chatId) async {
+  Future<Either<Failure,Stream<MessageModel>>> getChatMessages(String chatId) async {
     if(await networkInfo.isConnected){
        try{
         final product = await remoteDataSource.getChatMessages(chatId);

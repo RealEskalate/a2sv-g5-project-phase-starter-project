@@ -22,6 +22,7 @@ import {
   TableRow,
 } from "@/app/loans/components/table";
 import { SheetDemo } from "./components/Createloan";
+import { New } from "./components/new";
 
 // const loanid = "66c3054e80b7cf4a6c2f7709";
 // const token ="eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJsc2FqZGxzanNuIiwiaWF0IjoxNzI0MTU1NzkzLCJleHAiOjE3MjQyNDIxOTN9.wi7oRgF81zMp1v8tPzRPmAj4GOLaYy4bV_TMVvtWmzg2mjrTThiruT_Fswcyu1eq";
@@ -116,12 +117,12 @@ export default function Home() {
 
   if (loading || Loading)
     return (
-      <div className="bg-gray-100 dark:bg-gray-900 p-6 animate-pulse">
-        <div className="flex justify-between flex-wrap flex-wrap gap-4">
-          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
-          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
-          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
-          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
+      <div className="bg-gray-100 dark:bg-gray-900 p-6 animate-pulse gap-8">
+        <div className="flex flex-wrap justify-between ">
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-60 h-20"></div>
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-60 h-20"></div>
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-60 h-20"></div>
+          <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-60 h-20"></div>
         </div>
         <div className=" ">
           <div className="col-span-2 lg:col-span-1">
@@ -275,7 +276,8 @@ export default function Home() {
                         : "text-[#1814F3] font-semibold dark:text-[#9faaeb]"
                     }
                   >
-                    repay
+                    {/* repay */}
+                    <New invoice={invoice} />
                   </button>{" "}
                 </div>
               </TableCell>

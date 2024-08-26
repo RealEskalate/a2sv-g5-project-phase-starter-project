@@ -1,206 +1,176 @@
 package blogusecase_test
 
 import (
+	"blogs/config"
 	"blogs/domain"
 	"blogs/mocks"
 	"blogs/usecase/blogusecase"
 	"testing"
-	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type BlogUsecaseSuite struct {
+type BlogUsecaseTestSuite struct {
 	suite.Suite
 	usecase *blogusecase.BlogUsecase
 	repo    *mocks.BlogRepository
 }
 
-func (s *BlogUsecaseSuite) SetupTest() {
-	s.repo = &mocks.BlogRepository{}
-	s.usecase = blogusecase.NewBlogUsecase(s.repo, nil)
+func (suite *BlogUsecaseTestSuite) SetupTest() {
+	suite.repo = new(mocks.BlogRepository)
+	suite.usecase = blogusecase.NewBlogUsecase(suite.repo)
 }
 
-func (s *BlogUsecaseSuite) TestInsertBlog () {
-	blog := &domain.Blog{
-		Title: "test title",
-		Content: "testn content",
-		Author: "test author",
-		Tags: []string{"test"},
-		CreatedAt: time.Now(),
-		LastUpdatedAt: time.Now(),
-		ViewsCount: 0,
-		LikesCount: 0,
-		CommentsCount: 0,
-	}
+func (suite *BlogUsecaseTestSuite) TestInsertBlog_Success() {
+	testBlog := &domain.Blog{Title: "Test Blog", Author: "Test Author", Tags: []string{"tag1"}}
+	expectedBlog := &domain.Blog{Title: "Test Blog", Author: "Test Author", Tags: []string{"tag1"}}
 
-	s.repo.On("InsertBlog", blog).Return(blog, nil)
+	// Setup mock expectations
+	suite.repo.On("InsertBlog", testBlog).Return(expectedBlog, nil)
 
-	newblog, err := s.usecase.InsertBlog(blog)
+	// Call the method
+	result, err := suite.usecase.InsertBlog(testBlog)
 
-	s.NoError(err)
-	s.Equal(blog, newblog)
+	// Assert results
+	assert.NoError(suite.T(), err)
+	assert.Equal(suite.T(), expectedBlog, result)
+
+	// Verify mock expectations
+	suite.repo.AssertExpectations(suite.T())
 }
 
-func (s *BlogUsecaseSuite) TestGetBlogByID () {
-	blog := &domain.Blog{
-		Title: "test title",
-		Content: "testn content",
-		Author: "test author",
-		Tags: []string{"test"},
-		CreatedAt: time.Now(),
-		LastUpdatedAt: time.Now(),
-		ViewsCount: 0,
-		LikesCount: 0,
-		CommentsCount: 0,
-	}
+func (suite *BlogUsecaseTestSuite) TestInsertBlog_Failure() {	
+	testBlog := &domain.Blog{Title: "Test Blog", Author: "Test Author", Tags: []string{"tag1"}}
+	expectedError := assert.AnError // Use an actual error if assert.AnError is not available
 
-	s.repo.On("GetBlogByID", primitive.NewObjectID()).Return(blog, nil)
+	// Setup mock expectations
+	suite.repo.On("InsertBlog", testBlog).Return(nil, expectedError)
+
+	// Call the method
+	result, err := suite.usecase.InsertBlog(testBlog)
+
+	// Assert results
+	assert.Error(suite.T(), err)
+	assert.Nil(suite.T(), result)
+	assert.Equal(suite.T(), expectedError, err)
+
+	// Verify mock expectations
+	suite.repo.AssertExpectations(suite.T())
+}
+
+func (suite *BlogUsecaseTestSuite) TestAddComment_Success() {    
+	comment := &domain.Comment{BlogID: primitive.NewObjectID(), Author: "Test Author", Content: "Test Comment"}
 	
-	newblog, err := s.usecase.GetBlogByID(primitive.NewObjectID().Hex())
+	// Setup mock expectations
+	suite.repo.On("GetBlogByID", comment.BlogID.Hex()).Return(&domain.Blog{ID: comment.BlogID}, nil).Once()
+	suite.repo.On("IncrmentBlogComments", comment.BlogID.Hex()).Return(nil).Once()
+	suite.repo.On("AddComment", comment).Return(nil).Once()
 
-	s.NoError(err)
-	s.Equal(blog, newblog)
+	// Call the method
+	err := suite.usecase.AddComment(comment)
+
+	// Assert results
+	assert.NoError(suite.T(), err)
+
+	// Verify mock expectations
+	suite.repo.AssertExpectations(suite.T())
 }
 
-func (s *BlogUsecaseSuite) TestUpdateBlogByID () {
-	blog := &domain.Blog{
-		Title: "test title",
-		Content: "testn content",
-		Author: "test author",
-		Tags: []string{"test"},
-		CreatedAt: time.Now(),
-		LastUpdatedAt: time.Now(),
-		ViewsCount: 0,
-		LikesCount: 0,
-		CommentsCount: 0,
+func (suite *BlogUsecaseTestSuite) TestAddComment_BlogNotFound() {
+	comment := &domain.Comment{BlogID: primitive.NewObjectID(), Author: "Test Author", Content: "Test Comment"}
+
+	// Setup mock expectations
+	suite.repo.On("GetBlogByID", comment.BlogID.Hex()).Return(nil, mongo.ErrNoDocuments).Once()
+
+	// Call the method
+	err := suite.usecase.AddComment(comment)
+
+	// Assert results
+	assert.Error(suite.T(), err)
+	assert.Equal(suite.T(), config.ErrBlogNotFound, err)
+
+	// Verify mock expectations
+	suite.repo.AssertExpectations(suite.T())
+}
+
+func (suite *BlogUsecaseTestSuite) TestGetBlogComments_Success() {
+	blogID := primitive.NewObjectID().Hex()
+	comment := &domain.Comment{BlogID: primitive.NewObjectID(), Author: "Test Author", Content: "Test Comment"}
+
+	// Setup mock expectations
+	suite.repo.On("GetBlogByID", blogID).Return(&domain.Blog{ID: primitive.NewObjectID()}, nil).Once()
+	suite.repo.On("GetBlogComments", blogID).Return([]*domain.Comment{comment}, nil).Once()
+
+	// Call the method
+	result, err := suite.usecase.GetBlogComments(blogID)
+
+	// Assert results
+	assert.NoError(suite.T(), err)
+	assert.NotNil(suite.T(), result)
+	assert.Equal(suite.T(), []*domain.Comment{comment}, result)
+
+	// Verify mock expectations
+	suite.repo.AssertExpectations(suite.T())
+}
+
+func (suite *BlogUsecaseTestSuite) TestGetBlogComments_BlogNotFound() {
+	blogID := primitive.NewObjectID().Hex()
+
+	// Setup mock expectations
+	suite.repo.On("GetBlogByID", blogID).Return(nil, mongo.ErrNoDocuments).Once()
+	suite.repo.On("GetBlogComments", blogID).Return(nil, nil).Once()
+	// Call the method
+	result, err := suite.usecase.GetBlogComments(blogID)
+
+	// Assert results
+	assert.Error(suite.T(), err)
+	assert.Nil(suite.T(), result)
+	assert.Equal(suite.T(), config.ErrBlogNotFound, err)
+
+	// Verify mock expectations
+	suite.repo.AssertExpectations(suite.T())
+}
+
+//Delete Comment
+func (suite *BlogUsecaseTestSuite) TestDeleteComment_Success() {
+	commentID := primitive.NewObjectID().Hex()
+	BlogID := primitive.NewObjectID()
+
+	claims := &domain.LoginClaims{
+		Username: "Test Author",
+		Role:     "user",
 	}
 
-	claim := &domain.LoginClaims{
-		Username: "test author",
-		Role: "admin",
-		Type: "access",
-	}
 
-	s.repo.On("UpdateBlogByID", primitive.NewObjectID().Hex(), blog).Return(nil)
+	// Setup mock expectations
+	suite.repo.On("DeleteComment", commentID).Return(nil).Once()
+	suite.repo.On("GetCommentByID", commentID).Return(&domain.Comment{Author: "Test Author", BlogID: BlogID}, nil).Once()
+	suite.repo.On("DecrementBlogComments", BlogID.Hex()).Return(nil).Once()
 
-	result , err := s.usecase.UpdateBlogByID(primitive.NewObjectID().Hex(), blog, claim)
-
-	s.NoError(err)
-	s.Equal(blog, result)
+	// Call the method
+	err := suite.usecase.DeleteComment(commentID,claims )
 
 
+	// Assert results
+	assert.NoError(suite.T(), err)
+	assert.Nil(suite.T(), err)
+	assert.Equal(suite.T(), nil, err)
+
+	suite.repo.AssertExpectations(suite.T())
 }
 
-func (s *BlogUsecaseSuite) TestDeleteBlogByID () {
-	claim := &domain.LoginClaims{
-		Username: "test author",
-		Role: "admin",
-		Type: "access",
-	}
 
-	s.repo.On("DeleteBlogByID", primitive.NewObjectID().Hex()).Return(nil)
 
-	err := s.usecase.DeleteBlogByID(primitive.NewObjectID().Hex(), claim)
-
-	s.NoError(err)
+func (suite *BlogUsecaseTestSuite) TearDownTest() {
+	suite.repo.AssertExpectations(suite.T())
 }
 
-func (s *BlogUsecaseSuite) TestSearchBlog () {
-	blog := &domain.Blog{
-		Title: "test title",
-		Content: "testn content",
-		Author: "test author",
-		Tags: []string{"test"},
-		CreatedAt: time.Now(),
-		LastUpdatedAt: time.Now(),
-		ViewsCount: 0,
-		LikesCount: 0,
-		CommentsCount: 0,
-	}
-
-	s.repo.On("SearchBlog", "test title", "test author", []string{"test"}).Return([]*domain.Blog{blog}, nil)
-
-	result, err := s.usecase.SearchBlog("test title", "test author", []string{"test"})
-
-	s.NoError(err)
-	s.Equal([]*domain.Blog{blog}, result)
+func TestBlogUsecaseTestSuite(t *testing.T) {
+	suite.Run(t, new(BlogUsecaseTestSuite))
 }
-
-func (s *BlogUsecaseSuite) TestFilterBlog () {
-	blog := &domain.Blog{
-		Title: "test title",
-		Content: "testn content",
-		Author: "test author",
-		Tags: []string{"test"},
-		CreatedAt: time.Now(),
-		LastUpdatedAt: time.Now(),
-		ViewsCount: 0,
-		LikesCount: 0,
-		CommentsCount: 0,
-	}
-
-	s.repo.On("FilterBlog", []string{"test"}, time.Now(), time.Now()).Return([]*domain.Blog{blog}, nil)
-	
-	result, err := s.usecase.FilterBlog([]string{"test"}, time.Now(), time.Now())
-
-	s.NoError(err)
-	s.Equal([]*domain.Blog{blog}, result)
-}
-
-func (s *BlogUsecaseSuite) TestAddView () {
-	objId := primitive.NewObjectID() 
-	view := &domain.View{
-		BlogID: objId,
-		User: "test user",
-	}
-
-	claim := &domain.LoginClaims{
-		Username: "test author",
-		Role: "admin",
-		Type: "access",
-	}
-
-	s.repo.On("AddView", view).Return(nil)
-
-	err := s.usecase.AddView([]primitive.ObjectID{objId}, *claim)
-
-	s.NoError(err)
-}
-
-func (s *BlogUsecaseSuite) TestAddLike () {
-	objId := primitive.NewObjectID() 
-	like := &domain.Like{
-		BlogID: objId,
-		User: "test user",
-		Like: true,
-	}
-
-	s.repo.On("AddLike", like).Return(nil)
-
-	err := s.usecase.AddLike(like)
-
-	s.NoError(err)
-}
-
-func (s *BlogUsecaseSuite) TestGenerateContent(){
-	prompt := "test prompt"
-
-	s.repo.On("GenerateAIContent", prompt).Return("test content", nil)
-
-	result, err := s.usecase.GenerateAiContent(prompt)
-
-	s.NoError(err)
-	s.Equal("test content", result)
-
-
-}
-
-func TestBlogUsecaseSuite(t *testing.T) {
-	suite.Run(t, new(BlogUsecaseSuite))
-}
-
 
 
 

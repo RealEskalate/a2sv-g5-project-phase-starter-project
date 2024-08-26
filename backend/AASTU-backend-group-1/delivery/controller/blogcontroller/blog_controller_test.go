@@ -793,6 +793,156 @@ func (suite *BlogControllerTestSuite) TestGenerateContent_Fail() {
 	suite.Equal(string(expected), suite.w.Body.String())
 }
 
+func (suite *BlogControllerTestSuite) TestGetTags_Success() {
+	suite.ctx.Request = httptest.NewRequest("GET", "/blogs/tags", nil)
+
+	tags := []*domain.Tag{
+		{ID: "tag1"},
+		{ID: "tag2"},
+		{ID: "tag3"},
+	}
+
+	suite.blogusecase.On("GetTags").Return(tags, nil).Once()
+
+	expectedBody := domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Tags retrieved",
+		Data:    tags,
+	}
+
+	expected, err := json.Marshal(expectedBody)
+	suite.NoError(err)
+
+	suite.blogcontroller.GetTags(suite.ctx)
+	suite.Equal(http.StatusOK, suite.w.Code)
+	suite.Equal(string(expected), suite.w.Body.String())
+}
+
+func (suite *BlogControllerTestSuite) TestGetTags_Fail() {
+	suite.ctx.Request = httptest.NewRequest("GET", "/blogs/tags", nil)
+
+	suite.blogusecase.On("GetTags").Return(nil, errors.New("some error")).Once()
+
+	expectedBody := domain.APIResponse{
+		Status:  http.StatusInternalServerError,
+		Message: "Error getting tags",
+		Error:   "some error",
+	}
+
+	expected, err := json.Marshal(expectedBody)
+	suite.NoError(err)
+
+	suite.blogcontroller.GetTags(suite.ctx)
+	suite.Equal(http.StatusInternalServerError, suite.w.Code)
+	suite.Equal(string(expected), suite.w.Body.String())
+}
+
+func (suite *BlogControllerTestSuite) TestInsertTag_Success() {
+	tag := domain.Tag{ID: "tag1"}
+
+	body, err := json.Marshal(tag)
+	suite.NoError(err)
+
+	suite.ctx.Request = httptest.NewRequest("POST", "/blogs/tags", strings.NewReader(string(body)))
+
+	claims := &domain.LoginClaims{Username: "user_1"}
+	suite.ctx.Set("claims", claims)
+
+	suite.blogusecase.On("InsertTag", &tag, claims).Return(nil).Once()
+
+	expectedBody := domain.APIResponse{
+		Status:  http.StatusCreated,
+		Message: "Tag added",
+	}
+
+	expected, err := json.Marshal(expectedBody)
+	suite.NoError(err)
+
+	suite.blogcontroller.InsertTag(suite.ctx)
+	suite.Equal(http.StatusCreated, suite.w.Code)
+	suite.Equal(string(expected), suite.w.Body.String())
+}
+
+func (suite *BlogControllerTestSuite) TestInsertTag_Fail() {
+	tag := domain.Tag{ID: "tag1"}
+
+	body, err := json.Marshal(tag)
+	suite.NoError(err)
+
+	suite.ctx.Request = httptest.NewRequest("POST", "/blogs/tags", strings.NewReader(string(body)))
+
+	claims := &domain.LoginClaims{Username: "user_1"}
+	suite.ctx.Set("claims", claims)
+
+	suite.blogusecase.On("InsertTag", &tag, claims).Return(errors.New("some error")).Once()
+
+	expectedBody := domain.APIResponse{
+		Status:  http.StatusInternalServerError,
+		Message: "Error adding tag",
+		Error:   "some error",
+	}
+
+	expected, err := json.Marshal(expectedBody)
+	suite.NoError(err)
+
+	suite.blogcontroller.InsertTag(suite.ctx)
+	suite.Equal(http.StatusInternalServerError, suite.w.Code)
+	suite.Equal(string(expected), suite.w.Body.String())
+}
+
+func (suite *BlogControllerTestSuite) TestRemoveTags_Success() {
+	tag := domain.Tag{ID: "tag1"}
+
+	body, err := json.Marshal(tag)
+	suite.NoError(err)
+
+	suite.ctx.Request = httptest.NewRequest("DELETE", "/blogs/tags", strings.NewReader(string(body)))
+
+	claims := &domain.LoginClaims{Username: "user_1"}
+	suite.ctx.Set("claims", claims)
+
+	suite.blogusecase.On("DeleteTag", &tag, claims).Return(nil).Once()
+
+	expectedBody := domain.APIResponse{
+		Status:  http.StatusOK,
+		Message: "Tag removed",
+	}
+
+	expected, err := json.Marshal(expectedBody)
+	suite.NoError(err)
+
+	suite.blogcontroller.RemoveTags(suite.ctx)
+	suite.Equal(http.StatusOK, suite.w.Code)
+	suite.Equal(string(expected), suite.w.Body.String())
+}
+
+func (suite *BlogControllerTestSuite) TestRemoveTags_Fail() {
+	tag := domain.Tag{ID: "tag1"}
+
+	body, err := json.Marshal(tag)
+	suite.NoError(err)
+
+	suite.ctx.Request = httptest.NewRequest("DELETE", "/blogs/tags", strings.NewReader(string(body)))
+
+	claims := &domain.LoginClaims{Username: "user_1"}
+	suite.ctx.Set("claims", claims)
+
+	suite.blogusecase.On("DeleteTag", &tag, claims).Return(errors.New("some error")).Once()
+
+	expectedBody := domain.APIResponse{
+		Status:  http.StatusInternalServerError,
+		Message: "Error removing tag",
+		Error:   "some error",
+	}
+
+	expected, err := json.Marshal(expectedBody)
+	suite.NoError(err)
+
+	suite.blogcontroller.RemoveTags(suite.ctx)
+	suite.Equal(http.StatusInternalServerError, suite.w.Code)
+	suite.Equal(string(expected), suite.w.Body.String())
+}
+
 func TestBlogControllerTestSuite(t *testing.T) {
 	suite.Run(t, new(BlogControllerTestSuite))
 }

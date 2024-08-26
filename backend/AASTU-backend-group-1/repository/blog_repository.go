@@ -36,15 +36,16 @@ type BlogRepository struct {
 	cache             domain.Cache
 }
 
-func NewBlogRepository(database *mongo.Database, cache domain.Cache) domain.BlogRepository {
-	return &BlogRepository{
-		blogCollection:    database.Collection("blog"),
-		viewCollection:    database.Collection("view"),
-		likeCollection:    database.Collection("like"),
-		commentCollection: database.Collection("comment"),
-		cache:             cache,
-	}
+func NewBlogRepository(database *mongo.Database, cache domain.Cache) *BlogRepository {
+    return &BlogRepository{
+        blogCollection:    database.Collection("blogs"),
+        viewCollection:    database.Collection("views"),
+        likeCollection:    database.Collection("likes"),
+        commentCollection: database.Collection("comments"),
+        cache:             cache,
+    }
 }
+
 
 // InsertBlog implements domain.BlogRepository.
 func (b *BlogRepository) InsertBlog(blog *domain.Blog) (*domain.Blog, error) {
@@ -96,9 +97,14 @@ func (b *BlogRepository) UpdateBlogByID(id string, blog *domain.Blog) error {
 // DeleteBlogByID implements domain.BlogRepository.
 func (b *BlogRepository) DeleteBlogByID(id string) error {
 	blogid, err := primitive.ObjectIDFromHex(id)
+	// Delete blog from cache
+
+	err = b.cache.DeleteCache(fmt.Sprintf("blog:%s", id))
 	if err != nil {
 		return err
 	}
+
+	
 
 	
 	_,err = b.commentCollection.DeleteMany(context.Background(), bson.M{"blogid": blogid})

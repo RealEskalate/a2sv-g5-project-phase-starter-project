@@ -69,7 +69,7 @@ export default function Chart2(props:any) {
             dataKey="value"
             type="linear"
             fill="white"
-            fillOpacity={0.1}
+            fillOpacity={0}
             stroke="#008010"
             strokeWidth={2}
             dot={{

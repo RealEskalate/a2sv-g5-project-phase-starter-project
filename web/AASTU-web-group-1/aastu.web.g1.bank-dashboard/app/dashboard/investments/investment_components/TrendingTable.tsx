@@ -42,8 +42,8 @@ export default function TrendingTable() {
         <div className={`h-10 w-full ${isDarkMode ? "bg-gray-950" : "bg-gray-300"} animate-pulse rounded-md mb-2`}></div>
       </div>
     ):
-    (<div className={`text-sm md:text-lg ${isDarkMode ? "text-gray-200" : "text-black"}`}>
-      <Table className={`${isDarkMode ? "bg-gray-800" : "bg-white"} rounded-2xl`}>
+    (<div className={`text-sm md:text-lg w-auto ${isDarkMode ? "text-gray-200" : "text-black"}`}>
+      <Table className={`${isDarkMode ? "bg-gray-800" : "bg-white"} rounded-2xl w-full`}>
         <TableHeader className={`${isDarkMode ? "bg-[#1a1d2288] rounded-xl":"bg-transparent"} text-white`}>
           <TableRow className={`"bg-transparent ${isDarkMode? "border-b-gray-700": ""}`}>
             <TableHead className={`text-sm md:text-lg text-center ${isDarkMode ? "text-white rounded-tl-xl " : "text-black"}`}>

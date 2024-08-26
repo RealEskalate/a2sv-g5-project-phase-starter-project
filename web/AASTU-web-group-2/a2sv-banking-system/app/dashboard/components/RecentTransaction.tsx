@@ -104,7 +104,7 @@ const RecentTransaction = () => {
     <div >
 
                     <div  // Use a unique identifier if available, otherwise fallback to index
-                    className=' text-nowrap overflow-x-auto border mx-4 my-4 flex flex-col md:w-[65%] md:ml-8 md:h-full md:px-4 rounded-3xl md:border bg-[#ffffff] dark:bg-[#020817] dark:border dark:border-[#333B69] '>
+                    className=' [&::-webkit-scrollbar]:hidden text-nowrap overflow-x-auto border mx-4  flex flex-col md:w-[65%] md:ml-8 md:h-full md:px-4 rounded-3xl md:border bg-[#ffffff] dark:bg-[#020817] dark:border dark:border-[#333B69] '>
                           <div className='px-4 py-4 flex-grow-0'>
                             <h1 className="text-[#343C6A] font-bold text-xl md:hidden">Recent Transaction</h1>
                             <div className='flex flex-col gap-2 py-4 text-sm  '>
@@ -113,7 +113,7 @@ const RecentTransaction = () => {
                               transaction.length > 0 ? (
                                 transaction.slice(0,3).map((txn, index) => (
                                   <div key = {index}>
-                                   <div  className='flex gap-5 items-center justify-between mx-2 my-2'>
+                                   <div  className='flex gap-5 items-center justify-between mx-2 my-1'>
                                     <div className = "flex items-center gap-5">
                                       <div className="flex items-center rounded-full min-h-12 min-w-12 justify-center  bg-[#FFF5D9]">
                                       {txn.type === "shopping" && 

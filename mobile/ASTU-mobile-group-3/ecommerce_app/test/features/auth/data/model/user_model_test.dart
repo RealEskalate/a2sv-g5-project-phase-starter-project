@@ -56,7 +56,7 @@ void main() {
       UserModel(
         name: decoded['data']['name'],
         email: decoded['data']['email'],
-        id: decoded['data']['id'],
+        id: decoded['data']['_id'],
         password: '',
         v: 0,
       ),

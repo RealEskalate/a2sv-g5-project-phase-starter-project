@@ -55,7 +55,7 @@ class UserInfo extends StatelessWidget {
                   ),
                   RichText(
                     text: TextSpan(
-                      text: 'Hellow, ',
+                      text: 'Hello, ',
                       style: const TextStyle(
                         color: Colors.black,
                       ),

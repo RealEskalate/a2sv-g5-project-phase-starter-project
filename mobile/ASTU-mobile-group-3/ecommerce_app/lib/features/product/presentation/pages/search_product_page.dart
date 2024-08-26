@@ -27,7 +27,6 @@ class _SearchProduct extends State<SearchProduct> with AppBars {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: normalAppBar('Search Product', () {
-        BlocProvider.of<ProductBloc>(context).add(LoadAllProductEvents());
         Navigator.pop(context);
       }),
       body: Column(

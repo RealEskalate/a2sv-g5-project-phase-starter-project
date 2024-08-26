@@ -58,14 +58,15 @@ class _ChatListState extends State<ChatList> {
                 Row(
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(left: 10.0, top: 15, bottom: 20),
+                      padding: const EdgeInsets.only(
+                          left: 10.0, top: 15, bottom: 20),
                       child: IconButton(
                         onPressed: () {
                           setState(() {
                             showSearch = !showSearch;
                           });
                         },
-                        icon: Icon(Icons.search),
+                        icon: const Icon(Icons.search),
                         color: Colors.white,
                       ),
                     ),
@@ -111,17 +112,39 @@ class _ChatListState extends State<ChatList> {
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: BoxDecoration(
-                                      color: colorList[index % 5],
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(50),
-                                      child: Image.asset(imagesList[index % 3]),
-                                    ),
+                                  Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Container(
+                                        height: 50,
+                                        width: 50,
+                                        decoration: BoxDecoration(
+                                          color: colorList[index % 5],
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          child: Image.asset(
+                                              imagesList[index % 3]),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        bottom: -5,
+                                        right: -5,
+                                        child: Visibility(
+                                          visible: index == 0,
+                                          child: const DecoratedBox(
+                                              decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: Colors.white),
+                                              child: Icon(
+                                                Icons.add,
+                                                size: 18,
+                                              )),
+                                        ),
+                                      )
+                                    ],
                                   ),
                                 ],
                               ),

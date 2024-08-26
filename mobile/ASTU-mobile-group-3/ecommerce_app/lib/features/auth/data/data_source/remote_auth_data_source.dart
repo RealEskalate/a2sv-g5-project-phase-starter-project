@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../../core/constants/constants.dart';
@@ -11,10 +13,12 @@ import '../model/user_model.dart';
 abstract class RemoteAuthDataSource {
   Future<TokenModel> logIn(UserEntity user);
   Future<UserModel> signUp(UserEntity user);
+  Future<UserModel> getMe(TokenModel token);
 }
 
 class RemoteAuthDataSourceImpl implements RemoteAuthDataSource {
   final http.Client client;
+  Map<String, String> headerWithToken = Map.from(AppData.jsonHeader);
 
   RemoteAuthDataSourceImpl({required this.client});
 
@@ -60,6 +64,30 @@ class RemoteAuthDataSourceImpl implements RemoteAuthDataSource {
         return UserModel.fromJson(jsonFormat['data']);
       } else if (result.statusCode == 409) {
         throw UserConflictException();
+      } else {
+        throw ServerException();
+      }
+    } on UserConflictException {
+      rethrow;
+    } on ServerException {
+      rethrow;
+    } on Exception {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<UserModel> getMe(TokenModel token) async {
+    headerWithToken['Authorization'] = 'Bearer ${token.token}';
+    try {
+      final result = await client
+          .get(Uri.parse('${AppData.baseUrlV3}/users/me'),
+              headers: headerWithToken)
+          .timeout(const Duration(seconds: 15));
+
+      if (result.statusCode == 200) {
+        final Map<String, dynamic> jsonFormat = json.decode(result.body);
+        return UserModel.fromJson(jsonFormat['data']);
       } else {
         throw ServerException();
       }

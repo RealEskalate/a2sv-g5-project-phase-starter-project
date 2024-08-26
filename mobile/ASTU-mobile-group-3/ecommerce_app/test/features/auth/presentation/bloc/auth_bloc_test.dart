@@ -13,16 +13,19 @@ void main() {
   late MockLogInUsecase mockLogInUsecase;
   late MockSignUpUsecase mockSignUpUsecase;
   late MockLogOutUsecase mockLogOutUsecase;
+  late MockGetMeUsecase mockGetMeUsecase;
   late AuthBloc authBloc;
 
   setUp(() {
     mockLogInUsecase = MockLogInUsecase();
     mockLogOutUsecase = MockLogOutUsecase();
     mockSignUpUsecase = MockSignUpUsecase();
+    mockGetMeUsecase = MockGetMeUsecase();
     authBloc = AuthBloc(
         signUpUsecase: mockSignUpUsecase,
         logInUsecase: mockLogInUsecase,
-        logOutUsecase: mockLogOutUsecase);
+        logOutUsecase: mockLogOutUsecase,
+        getMeUsecase: mockGetMeUsecase);
   });
 
   test('Bloc should in its iinitial point ', () {
@@ -127,6 +130,30 @@ void main() {
         expect: () => [
               LogoutFailedState(
                   message: AppData.getMessage(AppData.logoutError))
+            ]);
+  });
+
+  group('getme state test', () {
+    blocTest('Should emit getme success when logout success',
+        build: () {
+          when(mockGetMeUsecase.execute())
+              .thenAnswer((_) async => const Right(AuthData.userEntity));
+          return authBloc;
+        },
+        act: (bloc) => bloc.add(GetMeEvent()),
+        expect: () =>
+            [AuthLoadingstate(), GetMeSuccessState(user: AuthData.userEntity)]);
+
+    blocTest('Should emit getme success failure when failed',
+        build: () {
+          when(mockGetMeUsecase.execute()).thenAnswer((_) async =>
+              Left(CacheFailure(AppData.getMessage(AppData.cacheError))));
+          return authBloc;
+        },
+        act: (bloc) => bloc.add(GetMeEvent()),
+        expect: () => [
+              AuthLoadingstate(),
+              LogoutFailedState(message: AppData.getMessage(AppData.cacheError))
             ]);
   });
 }

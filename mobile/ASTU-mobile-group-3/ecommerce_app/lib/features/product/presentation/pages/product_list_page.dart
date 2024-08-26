@@ -14,6 +14,7 @@ class ProductListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BlocProvider.of<ProductBloc>(context).add(LoadAllProductEvents());
+    BlocProvider.of<AuthBloc>(context).add(GetMeEvent());
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is LogoutSuccess) {
@@ -36,29 +37,39 @@ class ProductListPage extends StatelessWidget {
           child: SafeArea(
             child: Column(
               children: [
-                UserInfo(
-                  iconPres: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text('Logout'),
-                            content:
-                                const Text('Are you sure you want to logout.'),
-                            actions: [
-                              FillCustomButton(
-                                  press: () {
-                                    BlocProvider.of<AuthBloc>(context)
-                                        .add(LogOutEvent());
-                                    Navigator.pop(context);
-                                  },
-                                  label: 'Logout')
-                            ],
-                          );
-                        });
+                BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    String name = 'Sir';
+                    String email = '...@gmail.com';
+                    if (state is GetMeSuccessState) {
+                      name = state.user.name;
+                      email = state.user.email;
+                    }
+                    return UserInfo(
+                      iconPres: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Logout'),
+                                content: const Text(
+                                    'Are you sure you want to logout.'),
+                                actions: [
+                                  FillCustomButton(
+                                      press: () {
+                                        BlocProvider.of<AuthBloc>(context)
+                                            .add(LogOutEvent());
+                                        Navigator.pop(context);
+                                      },
+                                      label: 'Logout')
+                                ],
+                              );
+                            });
+                      },
+                      userName: name,
+                      day: email,
+                    );
                   },
-                  userName: 'Yohannes',
-                  day: 'July 14, 2023',
                 ),
                 const SearchNavigator(),
                 const ProductListDisplayer(),

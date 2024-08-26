@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { getAllTransactions } from "@/services/transactionfetch";
 import { currentuser } from "@/services/userupdate";
@@ -75,3 +76,63 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+
+// import React, { useEffect, useState } from 'react';
+// import { getAllTransactions } from '@/services/transactionfetch';
+// import { currentuser } from '@/services/userupdate';
+// import TransactionCard from './TransactionCard';
+// import { TbFileSad } from 'react-icons/tb';
+// import TransactionCardShimmer from './TransactionCardShimmer';
+// import { useCurrency } from '../context/CurrencyContext';
+
+// const App: React.FC = () => {
+//   const [status, setStatus] = useState<'loading' | 'error' | 'success'>('loading');
+//   const [transactions, setTransactions] = useState([]);
+//   const [currentUser, setCurrentUser] = useState("");
+//   const { currency } = useCurrency();
+
+//   useEffect(() => {
+//     const fetchTransactions = async () => {
+//       try {
+//         const transactionData = await getAllTransactions(0, 5); 
+//         const current = await currentuser();
+//         setCurrentUser(current.data.name);
+
+//         if (Array.isArray(transactionData.data.content)) {
+//           setTransactions(transactionData.data.content);
+//           setStatus('success');
+//         } else {
+//           setStatus('error');
+//         }
+//       } catch (error) {
+//         setStatus('error');
+//       }
+//     };
+
+//     fetchTransactions();
+//   }, []);
+
+//   const formatAmount = (amount: number) => {
+//     switch (currency) {
+//       case 'EUR':
+//         return `€${(amount * 0.85).toFixed(2)}`;
+//       case 'GBP':
+//         return `£${(amount * 0.75).toFixed(2)}`;
+//       default:
+//         return `$${amount.toFixed(2)}`;
+//     }
+//   };
+
+//   return (
+//     <div>
+//       {/* Your render logic for loading, error, and success */}
+//       {status === 'success' && transactions.map((transaction, index) => (
+//         <TransactionCard key={index} transaction={transaction} formatAmount={formatAmount} />
+//       ))}
+//     </div>
+//   );
+// };
+
+// export default App;
+

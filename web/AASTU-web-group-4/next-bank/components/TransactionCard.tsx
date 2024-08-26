@@ -5,7 +5,7 @@ interface Transaction {
   receiverUserName: string;
   type: string;
   amount: string;
-  date: string
+  date: string;
 }
 
 interface Currentname {

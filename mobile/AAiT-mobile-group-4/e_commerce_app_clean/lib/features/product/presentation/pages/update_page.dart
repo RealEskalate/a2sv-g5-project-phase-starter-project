@@ -208,15 +208,20 @@ class _UpdatePageState extends State<UpdatePage> {
                   bgcolor: const Color.fromRGBO(63, 81, 243, 1),
                 ),
                 const SizedBox(height: 16),
-                const CustomButton(
-                  pressed: null,
-                  name: 'DELETE',
-                  width: double.infinity,
-                  height: 50,
-                  fgcolor: Color.fromARGB(230, 255, 19, 19),
-                  textBgColor: Color.fromARGB(230, 255, 19, 19),
-                  bgcolor: Color.fromRGBO(255, 255, 255, 1),
-                ),
+                CustomButton(
+                      pressed: (){
+                        _nameController.text = '';
+                        _categoryController.text = '';
+                        _priceController.text = '';
+                        _descriptionController.text = '';
+                      },
+                      name: 'CLEAR',
+                      width: double.infinity,
+                      height: 50,
+                      textBgColor: Theme.of(context).secondaryHeaderColor,
+                      fgcolor: Theme.of(context).secondaryHeaderColor,
+                      bgcolor: Colors.white ,
+                    ),
               ],
             ),
           ),

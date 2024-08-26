@@ -208,8 +208,16 @@ class _AddProudctPageState extends State<AddProudctPage> {
                     ),
                     const SizedBox(height: 16),
                     CustomButton(
-                      pressed: null,
-                      name: 'DELETE',
+                      pressed: (){
+                        _nameController.text = '';
+                        _categoryController.text = '';
+                        _priceController.text = '';
+                        _descriptionController.text = '';
+                        setState(() {
+                          _selectedImage = null;
+                        });
+                      },
+                      name: 'CLEAR',
                       width: double.infinity,
                       height: 50,
                       textBgColor: Theme.of(context).secondaryHeaderColor,

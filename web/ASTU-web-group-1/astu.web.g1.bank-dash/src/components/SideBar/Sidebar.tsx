@@ -119,7 +119,7 @@ export default function Sidebar() {
           <Popover>
             <PopoverTrigger>
               {getData?.profilePicture ? (
-                <div className='flex items-center gap-4 py-4 border-t-2 mx-3'>
+                <div className='flex items-center gap-4 py-4 border-t-2 mx-3' id='profile-btn'>
                   <Image
                     src={getData.profilePicture || '/assets/default-user.png'}
                     alt=''

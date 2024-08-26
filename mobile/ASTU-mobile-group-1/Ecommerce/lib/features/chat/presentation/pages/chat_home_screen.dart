@@ -43,12 +43,7 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
             backgroundColor: ChatColors.lightBlueColor,
             appBar: AppBar(
               leading: IconButton(
-                  onPressed: () {
-                    context.read<ChatBloc>().add(SendMessage(
-                        chatId: '66cc55f0ef08f8f02f851d12',
-                        type: 'text',
-                        message: 'This is new'));
-                  },
+                  onPressed: () {},
                   icon: const Icon(
                     Icons.search,
                     color: Colors.white,

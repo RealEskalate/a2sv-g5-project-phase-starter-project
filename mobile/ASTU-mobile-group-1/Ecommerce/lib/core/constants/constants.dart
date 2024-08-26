@@ -1,3 +1,5 @@
+import '../../features/product/domain/entities/product_entity.dart';
+
 class Urls {
   static String baseUrl =
       'https://g5-flutter-learning-path-be.onrender.com/api/v3';
@@ -13,4 +15,6 @@ class Urls {
       'https://g5-flutter-learning-path-be.onrender.com/api/v3/chats';
   static String getChatById(String chatId) => '$baseChat/$chatId';
   static String getChatMessages(String chatId) => '$baseChat/$chatId/messages';
+  static List<ProductEntity> allProducts = [];
+
 }

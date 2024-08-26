@@ -36,16 +36,14 @@ const options = {
 const CardExpenceStatistics: React.FC = () => {
   return (
     <div className='w-full'>
-      <h1 className='text-[#333B69] pb-3 font-semibold'>
-        Card and Expense Statistics
-      </h1>
+      <h1 className='text-[#333B69] pb-3 font-semibold'>Card and Expense Statistics</h1>
       <div className='bg-white p-4 rounded-3xl shadow-md'>
         <div className='flex justify-center mb-4'>
           <div className='w-full max-w-md h-[250px]'>
             <Doughnut data={data} options={options} />
           </div>
         </div>
-        <div className='flex flex-col md:flex-row justify-around mt-4'>
+        <div className='flex flex-row justify-around mt-4'>
           <div className='space-y-4 text-center md:text-left'>
             <h1 className='flex items-center justify-center md:justify-start'>
               <p className='w-4 h-4 rounded-full bg-[#4C78FF] me-2'></p> DBL Bank

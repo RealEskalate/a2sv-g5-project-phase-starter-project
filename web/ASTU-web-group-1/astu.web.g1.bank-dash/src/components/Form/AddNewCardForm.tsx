@@ -52,7 +52,7 @@ const AddNewCardForm = () => {
     reset();
     console.log(result, 'card res');
     if (result.id) {
-      router.refresh();
+      // router.refresh();
       toastSuccess('Your card has been added successfully.');
     }
   };

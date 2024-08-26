@@ -19,7 +19,7 @@ type BlogUsecaseSuite struct {
 
 func (s *BlogUsecaseSuite) SetupTest() {
 	s.repo = &mocks.BlogRepository{}
-	s.usecase = blogusecase.NewBlogUsecase(s.repo)
+	s.usecase = blogusecase.NewBlogUsecase(s.repo, nil)
 }
 
 func (s *BlogUsecaseSuite) TestInsertBlog () {

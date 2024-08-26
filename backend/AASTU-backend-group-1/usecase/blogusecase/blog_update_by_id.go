@@ -11,6 +11,11 @@ import (
 
 // UpdateBlogByID implements domain.BlogUsecase.
 func (b *BlogUsecase) UpdateBlogByID(id string, newblog *domain.Blog, claim *domain.LoginClaims) (*domain.Blog, error) {
+	err:= b.TagRepo.CheckTag(newblog.Tags)
+	if err != nil {
+		return nil, err
+	}
+	
 	blog, err := b.BlogRepo.GetBlogByID(id)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {

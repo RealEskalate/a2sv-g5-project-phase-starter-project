@@ -24,43 +24,43 @@ func (useCase *userUsecase) Get() ([]domain.User, error) {
 	return useCase.userRepository.Get(domain.UserFilterOption{})
 }
 
-func (useCase *userUsecase) LoginUser(uname string, password string,email string) (string, error) {
+func (useCase *userUsecase) LoginUser(uname string, password string,email string) (string,string, error) {
 	if uname != "" {
 	user, err := useCase.GetByUsername(uname)
 	if err != nil {
-		return "", err
+		return "","", err
 	}
 	if user.IsActive == false {
-		return "", errors.New("Account not activated")
+		return "","", errors.New("Account not activated")
 	}
 	accesstoken, refreshToken, err := infrastructure.GenerateToken(&user, password)
 	if err != nil {
-		return "", err
+		return "","", err
 	}
 	user.RefreshToken = refreshToken
 	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken,IsAdmin: user.IsAdmin})
 
-	return accesstoken, nil
+	return accesstoken,refreshToken, nil
 } else if email != "" {
 	user, err := useCase.GetByEmail(email)
 	
 	if err != nil {
-		return "", err
+		return "","", err
 	}
 	if user.IsActive == false {
-		return "", errors.New("Account not activated")
+		return "","", errors.New("Account not activated")
 	}
 	accesstoken, refreshToken, err := infrastructure.GenerateToken(&user, password)
 	if err != nil {
-		return "", err
+		return "","", err
 	}
 	log.Println(user)
 	user.RefreshToken = refreshToken
 	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken,IsAdmin:user.IsAdmin})
 
-	return accesstoken, nil
+	return accesstoken,refreshToken, nil
 }else{
-	return "", errors.New("Invalid login credentials")
+	return "","", errors.New("Invalid login credentials")
 }
 }
 

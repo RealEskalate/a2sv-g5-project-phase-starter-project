@@ -61,7 +61,7 @@ type UserUsecase interface {
 	AccountVerification(uemail string, confirmationToken string) error
 	ResetPassword(email string, token string, password string) (string, error)
 	ForgetPassword(email string) (string, error)
-	LoginUser(uname string, password string,email string) (string, error)
+	LoginUser(uname string, password string,email string) (string,string, error)
 	Logout(email string) error
 	DemoteUser(userId string) (User, error)
 	PromteUser(userId string) (User, error)

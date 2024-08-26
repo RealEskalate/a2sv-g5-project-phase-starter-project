@@ -228,7 +228,6 @@ func (r *MongoBlogRepository) UpdateBlog(strBlogId string, updateData domain.Blo
 	}
 	filter := bson.M{"blog_id": blogId}
 	update := bson.M{"$set": UpdateBlogQuery(updateData)}
-
 	result, err := r.BlogCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil || result.MatchedCount == 0 {
 		return domain.Blog{}, errors.New("Failed to update blog with ID" + strBlogId + ":" + err.Error())
@@ -258,7 +257,129 @@ func (r *MongoBlogRepository) DeleteBlog(blogId, authorId string) error {
 	return nil
 }
 
+// func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int) (string, error) {
+// 	id, err := IsValidObjectID(blogId)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	uid, err := IsValidObjectID(userId)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	var responseMessage string
+
+// 	filter := bson.M{"blog_id": id}
+// 	Result := bson.M{}
+// 	err = r.BlogCollection.FindOne(context.TODO(), filter).Decode(&Result)
+// 	if err != nil {
+// 		responseMessage = "no such blog"
+// 		return responseMessage,err
+// 	}else{
+
+// 	}
+// 	var update bson.M
+
+// 	if like == 1 {
+// 		likeFinder := bson.M{"blog_id": id, "likes": uid}
+// 		likeResult := bson.M{}
+// 		err := r.BlogCollection.FindOne(context.TODO(), likeFinder).Decode(&likeResult)
+// 		if err == nil {
+// 			update = bson.M{
+// 				"$pull": bson.M{
+// 					"likes": uid,
+// 				},
+// 				"$inc": bson.M{
+// 					"view": 1,
+// 				},
+// 			}
+// 			responseMessage = "Removed your like"
+// 		} else {
+// 			dislikeFinder := bson.M{"blog_id": id, "dislikes": uid}
+// 			dislikeResult := bson.M{}
+// 			err = r.BlogCollection.FindOne(context.TODO(), dislikeFinder).Decode(&dislikeResult)
+// 			if err == nil {
+// 				_, err = r.BlogCollection.UpdateOne(context.TODO(), filter, bson.M{
+// 					"$pull": bson.M{
+// 						"dislikes": uid,
+// 					},
+// 				})
+// 				if err != nil {
+// 					return "", err
+// 				}
+// 			}
+// 			update = bson.M{
+// 				"$addToSet": bson.M{
+// 					"likes": uid,
+// 				},
+// 				"$inc": bson.M{
+// 					"view": 1,
+// 				},
+// 			}
+// 			responseMessage = "Added your like"
+// 		}
+// 	} else if like == -1 {
+// 		dislikeFinder := bson.M{"blog_id": id, "dislikes": uid}
+// 		dislikeResult := bson.M{}
+// 		err := r.BlogCollection.FindOne(context.TODO(), dislikeFinder).Decode(&dislikeResult)
+// 		if err == nil {
+// 			update = bson.M{
+// 				"$pull": bson.M{
+// 					"dislikes": uid,
+// 				},
+// 				"$inc": bson.M{
+// 					"view": 1,
+// 				},
+// 			}
+// 			responseMessage = "Removed your dislike"
+// 		} else {
+// 			likeFinder := bson.M{"blog_id": id, "likes": uid}
+// 			likeResult := bson.M{}
+// 			err = r.BlogCollection.FindOne(context.TODO(), likeFinder).Decode(&likeResult)
+// 			if err == nil {
+// 				_, err = r.BlogCollection.UpdateOne(context.TODO(), filter, bson.M{
+// 					"$pull": bson.M{
+// 						"likes": uid,
+// 					},
+// 				})
+// 				if err != nil {
+// 					return "", err
+// 				}
+// 			}
+// 			update = bson.M{
+// 				"$addToSet": bson.M{
+// 					"dislikes": uid,
+// 				},
+// 				"$inc": bson.M{
+// 					"view": 1,
+// 				},
+// 			}
+// 			responseMessage = "Added your dislike"
+// 		}
+// 	} else {
+// 		viewFinder := bson.M{"blog_id": id, "views": uid}
+// 		viewResult := bson.M{}
+// 		err := r.BlogCollection.FindOne(context.TODO(), viewFinder).Decode(&viewResult)
+// 		if err == nil {
+// 			responseMessage = "already viewed this blog"
+// 		} else {
+// 			update = bson.M{
+
+// 				"$inc": bson.M{
+// 					"view": 1,
+// 				},
+// 			}
+// 			responseMessage = "Added view"
+// 		}
+// 		_, err = r.BlogCollection.UpdateOne(context.Background(), filter, update)
+// 		if err != nil {
+// 			return "", err
+// 		}
+// 	}
+// 	return responseMessage, nil
+
+// }
 func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int) (string, error) {
+	// Validate the blogId and userId
 	id, err := IsValidObjectID(blogId)
 	if err != nil {
 		return "", err
@@ -268,109 +389,79 @@ func (r *MongoBlogRepository) LikeOrDislikeBlog(blogId, userId string, like int)
 		return "", err
 	}
 
+	// Initialize variables
+	var responseMessage string
 	filter := bson.M{"blog_id": id}
 	var update bson.M
-	var responseMessage string
 
+	// Find the blog post
+	blogResult := bson.M{}
+	err = r.BlogCollection.FindOne(context.TODO(), filter).Decode(&blogResult)
+	if err != nil {
+		return "No such blog", err
+	}
+
+	// Handle like or dislike
 	if like == 1 {
+		// Toggle like
 		likeFinder := bson.M{"blog_id": id, "likes": uid}
 		likeResult := bson.M{}
 		err := r.BlogCollection.FindOne(context.TODO(), likeFinder).Decode(&likeResult)
 		if err == nil {
+			// User already liked the post, so remove the like
 			update = bson.M{
-				"$pull": bson.M{
-					"likes": uid,
-				},
-				"$inc": bson.M{
-					"view": 1,
-				},
+				"$pull": bson.M{"likes": uid},
+				"$inc":  bson.M{"view": 1},
 			}
 			responseMessage = "Removed your like"
 		} else {
-			dislikeFinder := bson.M{"blog_id": id, "dislikes": uid}
-			dislikeResult := bson.M{}
-			err = r.BlogCollection.FindOne(context.TODO(), dislikeFinder).Decode(&dislikeResult)
-			if err == nil {
-				_, err = r.BlogCollection.UpdateOne(context.TODO(), filter, bson.M{
-					"$pull": bson.M{
-						"dislikes": uid,
-					},
-				})
-				if err != nil {
-					return "", err
-				}
-			}
+			// Remove any existing dislike and add the like
 			update = bson.M{
-				"$addToSet": bson.M{
-					"likes": uid,
-				},
-				"$inc": bson.M{
-					"view": 1,
-				},
+				"$pull":     bson.M{"dislikes": uid},
+				"$addToSet": bson.M{"likes": uid},
+				"$inc":      bson.M{"view": 1},
 			}
 			responseMessage = "Added your like"
 		}
 	} else if like == -1 {
+		// Toggle dislike
 		dislikeFinder := bson.M{"blog_id": id, "dislikes": uid}
 		dislikeResult := bson.M{}
 		err := r.BlogCollection.FindOne(context.TODO(), dislikeFinder).Decode(&dislikeResult)
 		if err == nil {
+			// User already disliked the post, so remove the dislike
 			update = bson.M{
-				"$pull": bson.M{
-					"dislikes": uid,
-				},
-				"$inc": bson.M{
-					"view": 1,
-				},
+				"$pull": bson.M{"dislikes": uid},
+				"$inc":  bson.M{"view": 1},
 			}
 			responseMessage = "Removed your dislike"
 		} else {
-			likeFinder := bson.M{"blog_id": id, "likes": uid}
-			likeResult := bson.M{}
-			err = r.BlogCollection.FindOne(context.TODO(), likeFinder).Decode(&likeResult)
-			if err == nil {
-				_, err = r.BlogCollection.UpdateOne(context.TODO(), filter, bson.M{
-					"$pull": bson.M{
-						"likes": uid,
-					},
-				})
-				if err != nil {
-					return "", err
-				}
-			}
+			// Remove any existing like and add the dislike
 			update = bson.M{
-				"$addToSet": bson.M{
-					"dislikes": uid,
-				},
-				"$inc": bson.M{
-					"view": 1,
-				},
+				"$pull":     bson.M{"likes": uid},
+				"$addToSet": bson.M{"dislikes": uid},
+				"$inc":      bson.M{"view": 1},
 			}
 			responseMessage = "Added your dislike"
 		}
-	} else {
-		viewFinder := bson.M{"blog_id": id, "views": uid}
-		viewResult := bson.M{}
-		err := r.BlogCollection.FindOne(context.TODO(), viewFinder).Decode(&viewResult)
-		if err == nil {
-			responseMessage = "already viewed this blog"
-		} else {
+	} else if like == 0 {
 			update = bson.M{
-
-				"$inc": bson.M{
-					"view": 1,
-				},
+				"$inc":      bson.M{"view": 1},
 			}
-			responseMessage = "Added view"
-		}
-		_, err = r.BlogCollection.UpdateOne(context.Background(), filter, update)
-		if err != nil {
-			return "", err
-		}
+			responseMessage = "Added your view"
+		} 	else {
+		return "", errors.New("Invalid like/dislike value")
 	}
-	return responseMessage, nil
 
+	// Apply the update to the blog
+	_, err = r.BlogCollection.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		return "", err
+	}
+
+	return responseMessage, nil
 }
+
 func (r *MongoBlogRepository) GetBlogById(blogId string) (domain.Blog, error) {
 	bid, err := IsValidObjectID(blogId)
 	if err != nil {

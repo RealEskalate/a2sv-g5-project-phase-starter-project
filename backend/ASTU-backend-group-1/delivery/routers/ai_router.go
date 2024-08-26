@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AddAIRoutes(r *gin.Engine, config config.Config, prompts infrastructure.Prompts) {
+func  (gr *MainRouter) AddAIRoutes(r *gin.Engine, config config.Config, prompts infrastructure.Prompts)  *gin.RouterGroup{
 	model, err := gemini.NewGeminiModel(config.Gemini.ApiKey, config.Gemini.Model, prompts)
 	if err != nil {
 		log.Fatal(err)
@@ -24,4 +24,5 @@ func AddAIRoutes(r *gin.Engine, config config.Config, prompts infrastructure.Pro
 		aiRouteGroup.POST("/summarize", aiController.Sumarize)
 		aiRouteGroup.POST("/chat", aiController.Chat)
 	}
+	return aiRouteGroup
 }

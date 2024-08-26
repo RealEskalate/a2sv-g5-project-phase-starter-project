@@ -38,7 +38,7 @@ const LoanPage = () => {
 			}
 			try {
 				const response = await fetch(
-					`https://bank-dashboard-rsf1.onrender.com/active-loans/all?page=${currentPage}&size=8`,
+					`https://bank-dashboard-irbd.onrender.com/active-loans/all?page=${currentPage}&size=8`,
 					{
 						headers: {
 							Authorization: `Bearer ${user.accessToken}`,

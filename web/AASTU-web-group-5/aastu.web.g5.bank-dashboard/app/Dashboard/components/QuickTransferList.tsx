@@ -24,7 +24,7 @@ export const QuickTransferList = () => {
     const fetchTransfers = async () => {
       try {
         const response = await axios.get<{ data: Transfer[] }>(
-          'https://bank-dashboard-rsf1.onrender.com/transactions/quick-transfers?number=3',
+          'https://bank-dashboard-irbd.onrender.com/transactions/quick-transfers?number=3',
           {
             headers: {
               Authorization: `Bearer ${user?.accessToken}`,

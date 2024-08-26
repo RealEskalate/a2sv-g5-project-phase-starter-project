@@ -156,7 +156,7 @@ const Page = () => {
   };
 
   return (
-    <div className="bg-[#f5f7fa] dark:bg-[#020817] py-4 px-4 md:px-8 max-w-full overflow-x-hidden">
+    <div className="bg-[#f5f7fa] dark:bg-[#090b0e] py-4 px-4 md:px-8 max-w-full overflow-x-hidden">
       <div className="mb-4">
         <div className="flex flex-col md:flex-row space-x-4">
           {/* Card Section */}
@@ -215,7 +215,7 @@ const Page = () => {
                   ) : (
                     [...Array(2)].map((_, i) => (
                       <div key={i} className="border dark:border-[#333B69] rounded-3xl my-4 mx-2 animate-pulse">
-                        <div className="relative w-full bg-gradient-to-b from-gray-200 dark:from-[#333B69] to-gray-300 dark:to-[#555B85] text-transparent rounded-3xl shadow-md h-[230px] min-w-[350px]">
+                        <div className="relative w-full bg-gradient-to-r from-gray-200 dark:from-[#333B69] to-gray-300 dark:to-[#555B85] text-transparent rounded-3xl shadow-md h-[230px] min-w-[350px]">
                           <div className="flex justify-between items-start px-6 pt-6">
                             <div>
                               <p className="text-xs font-semibold bg-gray-300 dark:bg-[#555B85] rounded w-16 h-4 mb-2"></p>

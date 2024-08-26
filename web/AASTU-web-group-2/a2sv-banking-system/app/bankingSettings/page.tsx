@@ -24,7 +24,7 @@ const SettingsPage: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [session, setSession] = useState<SessionDataType | null>(null);
-  const [activeTab, setActiveTab] = useState<string>('Preferences');
+  const [activeTab, setActiveTab] = useState<string>('Edit Profile');
   const [user, setUser] = useState<User | null>(null);
   const [notifications, setNotifications] = useState<Preference>({
     currency: "",

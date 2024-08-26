@@ -2,8 +2,9 @@ package domain
 
 import (
 	"encoding/json"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Role string
@@ -31,6 +32,17 @@ type User struct {
 
 	GoogleID           string `bson:"google_id,omitempty" json:"google_id,omitempty"`
 	PasswordResetToken string `bson:"password_reset_token,omitempty" json:"password_reset_token,omitempty"`
+}
+
+type ReturnUser struct {
+	ID        primitive.ObjectID  `bson:"_id,omitempty" json:"id,omitempty"`
+	Username  string              `bson:"username" json:"username"`
+	Email     string              `bson:"email" json:"email"`
+	Bio       string              `bson:"bio,omitempty" json:"bio,omitempty"`
+	Role      string              `bson:"role" json:"role"`
+	CreatedAt primitive.Timestamp `bson:"createdAt" json:"createdAt"`
+	Image     string              `bson:"image,omitempty" json:"image,omitempty"`
+	IsActive  bool                `bson:"is_active"`
 }
 
 func (u *User) MarshalJSON() ([]byte, error) {
@@ -79,6 +91,7 @@ type RefreshToken struct {
 type LogInResponse struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
+	User		 ReturnUser `json:"user"`
 }
 
 type ResetPasswordRequest struct {

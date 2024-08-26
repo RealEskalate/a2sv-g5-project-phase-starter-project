@@ -34,6 +34,24 @@ func (_m *UnverifiedUserRepository) DeleteUnverifiedUser(ctx context.Context, em
 	return r0
 }
 
+// DeleteUnverifiedUsersBefore provides a mock function with given fields: ctx, cutoffDate
+func (_m *UnverifiedUserRepository) DeleteUnverifiedUsersBefore(ctx context.Context, cutoffDate time.Time) error {
+	ret := _m.Called(ctx, cutoffDate)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteUnverifiedUsersBefore")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, time.Time) error); ok {
+		r0 = rf(ctx, cutoffDate)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // FindUnverifiedUser provides a mock function with given fields: ctx, email
 func (_m *UnverifiedUserRepository) FindUnverifiedUser(ctx context.Context, email string) (domain.UnverifiedUser, error) {
 	ret := _m.Called(ctx, email)

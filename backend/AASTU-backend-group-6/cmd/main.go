@@ -15,6 +15,9 @@ func main() {
 	 var xssMdlwr xss.XssMw
     server.Use(xssMdlwr.RemoveXss())
 
+	
+
+
 	config, err := infrastructure.LoadEnv()
 	if err != nil {
 		fmt.Print("Error in env.load")

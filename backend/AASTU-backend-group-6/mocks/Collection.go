@@ -83,6 +83,36 @@ func (_m *Collection) CountDocuments(_a0 context.Context, _a1 interface{}, _a2 .
 	return r0, r1
 }
 
+// DeleteMany provides a mock function with given fields: _a0, _a1
+func (_m *Collection) DeleteMany(_a0 context.Context, _a1 interface{}) (*mongo_drivermongo.DeleteResult, error) {
+	ret := _m.Called(_a0, _a1)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteMany")
+	}
+
+	var r0 *mongo_drivermongo.DeleteResult
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}) (*mongo_drivermongo.DeleteResult, error)); ok {
+		return rf(_a0, _a1)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}) *mongo_drivermongo.DeleteResult); ok {
+		r0 = rf(_a0, _a1)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*mongo_drivermongo.DeleteResult)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, interface{}) error); ok {
+		r1 = rf(_a0, _a1)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // DeleteOne provides a mock function with given fields: _a0, _a1
 func (_m *Collection) DeleteOne(_a0 context.Context, _a1 interface{}) (int64, error) {
 	ret := _m.Called(_a0, _a1)

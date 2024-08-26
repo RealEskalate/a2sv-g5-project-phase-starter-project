@@ -81,7 +81,7 @@ const Accounts = () => {
 	const fetchTransactions = async (accessToken: string) => {
 		try {
 			const response = await axios.get(
-				"https://bank-dashboard-rsf1.onrender.com/transactions?page=0&size=10",
+				"https://bank-dashboard-irbd.onrender.com/transactions?page=0&size=10",
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -100,7 +100,7 @@ const Accounts = () => {
 	const fetchBalanceData = async (accessToken: string) => {
 		try {
 			const response = await axios.get(
-				"https://bank-dashboard-rsf1.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=3",
+				"https://bank-dashboard-irbd.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=3",
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -122,7 +122,7 @@ const Accounts = () => {
 	const fetchIncomes = async (accessToken: string) => {
 		try {
 			const response = await axios.get(
-				"https://bank-dashboard-rsf1.onrender.com/transactions/incomes?page=0&size=5",
+				"https://bank-dashboard-irbd.onrender.com/transactions/incomes?page=0&size=5",
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -146,7 +146,7 @@ const Accounts = () => {
 	const fetchExpenses = async (accessToken: string) => {
 		try {
 			const response = await axios.get(
-				"https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=0&size=3",
+				"https://bank-dashboard-irbd.onrender.com/transactions/expenses?page=0&size=3",
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,
@@ -170,7 +170,7 @@ const Accounts = () => {
 	const fetchCardData = async (page: number, accessToken: string) => {
 		try {
 			const response = await fetch(
-				`https://bank-dashboard-rsf1.onrender.com/cards?page=${page}&size=3`,
+				`https://bank-dashboard-irbd.onrender.com/cards?page=${page}&size=3`,
 				{
 					headers: {
 						Authorization: `Bearer ${accessToken}`,

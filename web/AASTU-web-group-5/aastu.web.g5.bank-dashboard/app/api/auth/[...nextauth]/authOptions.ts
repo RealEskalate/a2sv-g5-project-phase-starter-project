@@ -7,7 +7,7 @@ async function refreshAccessToken(token: JWT) {
 
 	try {
 		const res = await fetch(
-			"https://bank-dashboard-rsf1.onrender.com/auth/refresh_token",
+			"https://bank-dashboard-irbd.onrender.com/auth/refresh_token",
 			{
 				method: "POST",
 				headers: {
@@ -49,7 +49,7 @@ const authOptions: AuthOptions = {
 			},
 			async authorize(credentials) {
 				const res = await fetch(
-					"https://bank-dashboard-rsf1.onrender.com/auth/login",
+					"https://bank-dashboard-irbd.onrender.com/auth/login",
 					{
 						method: "POST",
 						headers: {

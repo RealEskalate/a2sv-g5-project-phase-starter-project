@@ -32,7 +32,7 @@ const LineGraphComponent = () => {
     const fetchData = async () => {
       if (user?.accessToken) {
         try {
-          const response = await axios.get('https://bank-dashboard-rsf1.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=6', {
+          const response = await axios.get('https://bank-dashboard-irbd.onrender.com/transactions/random-balance-history?monthsBeforeFirstTransaction=6', {
             headers: {
               Authorization: `Bearer ${user.accessToken}`,
             },
@@ -54,7 +54,7 @@ const LineGraphComponent = () => {
           if (error.response?.status === 401) {
             // Token might be expired, try to refresh it
             try {
-              const refreshResponse = await axios.post('https://bank-dashboard-rsf1.onrender.com/auth/refresh_token', {}, {
+              const refreshResponse = await axios.post('https://bank-dashboard-irbd.onrender.com/auth/refresh_token', {}, {
                 headers: {
                   "Content-Type": "application/json",
                   Authorization: `Bearer ${user.refreshToken}`,

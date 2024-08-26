@@ -45,7 +45,7 @@ const CardList: React.FC<CardListProps> = ({ cardId }) => {
 			const data = await Promise.all(
 				cardId.map(async (id) => {
 					const response = await fetch(
-						`https://bank-dashboard-rsf1.onrender.com/cards/${id}`,
+						`https://bank-dashboard-irbd.onrender.com/cards/${id}`,
 						{
 							headers: {
 								Authorization: `Bearer ${accessToken}`,

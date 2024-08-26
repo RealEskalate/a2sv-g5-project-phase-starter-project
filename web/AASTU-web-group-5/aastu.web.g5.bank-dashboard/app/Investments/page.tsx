@@ -45,7 +45,7 @@ const Investments = () => {
 			setLoading(true); // Set loading to true before fetching data
 			try {
 				const response = await axios.get(
-					"https://bank-dashboard-rsf1.onrender.com/user/random-investment-data?years=3&months=5",
+					"https://bank-dashboard-irbd.onrender.com/user/random-investment-data?years=3&months=5",
 					{
 						headers: {
 							Authorization: token, // Make sure to add your token here

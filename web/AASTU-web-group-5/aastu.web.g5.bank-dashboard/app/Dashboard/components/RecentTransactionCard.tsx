@@ -47,7 +47,7 @@ const RecentTransactionCard = () => {
 
       try {
         const response = await axios.get<{ data: { content: Transaction[] } }>(
-          'https://bank-dashboard-rsf1.onrender.com/transactions?page=0&size=3',
+          'https://bank-dashboard-irbd.onrender.com/transactions?page=0&size=3',
           {
             headers: {
               Authorization: `Bearer ${user.accessToken}`,
@@ -59,7 +59,7 @@ const RecentTransactionCard = () => {
         if (err.response && err.response.status === 401 && user.refreshToken) {
           try {
             // Attempt to refresh the access token
-            const refreshResponse = await axios.post('https://bank-dashboard-rsf1.onrender.com/auth/refresh_token', {}, {
+            const refreshResponse = await axios.post('https://bank-dashboard-irbd.onrender.com/auth/refresh_token', {}, {
               headers: {
                 'Authorization': `Bearer ${user.refreshToken}`,
               },
@@ -70,7 +70,7 @@ const RecentTransactionCard = () => {
 
             // Retry fetching data with the new access token
             const retryResponse = await axios.get<{ data: { content: Transaction[] } }>(
-              'https://bank-dashboard-rsf1.onrender.com/transactions?page=0&size=3',
+              'https://bank-dashboard-irbd.onrender.com/transactions?page=0&size=3',
               {
                 headers: {
                   Authorization: `Bearer ${newAccessToken}`,

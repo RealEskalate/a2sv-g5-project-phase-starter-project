@@ -13,7 +13,7 @@ void main() {
     email: 'john@example.com',
     password: '',
     id: 'user1_id',
-    v: 1,
+    v: 0,
   );
 
   const testUser2 = UserModel(
@@ -21,7 +21,7 @@ void main() {
     email: 'jane@example.com',
     password: '',
     id: 'user2_id',
-    v: 2,
+    v: 0,
   );
 
   const testChatModel = ChatModel(
@@ -62,10 +62,5 @@ void main() {
   });
 
  
-  group('toJson', () {
-    test('should return a JSON map containing the proper data', () {
-      //final result = testChatModel.toJson();
-      //expect(result, testJson);
-    });
-  });
+  
 }

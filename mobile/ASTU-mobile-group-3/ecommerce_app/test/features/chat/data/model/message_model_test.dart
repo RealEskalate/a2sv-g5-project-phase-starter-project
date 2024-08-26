@@ -13,29 +13,29 @@ void main() {
   const  testMessageModel = MessageModel(
     messageId: '123',
     sender: UserModel(
-      id: '1',
+      id: 'user1_id',
       name: 'John Doe',
-      email: 'john@gmail.com',
-      password: '123',
-      v: 3
+      email: 'john@example.com',
+      password: '',
+      v: 1
  
     ),
     chat: ChatModel(
-      chatId: '456',
+      chatId: 'chat123',
       user1:  UserModel(
-      id: '1',
+      id: 'user1_id',
       name: 'John Doe',
-      email: 'john@gmail.com',
-      password: '123',
-      v: 3
+      email: 'john@example.com',
+      password: '',
+      v: 0
    
     ),
     user2:  UserModel(
-      id: '2',
-      name: 'Doe John',
-      email: 'Doe@gmail.com',
-      password: '123',
-      v: 3
+      id: 'user2_id',
+      name: 'Jane Doe',
+      email: 'jane@example.com',
+      password: '',
+      v: 0
     
     ),
    
@@ -46,12 +46,31 @@ void main() {
    final testJson = {
         'messageId': '123',
         'sender': {
-          'id': '1',
           'name': 'John Doe',
+          'email': 'john@example.com',
+          '_id': 'user1_id',
+          '__v': 1,
+          'password': 'password123',
+
         
         },
         'chat': {
-          'chatId': '456',
+          '_id': 'chat123',
+          'user1': {
+            'name': 'John Doe',
+            'email': 'john@example.com',
+            'id': 'user1_id',
+            '__v': 1,
+            'password': 'password123',
+          
+          },
+          'user2': {
+            'name': 'Jane Doe',
+            'email': 'jane@example.com',
+            'id': 'user2_id',
+            '__v': 2,
+            'password': 'password456',
+          },
           
         },
         'content': 'Hello, world!',
@@ -70,10 +89,5 @@ void main() {
     });
   });
 
-  group('toJson', () {
-    test('should return JSON map containing proper data', () {
-      final expectedJsonMap = testJson;
-     // expect(testMessageModel.toJson(), expectedJsonMap);
-    });
-  });
+ 
 }

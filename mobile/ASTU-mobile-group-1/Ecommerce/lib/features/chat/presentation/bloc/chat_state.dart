@@ -16,3 +16,25 @@ final class ChatErrorState extends ChatState {
 
   ChatErrorState({required this.message});
 }
+
+ 
+class ChatLoadingState extends ChatState {}
+class ChatFailureState extends ChatState{
+  final String message;
+  ChatFailureState({required this.message});
+}
+
+
+final class LoadedAllChatState extends ChatState{
+  final List<ChatEntity> allChats;
+  // final List<UserEntity> users;
+   LoadedAllChatState({required this.allChats});
+}
+
+
+final class LoadedAllMessages extends ChatState{
+  final List<MessageEntity> allMessages;
+
+  LoadedAllMessages({required this.allMessages});
+ 
+}

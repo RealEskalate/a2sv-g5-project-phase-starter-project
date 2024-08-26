@@ -104,7 +104,7 @@ Route<dynamic> controller(RouteSettings settings) {
       case individiualChatScreen:
       return PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            const IndividiualChatScreen(),
+             IndividiualChatScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           var begin = const Offset(1.0, 0.0);
           var end = Offset.zero;

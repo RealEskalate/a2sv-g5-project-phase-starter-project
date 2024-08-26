@@ -20,6 +20,7 @@ import 'features/chat/data/data_source/remote_data_source/remote_data_source.dar
 import 'features/chat/data/data_source/remote_data_source/remote_data_source_impl.dart';
 import 'features/chat/data/repository/chat_repository_impl.dart';
 import 'features/chat/domain/repositories/chat_repository.dart';
+import 'features/chat/domain/usecases/get_chat_message_usecase.dart';
 import 'features/chat/domain/usecases/get_message_usecase.dart';
 import 'features/chat/domain/usecases/my_chat_usecase.dart';
 import 'features/chat/domain/usecases/send_message_usecase.dart';
@@ -35,6 +36,7 @@ import 'features/product/domain/usecases/insert_prodcut_usecase.dart';
 import 'features/product/domain/usecases/update_product_usecase.dart';
 
 import 'features/product/presentation/bloc/product_bloc.dart';
+import './features/chat/domain/usecases/my_chat_usecase.dart';
 
 final sl = GetIt.instance;
 
@@ -56,7 +58,8 @@ Future<void> init() async {
   sl.registerFactory(() => GetMessageUsecase(chatRepository: sl()));
   sl.registerFactory(() => SendMessageUsecase(chatRepository: sl()));
   sl.registerLazySingleton(() => MyChatUsecase(chatRepository: sl()));
-  sl.registerFactory(() => GetMessageUsecase(chatRepository:sl()));
+  //
+  sl.registerFactory(() => GetChatMessageUsecase(chatRepository:sl()));
 
 
   // repository

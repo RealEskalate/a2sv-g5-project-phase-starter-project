@@ -21,8 +21,8 @@ class ChatHomeScreen extends StatefulWidget {
 class _ChatHomeScreenState extends State<ChatHomeScreen> {
   @override
   void initState() {
-    // context.read<ChatBloc>().add(StartChat());
-    context.read<ChatBloc>().add(ListOfMessageEvent(chatId: '66cc462cdab43c1a2e9803cd'));
+    context.read<ChatBloc>().add(GetAllChatEvent());
+    // context.read<ChatBloc>().add(ListOfMessageEvent(chatId: '66cc462cdab43c1a2e9803cd'));
     
     super.initState();
   }
@@ -66,9 +66,9 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                   child: Column(
                     children: [
                       showUser(onClicked: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const IndividiualChatScreen(),
-                        ));
+                        // Navigator.of(context).push(MaterialPageRoute(
+                        //   builder: (context) => const IndividiualChatScreen(),
+                        // ));
                       }),
                       const Text(
                         'Marina',
@@ -97,7 +97,9 @@ class _ChatHomeScreenState extends State<ChatHomeScreen> {
                   itemBuilder: (context, index) => ListTile(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const IndividiualChatScreen(),
+                        // builder: (context) =>  IndividiualChatScreen(chatId:state.allChats[index].chatId ,),
+                        builder: (context) =>  const IndividiualChatScreen(),
+
                       ));
                     },
                     title:  Text(state.allChats[index].user2.name),

@@ -1,10 +1,13 @@
   import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-  import '../widget/recieved_messages.dart';
+  import '../bloc/chat_bloc.dart';
+import '../widget/recieved_messages.dart';
   import '../widget/sent_message.dart';
   import '../widget/user_profile.dart';
 
   class IndividiualChatScreen extends StatefulWidget {
+    
   const IndividiualChatScreen({super.key});
 
   @override
@@ -12,6 +15,13 @@
 }
 
 class _IndividiualChatScreenState extends State<IndividiualChatScreen> {
+  void initState(){
+    context.read<ChatBloc>().add(ListOfMessageEvent(chatId: '66cc462cdab43c1a2e9803cd'));
+
+  }
+  
+  
+
   bool showSendIcon = false;
   TextEditingController searchTextController = TextEditingController();
   @override

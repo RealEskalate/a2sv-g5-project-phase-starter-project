@@ -27,12 +27,20 @@ class _ImagePickerIconButtonState extends State<ImagePickerIconButton> {
     return IconButton(
       icon: _image == null
           ? Icon(
-              Icons.rectangle_rounded,
-              size: 45.0,
+              Icons.circle_rounded,
+              size: 60.0, 
               color: Color.fromARGB(255, 204, 204, 204),
             )
-          : Image.file(_image!),
-      onPressed: _pickImage,
+          : ClipOval(
+              child: Image.file(
+                _image!,
+                width: 50.0,  
+                height: 50.0,
+                fit: BoxFit.cover, 
+              ),
+            ),      
+        onPressed: _pickImage,
+        // iconSize: 80.0,
     );
   }
 }

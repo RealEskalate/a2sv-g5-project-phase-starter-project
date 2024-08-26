@@ -15,6 +15,7 @@ func SetRouter(router *gin.Engine, bc *blog_controller.BlogController, uc *user_
 	router.POST("/login", uc.Login)
 	router.POST("/refresh", uc.RefreshTokens)
 	router.GET("/logout", auth.JwtAuthMiddleware(env.AccessTokenSecret), uc.Logout)
+	router.GET("/promote", auth.JwtAuthMiddleware(env.AccessTokenSecret), uc.PromoteDemote)
 	router.POST("/forgot-password", uc.ForgotPassword)
 	router.POST("/reset-password", uc.ResetPassword)
 	router.PUT("/updateUser", auth.JwtAuthMiddleware(env.AccessTokenSecret), uc.UpdateUser)
@@ -34,6 +35,10 @@ func SetRouter(router *gin.Engine, bc *blog_controller.BlogController, uc *user_
 		r.DELETE("/:id", bc.DeleteBlog)
 		r.GET("/search", bc.SearchBlogs)
 		r.POST("/filters", bc.FilterBlog)
+		r.GET("/like/:id", bc.AddLike)
+		r.GET("/unlike/:id", bc.Removelike)
+		r.POST("/comment", bc.CreateComment)
+		r.GET("/remove_comment/:id", bc.DeleteComment)
 
 	}
 }

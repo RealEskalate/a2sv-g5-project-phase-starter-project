@@ -30,5 +30,5 @@ func (bc *BlogController) DeleteComment(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Blog deleted successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully"})
 }

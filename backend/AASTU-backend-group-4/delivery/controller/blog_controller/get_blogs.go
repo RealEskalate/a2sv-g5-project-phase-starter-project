@@ -25,7 +25,7 @@ func (bc *BlogController) GetBlogs(c *gin.Context) {
 
 	posts, totalPosts, err := bc.usecase.GetBlogs(context.Background(), page, limit, sortBy)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to retrieve blog posts"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

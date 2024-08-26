@@ -23,6 +23,7 @@ type Blog struct {
 }
 
 type BlogUsecase interface {
+
 	GenerateAIContent(ctx context.Context, prompt string) (genai.Part, error)
 	CreateBlog(ctx context.Context, blog *BlogRequest, authorID primitive.ObjectID) (*Blog, error)                        //
 	CreateComment(ctx context.Context, comment *CommentRequest) (*Comment, error)                                         //

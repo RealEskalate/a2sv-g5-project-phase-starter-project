@@ -20,17 +20,8 @@ import {
 } from "@/lib/api/transactionController";
 import { useRouter } from "next/navigation";
 import Refresh from "@/app/api/auth/[...nextauth]/token/RefreshToken";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import AddCardForm from "../creditCards/AddCardForm";
+import {Dialog} from "@/components/ui/dialog";
+import {Button} from "@/components/ui/button";
 
 // Utility to format dates
 const formatDate = (date: string): string => {
@@ -64,6 +55,7 @@ const Page = () => {
         setAccess_token(accessToken);
       } catch (error) {
         console.error("Error fetching session or refreshing token:", error);
+        router.push(`/api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
         router.push(`/api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
       } finally {
         setLoading(false);

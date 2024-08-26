@@ -12,7 +12,7 @@ import {
 } from "react-icons/md";
 import { FaTimes } from "react-icons/fa";
 import { RiHandCoinLine } from "react-icons/ri";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import SidebarElements from "./SidebarElements";
 
 interface SidebarProps {
@@ -20,8 +20,21 @@ interface SidebarProps {
   handleClose: () => void;
 }
 const Sidebar = ({ toggle, handleClose }: SidebarProps) => {
-  const router = useRouter();
-  const [active, setActive] = useState("Dashboard");
+  
+const map = new Map();
+map.set("/", "Dashboard");
+map.set("/dashboard", "Dashboard");
+map.set("/transactions", "Transactions");
+map.set("/accounts", "Accounts");
+map.set("/investments", "Investments");
+map.set("/creditCards", "Credit Cards");
+map.set("/loans", "Loans");
+map.set("/bankingServices", "Services");
+map.set("/bankingSettings", "Settings");
+
+const pathName = usePathname();
+const router = useRouter();
+const [active, setActive] = useState(map.get(pathName));
 
   const elements = [
     {

@@ -34,4 +34,3 @@ final class FailedState extends SearchState {
   final String message;
   const FailedState(this.message);
 }
-

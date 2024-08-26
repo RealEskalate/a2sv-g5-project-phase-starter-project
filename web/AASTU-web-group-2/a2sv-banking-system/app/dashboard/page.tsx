@@ -28,6 +28,7 @@ MdSettings,
 MdAttachMoney,
 MdAccountBalance,
 } from "react-icons/md";
+import { ShimmerCreditCard } from "../creditCards/Shimmer";
 
 type DataItem = {
   heading: string;
@@ -161,22 +162,24 @@ export default function Home() {
           <div className="flex-col">
 
             <div className="flex">
-              fad
               <div className="flex min-w-max min-h-max [&::-webkit-scrollbar]:hidden">
-              {getCard && getCard.length > 0 && (
-                        <CreditCard
-                          key={getCard[0].id}
-                          balance={String(getCard[0].balance)}
-                          cardHolder={getCard[0].cardHolder}
-                          validThru={formatDate(getCard[0].expiryDate)}
-                          cardNumber="3778 **** **** 1234"
-                          filterClass=""
-                          bgColor="from-[#4C49ED] to-[#0A06F4]"
-                          textColor="text-white"
-                          iconBgColor="bg-opacity-10"
-                          showIcon={true}
-                        />
-                      )}
+              {loading && <ShimmerCreditCard/>}
+
+                    {!loading && getCard &&
+                    getCard.map((items, index) => (
+                      <CreditCard
+                        key={items.id}
+                        balance={String(items.balance)}
+                        cardHolder={items.cardHolder}
+                        validThru={formatDate(items.expiryDate)}
+                        cardNumber="3778 **** **** 1234"
+                        filterClass=""
+                        bgColor={index % 2 === 0 ? "from-[#4C49ED] to-[#0A06F4]" : "bg-white"}
+                        textColor={index%2 == 0 ? "text-white": "text-black"}
+                        iconBgColor="bg-opacity-10"
+                        showIcon={true}
+                      ></CreditCard>
+                    ))}   
               </div>
             </div>
           </div>
@@ -203,7 +206,7 @@ export default function Home() {
             </div>
             <div className="flex space-x-6 overflow-x-auto [&::-webkit-scrollbar]:hidden">
               
-            {loading && <p>Loading ... </p>}
+            {loading && <ShimmerCreditCard/>}
 
               {!loading && getCard &&
               getCard.map((items, index) => (

@@ -103,7 +103,7 @@ export function BalanceHistory() {
       </CardHeader>
       <CardContent>
         <div className="w-full">
-          <ChartContainer config={chartConfig} className="md:h-36 md:w-full">
+          <ChartContainer config={chartConfig} className="md:h-48 md:w-full">
             <AreaChart
               width={5}
               height={300}

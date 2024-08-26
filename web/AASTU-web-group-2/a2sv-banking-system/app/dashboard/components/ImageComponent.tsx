@@ -21,7 +21,7 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ src, alt, width, height
             // className='rounded-full'
             alt={alt}
             src={src}
-            className="w-full h-full object-cover rounded-full"
+            className="w-full h-full object-cover rounded-full  dark:fill-black "
 
           />
         </div>

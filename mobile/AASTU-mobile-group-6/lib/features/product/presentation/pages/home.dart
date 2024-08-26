@@ -196,7 +196,6 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(9)),
                         child: GestureDetector(
                           onTap: () {
-                            SocketService().connectToServer();
                             Navigator.pushNamed(context, '/HomeChat');
                           },
                           child: Image(

@@ -1,49 +1,54 @@
+import 'package:ecommerce_app_ca_tdd/core/errors/failure/failures.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/message.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class MessageState extends Equatable {
-  final List<Message> messages;
-
-  const MessageState(this.messages);
+  
+  const MessageState();
 
   @override
   List<Object> get props => [];
 }
 
 class MessageInitial extends MessageState {
-  const MessageInitial(super.messages);
+  const MessageInitial();
 
   @override
-  List<Object> get props => [messages];
+  List<Object> get props => [];
 }
 
-class MessagesMessageLoadInProgress extends MessageState {
-  const MessagesMessageLoadInProgress(super.messages);
+class MessageLoadInProgress extends MessageState {
+  const MessageLoadInProgress();
 }
 
 class MessageLoadSuccess extends MessageState {
-  const MessageLoadSuccess(super.messages);
+  final List<Message> messages;
+  const MessageLoadSuccess(this.messages);
 
   @override
   List<Object> get props => [messages];
 }
 
 class MessageLoadFailure extends MessageState {
-  const MessageLoadFailure(super.messages);
+  final String error;
+  const MessageLoadFailure(this.error);
 
   @override
-  List<Object> get props => [messages];
+  List<Object> get props => [error];
 }
 
 class MessageSentSuccess extends MessageState {
-  const MessageSentSuccess(super.messages);
+  final String ans;
+  const MessageSentSuccess(this.ans);
 
   @override
-  List<Object> get props => [messages];
+  List<Object> get props => [ans];
 }
 
 class MessageSentFailure extends MessageState {
-  const MessageSentFailure(super.messages);
+  final String error;
+  const MessageSentFailure(this.error);
 
   @override
-  List<Object> get props => [messages];
+  List<Object> get props => [error];
 }

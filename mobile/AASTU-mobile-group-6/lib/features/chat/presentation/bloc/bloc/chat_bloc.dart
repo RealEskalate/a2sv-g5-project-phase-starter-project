@@ -1,49 +1,33 @@
-import 'package:bloc/bloc.dart';
+import 'package:ecommerce_app_ca_tdd/locator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ecommerce_app_ca_tdd/core/usecases/usecases.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/message.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/usecases/get_chats_usecase.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/usecases/initiate_chat_usecase.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_state.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/socket/socket_manager.dart';
-import 'package:meta/meta.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/domain/usecases/get_all_usecase.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
-  final SocketManager socketManager;
+  
+  final GetChatsUsecase getChatsUsecase;
+  final InitiateChatUsecase initiateChatUsecase;
 
-  ChatBloc(this.socketManager) : super(ChatInitial()) {
-    on<MessageReceived>(_onMessageReceived);
-    on<SendMessage>(_onSendMessage);
-
-    _initializeSocketListeners();
-  }
-
-  void _initializeSocketListeners() {
-    socketManager.receiveMessage((data) {
-      final message = Message.fromJson(data);
-      add(MessageReceived(message));
-    });
-  }
-
-  void _onMessageReceived(MessageReceived event, Emitter<ChatState> emit) {
-    if (state is ChatLoaded) {
-      final currentState = state as ChatLoaded;
-      emit(ChatLoaded(List.from(currentState.messages)..add(event.message)));
-    } else {
-      emit(ChatLoaded([event.message]));
+  ChatBloc(this.getChatsUsecase,this.initiateChatUsecase) : super(ChatInitial()) {
+    on<ListAllMessagesEvent>((event,emit) async{
+      emit(ChatLoading());
+      var result = await getChatsUsecase(NoParams());
+      result.fold((l)=> emit(ChatError(l.message)), (r)=> emit(ChatLoaded(r)));
     }
-  }
-
-  void _onSendMessage(SendMessage event, Emitter<ChatState> emit) {
-    socketManager.s.emit('send_message', event.message.toJson());
-    if (state is ChatLoaded) {
-      final currentState = state as ChatLoaded;
-      emit(ChatLoaded(List.from(currentState.messages)..add(event.message)));
-    } else {
-      emit(ChatLoaded([event.message]));
+    );
+    on<InitiateChatEvent>((event,emit) async {
+      emit(ChatInitateLoading());
+      var result = await initiateChatUsecase(event.receiver);
+      result.fold((l)=> emit(ChatInitateFailure(l.message)),(r)=>(ChatInitateLoaded(r)));
     }
+    );
+
   }
 
-  @override
-  Future<void> close() {
-    socketManager.s.dispose();
-    return super.close();
-  }
 }

@@ -6,8 +6,8 @@ import {
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import RecentTransactionSkeleton from "../recent-transaction/RecentTransactionSkeleton";
-import ErrorImage from "../Error/ErrorImage";
+import RecentTransactionSkeleton from "../../recent-transaction/RecentTransactionSkeleton";
+import ErrorImage from "../../Error/ErrorImage";
 
 const icons = [
   "/assets/cardlist/card1.svg",
@@ -70,7 +70,7 @@ const CardList = () => {
 
         const fullCards = await Promise.all(fullCardsPromises);
         setCardDetails(fullCards);
-        console.log("Fetched full cards:", fullCards);
+      
       }
     };
 

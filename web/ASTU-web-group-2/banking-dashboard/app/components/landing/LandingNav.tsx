@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion as m, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai"; // Import the close icon from React Icons
-import SignIn from "../signIn/SignIn";
+import SignIn from "../authAndProfileManagement/signIn/SignIn";
 
 interface LandingNavProps {
   bgWhite: boolean;

@@ -58,12 +58,7 @@ const Layout = ({
       }
     };
 
-    // if (session && isTokenExpired(session.user.accessToken)) {
-      // fetchUserData();
-    // }
-    // if (session?.user?.accessToken) {
-      // console.log("session", session, isTokenExpired(session.user.accessToken));
-    // }
+
     if (status == "unauthenticated" && !session) {
       router.push("/");
     }

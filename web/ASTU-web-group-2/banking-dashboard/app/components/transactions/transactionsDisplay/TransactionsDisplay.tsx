@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useGetAllTransactionQuery } from "@/lib/service/TransactionService";
 import { TransactionType } from "../transaction/Transaction";
-import RecentTransactionSkeleton from "../recent-transaction/RecentTransactionSkeleton";
-import EmptyShow from "../emptyShowingImage/EmptyShow";
+import RecentTransactionSkeleton from "../../recent-transaction/RecentTransactionSkeleton";
+import EmptyShow from "../../emptyShowingImage/EmptyShow";
 
 const inter = Inter({ subsets: ["latin"] });
 const TransactionsDisplay = () => {

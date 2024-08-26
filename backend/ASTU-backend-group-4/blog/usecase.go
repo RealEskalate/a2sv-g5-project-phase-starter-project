@@ -109,7 +109,7 @@ func (b *BlogUseCaseImpl) DeleteBlog(ctx context.Context, id, userID string) err
 		return err
 	}
 
-	if blog.AuthorID != user.ID {
+	if blog.AuthorID != user.ID && !user.IsAdmin {
 		return ErrBlogNotFound
 	}
 

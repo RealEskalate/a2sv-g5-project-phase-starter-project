@@ -88,14 +88,14 @@ func (bc *BlogController) DeleteBlog(c *gin.Context) {
 	blogID := c.Param("id")
 	userID := c.Value("user_id").(string)
 
-	err := bc.blogUseCase.DeleteBlog(c.Request.Context(), userID, blogID)
+	err := bc.blogUseCase.DeleteBlog(c.Request.Context(), blogID, userID)
 	if err != nil {
 		if errors.Is(err, auth.ErrNoUserWithId) {
-			c.AbortWithStatusJSON(http.StatusNotFound, err)
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		} else if errors.Is(err, blogDomain.ErrBlogNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, err)
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		} else {
-			log.Default().Println("Error trying to delete blog", err, "ID:", blogID)
+			log.Default().Println("Error trying to delete blog", err.Error(), "ID:", blogID)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		}
 		return

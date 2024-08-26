@@ -101,10 +101,10 @@ const RecentTransaction = () => {
     fetchData();
   }, [access_token]);
   return (
-    <div>
+    <div >
 
                     <div  // Use a unique identifier if available, otherwise fallback to index
-                    className=' text-nowrap overflow-x-auto border mx-4 my-4 flex flex-col md:w-[65%] md:ml-8 md:h-full md:px-4 rounded-3xl md:border bg-[#ffffff]'>
+                    className=' text-nowrap overflow-x-auto border mx-4 my-4 flex flex-col md:w-[65%] md:ml-8 md:h-full md:px-4 rounded-3xl md:border bg-[#ffffff] dark:bg-[#020817] dark:border dark:border-[#333B69] '>
                           <div className='px-4 py-4 flex-grow-0'>
                             <h1 className="text-[#343C6A] font-bold text-xl md:hidden">Recent Transaction</h1>
                             <div className='flex flex-col gap-2 py-4 text-sm  '>
@@ -153,7 +153,7 @@ const RecentTransaction = () => {
                                       </div>   
                                       <div>
                                           <div>
-                                          <p className='text-[#232323] font-semibold'>
+                                          <p className='text-[#232323] font-semibold dark:text-white'>
                                               {txn.description}
                                           </p> 
                                           <p className='text-[#718EBF]'>

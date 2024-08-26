@@ -8,6 +8,7 @@ import { useAppSelector } from "../Redux/store/store";
 import { useSession } from "next-auth/react";
 import useCardDispatch from "../Redux/Dispacher/useCardDispatch";
 import useTranDispatch from "../Redux/Dispacher/useTranDispatch";
+// import useUserDataDispatch from "../Redux/Dispacher/useUserDataDispatch";
 
 const LayoutProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
@@ -26,6 +27,7 @@ const LayoutProvider = ({ children }: { children: ReactNode }) => {
 
   console.log(session?.accessToken, "token");
   // Update initial card and tran data using the custom hook
+  // useUserDataDispatch(accessToken);
   useCardDispatch(accessToken);
   useTranDispatch(accessToken);
   const isDarkMode = useAppSelector((state) => state.darkMode.darkMode);

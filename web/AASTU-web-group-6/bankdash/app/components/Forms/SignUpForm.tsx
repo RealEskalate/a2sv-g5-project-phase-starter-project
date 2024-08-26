@@ -497,7 +497,7 @@ const SignUpForm = () => {
               type="submit"
               onClick={() => {
                 handleSubmit(onSubmit);
-                setFlag(!flag);
+                // setFlag(!flag);
               }}
               // disabled={flag}
               className=" flex gap-3 items-center bg-[#1814F3] text-white px-6 py-3 rounded-md"

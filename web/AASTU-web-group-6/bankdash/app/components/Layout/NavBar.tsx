@@ -16,6 +16,7 @@ const NavBar = ({ openSidebar }: { openSidebar: () => void }) => {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const userData = useAppSelector((state) => state.user);
+  console.log(userData, '--')
   const onDarkMode = () => {
     dispatch(toggleDarkMode());
   };

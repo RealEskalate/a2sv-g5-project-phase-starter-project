@@ -126,9 +126,9 @@ const SettingsPage: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-[#020817]">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-[#090b0e]">
       <main className="flex-1 p-4 md:p-8">
-        <div className="bg-white dark:bg-[#050914] p-6 rounded-2xl shadow-md">
+        <div className="bg-white dark:bg-[#020817] p-6 rounded-2xl shadow-md">
           <Tabs
             tabs={['Edit Profile', 'Preferences', 'Security']}
             activeTab={activeTab}
@@ -145,7 +145,7 @@ const SettingsPage: React.FC = () => {
                       type="text"
                       id="currency-input"
                       title="Currency"
-                      className="mt-1 block w-full border border-[#DFEAF2] dark:bg-[#050914]  dark:border dark:border-[#333B69] rounded-full shadow-sm px-4 py-2 text-[#232323] dark:text-[#9faaeb] bg-white placeholder-[#718EBF] dark:placeholder-[#9faaeb]"
+                      className="mt-1 block w-full border border-[#DFEAF2] dark:bg-[#020817] dark:border dark:border-[#333B69] rounded-full shadow-sm px-4 py-2 text-[#232323] dark:text-[#9faaeb] bg-white placeholder-[#718EBF] dark:placeholder-[#9faaeb]"
                       placeholder="Enter your currency"
                       value={notifications.currency || ""}  
                       onChange={(e) => handleTextInputChange('currency', e.target.value)}
@@ -157,7 +157,7 @@ const SettingsPage: React.FC = () => {
                       type="text"
                       id="timezone-input"
                       title="Time Zone"
-                      className="mt-1 block w-full border border-[#DFEAF2] dark:bg-[#050914]  dark:border dark:border-[#333B69] rounded-full shadow-sm px-4 py-2 text-[#718EBF] dark:text-[#9faaeb] bg-white placeholder-[#718EBF] dark:placeholder-[#9faaeb]"
+                      className="mt-1 block w-full border border-[#DFEAF2] dark:bg-[#020817] dark:border dark:border-[#333B69] rounded-full shadow-sm px-4 py-2 text-[#718EBF] dark:text-[#9faaeb] bg-white placeholder-[#718EBF] dark:placeholder-[#9faaeb]"
                       placeholder="Enter your time zone"
                       value={notifications.timeZone || ""}  
                       onChange={(e) => handleTextInputChange('timeZone', e.target.value)}

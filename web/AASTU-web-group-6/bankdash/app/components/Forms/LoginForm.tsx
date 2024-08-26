@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import LoginValue from "@/types/LoginValue";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 
 const LoginForm = () => {
   const [error, setError] = useState("");
@@ -20,17 +22,16 @@ const LoginForm = () => {
   const onSubmit = async (data: LoginValue) => {
     setLoading(true);
     setError("");
-    console.log("login dara",data)
-    const result = await signIn("credentials",{
+    console.log("login dara", data);
+    const result = await signIn("credentials", {
       redirect: false,
       userName: data.userName,
       password: data.password,
-      
-    })
-    console.log("Login DATA RESULT",result)
+    });
+    console.log("Login DATA RESULT", result);
 
     if (result?.error) {
-      console.log("error",result.error);
+      console.log("error", result.error);
       setError("Invalid Credential");
       setLoading(false);
     } else {
@@ -39,7 +40,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center gap-2 max-w-[408px] min-w-72 p-10 bg-[#ffff] rounded-2xl border-[0.3px] border-solid border-[#1814f326] shadow-sm shadow-blue-100">
+    <div className="flex flex-col justify-center gap-2 max-w-[408px] min-w-72 p-10 bg-[#ffff] rounded-2xl border-[0.3px] border-solid border-[#1814f326] shadow-sm shadow-blue-100 z-20">
       <div className="flex flex-col gap-2 justify-center items-center ">
         <div className="flex items-center circle p-4 pt-5 bg-blue-50 rounded-full">
           <Image src="/assets/logo-blue.svg" width={48} height={48} alt="" />
@@ -89,7 +90,15 @@ const LoginForm = () => {
         </div>
 
         <div className="px-6 py-3 mt-3 flex flex-col bg-[#1814F3] rounded-xl">
-          <button type="submit" disabled={loading} className="text-white">
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex gap-3 items-center justify-center bg-[#1814F3] text-white rounded-md"
+          >
+            <FontAwesomeIcon
+              icon={faSpinner}
+              className={loading ? "visible text-2xl animate-spin" : "hidden"}
+            />
             {loading ? "Loading..." : "Login"}
           </button>
         </div>

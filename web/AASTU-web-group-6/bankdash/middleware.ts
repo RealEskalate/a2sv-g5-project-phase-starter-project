@@ -1,28 +1,26 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-export async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-
+export async function middleware(request: NextRequest) {
+  const token = await getToken({
+    req: request,
+    secret: process.env.JWT_SECRET,
+  });
   if (token) {
     return NextResponse.next();
-  } else {
-    const signInUrl = new URL("/login", req.url);
-    return NextResponse.redirect(signInUrl);
   }
+  return NextResponse.redirect(new URL("/login", request.url));
 }
 
 export const config = {
-  matcher: ["/kj"],
-  // matcher: [
-  //   "/",
-  //   "/transaction",
-  //   "/account",
-  //   "/investment",
-  //   "/credit-cards",
-  //   "/loan",
-  //   "/service",
-  //   "/settings/:path*",
-  // ],
+  matcher: [
+    "/",
+    "/transaction",
+    "/account",
+    "/investment",
+    "/credit-cards",
+    "/loan",
+    "/service",
+    "/settings/:path*",
+  ],
 };

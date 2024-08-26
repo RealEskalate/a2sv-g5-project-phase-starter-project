@@ -73,8 +73,7 @@ class TransactionService {
     );
   }
   public static getOneExpenseData(
-    accessToken?: string,
-    
+    accessToken?: string
   ): Promise<TransactionType[]> {
     return handleRequest(
       "GET",
@@ -85,7 +84,7 @@ class TransactionService {
   }
   public static getExpenseData(
     accessToken?: string,
-    total? : any
+    total?: any
   ): Promise<TransactionType[]> {
     return handleRequest(
       "GET",
@@ -106,7 +105,7 @@ class TransactionService {
   }
   public static getIncomeData(
     accessToken?: string,
-    total?:any
+    total?: any
   ): Promise<TransactionType[]> {
     return handleRequest(
       "GET",

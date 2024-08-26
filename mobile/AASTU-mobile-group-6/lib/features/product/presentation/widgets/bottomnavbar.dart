@@ -18,7 +18,7 @@ class _BottomnavbarState extends State<Bottomnavbar> {
       color: Theme.of(context).colorScheme.onTertiary,
       backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
       animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 5000),
+      animationDuration: const Duration(milliseconds: 300),
       // RGBO(63, 81, 243,1)
       onTap: (int newidx) {
         setState(() {

@@ -146,6 +146,7 @@ class _searchPageState extends State<searchPage> {
                                       color: Color.fromRGBO(63, 81, 243, 1)),
                                   borderRadius:
                                       BorderRadius.all(Radius.circular(8))),
+                                 
                               child: IconButton(
                                   onPressed: () {
                                     showModalBottomSheet(

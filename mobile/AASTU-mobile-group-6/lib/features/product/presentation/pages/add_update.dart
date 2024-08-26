@@ -66,7 +66,7 @@ class _AddUpdateState extends State<AddUpdate> {
                 },
                 icon: Icon(
                   Icons.arrow_back_ios_new,
-                  color: Color.fromARGB(255, 63, 81, 243),
+                  color: Color.fromARGB(255, 8, 85, 149),
                   size: 20,
                 )),
             Center(
@@ -305,7 +305,7 @@ class _AddUpdateState extends State<AddUpdate> {
                                             color: Color(0xff3F51F3)),
                                         // overlayColor: Colors.red,
                                         foregroundColor: Colors.white,
-                                        backgroundColor: Color(0xff3F51F3),
+                                        backgroundColor: Color.fromARGB(255, 8, 85, 149),
                                       ),
                                       onPressed: () {
                                         final createProduct = ProductEntity(

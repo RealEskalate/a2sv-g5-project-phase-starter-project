@@ -13,6 +13,7 @@ import 'features/chat/domain/repository/chat_repo.dart';
 import 'features/chat/domain/usecase/chat_usecase.dart';
 import 'core/utility/socket_impl.dart';
 import 'features/chat/presentation/bloc/chat_bloc.dart';
+import 'features/chat/presentation/bloc/socket/socket_bloc.dart';
 import 'features/ecommerce/Data/data_source/local_data_source.dart';
 import 'features/ecommerce/Data/data_source/remote_data_source.dart';
 import 'features/ecommerce/Data/repositories/ecommerce_repo_impl.dart';
@@ -83,6 +84,8 @@ Future<void> setUpLocator() async {
     final service = await SocketService.create();
     return service;
   });
+  locator.registerFactory(() => SocketBloc(locator<SocketService>()));
+  await locator.allReady();
 
  
   

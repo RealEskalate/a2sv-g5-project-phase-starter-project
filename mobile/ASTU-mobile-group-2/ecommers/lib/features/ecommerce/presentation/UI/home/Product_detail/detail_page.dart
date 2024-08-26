@@ -47,6 +47,8 @@ class DetailPage extends StatelessWidget {
                             ),
                             onPressed: (){
                               context.read<ChatBloc>().add(OnInitiatChat(userId: data['senderId']));
+                              context.read<ChatBloc>().add(OnGetAllChat());
+                              Navigator.pushNamed(context, '/chat-screen');
                             }, 
                             child: TextStyles(
                               fontColor: Colors.black,

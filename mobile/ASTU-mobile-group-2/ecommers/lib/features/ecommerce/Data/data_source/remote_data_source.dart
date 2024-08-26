@@ -71,6 +71,7 @@ class EcommerceRemoteDataSourceImpl implements EcommerceRemoteDataSource {
           'Authorization': 'Bearer $token',
         },
       );
+      print(token);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
      

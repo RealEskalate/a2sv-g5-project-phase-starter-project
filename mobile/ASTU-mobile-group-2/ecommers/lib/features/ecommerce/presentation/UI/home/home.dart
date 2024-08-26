@@ -76,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           child: BlocConsumer<ProductBloc, ProductState>(
             listener: (context, state) {
+              print(state);
               if(state is ProductErrorState){
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(state.messages))

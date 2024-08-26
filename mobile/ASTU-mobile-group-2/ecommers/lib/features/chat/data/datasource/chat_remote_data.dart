@@ -157,7 +157,7 @@ class ChatRemoteDataImpl implements ChatRemoteData {
           }
         }
       }
-      
+      print(GlobalMessagePart.gloablMessage);
       return allChats;
     } on ConnectionFailur catch (e) {
       

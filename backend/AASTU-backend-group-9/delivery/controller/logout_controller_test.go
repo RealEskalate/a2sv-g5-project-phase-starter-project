@@ -41,7 +41,7 @@ func (suite *LogoutControllerSuite) TestLogout() {
 		w := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(w)
 		user := domain.LogoutRequest{}
-		suite.LogoutUsecase.On("Logout", mock.Anything, user.RefreshToken).Return(nil).Once()
+		suite.LogoutUsecase.On("Logout", mock.Anything, user.RefreshToken,"cbe5cfdf7c2118a9c3d78ef1d684f3afa089201352886449a06a6511cfef74a7").Return(nil).Once()
 		payload, _ := json.Marshal(user)
 		req, _ := http.NewRequest(http.MethodPost, "/logout", bytes.NewBuffer(payload))
 		c.Request = req
@@ -52,7 +52,7 @@ func (suite *LogoutControllerSuite) TestLogout() {
 		w := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(w)
 		user := domain.LogoutRequest{}
-		suite.LogoutUsecase.On("Logout", mock.Anything, user.RefreshToken).Return(errors.New("error")).Once()
+		suite.LogoutUsecase.On("Logout", mock.Anything, user.RefreshToken,"cbe5cfdf7c2118a9c3d78ef1d684f3afa089201352886449a06a6511cfef74a7").Return(errors.New("error")).Once()
 		payload, _ := json.Marshal(user)
 		req, _ := http.NewRequest(http.MethodPost, "/logout", bytes.NewBuffer(payload))
 		c.Request = req

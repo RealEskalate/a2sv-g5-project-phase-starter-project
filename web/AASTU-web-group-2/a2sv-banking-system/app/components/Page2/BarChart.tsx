@@ -17,7 +17,7 @@ const getLastSixMonthsLabels = (): string[] => {
   const labels = [];
 
   for (let i = 5; i >= 0; i--) {
-    const monthIndex = (currentMonth - i + 12) % 12;
+    const monthIndex = (currentMonth - i + 5) % 12;
     labels.push(monthNames[monthIndex]);
   }
 

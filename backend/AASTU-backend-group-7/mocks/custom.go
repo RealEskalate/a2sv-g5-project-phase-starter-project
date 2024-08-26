@@ -41,3 +41,15 @@ func GetSampleClaim() *Domain.AccessClaims {
 		Role: "admin",
 	}
 }
+
+// get sample comment
+func GetSampleComment() *Domain.Comment {
+	return &Domain.Comment{
+		ID: primitive.NewObjectID(),
+		PostID: primitive.NewObjectID(),
+		AuthorID: primitive.NewObjectID(),
+		Content: "sample content",
+		CreatedAt: primitive.NewObjectID().Timestamp(),
+		UpdatedAt: primitive.NewObjectID().Timestamp(),
+	}
+}

@@ -61,7 +61,7 @@ const App: React.FC = () => {
 
   if (status === 'success' && transactions.length === 0) {
     return (
-      <div className="p-3 gap-4 flex-1 h-auto bg-gray-50 dark:bg-dark text-gray-900 dark:text-white text-center text-gray-500">
+      <div className="p-3 gap-4 flex-1 h-auto bg-gray-50 dark:bg-dark dark:text-white text-center text-gray-500">
         No transactions to display.
       </div>
     );

@@ -30,16 +30,16 @@ export function Pie_chart({
   useEffect(() => {
     transactions.forEach((transaction: TransactionContent) => {
       switch (transaction.type) {
-        case "shopping":
+        case "transfer":
           categoryTotals.Entertainment += transaction.amount;
           break;
-        case "deposit":
+        case "service":
           categoryTotals.Investment += transaction.amount;
           break;
-        case "service":
+        case "shopping":
           categoryTotals.BillExpense += transaction.amount;
           break;
-        case "transfer":
+        case "deposit":
           categoryTotals.Other += transaction.amount;
           break;
         default:
@@ -47,18 +47,20 @@ export function Pie_chart({
           break;
       }
     });
-    console.log(transactions)
+    
     const totalSum =
       categoryTotals.Other +
       categoryTotals.Investment +
       categoryTotals.BillExpense +
       categoryTotals.Entertainment;
 
+
     const newChartData = [
       {
         expense: "Other",
         value: Math.round((categoryTotals.Other / totalSum) * 100),
         fill: isDarkMode ? "#FF4500" : "#1814F3", 
+        
       },
       {
         expense: "Investment",
@@ -89,15 +91,15 @@ export function Pie_chart({
     },
     investment: {
       label: "Investment",
-      color: isDarkMode ? "#8A2BE2" : "#343C6A", 
+      color: isDarkMode ? "#8A2BE2" : "#343C6A",
     },
     billExpense: {
       label: "Bill Expense",
-      color: isDarkMode ? "#00CED1" : "#FC7900", 
+      color: isDarkMode ? "#00CED1" : "#FC7900",
     },
     entertainment: {
       label: "Entertainment",
-      color: isDarkMode ? "#FF69B4" : "#FA00FF", 
+      color: isDarkMode ? "#FF69B4" : "#fa00ff",
     },
   };
 
@@ -131,14 +133,14 @@ export function Pie_chart({
               dataKey="value"
               nameKey="expense"
               outerRadius="80%"
-              label
               paddingAngle={5}
             >
               <LabelList
                 dataKey="expense"
                 position="inside"
-                fontSize={12}
-                fontFamily="font-lustria"
+                fill="#FFFFFF"
+                className="font-bold text-[13px] text-wrap"
+                
                 formatter={(value: number) => ` ${value}`}
               />
             </Pie>

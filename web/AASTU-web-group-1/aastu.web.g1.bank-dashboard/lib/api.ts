@@ -170,7 +170,6 @@ export default async function getRandomBalance() {
   try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
-    console.log("random balance",accessToken);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/transactions/random-balance-history?monthsBeforeFirstTransaction=7`,
       {
@@ -195,7 +194,6 @@ export async function getallTransactions(page: number, size: number) {
   try {
     const session = await getSession();
     const accessToken = session?.user.accessToken;
-    console.log("get all transactions",accessToken);
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/transactions?page=${page}&size=${size}`,
       {

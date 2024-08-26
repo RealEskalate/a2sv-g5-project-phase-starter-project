@@ -32,7 +32,7 @@ export const ExpenseStatistics = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const statistics = await getallTransactions(0, 100);
+        const statistics = await getallTransactions(0, 50);
         setTransactions(statistics?.content || []);
         onLoadingComplete(false);
       } finally {

@@ -93,7 +93,7 @@ func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} 
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error creating token", Status: 500}
 	}
-
+	newuser.Created_at = time.Now()
 	err = infrastructure.SendOTPEmail(user.Email, otp)
 
 	if err != nil {
@@ -146,10 +146,7 @@ func (u *SignupUseCase) VerifyOTP(c context.Context, otp domain.OtpToken) interf
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error verifying user", Status: 500}
 	}
-	err=u.UnverifiedUserRepository.DeleteUnverifiedUser(ctx, otp.Email)
-	if err != nil {
-		return &domain.ErrorResponse{Message: "Error deleting unverified user", Status: 500}
-	}
+
 	return &domain.SuccessResponse{Message: "Account verified successfully", Data: verifiedUser, Status: 200}
 
 }
@@ -163,6 +160,10 @@ func (u *SignupUseCase) ForgotPassword(c context.Context, email domain.ForgotPas
 	existing, err := u.SignupRepository.FindUserByEmail(ctx, email.Email)
 	if err != nil {
 		return &domain.ErrorResponse{Message: "User not found", Status: 404}
+	}
+
+	if existing.GoogleID != "" {
+		return &domain.ErrorResponse{Message: "User is registered with Google", Status: 400}
 	}
 
 	// generate token
@@ -300,4 +301,19 @@ func (u *SignupUseCase) HandleUnverifiedUser(c context.Context, user domain.Emai
 	return &domain.SuccessResponse{Message: "OTP send to your Email Verify Your Account", Data: "", Status: 201}
   
   }
+  
+
+//   background Task that delete the user that stays unverified over 2 week
+
+func (u *SignupUseCase) DeleteOldUnverifiedUsers(c context.Context , days int) interface{} {
+	ctx, cancel := context.WithTimeout(context.Background(), u.contextTimeout)
+	defer cancel()
+
+    cutoffDate := time.Now().AddDate(0, 0, -days)
+    return u.UnverifiedUserRepository.DeleteUnverifiedUsersBefore(ctx , cutoffDate)
+	
+}
+	
+
+
   

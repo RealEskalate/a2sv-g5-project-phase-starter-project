@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import LineChartNoBg from "@/components/LineChartNoBg";
 import LineChartStright from "@/components/LineChartStraight";
 import { colors } from "@/constants/index";
@@ -8,7 +9,7 @@ import { GiTakeMyMoney } from "react-icons/gi";
 import MyInvestment from "@/components/MyInvestment";
 import TrendingStock from "@/components/TrendingStock";
 import { getTrendingCompanies } from "@/services/companygetch";
-
+import { randomInvestmentData } from "@/services/userupdate";
 const data = [
   {
     icon: "/icons/apple_store.png",
@@ -49,17 +50,112 @@ const trendingdata = [
   { slNo: "05.", name: "Microsoft", price: "$2000", return: "-6%" },
 ];
 
-const Investments = async () => {
-  const fetch = async () => {
-    try {
-      const trendingcomp = await getTrendingCompanies();
-      return trendingcomp;
-    } catch (error) {
-      console.error("Login Error:", error);
-    }
-  };
+interface chartData {
+  time: string;
+  value: number;
+}
+interface InvestmentData {
+  totalInvestment: string;
+  rateOfReturn: string;
+  yearlyTotalInvestment: chartData[];
+  monthlyRevenue: chartData[];
+  // Add other properties as needed
+}
 
-  const Trendingcomp = fetch();
+const Investments = () => {
+  // const fetch = async () => {
+  //   try {
+  //     const trendingcomp = await getTrendingCompanies();
+  //     return trendingcomp;
+  //   } catch (error) {
+  //     console.error("Login Error:", error);
+  //   }
+  // };
+
+  // const Trendingcomp = fetch();
+
+  const [investment, setInvestment] = useState<InvestmentData>();
+  const [status, setStatus] = useState<"loading" | "error" | "success">(
+    "loading"
+  );
+
+  useEffect(() => {
+    const fetchInvestmentData = async () => {
+      setStatus("loading");
+      try {
+        const data = await randomInvestmentData();
+        console.log(data, "sanhiubk");
+        if (data.success) {
+          setInvestment(data.data);
+          setStatus("success");
+        }
+      } catch (error) {
+        console.error("Error fetching investment data:", error);
+        setStatus("error");
+      }
+    };
+    fetchInvestmentData();
+  }, []);
+
+  if (status === "loading") {
+    return (
+      <div
+        className={` ${colors.graybg} flex flex-col lg:gap-5 lg:ml-64 lg:pr-6 xl:pr-10 dark:bg-dark text-gray-900 dark:text-white`}
+      >
+        <div className="flex flex-col items-center px-6 pt-10 gap-4 lg:flex-row dark:bg-dark text-gray-900 dark:text-white">
+          <div className="flex gap-3 w-[80%] bg-gray-200 justify-center items-center py-3 rounded-xl animate-pulse">
+            <div className="bg-cyan-100 w-[50px] h-[50px] flex items-center justify-center rounded-full animate-pulse"></div>
+            <div>
+              <div className="bg-gray-300 h-[12px] w-[150px] rounded mb-2 animate-pulse"></div>
+              <div className="bg-gray-300 h-[16px] w-[100px] rounded animate-pulse"></div>
+            </div>
+          </div>
+
+          <div className="flex gap-3 w-[80%] bg-gray-200 justify-center items-center py-3 rounded-xl animate-pulse">
+            <div className="bg-pink-100 w-[50px] h-[50px] flex items-center justify-center rounded-full animate-pulse"></div>
+            <div>
+              <div className="bg-gray-300 h-[12px] w-[150px] rounded mb-2 animate-pulse"></div>
+              <div className="bg-gray-300 h-[16px] w-[100px] rounded animate-pulse"></div>
+            </div>
+          </div>
+
+          <div className="flex gap-3 w-[80%] bg-gray-200 justify-center items-center py-3 rounded-xl animate-pulse">
+            <div className="bg-indigo-100 w-[50px] h-[50px] flex items-center justify-center rounded-full animate-pulse"></div>
+            <div>
+              <div className="bg-gray-300 h-[12px] w-[150px] rounded mb-2 animate-pulse"></div>
+              <div className="bg-gray-300 h-[16px] w-[100px] rounded animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col py-5 px-6 gap-14 lg:grid lg:grid-cols-2 lg:gap-6">
+          <div className="flex flex-col gap-3 lg:gap-4 xl:gap-5">
+            <div className="bg-gray-300 h-[22px] w-[200px] rounded mb-4 animate-pulse"></div>
+            <div className="bg-gray-300 h-[250px] rounded animate-pulse"></div>
+          </div>
+          <div className="flex flex-col gap-3 lg:gap-4 xl:gap-5">
+            <div className="bg-gray-300 h-[22px] w-[200px] rounded mb-4 animate-pulse"></div>
+            <div className="bg-gray-300 h-[250px] rounded animate-pulse"></div>
+          </div>
+        </div>
+
+        <div className="flex flex-col lg:grid lg:grid-cols-5">
+          <div className="px-6 lg:col-span-3 flex flex-col gap-5">
+            <div className="bg-gray-300 h-[22px] w-[200px] rounded mb-4 animate-pulse"></div>
+            <div className="bg-gray-300 h-[150px] rounded mb-4 animate-pulse"></div>
+            <div className="bg-gray-300 h-[150px] rounded mb-4 animate-pulse"></div>
+            <div className="bg-gray-300 h-[150px] rounded mb-4 animate-pulse"></div>
+          </div>
+          <div className="lg:col-span-2">
+            <div className="p-6 lg:p-0">
+              <div className="bg-gray-300 h-[22px] w-[200px] rounded mb-4 animate-pulse"></div>
+              <div className="bg-gray-300 h-[250px] rounded animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -79,7 +175,7 @@ const Investments = async () => {
             <p
               className={`${colors.textblack} font-semibold text-[16px] dark:text-white`}
             >
-              $10000
+              {investment?.totalInvestment ?? "no data to display"}
             </p>
           </div>
         </div>
@@ -115,7 +211,7 @@ const Investments = async () => {
             <p
               className={`${colors.textblack} font-semibold text-[16px] dark:text-white`}
             >
-              +5.8%
+              {investment?.rateOfReturn ?? "no data to display"}
             </p>
           </div>
         </div>
@@ -128,7 +224,11 @@ const Investments = async () => {
           >
             Yearly Total Investments
           </h2>
-          <LineChartStright />
+          <LineChartStright
+            yearlyData={
+              investment?.yearlyTotalInvestment ?? [{ time: "", value: 0 }]
+            }
+          />
         </div>
         <div className="flex  flex-col gap-3 lg:gap-4 xl:gap-5 ">
           <h2
@@ -136,7 +236,9 @@ const Investments = async () => {
           >
             Monthly Revenue
           </h2>
-          <LineChartNoBg />
+          <LineChartNoBg
+            monthlyData={investment?.monthlyRevenue ?? [{ time: "", value: 0 }]}
+          />
         </div>
       </div>
 
@@ -163,7 +265,9 @@ const Investments = async () => {
         </div>
         <div className="lg:col-span-2">
           <div className="p-6 lg:p-0">
-            <h2 className="text-lg font-semibold text-gray-800 mb-3 dark:text-blue-500">
+            <h2
+              className={`font-semibold text-[22px] ${colors.navbartext} dark:text-blue-500`}
+            >
               Trending Stock
             </h2>
 

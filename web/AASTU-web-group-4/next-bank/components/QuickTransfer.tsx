@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { colors } from "@/constants/index";
 import Image from "next/image";
 import { createTransaction, getLatestTransfers } from '@/services/transactionfetch';
@@ -8,6 +8,11 @@ import Cookie from 'js-cookie';
 import { TbFileSad } from "react-icons/tb";
 import { message } from 'antd';
 
+
+import AccountContext from "./account_balance_context";
+import { UserData } from "@/types";
+import { currentuser } from "@/services/userupdate";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 interface UserType {
   id: string;
   name: string;
@@ -25,7 +30,6 @@ const QuickTransfer: React.FC = () => {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const accessToken = Cookie.get('accessToken') ?? '';
   const [messageApi, contextHolder] = message.useMessage();
-
   const success = (amount: string, username: string) => {
     messageApi.open({
       type: 'success',
@@ -39,14 +43,28 @@ const QuickTransfer: React.FC = () => {
       type: 'error',
       content: 'Transaction was not successful',
       duration:4
-    });
+    } as any);
   };
+
+  const nouser = () => {
+    messageApi.open({
+      type: 'error',
+      content: 'Please select user',
+      duration:4} as any);};
+
+
+  const lowbalance = () => {
+    messageApi.open({
+      type: 'error',
+      content: 'Insufficient funds',
+      duration:4} as any);};
 
   useEffect(() => {
     const fetchUsers = async () => {
       setStatus('loading');
       try {
-        const data = await getLatestTransfers( 6);
+
+        const data = await getLatestTransfers(6);
         if (data.success) {
           setUsers(data.data);
           setStatus('success');
@@ -62,6 +80,22 @@ const QuickTransfer: React.FC = () => {
 
     fetchUsers();
   }, []);
+
+  const [accountBalance, setAccountBalance ] = useState(0);
+  const [info, setinfo] = useState<UserData>();
+  const [visible , setvisible] = useState(false)
+  useEffect(() => {
+    const fetch = async () => {
+      try {
+        const data = await currentuser();
+        setinfo(data.data || []);
+        setAccountBalance(data.data.accountBalance);
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
+    fetch();
+  } , []);
 
   const handleNext = () => {
     if (currentIndex < users.length - 3) {
@@ -79,8 +113,10 @@ const QuickTransfer: React.FC = () => {
     const userId = event.currentTarget.dataset.id;
     setSelectedUser(userId || '');
   };
-
+  const[loading , setloading] = useState(false)
   const onSubmit = async (data: { amount: string }) => {
+    setloading(true)
+    
     const transactionData = {
       type: "transfer",
       description: `Transfer to ${selectedUser}`,
@@ -90,10 +126,18 @@ const QuickTransfer: React.FC = () => {
 
     try {
       const res = await createTransaction(transactionData, accessToken);
-      if (res.success) {
+      if (res.success && parseInt(transactionData.amount) < accountBalance) {
         success(transactionData.amount, transactionData.receiverUserName);
         reset();
-      } else {
+      } 
+      else if (parseInt(transactionData.amount) > accountBalance){
+        lowbalance();
+        console.error('Insufficient funds , typeof(accountBalance):', (accountBalance) , (transactionData.amount));
+      }
+      else if (selectedUser === '') {
+        nouser();
+      }
+      else {
         errormessage();
         console.error('Failed to create transaction', res);
       }
@@ -101,7 +145,10 @@ const QuickTransfer: React.FC = () => {
       errormessage();
       console.error('Error creating transaction:', error);
     }
+    setloading(false)
   };
+
+  
 
   if (status === 'loading') {
     return (
@@ -200,10 +247,15 @@ const QuickTransfer: React.FC = () => {
             className={`w-[50%] border-1 rounded-3xl py-2 border-black ${colors.lightblue} focus:${colors.lightblue} focus:outline-none px-3 focus:border-none`}
           />
           <button
-            className={`${colors.blue} text-white w-[60%] py-2 rounded-3xl`}
-            onClick={handleSubmit(onSubmit as any)}
+            className={`${colors.blue} text-white w-[60%] py-2 rounded-3xl ${loading ? 'bg-indigo-500' :'bg-[#1814F9]'}`}
+            onClick={handleSubmit(onSubmit as any )}
           >
-            Send ✈
+          {loading ?(
+            <div className="flex justify-center items-center ">
+            <ArrowPathIcon className="h-5 w-5 animate-spin  text-white  " />
+          </div>
+          ) :("Send ✈")}
+            
           </button>
         </div>
       </div>

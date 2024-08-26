@@ -1,7 +1,7 @@
 import React from "react";
 import { colors, sidebarLinks } from "../constants/index";
 import { CgCreditCard } from "react-icons/cg";
-import { cardType } from "@/types";
+import { cardType } from "@/types/index";
 import Image from "next/image";
 
 interface Props {

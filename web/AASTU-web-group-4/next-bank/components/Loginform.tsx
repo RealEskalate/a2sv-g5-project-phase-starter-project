@@ -32,9 +32,14 @@ const LoginForm: React.FC = () => {
     setErrorMessage("");
       try {
         const loggedInUser = await loginUser(data);
+
+        console.log("Logged in user:", loggedInUser)
         
         Cookie.set('accessToken', loggedInUser.data.access_token);
         Cookie.set('refreshToken', loggedInUser.data.refresh_token);
+
+        
+        
 
         setIsLoading(false);
         // console.log("redirect...")
@@ -121,7 +126,7 @@ const LoginForm: React.FC = () => {
         <div className="flex items-center justify-center">
         <button
         type="submit"
-        className={`${colors.blue} text-white px-4 py-2 mt-4 w-full rounded-3xl text-xl`}
+        className={` text-white px-4 py-2 mt-4 w-full rounded-3xl text-xl hover:bg-indigo-600 ${isLoading ? 'bg-indigo-500 cursor-not-allowed hover:bg-indigo-500' : 'bg-indigo-700' }`}
         >
         {isLoading ? (
 

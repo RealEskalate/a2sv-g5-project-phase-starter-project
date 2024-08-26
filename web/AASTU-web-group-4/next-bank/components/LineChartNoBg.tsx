@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { TrendingUp } from "lucide-react"
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import { TrendingUp } from "lucide-react";
+import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
 import {
   Card,
@@ -10,14 +10,13 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
-
+} from "@/components/ui/chart";
 
 const chartData = [
   { month: "January", desktop: 186 },
@@ -26,26 +25,32 @@ const chartData = [
   { month: "April", desktop: 73 },
   { month: "May", desktop: 209 },
   { month: "June", desktop: 214 },
-]
+];
 
 const chartConfig = {
   desktop: {
     label: "Desktop",
     color: " #06b6d4",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
-export default function LineChartNoBg() {
+interface chartData {
+  time: string;
+  value: number;
+}
+interface props {
+  monthlyData: chartData[];
+}
+
+export default function LineChartNoBg({ monthlyData }: props) {
   return (
     <Card className="rounded-2xl">
-      <CardHeader>
-
-      </CardHeader>
+      <CardHeader></CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
           <LineChart
             accessibilityLayer
-            data={chartData}
+            data={monthlyData}
             margin={{
               left: 12,
               right: 12,
@@ -53,7 +58,7 @@ export default function LineChartNoBg() {
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="time"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
@@ -64,7 +69,7 @@ export default function LineChartNoBg() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Line
-              dataKey="desktop"
+              dataKey="value"
               type="natural"
               stroke="var(--color-desktop)"
               strokeWidth={4}
@@ -73,7 +78,6 @@ export default function LineChartNoBg() {
           </LineChart>
         </ChartContainer>
       </CardContent>
-
     </Card>
-  )
+  );
 }

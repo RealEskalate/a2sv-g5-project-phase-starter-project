@@ -11,7 +11,7 @@ func PaginationByPage(pageNo int64, pageSize int64, popularity string) *options.
 	findOptions.SetSort(bson.D{{Key: "createdAt", Value: -1}})
 	if popularity == "1" {
 		findOptions.SetSort(bson.D{{Key: "popularity", Value: -1}})
-	} else {
+	} else if popularity == "-1" {
 		findOptions.SetSort(bson.D{{Key: "popularity", Value: 1}})
 	}
 	findOptions.SetSkip(skip)

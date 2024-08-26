@@ -12,8 +12,8 @@ import (
 
 func main() {
 	server := gin.Default()
-	 var xssMdlwr xss.XssMw
-    server.Use(xssMdlwr.RemoveXss())
+	var xssMdlwr xss.XssMw
+	server.Use(xssMdlwr.RemoveXss())
 
 	config, err := infrastructure.LoadEnv()
 	if err != nil {

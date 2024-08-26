@@ -46,6 +46,22 @@ func (b BlogUsecase) CommentOnBlog(user_id string, comment domain.Comment) error
 	return nil
 }
 
+func (b BlogUsecase) ReplyCommentOnBlog(user_id string, parent_id string, comment domain.Comment) error {
+	comment.Commentor_ID = b.idConverter.ToObjectID(user_id)
+
+	existing_comment, err := b.blogRepository.GetCommentByID(parent_id)
+	if err != nil || existing_comment.Deleted {
+		return errors.New("parent comment not found")
+	}
+
+	comment.Parent_ID = b.idConverter.ToObjectID(parent_id)
+	err = b.ReplyCommentOnBlog(user_id, parent_id, comment)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // CreateBlog implements domain.BlogRepository.
 func (b BlogUsecase) CreateBlog(user_id string, blog domain.Blog, creator_id string) (domain.Blog, error) {
 	if blog.CreatedAt.IsZero() && blog.UpdatedAt.IsZero() {
@@ -160,6 +176,9 @@ func (b BlogUsecase) GetBlogs(pageNo string, pageSize string, popularity string)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
+	if PageNo <= 0 || PageSize <= 0 {
+		return []domain.Blog{}, domain.Pagination{}, errors.New("invalid page number or page size")
+	}
 
 	blogs, pagination, err := b.blogRepository.GetBlogs(PageNo, PageSize, popularity)
 	if err != nil {
@@ -211,12 +230,7 @@ func (b BlogUsecase) GetMyBlogs(user_id string, pageNo string, pageSize string, 
 
 // SearchBlogByTitleAndAuthor implements domain.BlogRepository.
 func (b BlogUsecase) SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string, popularity string) ([]domain.Blog, domain.Pagination, domain.ErrorResponse) {
-	if pageNo == "" {
-		pageNo = "0"
-	}
-	if pageSize == "" {
-		pageSize = "0"
-	}
+
 	pageNO, err := strconv.ParseInt(pageNo, 10, 64)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, domain.ErrorResponse{

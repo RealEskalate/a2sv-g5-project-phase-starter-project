@@ -54,7 +54,6 @@ import 'package:shared_preferences/shared_preferences.dart';
     AuthBloc,
     ProductBloc,
     InputValidationCubit,
-    UserInputValidationCubit,
     GetMeUsecase,
     UserInputValidationCubit,
     ChatRepository,

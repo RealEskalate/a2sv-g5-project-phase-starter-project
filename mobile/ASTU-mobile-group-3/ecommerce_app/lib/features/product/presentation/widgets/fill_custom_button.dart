@@ -8,18 +8,20 @@ class FillCustomButton extends StatelessWidget {
   const FillCustomButton({super.key, required this.press, required this.label});
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: FilledButton(
-        key: Key(label),
-        onPressed: press,
-        style: FilledButton.styleFrom(
-            padding: const EdgeInsets.all(15),
-            backgroundColor: MyTheme.ecBlue,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))),
-        child: Text(label),
-      ),
+    return ElevatedButton(
+      key: Key(label),
+      onPressed: press,
+      style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          backgroundColor: MyTheme.ecBlue,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))),
+      child: Text(label,
+      style: TextStyle(
+        color: Colors.white,
+        fontFamily: 'Poppins',
+        fontSize: 15,
+        fontWeight: FontWeight.w600),),
     );
   }
 }

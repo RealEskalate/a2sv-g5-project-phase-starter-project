@@ -9,19 +9,23 @@ class OutlineCustomButton extends StatelessWidget {
       {super.key, required this.press, required this.label});
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: OutlinedButton(
-        onPressed: press,
-        style: FilledButton.styleFrom(
-          foregroundColor: MyTheme.ecRed,
-          side: const BorderSide(color: MyTheme.ecRed),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
+    return OutlinedButton(
+      onPressed: press,
+      style: FilledButton.styleFrom(
+        foregroundColor: MyTheme.ecRed,
+        side: const BorderSide(color: MyTheme.ecRed),
+        padding: EdgeInsets.symmetric(vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
         ),
-        child: Text(label),
       ),
+      child: Text(label,
+      maxLines: 1,
+      style : TextStyle( 
+      fontFamily:   'Poppins',
+      fontSize: 15,
+      fontWeight: FontWeight.w600
+      )),
     );
   }
 }

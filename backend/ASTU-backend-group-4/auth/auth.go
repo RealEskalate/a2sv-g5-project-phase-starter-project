@@ -17,7 +17,10 @@ type User struct {
 	CreatedAt time.Time `json:"createdat"`
 	UpdatedAt time.Time `json:"updatedat"`
 }
-
+type ResetForm struct {
+	Passowrd    string
+	NewPassword string
+}
 type Token struct {
 	ID           string `json:"id" bson:"_id"`
 	UserId       string `json:"userid"`
@@ -58,5 +61,5 @@ type AuthServices interface {
 	PromoteUser(ctx context.Context, userID string) error
 	DemoteUser(ctx context.Context, userID string) error
 	ForgetPassword(ctx context.Context, email Email) error
-	ResetPassword(ctx context.Context, email, token, timeStamp, password, newPassword string) error
+	ResetPassword(ctx context.Context, userid, tokenTime, token, password, newPassword string) error
 }

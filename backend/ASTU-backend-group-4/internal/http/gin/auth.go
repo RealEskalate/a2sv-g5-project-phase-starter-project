@@ -118,5 +118,17 @@ func (uc *UserController) ForgetPassword(ctx *gin.Context) {
 }
 
 func (uc *UserController) ResetPassword(ctx *gin.Context) {
-	uc.authuserusecase.ResetPassword(ctx)
+	userid := ctx.Param("userid")
+	tokenTime := ctx.Param("tokentime")
+	token := ctx.Param("token")
+	var resetForm auth.ResetForm
+	if err := ctx.ShouldBindJSON(&resetForm); err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	err := uc.authuserusecase.ResetPassword(ctx, userid, tokenTime, token, resetForm.Passowrd, resetForm.NewPassword)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err.Error())
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "password reseted"})
 }

@@ -249,24 +249,12 @@ func (au *AuthUserUsecase) ForgetPassword(ctx context.Context, email Email) erro
 	return nil
 }
 
-// func (au *AuthUserUsecase) ResetPassword(ctx context.Context, userid, token, password, newPassword string) error {
-// 	user, err := au.repository.GetUserByID(ctx, userid)
+func (au *AuthUserUsecase) ResetPassword(ctx context.Context, userid, tokenTime, token, password, newPassword string) error {
+	user, _ := au.repository.GetUserByID(ctx, userid)
 
-// 	expectedToken := au.GenerateTokenForReset(ctx, user.UpdatedAt.String(), user.Password, theTime)
-
-// }
-
-// func (au *AuthUserUsecase) IsTokenExpired(timeStamp string) bool {
-// 	ts, err := strconv.ParseInt(timeStamp, 10, 64)
-
-// 	if err != nil {
-// 		return true
-// 	}
-// 	tokenTime := time.Unix(ts, 0)
-// 	return time.Since(tokenTime) > 1*time.Hour
-// }
-
-// func (au *AuthUserUsecase) IsTokenValied(ctx context.Context, token, email string) bool {
-// 	tk, _ := au.GenerateTokenForReset(ctx, email)
-// 	return tk == token
-// }
+	expectedToken := au.GenerateTokenForReset(ctx, user.UpdatedAt.String(), user.Password, tokenTime)
+	if expectedToken != token {
+		return errors.New("some error")
+	}
+	return nil
+}

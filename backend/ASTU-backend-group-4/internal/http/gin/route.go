@@ -50,5 +50,5 @@ func SetUpAuthRouter(r *gin.RouterGroup, userController *UserController) {
 	r.GET("/demote/:userID", AuthMiddleware(), userController.DemoteUser)
 
 	r.POST("/forget-password", userController.ForgetPassword)
-	// r.POST("/reset", AuthMiddleware(), userController.)
+	r.POST("/reset", AuthMiddleware(), userController.ResetPassword)
 }

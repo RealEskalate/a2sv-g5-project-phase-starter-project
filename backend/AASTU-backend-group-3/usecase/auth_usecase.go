@@ -269,7 +269,7 @@ func (u *UserUsecase) SendPasswordResetLink(email string) *domain.CustomError {
 		return domain.ErrFailedToSendEmail
 	}
 
-	return nil
+	return &domain.CustomError{}
 }
 
 func (u *UserUsecase) ResetPassword(token, newPassword string) *domain.CustomError {

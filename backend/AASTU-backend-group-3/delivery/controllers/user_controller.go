@@ -48,9 +48,9 @@ func (uc *UserController) Logout(c *gin.Context) {
 	userAgent := c.Request.UserAgent()
 	deviceFingerprint := infrastracture.GenerateDeviceFingerprint(ipAddress, userAgent)
 
-	err := uc.UserUsecase.Logout(logoutRequest.UserID, deviceFingerprint, logoutRequest.Token)
-	if err.Message != "" {
-		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+	uerr := uc.UserUsecase.Logout(logoutRequest.UserID, deviceFingerprint, logoutRequest.Token)
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 
@@ -104,9 +104,9 @@ func (uc *UserController) RefreshToken(c *gin.Context) {
 	userAgent := c.Request.UserAgent()
 	deviceFingerprint := infrastracture.GenerateDeviceFingerprint(ipAddress, userAgent)
 
-	refreshResponse, err := uc.UserUsecase.RefreshToken(refreshRequest.UserID, deviceFingerprint, refreshRequest.Token)
-	if err.Message != "" {
-		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+	refreshResponse, uerr := uc.UserUsecase.RefreshToken(refreshRequest.UserID, deviceFingerprint, refreshRequest.Token)
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 
@@ -168,9 +168,9 @@ func (uc *UserController) SendPasswordResetLink(c *gin.Context) {
 		return
 	}
 
-	err := uc.UserUsecase.SendPasswordResetLink(req.Email)
-	if err.Message != "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+	uerr := uc.UserUsecase.SendPasswordResetLink(req.Email)
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 
@@ -187,9 +187,9 @@ func (uc *UserController) ResetPassword(c *gin.Context) {
 		return
 	}
 
-	err := uc.UserUsecase.ResetPassword(token, req.Password)
-	if err.Message != "" {
-		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+	uerr := uc.UserUsecase.ResetPassword(token, req.Password)
+	if uerr.Message != "" {
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 

@@ -379,17 +379,17 @@ func (_m *UserUseCaseInterface) RequestPasswordResetUsecase(userEmail string) er
 	return r0
 }
 
-// ResetPassword provides a mock function with given fields: token, password, email
-func (_m *UserUseCaseInterface) ResetPassword(token string, password string, email string) error {
-	ret := _m.Called(token, password, email)
+// ResetPassword provides a mock function with given fields: token, password
+func (_m *UserUseCaseInterface) ResetPassword(token string, password string) error {
+	ret := _m.Called(token, password)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ResetPassword")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string, string) error); ok {
-		r0 = rf(token, password, email)
+	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+		r0 = rf(token, password)
 	} else {
 		r0 = ret.Error(0)
 	}

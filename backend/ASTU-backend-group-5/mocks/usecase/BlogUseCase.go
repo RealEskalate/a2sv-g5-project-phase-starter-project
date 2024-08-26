@@ -356,6 +356,36 @@ func (_m *BlogUseCase) GetTagByID(ctx context.Context, id string) (*domain.BlogT
 	return r0, r1
 }
 
+// GetUserBlogs provides a mock function with given fields: ctx, userId, page, pageSize
+func (_m *BlogUseCase) GetUserBlogs(ctx context.Context, userId string, page int, pageSize int) ([]*domain.Blog, error) {
+	ret := _m.Called(ctx, userId, page, pageSize)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserBlogs")
+	}
+
+	var r0 []*domain.Blog
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) ([]*domain.Blog, error)); ok {
+		return rf(ctx, userId, page, pageSize)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) []*domain.Blog); ok {
+		r0 = rf(ctx, userId, page, pageSize)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.Blog)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, int, int) error); ok {
+		r1 = rf(ctx, userId, page, pageSize)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetViewsByBlogID provides a mock function with given fields: ctx, blogID
 func (_m *BlogUseCase) GetViewsByBlogID(ctx context.Context, blogID string) ([]*domain.View, error) {
 	ret := _m.Called(ctx, blogID)

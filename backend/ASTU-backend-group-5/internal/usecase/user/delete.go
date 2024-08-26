@@ -21,7 +21,6 @@ func (u *UserUsecase) DeleteUser(id string) error {
 }
 
 func (u *UserUsecase) AdminRemoveUser(UserId string) error {
-
 	user, err := u.repo.FindUserById(context.Background(), UserId)
 	if err != nil {
 		return err

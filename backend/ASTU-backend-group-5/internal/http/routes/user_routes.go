@@ -16,5 +16,5 @@ func RegisterUserRoutes(router *gin.Engine) {
 		userRoute.GET("/any/:id", userHandler.GetAnyUser)
 		userRoute.POST("upload", userHandler.UploadProfilePic)
 	}
-
+    
 }

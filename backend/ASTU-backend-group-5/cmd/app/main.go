@@ -18,12 +18,12 @@ func main() {
 	defer mongo.DisconnectDB()
 	mongo.InitializeCollections()
 
-	userCollection := mongo.UserCollection
-	blogCollection := mongo.BlogsCollection
-	commentCollection := mongo.CommentsCollection
-	likeCollection := mongo.LikesCollection
-	viewCollection := mongo.ViewsCollection
-	tagCollection := mongo.TagsCollection
+	// userCollection := mongo.UserCollection
+	// blogCollection := mongo.BlogsCollection
+	// commentCollection := mongo.CommentsCollection
+	// likeCollection := mongo.LikesCollection
+	// viewCollection := mongo.ViewsCollection
+	// tagCollection := mongo.TagsCollection
 
 	router := gin.Default()
 	// Serve static files from the "upload" directory

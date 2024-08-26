@@ -44,3 +44,4 @@ type BlogUseCase interface {
 	SearchBlogs(ctx context.Context, filter domain.BlogFilter, page int, pageSize int, orderBy []string) ([]*domain.GetBlogDTO, int, error)
 	GetUserBlogs(ctx context.Context, userId string, page int, pageSize int) ([]*domain.Blog, error)
 }
+

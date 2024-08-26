@@ -104,6 +104,7 @@ func (_m *BlogRepository) CreateBlog(ctx context.Context, blog *domain.Blog) err
 	}
 
 	return r0
+	
 }
 
 // CreateTag provides a mock function with given fields: ctx, tag
@@ -117,6 +118,60 @@ func (_m *BlogRepository) CreateTag(ctx context.Context, tag *domain.BlogTag) er
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, *domain.BlogTag) error); ok {
 		r0 = rf(ctx, tag)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// DecrementBlogCommentCount provides a mock function with given fields: ctx, blogId
+func (_m *BlogRepository) DecrementBlogCommentCount(ctx context.Context, blogId string) error {
+	ret := _m.Called(ctx, blogId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DecrementBlogCommentCount")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, blogId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// DecrementBlogLikeCount provides a mock function with given fields: ctx, blogId
+func (_m *BlogRepository) DecrementBlogLikeCount(ctx context.Context, blogId string) error {
+	ret := _m.Called(ctx, blogId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DecrementBlogLikeCount")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, blogId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// DecrementBlogViewCount provides a mock function with given fields: ctx, blogId
+func (_m *BlogRepository) DecrementBlogViewCount(ctx context.Context, blogId string) error {
+	ret := _m.Called(ctx, blogId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DecrementBlogViewCount")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, blogId)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -455,6 +510,36 @@ func (_m *BlogRepository) GetTagByID(ctx context.Context, id string) (*domain.Bl
 	return r0, r1
 }
 
+// GetUserBlogs provides a mock function with given fields: ctx, userID, page, pageSize
+func (_m *BlogRepository) GetUserBlogs(ctx context.Context, userID string, page int, pageSize int) ([]*domain.Blog, error) {
+	ret := _m.Called(ctx, userID, page, pageSize)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserBlogs")
+	}
+
+	var r0 []*domain.Blog
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) ([]*domain.Blog, error)); ok {
+		return rf(ctx, userID, page, pageSize)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) []*domain.Blog); ok {
+		r0 = rf(ctx, userID, page, pageSize)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]*domain.Blog)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, int, int) error); ok {
+		r1 = rf(ctx, userID, page, pageSize)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetViewsByBlogID provides a mock function with given fields: ctx, blogID
 func (_m *BlogRepository) GetViewsByBlogID(ctx context.Context, blogID string) ([]*domain.View, error) {
 	ret := _m.Called(ctx, blogID)
@@ -539,6 +624,60 @@ func (_m *BlogRepository) HasUserViewedBlog(ctx context.Context, userId string, 
 	}
 
 	return r0, r1
+}
+
+// IncrementBlogCommentCount provides a mock function with given fields: ctx, blogId
+func (_m *BlogRepository) IncrementBlogCommentCount(ctx context.Context, blogId string) error {
+	ret := _m.Called(ctx, blogId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for IncrementBlogCommentCount")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, blogId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// IncrementBlogLikeCount provides a mock function with given fields: ctx, blogId
+func (_m *BlogRepository) IncrementBlogLikeCount(ctx context.Context, blogId string) error {
+	ret := _m.Called(ctx, blogId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for IncrementBlogLikeCount")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, blogId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// IncrementBlogViewCount provides a mock function with given fields: ctx, blogId
+func (_m *BlogRepository) IncrementBlogViewCount(ctx context.Context, blogId string) error {
+	ret := _m.Called(ctx, blogId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for IncrementBlogViewCount")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+		r0 = rf(ctx, blogId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // PaginateBlogs provides a mock function with given fields: ctx, filter, page, pageSize

@@ -2,7 +2,6 @@ package mongodb
 
 import (
 	"context"
-	"fmt"
 	"log"
 
 	blogDomain "github.com/RealEskalate/-g5-project-phase-starter-project/astu/backend/g4/blog"
@@ -243,7 +242,6 @@ func (b *BlogStorage) GetBlogs(ctx context.Context, filterQuery blogDomain.Filte
 
 	var blogs []blogDomain.BlogSummary = make([]blogDomain.BlogSummary, 0)
 	cursor.All(ctx, &blogs)
-	fmt.Println(blogs)
 
 	return infrastructure.NewPaginationResponse[blogDomain.BlogSummary](pagination.Limit, pagination.Page, count, blogs), nil
 }

@@ -3,27 +3,29 @@ import 'package:flutter/material.dart';
 import '../../../authentication/domain/entity/user.dart';
 import 'user_avater.dart';
 
+import 'package:flutter/material.dart';
+
+
 class ChatCard extends StatefulWidget {
-  final String topMessage;
-  final User user;
-  // final DateTime time;
-  final int time;
-  final int unread;
-  final bool online;
+  final User user1;
+  final User user2;
+  final String? topMessage;
+  final String? time;
+  final bool? unread;
+  final bool? online;
 
-  const ChatCard(
-      {super.key,
-      required this.topMessage,
-      required this.user,
-      required this.time,
-      required this.unread,
-      this.online = false
-      });
-
+  const ChatCard({
+    Key? key,
+    required this.user1,
+    required this.user2,
+    this.topMessage,
+    this.time,
+    this.unread,
+    this.online
+  }) : super(key: key);
   @override
-  State<ChatCard> createState() => _ChatCardState();
+  _ChatCardState createState() => _ChatCardState();
 }
-
 class _ChatCardState extends State<ChatCard> {
   @override
   Widget build(BuildContext context) {
@@ -38,7 +40,7 @@ class _ChatCardState extends State<ChatCard> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-         UserAvater(image: 'assets/images/avater.png', online: widget.online),
+        UserAvater(image: 'assets/images/avater.png', online: widget.online!),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -50,7 +52,7 @@ class _ChatCardState extends State<ChatCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      widget.user.username,
+                      widget.user1.username,
                       style: const TextStyle(
                           fontWeight: FontWeight.w500, fontSize: 17),
                     ),
@@ -62,7 +64,7 @@ class _ChatCardState extends State<ChatCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      widget.topMessage,
+                      widget.topMessage!,
                       style: const TextStyle(
                           fontWeight: FontWeight.w400,
                           color: Color(0xFF797C7B),

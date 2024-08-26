@@ -98,50 +98,55 @@ class _SignInState extends State<SignIn> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 100),
-                  const Logo(width: 120, height: 50, fontSize: 30),
-                  const BigTitle(text: "Sign into your account"),
-                  Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        CustomTextField(
-                          name: "Email",
-                          controller: emailController,
-                          hintText: "ex: jon.smith@email.com",
-                          isPassword: false,
-                          validator: validateEmail,
-                        ),
-                        CustomTextField(
-                          name: "Password",
-                          controller: passwordController,
-                          hintText: "********",
-                          isPassword: true,
-                          validator: validatePassword,
-                        ),
-                        CustomButton(
-                          name: 'SIGN IN',
-                          login: true,
-                          formKey: _formKey,
-                          controllers: [emailController, passwordController],
-                          onPressed: () => _submitForm(context),
-                        ),
-                        const SizedBox(height: 40),
-                        LinkedText(
-                          description: "Don’t have an account?",
-                          linkedText: " SIGN UP",
-                          navigateTo: const SignUp(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(height : 80),
+                          const Logo(width: 144, height: 40, fontSize: 30),
+                          const BigTitle(text: "Sign into your account"),
+                          Form(
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                CustomTextField(
+                                  name: "Email",
+                                  controller: emailController,
+                                  hintText: "ex: jon.smith@email.com",
+                                  validator: validateEmail,
+                                  isPassword: false,
+                                ),
+                                CustomTextField(
+                                  name: "Password",
+                                  controller: passwordController,
+                                  hintText: "********",
+                                  validator: validatePassword,
+                                  isPassword: true,
+                                ),
+                                CustomButton(
+                                  name: 'SIGN IN',
+                                  controllers: [
+                                    emailController,
+                                    passwordController
+                                  ],
+                                  formKey: _formKey,
+                                  login: true,
+                                  // isPassword: true,
+                                  onPressed: () {
+                                    _submitForm(context);
+                                  },
+                                ),
+                                const SizedBox(height: 40),
+                                LinkedText(
+                                  description: "Don’t have an account?",
+                                  linkedText: " SIGN UP",
+                                  navigateTo: SignUp(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    
+            )));
       },
     );
   }

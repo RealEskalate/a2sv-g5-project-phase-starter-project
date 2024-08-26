@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../../authentication/domain/entity/user.dart';
 import '../../domain/entity/product.dart';
 
 import '../pages/detail_page.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key, required this.product});
+  const ProductCard({super.key, required this.product, required this.user});
+  final User user;
   final Product product;
 
   @override
@@ -16,7 +18,7 @@ class ProductCard extends StatelessWidget {
               Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (BuildContext context) {
-                        return DetailPage(product: product);
+                        return DetailPage(product: product, user: user);
                       },
                     ),
                   );
@@ -26,7 +28,17 @@ class ProductCard extends StatelessWidget {
                 child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Image.network(product.image),
+                ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(8.0),
+                topRight: Radius.circular(8.0),
+              ),
+              child: Image.network(
+                product.image,
+                fit: BoxFit.cover,
+              ),
+            ),
+                
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Row(
@@ -38,7 +50,7 @@ class ProductCard extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -46,17 +58,20 @@ class ProductCard extends StatelessWidget {
                         product.seller.username,
                         style: const TextStyle(color: Colors.grey),
                       ),
-                      const Row(
-                        children: [
-                          Icon(
-                            Icons.star,
-                            color: Colors.yellow,
-                          ),
-                          Text(
-                            "(5)",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: const Row(
+                          children: [
+                            Icon(
+                              Icons.star,
+                              color: Colors.yellow,
+                            ),
+                            Text(
+                              "(5)",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -95,7 +110,7 @@ class TextFieldCard extends StatelessWidget {
             maxLines: area ? 4 : 1,
             decoration: InputDecoration(
                 filled: fill ? true : false,
-                fillColor: const Color(0xFFF3F3F3),
+                fillColor: const Color(0xFFF0F0F0),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(5)),
                 enabledBorder: OutlineInputBorder(
@@ -105,7 +120,7 @@ class TextFieldCard extends StatelessWidget {
                         width: fill ? 2.0 : 1.0)),
                 focusedBorder: const OutlineInputBorder(
                     borderSide: BorderSide(
-                        color: Color.fromARGB(255, 212, 224, 208), width: 2))),
+                        color: Color.fromARGB(255, 83, 122, 249), width: 2))),
           ),
           dollar
               ? Positioned(

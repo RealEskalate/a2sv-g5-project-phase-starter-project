@@ -20,6 +20,15 @@ class UserModel extends User {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     print("Changingggg");
     return UserModel(
+      id: json['_id'],
+      email: json['email'],
+      username: json['name'],
+      password: json['password'] ?? '',
+    );
+  }
+  factory UserModel.fromJsonRegister(Map<String, dynamic> json) {
+    print("Changingggg");
+    return UserModel(
       id: json['id'],
       email: json['email'],
       username: json['name'],

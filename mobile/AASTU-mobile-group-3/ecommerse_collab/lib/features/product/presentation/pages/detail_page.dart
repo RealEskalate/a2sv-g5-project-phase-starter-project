@@ -1,7 +1,10 @@
+// import 'package:ecommerce_clean/features/product/domain/entities/product.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../service_locator.dart';
+import '../../../authentication/domain/entity/user.dart';
+import '../../../chat/presentation/pages/chat_page.dart';
 import '../../domain/entity/product.dart';
 import '../../domain/usecase/add_product.dart';
 import '../../domain/usecase/delete_product.dart';
@@ -10,13 +13,15 @@ import '../../domain/usecase/get_product.dart';
 import '../../domain/usecase/update_product.dart';
 import '../bloc/blocs.dart';
 import '../bloc/events.dart';
-import '../bloc/states.dart';
 
+import '../bloc/states.dart';
+import 'home_page.dart';
 import 'update_page.dart';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({super.key, required this.product});
+  const DetailPage({super.key, required this.product, required this.user});
   final Product product;
+  final User user;
 
   @override
   State<DetailPage> createState() => _DetailPageState();
@@ -43,7 +48,7 @@ class _DetailPageState extends State<DetailPage> {
                   color: (current != int.parse(number))
                       ? const Color.fromARGB(255, 236, 236, 247)
                           .withOpacity(0.5)
-                      : const Color.fromARGB(255, 7, 80, 214)),
+                      :  const Color(0xFF3E50F3)),
             ],
           ),
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -57,6 +62,36 @@ class _DetailPageState extends State<DetailPage> {
                         ? Colors.white
                         : Colors.black)),
           )),
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Delete Product"),
+        content: const Text("Are you sure you want to delete this product?"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              context.read<ProductBloc>().add(
+                  DeleteProductEvent(productId: widget.product.id));
+              Navigator.of(context).pop(); // Close the dialog
+              Navigator.of(context).pop(); // Go back to the previous screen
+            },
+            child: const Text(
+              "Delete",
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -94,7 +129,9 @@ class _DetailPageState extends State<DetailPage> {
                           icon: const Icon(Icons.arrow_back_ios_new_rounded,
                               size: 18, color: Colors.blue),
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) =>
+                                    HomePage(user: widget.user)));
                           },
                         ),
                       ))
@@ -173,43 +210,60 @@ class _DetailPageState extends State<DetailPage> {
                     style: const TextStyle(color: Color(0xFF666666)),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      top: 15.0, bottom: 3, left: 10, right: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      // BlocBuilder<ProductBloc, ProductState>(
-                      // builder: (context, state) {
-                      // return
-                      BlocBuilder<ProductBloc, ProductState>(
-                        builder: (context, state) {
-                          return OutlinedButton(
-                              style: ButtonStyle(
-                                  side: WidgetStateProperty.all<BorderSide>(
-                                      const BorderSide(
-                                    color: Colors.red,
-                                    width: 1,
-                                  )),
-                                  shape: WidgetStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(12)))),
-                              onPressed: () {
-                                context.read<ProductBloc>().add(
-                                    DeleteProductEvent(
-                                        productId: widget.product.id));
-
-                                Navigator.of(context).pop();
+                widget.user == widget.product.seller
+                    ? Padding(
+                        padding: const EdgeInsets.only(
+                            top: 15.0, bottom: 3, left: 10, right: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            BlocBuilder<ProductBloc, ProductState>(
+                              builder: (context, state) {
+                                return OutlinedButton(
+                                    style: ButtonStyle(
+                                        side: MaterialStateProperty.all<
+                                                BorderSide>(
+                                            const BorderSide(
+                                          color: Colors.red,
+                                          width: 1,
+                                        )),
+                                        shape: MaterialStateProperty.all<
+                                                RoundedRectangleBorder>(
+                                            RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        12)))),
+                                    onPressed: () {
+                                      _showDeleteDialog(context);
+                                    },
+                                    child: const Text("DELETE",
+                                        style: TextStyle(color: Colors.red)));
                               },
-                              child: const Text("DELETE",
-                                  style: TextStyle(color: Colors.red)));
-                        },
-                      ),
-                      // },
-                      // ),
-                      ElevatedButton(
+                            ),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue[800],
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8))),
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (BuildContext context) {
+                                  return UpdateProduct(
+                                    product: widget.product,
+                                    user: widget.user,
+                                  );
+                                }));
+                              },
+                              child: const Text(
+                                "UPDATE",
+                                style: TextStyle(
+                                    color: Color.fromARGB(255, 210, 206, 206)),
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    : ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue[800],
                             shape: RoundedRectangleBorder(
@@ -217,18 +271,15 @@ class _DetailPageState extends State<DetailPage> {
                         onPressed: () {
                           Navigator.of(context).push(MaterialPageRoute(
                               builder: (BuildContext context) {
-                            return UpdateProduct(product: widget.product);
+                            return ChatPage();
                           }));
                         },
                         child: const Text(
-                          "UPDATE",
+                          "Contact the Seller",
                           style: TextStyle(
                               color: Color.fromARGB(255, 210, 206, 206)),
                         ),
                       )
-                    ],
-                  ),
-                )
               ],
             ),
           ),

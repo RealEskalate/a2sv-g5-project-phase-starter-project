@@ -24,7 +24,7 @@ class _OnboardingState extends State<Onboarding>
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 10), () async {
+    Future.delayed(Duration(seconds: 5), () async {
       final cache = await SharedPreferences.getInstance();
       final isLoggedIn = cache.getString('token') != null;
 

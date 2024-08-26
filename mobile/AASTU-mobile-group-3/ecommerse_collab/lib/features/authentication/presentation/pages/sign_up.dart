@@ -154,6 +154,7 @@ class _SignUpState extends State<SignUp> {
                               ),
                             ],
                           ),
+                          SizedBox(height: 15),
                           CustomButton(
                             name: "SIGN UP",
                             login: false,

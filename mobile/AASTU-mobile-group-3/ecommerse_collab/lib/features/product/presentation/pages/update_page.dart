@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../../../service_locator.dart';
+import '../../../authentication/domain/entity/user.dart';
 import '../../domain/entity/product.dart';
 import '../../domain/usecase/add_product.dart';
 import '../../domain/usecase/delete_product.dart';
@@ -19,8 +20,9 @@ import 'detail_page.dart';
 import '../widgets/widgets.dart';
 
 class UpdateProduct extends StatefulWidget {
-  const UpdateProduct({super.key, required this.product});
+  const UpdateProduct({super.key, required this.product, required this.user});
   final Product product;
+  final User user;
   @override
   State<UpdateProduct> createState() => _UpdateProductState();
 }
@@ -142,7 +144,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                       margin: const EdgeInsets.all(6),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[800],
+                            backgroundColor:  const Color(0xFF3E50F3),
                             minimumSize: const Size(366, 50),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8))),
@@ -184,7 +186,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                                 description: description.text,
                                 image: widget.product.image,seller: widget.product.seller
                               );
-                            return DetailPage(product: product);
+                            return DetailPage(product: product, user: widget.user);
                           }));
                           });
                           Navigator.of(context).push(MaterialPageRoute(
@@ -198,7 +200,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                                 image: widget.product.image,
                                 seller: widget.product.seller
                               );
-                            return DetailPage(product: product);
+                            return DetailPage(product: product, user: widget.user,);
                           }));
                         },
                         child: const Text(

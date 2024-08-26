@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
 func InitRoutes(r *gin.Engine, client *mongo.Client) {
 
 	r.MaxMultipartMemory = 8 << 20
@@ -24,8 +25,6 @@ func InitRoutes(r *gin.Engine, client *mongo.Client) {
 	tokenCollection := client.Database("Blog").Collection("Tokens")
 	otpCollection := client.Database("Blog").Collection("OTPs")
 	profileCollection := client.Database("Blog").Collection("profile")
-	commentCollection := repository.NewMongoCollection(client.Database("Blog").Collection("Comments"))
-	likeCollection := repository.NewMongoCollection(client.Database("Blog").Collection("Likes"))
 
 	userMockCollection := repository.NewMongoCollection(userCollection)
 	blogMockCollection := repository.NewMongoCollection(blogCollection)
@@ -38,8 +37,6 @@ func InitRoutes(r *gin.Engine, client *mongo.Client) {
 	tokenRepo := repository.NewTokenRepository(tokenMockCollection)
 	otpRepo := repository.NewOtpRepository(otpMockCollection)
 	profileRepo := repository.NewProfileRepository(profileMockCollection)
-	commentRepo := repository.NewCommentRepository(commentCollection)
-	likeRepo := repository.NewLikeRepository(likeCollection)
 
 	userUsecase := usecases.NewUserUsecase(userRepo, tokenRepo, jwtService)
 	otpUsecase := usecases.NewOTPUsecase(otpRepo, userRepo)
@@ -54,12 +51,5 @@ func InitRoutes(r *gin.Engine, client *mongo.Client) {
 
 	profileUsecase := usecases.NewProfileUsecase(profileRepo)
 	NewProfileRoutes(r, profileUsecase, jwtService)
-
-	commentUsecase := usecases.NewCommentUsecase(commentRepo)
-	NewCommentRouter(r, commentUsecase, otpUsecase, jwtService)
-
-	likeUsecase := usecases.NewLikeUsecase(likeRepo)
-	NewLikeRouter(r, likeUsecase, otpUsecase, jwtService)
-
 
 }

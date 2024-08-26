@@ -88,17 +88,17 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Container(
                       margin: EdgeInsets.only(top: 4),
-                      child: SizedBox(
-                          width: 80,
-                          height: 80,
-                          child: ImagePickerIconButton()),
+                      child: ClipOval(
+                        child: ImagePickerIconButton(),
+                      ),          
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/logout');
-                      },
-                      child: Container(
-                        padding: EdgeInsets.only(top: 4, left: 10),
+                    // GestureDetector(
+                    //   onTap: () {
+                    //     Navigator.pushNamed(context, '/logout');
+                    //   },
+                      // child:
+                       Container(
+                        padding: EdgeInsets.only(top: 4),
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -132,13 +132,36 @@ class _HomePageState extends State<HomePage> {
                               ])
                             ]),
                       ),
-                    ),
+                    // ),
                   ],
                 ),
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    Container(
+                        decoration: BoxDecoration(
+                            // border: Border.all(
+                            // color: Color.fromRGBO(221, 221, 221, 1), width: 2),
+                            borderRadius: BorderRadius.circular(9)),
+                        child: GestureDetector(
+                          onTap: () {
+                            SocketService().connectToServer();
+                            Navigator.pushNamed(context, '/HomeChat');
+                          },
+                          child: Image(
+                              width: 23,
+                              height: 23,
+                              image: AssetImage('assets/message.png')),
+                        )),
+
+
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.05,
+                    ),
+
+
+                    
                     Container(
                         decoration: BoxDecoration(
                             // border: Border.all(
@@ -172,30 +195,9 @@ class _HomePageState extends State<HomePage> {
                                       ],
                                     ));
                           },
-                          child: Image(
-                              width: 40,
-                              height: 40,
-                              image: AssetImage(
-                                  'assets/icons8-notification-bell-24.png')),
+                          child: Icon(Icons.logout, color: Colors.red[600],),
                         )),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.05,
-                    ),
-                    Container(
-                        decoration: BoxDecoration(
-                            // border: Border.all(
-                            // color: Color.fromRGBO(221, 221, 221, 1), width: 2),
-                            borderRadius: BorderRadius.circular(9)),
-                        child: GestureDetector(
-                          onTap: () {
-                            SocketService().connectToServer();
-                            Navigator.pushNamed(context, '/HomeChat');
-                          },
-                          child: Image(
-                              width: 30,
-                              height: 30,
-                              image: AssetImage('assets/message.png')),
-                        )),
+                    
                   ],
                 ),
 
@@ -230,11 +232,14 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Available Products",
+                    'Available Products',
+                    
+                    textAlign: TextAlign.left,
                     style: TextStyle(
-                        fontFamily: "Poppins",
-                        fontSize: 24,
-                        fontWeight: FontWeight.w600),
+                      color:Color.fromRGBO(62, 62, 62, 1),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 22,
+                    ),
                   ),
                   //   Container(
                   //       decoration: BoxDecoration(
@@ -335,78 +340,85 @@ class OverflowCard extends StatelessWidget {
       child: Card(
         elevation: 2.0,
         margin: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16.0),
-                  topRight: Radius.circular(16.0)),
-              child: Image(
-                fit: BoxFit.cover,
-                width: MediaQuery.of(context).size.width * 1,
-                height: MediaQuery.of(context).size.height * 0.3,
-                image: NetworkImage(product.imagePath), // For local image
-              ),
-            ), // For network image
-            SizedBox(height: 5.0),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 16.0, top: 4, bottom: 12, right: 21),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        product.name,
-                        style: GoogleFonts.poppins(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(height: 8.0),
-                      Text('Ecommerce Items',
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.poppins(
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w400,
-                              color: Color.fromRGBO(217, 217, 217, 1))),
-                    ],
-                  ),
-                  SizedBox(height: 8.0),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        '\$' + product.price.toString(),
-                        overflow: TextOverflow.fade,
-                        style: GoogleFonts.sora(
-                            fontSize: 14, fontWeight: FontWeight.w500),
-                      ),
-                      SizedBox(height: 8.0),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.star,
-                            size: 24,
-                            color: Color.fromARGB(255, 255, 215, 0),
-                          ),
-                          Text("(4.0)",
-                              style: GoogleFonts.sora(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color.fromARGB(255, 170, 170, 170))),
-                        ],
-                      )
-                    ],
-                  ),
-                ],
-              ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.0),
             ),
-          ],
+
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16.0),
+                    topRight: Radius.circular(16.0)),
+                child: Image(
+                  fit: BoxFit.cover,
+                  width: MediaQuery.of(context).size.width * 1,
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  image: NetworkImage(product.imagePath), // For local image
+                ),
+              ), // For network image
+              SizedBox(height: 5.0),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 16.0, top: 4, bottom: 12, right: 21),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.name,
+                          style: GoogleFonts.poppins(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(height: 8.0),
+                        Text('Ecommerce Items',
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.w400,
+                                color: Color.fromRGBO(217, 217, 217, 1))),
+                      ],
+                    ),
+                    SizedBox(height: 8.0),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '\$' + product.price.toString(),
+                          overflow: TextOverflow.fade,
+                          style: GoogleFonts.sora(
+                              fontSize: 14, fontWeight: FontWeight.w500),
+                        ),
+                        SizedBox(height: 8.0),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.star,
+                              size: 24,
+                              color: Color.fromARGB(255, 255, 215, 0),
+                            ),
+                            Text("(4.0)",
+                                style: GoogleFonts.sora(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color.fromARGB(255, 170, 170, 170))),
+                          ],
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

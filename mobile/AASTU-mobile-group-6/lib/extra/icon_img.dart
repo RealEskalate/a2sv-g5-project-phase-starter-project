@@ -26,8 +26,22 @@ class _ImagePickerIconButtonState extends State<ImagePickerIconButton> {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      icon: _image == null ? Icon(Icons.rectangle_rounded,size: 45.0,color: Color.fromARGB(255, 204, 204, 204),) : Image.file(_image!),
-      onPressed: _pickImage,
+      icon: _image == null
+          ? Icon(
+              Icons.circle_rounded,
+              size: 60.0, 
+              color: Color.fromARGB(255, 204, 204, 204),
+            )
+          : ClipOval(
+              child: Image.file(
+                _image!,
+                width: 50.0,  
+                height: 50.0,
+                fit: BoxFit.cover, 
+              ),
+            ),      
+        onPressed: _pickImage,
+        // iconSize: 80.0,
     );
   }
 }

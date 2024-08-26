@@ -94,58 +94,104 @@ class _DetailsState extends State<DetailsPage> {
                       image: NetworkImage(widget.item.imagePath),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(height: 16),
-                          Text(
-                            "Men's Shoes",
-                            style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: Color.fromARGB(255, 170, 170, 170),
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            widget.item.name,
-                            style: GoogleFonts.poppins(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          SizedBox(height: 16),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.star,
-                                    size: 26,
-                                    color: Color.fromARGB(255, 255, 215, 0),
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'product',
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontFeatures: [FontFeature.enable('palt')],
+                                    fontSize: 10,
                                   ),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    "(4.0)",
-                                    style: GoogleFonts.sora(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color.fromARGB(255, 170, 170, 170),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Text(
-                                "\$${widget.item.price}",
-                                style: GoogleFonts.sora(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
                                 ),
-                              ),
-                            ],
-                          ),
+                                Row(
+                                  children: [
+                                    Icon(Icons.star,
+                                        color: Color.fromRGBO(255, 215, 0, 1),
+                                        size: 19),
+                                    Text('(${4.5})',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                        )),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 4),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(widget.item.name,
+                                    style: TextStyle(
+                                      color: Color.fromRGBO(62, 62, 62, 1),
+                                      fontWeight: FontWeight.w600,
+                                      fontFeatures: [
+                                        FontFeature.enable('palt')
+                                      ],
+                                      fontSize: 24,
+                                    )),
+                                Text(
+                                  '\$${widget.item.price}',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
+                                )
+                              ],
+                            ),
+                          // Text(
+                          //   "Men's Shoes",
+                          //   style: GoogleFonts.poppins(
+                          //     fontSize: 16,
+                          //     fontWeight: FontWeight.w400,
+                          //     color: Color.fromARGB(255, 170, 170, 170),
+                          //   ),
+                          // ),
+                          // SizedBox(height: 8),
+                          // Text(
+                          //   widget.item.name,
+                          //   style: GoogleFonts.poppins(
+                          //     fontSize: 24,
+                          //     fontWeight: FontWeight.w600,
+                          //   ),
+                          // ),
+                          // SizedBox(height: 16),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     Row(
+                          //       children: [
+                          //         Icon(
+                          //           Icons.star,
+                          //           size: 26,
+                          //           color: Color.fromARGB(255, 255, 215, 0),
+                          //         ),
+                          //         SizedBox(width: 4),
+                          //         Text(
+                          //           "(4.0)",
+                          //           style: GoogleFonts.sora(
+                          //             fontSize: 16,
+                          //             fontWeight: FontWeight.w400,
+                          //             color: Color.fromARGB(255, 170, 170, 170),
+                          //           ),
+                          //         ),
+                          //       ],
+                          //     ),
+                          //     Text(
+                          //       "\$${widget.item.price}",
+                          //       style: GoogleFonts.sora(
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w500,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                           SizedBox(height: 20),
                           Text(
                             "Sizes:",

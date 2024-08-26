@@ -61,6 +61,7 @@ class Main extends StatelessWidget {
     return BlocProvider(
       create: (context) => sl.get<HomeBloc>()..add(GetProductsEvent()),
       child: MaterialApp(
+        theme: ThemeData(textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme,),),
         debugShowCheckedModeBanner: false,
         // initial for splash page
         initialRoute: '/splash',

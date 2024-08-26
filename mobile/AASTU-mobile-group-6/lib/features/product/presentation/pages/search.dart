@@ -95,8 +95,9 @@ class _searchPageState extends State<searchPage> {
                             icon: Icon(Icons.arrow_forward_ios),
                           ),
                           border: InputBorder.none,
-                          hintText: "  Leather",
+                          hintText: "Leather",
                           hintStyle: TextStyle(color: Colors.grey.shade400),
+                          contentPadding: EdgeInsets.only(left: 16, top: 10),
                         ),
                         onSubmitted: (value) {
                           _performSearch();

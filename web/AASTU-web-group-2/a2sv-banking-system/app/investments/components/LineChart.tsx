@@ -135,7 +135,7 @@ export default function Linechart() {
     );
   const { yearlyTotalInvestment } = data;
   return (
-    <Card className="bg-white rounded-3xl border-none dark:bg-[#050914] dark:border dark:border-[#333B69]">
+    <Card className="bg-white rounded-3xl border-none dark:bg-[#020817] dark:border dark:border-[#333B69]">
       <CardContent className="pt-8 pb-6 w-full">
         <ChartContainer config={chartConfig}>
           <LineChart

@@ -142,7 +142,7 @@ export default function Monthly() {
   // console.log(data);
   const { monthlyRevenue } = data;
   return (
-    <Card className="bg-white rounded-3xl border-none dark:bg-[#050914] dark:border dark:border-[#333B69]">
+    <Card className="bg-white rounded-3xl border-none dark:bg-[#020817] dark:border dark:border-[#333B69]">
       <CardContent className="pt-8 pb-6 ">
         <ChartContainer config={chartConfig}>
           <LineChart

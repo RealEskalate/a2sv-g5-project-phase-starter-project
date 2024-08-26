@@ -7,6 +7,7 @@ import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
 import {
+  activeloans,
   activeloansall,
   activeloansdetaildata,
 } from "./back/ActiveLoanController";
@@ -20,6 +21,7 @@ import {
   TableFooter,
   TableRow,
 } from "@/app/loans/components/table";
+import { SheetDemo } from "./components/Createloan";
 
 // const loanid = "66c3054e80b7cf4a6c2f7709";
 // const token ="eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJsc2FqZGxzanNuIiwiaWF0IjoxNzI0MTU1NzkzLCJleHAiOjE3MjQyNDIxOTN9.wi7oRgF81zMp1v8tPzRPmAj4GOLaYy4bV_TMVvtWmzg2mjrTThiruT_Fswcyu1eq";
@@ -59,6 +61,7 @@ export default function Home() {
   const [data, setdata] = useState<loantype>();
   const [page, setpage] = useState<number>(0);
   const [total, settotal] = useState<number>(1);
+  const [toggle, settoggle] = useState<boolean>(false);
   const numbers = [];
 
   // Loop from 0 to 5
@@ -109,12 +112,12 @@ export default function Home() {
     };
 
     fetchData();
-  }, [access_token, page]);
+  }, [access_token, page, toggle]);
 
   if (loading || Loading)
     return (
       <div className="bg-gray-100 dark:bg-gray-900 p-6 animate-pulse">
-        <div className="flex justify-between flex-wrap lg:flex-nowrap gap-4">
+        <div className="flex justify-between flex-wrap flex-wrap gap-4">
           <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
           <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
           <div className="bg-gray-300 dark:bg-gray-700 rounded-lg w-1/3 h-20"></div>
@@ -141,8 +144,20 @@ export default function Home() {
   const handlePage = (page: number) => {
     setpage(page);
   };
+  type Form = {
+    loanAmount: number;
+    duration: number;
+    interestRate: number;
+    type: string;
+  };
+  const handleform = async (data: Form) => {
+    // console.log('handle',data);
+    const res = await activeloans(access_token, data);
+    settoggle(!toggle);
+  }
+
   return (
-    <div className="bg-gray-100 p-6 dark:bg-[#020817]">
+    <div className="bg-gray-100 p-6 dark:bg-[#090b0e]">
       <div className="flex justify-between gap-8 overflow-x-auto [&::-webkit-scrollbar]:hidden ">
         <Card1
           text="Personal Loans"
@@ -162,13 +177,13 @@ export default function Home() {
           num={data?.businessLoan}
           // num = {2}
         />
-        <Card1 text="Custom Loans" img="/custom.svg" num="Choose Money" />
+        <SheetDemo handleform={handleform} />
       </div>
       <div className="my-4 text-2xl font-bold text-[#333B69] dark:text-[#9faaeb]">
         Active Loans Overview
       </div>
       <Table className="bg-white shadow-1 rounded-3xl  dark:border dark:border-[#333B69] ">
-        <TableHeader className="dark:bg-[#050914]">
+        <TableHeader className="dark:bg-[#020817]">
           <TableRow className="text-[#718EBF]">
             <TableHead className="w-[100px] text-[#718EBF] hidden md:table-cell">
               SL No
@@ -188,7 +203,7 @@ export default function Home() {
           </TableRow>
         </TableHeader>
         <TableBody className="dark:bg-[#050914] ">
-          {f?.map((invoice: invoices, idx:number) => (
+          {f?.map((invoice: invoices, idx: number) => (
             <TableRow key={invoice.serialNumber}>
               <TableCell
                 className={
@@ -197,7 +212,8 @@ export default function Home() {
                     : "font-medium text-[#FE5C73] hidden md:table-cell dark:text-[#9faaeb]"
                 }
               >
-               {page}{idx+1}
+                {page}
+                {idx + 1}
               </TableCell>
               <TableCell
                 className={
@@ -270,11 +286,15 @@ export default function Home() {
       <div className="flex justify-center items-center pt-5">
         <div className="flex flex-wrap">
           <button
-            onClick={() => handlePage(page - 1)}
+            onClick={() => {
+              if (page > 0) {
+                handlePage(page - 1);
+              }
+            }}
             className={
               page > 0
-                ? "mx-3 text-slate-400 hover:text-slate-700 dark:text-[#9faaeb] font-bold text-xl"
-                : "hidden"
+                ? "mx-3 text-slate-600 hover:text-slate-700 dark:text-[#9faaeb] font-bold text-xl"
+                : "cursor-context-menu mx-3 text-slate-400  dark:text-[#9fabeb6b] font-bold text-xl"
             }
           >
             {"< "}Previous
@@ -303,7 +323,7 @@ export default function Home() {
             className={
               page < total - 1
                 ? "mx-3 text-slate-400 hover:text-slate-700 dark:text-[#9faaeb] font-bold text-xl"
-                : "hidden"
+                : "cursor-context-menu mx-3 text-slate-400  dark:text-[#9fabeb6b] font-bold text-xl"
             }
           >
             Next{" >"}

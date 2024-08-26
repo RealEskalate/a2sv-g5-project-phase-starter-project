@@ -21,6 +21,12 @@ func NewSignupRoute(config *infrastructure.Config, DB mongo.Database, SignupRout
 		SignupUsecase: usecase,
 	}
 
+	backgroundTask := infrastructure.NewBackgroundTask(usecase)
+
+	go backgroundTask.StartCronJob()
+
+
+
 	SignupRoute.POST("/signup", signup.Signup)
 	SignupRoute.POST("/signup/verify", signup.VerifyOTP)
 	SignupRoute.POST("/reset", signup.ForgotPassword)

@@ -4,6 +4,8 @@ import (
 	domain "blogs/Domain"
 	"blogs/mongo"
 	"context"
+	"errors"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -55,7 +57,7 @@ func (s *unverifiedUserRepo) UpdateOTP(ctx context.Context, email string, otp st
 	// Update to set the reset_token
 	update := bson.M{"$set": bson.M{"otp": otp, "expiresat": expiry}}
 
-	// Execute the update
+	// Execute the update3
 	_, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return unverifiedUser, err
@@ -64,4 +66,21 @@ func (s *unverifiedUserRepo) UpdateOTP(ctx context.Context, email string, otp st
 	// Return the updated user
 	return unverifiedUser, nil
 
+}
+
+
+func (r *unverifiedUserRepo) DeleteUnverifiedUsersBefore(ctx context.Context, cutoffDate time.Time) error {
+    collection := r.database.Collection(r.collection)
+    filter := bson.M{
+        "created_at": bson.M{"$lt": cutoffDate},
+    }
+    result, err := collection.DeleteMany(ctx, filter)
+	fmt.Println("WARNING: Deleting unverified users before", cutoffDate)
+    if err != nil {
+        return err
+    }
+    if result.DeletedCount == 0 {
+        return errors.New("no ones Data expired to delete")
+    }
+    return nil
 }

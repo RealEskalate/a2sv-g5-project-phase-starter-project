@@ -93,7 +93,7 @@ func (u *SignupUseCase) Create(c context.Context, user domain.User) interface{} 
 	if err != nil {
 		return &domain.ErrorResponse{Message: "Error creating token", Status: 500}
 	}
-
+	newuser.Created_at = time.Now()
 	err = infrastructure.SendOTPEmail(user.Email, otp)
 
 	if err != nil {
@@ -295,4 +295,19 @@ func (u *SignupUseCase) HandleUnverifiedUser(c context.Context, user domain.Emai
 	return &domain.SuccessResponse{Message: "OTP send to your Email Verify Your Account", Data: "", Status: 201}
   
   }
+  
+
+//   background Task that delete the user that stays unverified over 2 week
+
+func (u *SignupUseCase) DeleteOldUnverifiedUsers(c context.Context , days int) interface{} {
+	ctx, cancel := context.WithTimeout(context.Background(), u.contextTimeout)
+	defer cancel()
+
+    cutoffDate := time.Now().AddDate(0, 0, -days)
+    return u.UnverifiedUserRepository.DeleteUnverifiedUsersBefore(ctx , cutoffDate)
+	
+}
+	
+
+
   

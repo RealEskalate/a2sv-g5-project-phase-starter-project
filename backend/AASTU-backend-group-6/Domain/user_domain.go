@@ -58,6 +58,7 @@ type SignupUseCase interface {
 	ResetPassword(c context.Context, password ResetPasswordRequest, token string) interface{}
 	HandleUnverifiedUser(c context.Context, email Email) interface{}
 	// ResendToken(c context.Context , email User) interface{}
+	DeleteOldUnverifiedUsers(c context.Context , days int) interface{}
 }
 
 type UserUseCase interface {

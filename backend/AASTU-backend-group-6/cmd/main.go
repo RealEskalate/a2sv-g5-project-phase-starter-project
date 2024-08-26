@@ -5,11 +5,15 @@ import (
 	infrastructure "blogs/Infrastructure"
 	"fmt"
 
+	xss "github.com/araujo88/gin-gonic-xss-middleware"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	server := gin.Default()
+	 var xssMdlwr xss.XssMw
+    server.Use(xssMdlwr.RemoveXss())
 
 	config, err := infrastructure.LoadEnv()
 	if err != nil {

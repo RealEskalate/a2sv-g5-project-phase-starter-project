@@ -124,3 +124,5 @@ func (uc *UserUseCase) PromoteandDemoteUser(c context.Context , userId string , 
 	return &domain.SuccessResponse{Message: "User promoted successfully", Status: 200}
 	
 }
+
+

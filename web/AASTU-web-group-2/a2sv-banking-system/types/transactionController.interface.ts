@@ -20,7 +20,7 @@ export interface TransactionData {
 }
 
 export interface GetTransactionsResponse {
-  transactions: TransactionResponse[];
+  transactions: TransactionResponse;
 }
 
 export interface PostDepositTransactionRequest {

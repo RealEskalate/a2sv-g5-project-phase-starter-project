@@ -30,10 +30,10 @@ func (ac *AuthController) AuthenticationMiddleware() gin.HandlerFunc {
 			}
 		}()
 		claims, err := GetClaims(c)
-		if err != nil{
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-            c.Abort()
-            return
+			c.Abort()
+			return
 		}
 		c.Set("claims", claims)
 		c.Next()

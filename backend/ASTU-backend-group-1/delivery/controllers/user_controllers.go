@@ -22,6 +22,7 @@ func NewUserController(userUsecase domain.UserUsecase) *UserController {
 	return &UserController{
 		userUsecase: userUsecase,
 	}
+
 }
 
 // Register godoc
@@ -172,6 +173,18 @@ func (c *UserController) LoginUser(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, gin.H{"access_token": access_token})
 }
 
+//logout user
+
+func (c *UserController) LogoutUser(ctx *gin.Context) {
+	email := ctx.MustGet("claims").(*domain.Claims).Email
+	err := c.userUsecase.Logout(email)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
+
+}
+
 // GetUsers godoc
 // @Summary      Get users
 // @Description  Retrieves users by optional username or email query
@@ -183,15 +196,6 @@ func (c *UserController) LoginUser(ctx *gin.Context) {
 // @Failure      404 {object} map[string]string "error"
 // @Router       /users [get]
 // logout user
-func (c *UserController) LogoutUser(ctx *gin.Context) {
-	email := ctx.MustGet("claims").(*domain.Claims).Email
-	err := c.userUsecase.Logout(email)
-	if err != nil {
-		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
-	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
-}
-
 func (c *UserController) GetUsers(ctx *gin.Context) {
 	username := ctx.Query("username")
 	email := ctx.Query("email")

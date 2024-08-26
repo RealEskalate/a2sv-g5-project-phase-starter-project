@@ -25,7 +25,7 @@ export function New({ invoice }: { invoice : invoices }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button className="">repay</button>
+        <button className="">Details</button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>

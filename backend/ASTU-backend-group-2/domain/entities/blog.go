@@ -18,7 +18,7 @@ type Blog struct {
 	ID            primitive.ObjectID `json:"id,omitempty" bson:"_id"`
 	Author        *User              `json:"author,omitempty" bson:"author"`
 	AuthorName    string             `json:"author_name,omitempty" bson:"author_name"`
-	AuthorID      string             `json:"author_id,omitempty" bson:"author_id"`
+	AuthorID      primitive.ObjectID `json:"author_id,omitempty" bson:"author_id"`
 	Title         string             `json:"title,omitempty" bson:"title" binding:"required"`
 	Tags          []string           `json:"tags" bson:"tags"`
 	Content       string             `json:"content,omitempty" bson:"content" binding:"required"`

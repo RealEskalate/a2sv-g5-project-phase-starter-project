@@ -38,9 +38,15 @@ type ProfileController struct {
 func (pc *ProfileController) GetProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.Param("id")
+		claimUserID := c.MustGet("x-user-id").(string)
+		role := c.MustGet("x-user-role").(string)
 		user, err := pc.UserUsecase.GetUserById(c, userID)
 		if err != nil {
 			c.Error(err)
+			return
+		}
+		if userID != claimUserID && role != "admin" {
+			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
 			return
 		}
 
@@ -146,6 +152,9 @@ func (pc *ProfileController) ChangePassword() gin.HandlerFunc {
 func (pc *ProfileController) UpdateProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.Param("id")
+		claimUserID := c.MustGet("x-user-id").(string)
+		role := c.MustGet("x-user-role").(string)
+
 		var user entities.UserUpdate
 		if err := c.ShouldBindJSON(&user); err != nil {
 			if err == io.EOF {
@@ -155,7 +164,10 @@ func (pc *ProfileController) UpdateProfile() gin.HandlerFunc {
 			middleware.CustomErrorResponse(c, err)
 			return
 		}
-
+		if userID != claimUserID && role != "admin" {
+			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
+			return
+		}
 		updatedUser, err := pc.UserUsecase.UpdateUser(c, userID, &user)
 		if err != nil {
 			c.Error(err)
@@ -169,6 +181,14 @@ func (pc *ProfileController) UpdateProfile() gin.HandlerFunc {
 func (pc *ProfileController) DeleteProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userID := c.Param("id")
+		claimUserID := c.MustGet("x-user-id").(string)
+		role := c.MustGet("x-user-role").(string)
+
+		if userID != claimUserID && role != "admin" {
+			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
+			return
+		}
+
 		err := pc.UserUsecase.DeleteUser(c, userID)
 
 		if err != nil {

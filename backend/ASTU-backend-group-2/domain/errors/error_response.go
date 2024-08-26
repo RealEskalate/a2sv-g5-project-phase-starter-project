@@ -37,6 +37,7 @@ type ValidationErrorResponse struct {
 // General Errors
 var (
 	ErrInvalidToken      = errors.New("Invalid token")
+	ErrUnauthorized      = errors.New("unauthorized")
 	ErrUserNotFound      = errors.New("User not found")
 	ErrUserNotVerified   = errors.New("User is not verified")
 	ErrAlreadyVerified   = errors.New("User is already verified")

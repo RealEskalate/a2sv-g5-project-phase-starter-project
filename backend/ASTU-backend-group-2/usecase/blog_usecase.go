@@ -157,6 +157,7 @@ func (b *blogUsecase) CreateBlog(c context.Context, newBlog *forms.BlogForm, use
 
 	blog := entities.Blog{
 		Title:     newBlog.Title,
+		AuthorID:  newBlog.AuthorID,
 		Content:   newBlog.Content,
 		Tags:      newBlog.Tags,
 		CreatedAt: time.Now(),

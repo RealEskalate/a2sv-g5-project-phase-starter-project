@@ -114,7 +114,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
   ) {
     socketIOService.connect();
 
-    socketIOService.socket!.onConnect((_) {
+    socketIOService.socket.onConnect((_) {
       print('Connected to the socket server');
     });
   }

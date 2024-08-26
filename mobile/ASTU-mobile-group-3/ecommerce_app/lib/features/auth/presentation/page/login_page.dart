@@ -4,12 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/constants/constants.dart';
 import '../../../../core/themes/themes.dart';
+import '../../../../dependency_injection.dart';
 import '../../../../landing_page.dart';
-import '../../../product/presentation/widgets/fill_custom_button.dart';
+import '../../../chat/data/data_resources/socket_io_sesrvice.dart';
 import '../../../product/presentation/widgets/loading_dialog.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/cubit/user_input_validation_cubit.dart';
 import '../widgets/auth_widgets.dart';
+import '../widgets/reusable_button.dart';
 import 'signup_page.dart';
 
 // ignore: must_be_immutable
@@ -25,6 +27,7 @@ class LoginPage extends StatelessWidget {
         listener: (context, state) {
           if (state is LogInSuccessState) {
             Navigator.pop(context);
+            locator<SocketIOService>().connect();
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (_) => const LandingPage()));
           } else if (state is LoginErrorState) {
@@ -45,18 +48,19 @@ class LoginPage extends StatelessWidget {
                 ),
                 const Center(
                   child: Image(
-                    height: 80,
+                    height: 50,
+                    width: 144,
                     image: AssetImage(
-                      'assets/images/logo.png',
+                      'assets/images/Group 67.png',
                     ),
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height / 8,
+                  height: MediaQuery.of(context).size.height / 12,
                 ),
                 const Text(
                   'Sign into your account',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35),
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 26),
                 ),
                 const SizedBox(
                   height: 40,
@@ -79,27 +83,33 @@ class LoginPage extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: FillCustomButton(
-                        press: () {
-                          String? message =
-                              BlocProvider.of<UserInputValidationCubit>(context)
-                                  .state
-                                  .validate();
-                          if (message == null) {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return const LoadingDialog();
-                                });
-                            BlocProvider.of<AuthBloc>(context).add(LogInEvent(
-                                email: emailController.text.trim(),
-                                password: passwordController.text.trim()));
-                          } else {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(content: Text(message)));
-                          }
-                        },
-                        label: 'SIGN IN',
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            String? message =
+                                BlocProvider.of<UserInputValidationCubit>(
+                                        context)
+                                    .state
+                                    .validate();
+                            if (message == null) {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return const LoadingDialog();
+                                  });
+                              BlocProvider.of<AuthBloc>(context).add(LogInEvent(
+                                  email: emailController.text.trim(),
+                                  password: passwordController.text.trim()));
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(message)));
+                            }
+                          },
+                          child: const ReusableButton(
+                            lable: 'SIGN IN',
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -111,7 +121,11 @@ class LoginPage extends StatelessWidget {
                   key: const Key('click_sing'),
                   text: TextSpan(
                     text: 'Don\'t have an account?',
-                    style: const TextStyle(color: MyTheme.ecGrey, fontSize: 20),
+                    style: const TextStyle(
+                      color: MyTheme.ecGrey,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
                     children: [
                       TextSpan(
                         text: ' SIGN UP',

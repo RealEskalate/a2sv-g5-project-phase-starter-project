@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -165,7 +166,7 @@ class RemoteProductDataSourceImp implements RemoteProductDataSource {
       } else {
         result = await client.get(Uri.parse(url), headers: headerWithToken);
       }
-
+      //log(result.body);
       if (result.statusCode == 200) {
         if (id != null) {
           Map<String, dynamic> finalResult = json.decode(result.body);

@@ -60,7 +60,7 @@ function Dashboard() {
 
       try {
         const response = await fetch(
-          `https://bank-dashboard-rsf1.onrender.com/cards?page=${page}&size=2`,
+          `https://bank-dashboard-irbd.onrender.com/cards?page=${page}&size=2`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -72,7 +72,7 @@ function Dashboard() {
           if (response.status === 401 && refreshToken) {
             try {
               const refreshResponse = await fetch(
-                "https://bank-dashboard-rsf1.onrender.com/auth/refresh_token",
+                "https://bank-dashboard-irbd.onrender.com/auth/refresh_token",
                 {
                   method: "POST",
                   headers: {
@@ -89,7 +89,7 @@ function Dashboard() {
               const newAccessToken = refreshedTokens.data.access_token;
 
               const retryResponse = await fetch(
-                `https://bank-dashboard-rsf1.onrender.com/cards?page=${page}&size=2`,
+                `https://bank-dashboard-irbd.onrender.com/cards?page=${page}&size=2`,
                 {
                   headers: {
                     Authorization: `Bearer ${newAccessToken}`,

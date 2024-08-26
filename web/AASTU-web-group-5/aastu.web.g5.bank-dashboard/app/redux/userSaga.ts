@@ -13,7 +13,7 @@ interface FetchUserAction {
 // Function to fetch user data from the API
 function fetchUserData(username: string, token: string) {
   console.log(username,token,'token111111')
-  return axios.get(`https://bank-dashboard-rsf1.onrender.com/user/${username}`, {
+  return axios.get(`https://bank-dashboard-irbd.onrender.com/user/${username}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

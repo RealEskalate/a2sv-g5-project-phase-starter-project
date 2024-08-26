@@ -38,7 +38,7 @@ export default function Security() {
 
 		try {
 			const response = await axios.post(
-				`https://bank-dashboard-rsf1.onrender.com/auth/change_password`,
+				`https://bank-dashboard-irbd.onrender.com/auth/change_password`,
 				data,
 				{
 					headers: {

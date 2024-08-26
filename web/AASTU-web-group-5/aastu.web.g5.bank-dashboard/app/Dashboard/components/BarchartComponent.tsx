@@ -52,7 +52,7 @@ export default function Component() {
         // Fetch expenses and incomes data simultaneously
         const [expensesResponse, incomesResponse] = await Promise.all([
           axios.get(
-            "https://bank-dashboard-rsf1.onrender.com/transactions/expenses?page=0&size=7",
+            "https://bank-dashboard-irbd.onrender.com/transactions/expenses?page=0&size=7",
             {
               headers: {
                 Authorization: token,
@@ -60,7 +60,7 @@ export default function Component() {
             }
           ),
           axios.get(
-            "https://bank-dashboard-rsf1.onrender.com/transactions/incomes?page=0&size=7",
+            "https://bank-dashboard-irbd.onrender.com/transactions/incomes?page=0&size=7",
             {
               headers: {
                 Authorization: token,

@@ -115,7 +115,7 @@ const EditProfile = () => {
 		console.log(data, "savechanges1111", user.accessToken);
 		try {
 			const response = await axios.put(
-				"https://bank-dashboard-rsf1.onrender.com/user/update",
+				"https://bank-dashboard-irbd.onrender.com/user/update",
 				data,
 
 				{

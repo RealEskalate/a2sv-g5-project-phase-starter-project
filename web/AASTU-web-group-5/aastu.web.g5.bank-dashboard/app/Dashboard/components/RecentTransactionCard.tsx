@@ -44,7 +44,7 @@ const RecentTransactionCard = () => {
 
       try {
         const response = await axios.get<{ data: { content: Transaction[] } }>(
-          'https://bank-dashboard-rsf1.onrender.com/transactions?page=0&size=3',
+          'https://bank-dashboard-irbd.onrender.com/transactions?page=0&size=3',
           {
             headers: {
               Authorization: `Bearer ${user.accessToken}`,
@@ -65,7 +65,7 @@ const RecentTransactionCard = () => {
             const newAccessToken = refreshedTokens.data.access_token;
 
             const retryResponse = await axios.get<{ data: { content: Transaction[] } }>(
-              'https://bank-dashboard-rsf1.onrender.com/transactions?page=0&size=3',
+              'https://bank-dashboard-irbd.onrender.com/transactions?page=0&size=3',
               {
                 headers: {
                   Authorization: `Bearer ${newAccessToken}`,

@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_event.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_state.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/pages/HomeChat.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/models/product_models.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/detail_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/detail_event.dart';
@@ -319,9 +321,18 @@ class _DetailsState extends State<DetailsPage> {
                                         backgroundColor: Color(0xff3F51F3),
                                       ),
                                         onPressed: (){
-                                          BlocProvider.of<ChatBloc>(context).add(InitiateChatEvent(widget.item.sellerId.id));
+                                         context.read<ChatBloc>().add(InitiateChatEvent(widget.item.sellerId.id));
+                                         BlocListener<ChatBloc, ChatState>(
+                                           listener: (context, state){
+                                             if (state is ChatInitateLoaded){
+                                               Navigator.pushNamed(context, '/chatPage', arguments: {widget.item.sellerId.id, state.chat.chatid});
+                                             }
+                                             else{
+                                                showError(context, "Failed to initiate chat");
+                                             }
+                                           },);
                                           // context.read<ChatBloc>().add(InitiateChatEvent(widget.item.sellerId.id));
-                                          Navigator.pushNamed(context, '/chatPage', arguments: {widget.item.sellerId.id, ''});
+                                          
                                         },
                                         child: Row(
                                           children: [

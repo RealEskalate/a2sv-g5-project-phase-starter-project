@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:ecommerce_app_ca_tdd/features/chat/data/models/chat_models.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/chat_entity.dart';
 import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/message.dart';
@@ -15,14 +17,12 @@ import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/chat_
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/chat_bottom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
 
 class ChatPage extends StatelessWidget {
-  final List<String> params = [];
-  final SellerModel sellerID;
-  final String cht;
   final TextEditingController _messageController = TextEditingController();
   // final ChatEntity chat;
   // Dummy data for chat
@@ -43,28 +43,29 @@ class ChatPage extends StatelessWidget {
     '1',
   ];
 
-  ChatPage({super.key, required this.sellerID,required this.cht});
+  ChatPage({super.key});
   @override
   Widget build(BuildContext context) {
     final route = ModalRoute.of(context);
-
     if (route == null || route.settings.arguments == null) {
-      // debugPrint("bbb");
       return Scaffold(
         body: Center(
           child: Text("No chat Availbale"),
         ),
       );
     }
+    final arguments = route.settings.arguments as Map<String, dynamic>;
+    print(arguments);
+    final SellerModel seller = arguments[''];
+    final String chatId = arguments['chatId'];
 
-    final chat = route.settings.arguments as ChatEntity;
     
     // context.read<MessageBloc>().add(MessageConnection(chat));
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
           appBar:
-              ChatAppBar(sellerID.name, 'last seen yesterday', "image.jpg"),
+              ChatAppBar(seller.name, 'last seen yesterday', "image.jpg"),
           body: Container(
             color: Colors.white,
             child: Column(

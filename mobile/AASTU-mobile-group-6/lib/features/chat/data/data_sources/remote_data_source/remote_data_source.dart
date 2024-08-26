@@ -141,7 +141,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     return streamSocket.getResponse;
   }
   @override
-  Future<ChatEntity> initiateChat(String userId) async{
+  Future<ChatModel> initiateChat(String userId) async{
     var temp = await SharedPreferences.getInstance();
     var temp2 = temp.getString('access_token');
     var head =  {
@@ -153,9 +153,10 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         });
     var url = 'https://g5-flutter-learning-path-be.onrender.com/api/v3/chats';
     final response = await client.post(Uri.parse(url),headers: head,body: body);
+    print(response.statusCode); 
     if (response.statusCode == 201) {
       var data = jsonDecode(response.body);
-      return ChatEntity.fromJson(data['data']);
+      return ChatModel.fromJson(data['data']);
     } else {
       throw Exception('Failed to initiate chat');
     }

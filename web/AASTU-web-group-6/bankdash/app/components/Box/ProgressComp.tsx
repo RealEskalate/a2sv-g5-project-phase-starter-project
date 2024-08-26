@@ -16,7 +16,6 @@ export default function ProgressComp({ currentStep }: { currentStep: any }) {
   ];
 
   // Helper to determine if the circle should be active or not
-  console.log(currentStep);
   const isActive = (step: number) => step <= currentStep;
 
   return (

@@ -29,6 +29,7 @@ type Collection interface {
 	Aggregate(context.Context, interface{}) (Cursor, error)
 	UpdateOne(context.Context, interface{}, interface{}, ...*options.UpdateOptions) (*mongo.UpdateResult, error)
 	UpdateMany(context.Context, interface{}, interface{}, ...*options.UpdateOptions) (*mongo.UpdateResult, error)
+	DeleteMany(context.Context, interface{}) (*mongo.DeleteResult, error)
 }
 
 type SingleResult interface {
@@ -197,4 +198,10 @@ func (mr *mongoCursor) Decode(v interface{}) error {
 
 func (mr *mongoCursor) All(ctx context.Context, result interface{}) error {
 	return mr.mc.All(ctx, result)
+}
+
+
+func (mc *mongoCollection) DeleteMany(ctx context.Context, filter interface{}) (*mongo.DeleteResult, error) {
+	res, err := mc.coll.DeleteMany(ctx, filter)
+	return res, err
 }

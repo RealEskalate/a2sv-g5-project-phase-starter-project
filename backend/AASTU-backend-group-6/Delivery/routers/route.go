@@ -46,4 +46,6 @@ func Router(server *gin.RouterGroup, config *infrastructure.Config, DB mongo.Dat
 	userroute.Use(authHandler)
 	NewUserrouter(config, DB, userroute)
 
+	
+
 }

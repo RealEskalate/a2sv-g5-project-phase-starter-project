@@ -58,7 +58,7 @@ const Sidebar = () => {
                 className={`flex gap-3 items-center px-8 py-3 text-md md:text-lg ${
                   activeItem === item.title
                     ? "border-l-4 border-l-[#2D60FF] text-[#2D60FF] font-bold dark:border-l-darkAccent dark:text-darkAccent"
-                    : "text-[#a59d9d] dark:text-darkText"
+                    : "text-[#5f5d5d] dark:text-darkText"
                 }`}
               >
                 <Image

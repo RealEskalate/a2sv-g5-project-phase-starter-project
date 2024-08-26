@@ -30,6 +30,7 @@
     "react-redux": "^9.1.2",
     "react-select": "^5.8.0",
     "react-select-country-list": "^2.2.3",
+    "react-toastify": "^10.0.5",
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"

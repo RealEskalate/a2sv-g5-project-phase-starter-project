@@ -137,9 +137,9 @@ func (c *BlogController) GetBlogs(ctx *gin.Context) {
 func (c *BlogController) GetUserBlogs(ctx *gin.Context) {
 	userID := ctx.Param("id")
 
-	blogs, err := c.blogUsecase.GetUserBlogs(userID)
-	if err != nil {
-		ctx.JSON(err.StatusCode, gin.H{"error": err.Message})
+	blogs, uerr := c.blogUsecase.GetUserBlogs(userID)
+	if uerr.Message != "" {
+		ctx.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
 		return
 	}
 

@@ -29,8 +29,8 @@ func (uc *UserController) Login(c *gin.Context) {
 
 	LogInResponse, uerr := uc.UserUsecase.Login(&user, deviceFingerprint)
 	if uerr.Message != "" {
-	  c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
-	  return
+		c.JSON(uerr.StatusCode, gin.H{"error": uerr.Message})
+		return
 	}
   
 

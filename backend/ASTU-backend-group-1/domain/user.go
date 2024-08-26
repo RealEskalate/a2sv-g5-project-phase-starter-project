@@ -18,8 +18,8 @@ import (
 
 type User struct {
 	ID             string    `bson:"_id" json:"id"`
-	Username       string    `json:"username" binding:"required"`
-	Email          string    `json:"email" binding:"required"`
+	Username       string    `json:"username" `
+	Email          string    `json:"email" `
 	FirstName      string    `json:"first_name"`
 	LastName       string    `json:"last_name"`
 	Password       string    `json:"password"`

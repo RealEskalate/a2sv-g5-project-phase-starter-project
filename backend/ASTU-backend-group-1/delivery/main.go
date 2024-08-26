@@ -34,7 +34,6 @@ import (
 // @schemes http
 func main() {
 	config_mongo, err := config.LoadConfig()
-	// clientOptions := options.Client().ApplyURI("mongodb://localhost:27017/")
 	clientOptions := options.Client().ApplyURI(config_mongo.Database.Uri)
 	if err != nil {
 		log.Fatal(err)
@@ -47,7 +46,6 @@ func main() {
 	userCollections := client.Database("Starter_Blog_Api").Collection("Users")
 	commentCollections := client.Database("Starter_Blog_Api").Collection("Comments")
 	replyCollections := client.Database("Starter_Blog_Api").Collection("Replies")
-	// _ = client.Database("BlogAPI").Collection("Tokens")
 	blogRepo := repository.NewBlogRepository(mongoifc.WrapClient(client), mongoifc.WrapCollection(blogCollections), mongoifc.WrapCollection(commentCollections), mongoifc.WrapCollection(replyCollections))
 	blogUsecase := usecase.NewBlogUsecase(blogRepo)
 	blogController := controllers.NewBlogController(*blogUsecase)

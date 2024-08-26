@@ -31,11 +31,12 @@ func (gr *MainRouter) GinBlogRouter() {
 
 	router := gin.Default()
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	gr.AddHelpRoute(router)
 	blogRouter := gr.addBlogRouter(router)
 	_ = gr.addUserRouter(router)
 	// conf := config.Config{}
 	// prompts := infrastructure.Prompts{}
-	// _ = gr.AddAIRoutes(router, conf, prompts)
+	// _ = gr.AddAIRoutes(router, , prompts)
 	commentRouter := gr.addCommentRouter(blogRouter)
 	_ = gr.addReplyRouter(commentRouter)
 

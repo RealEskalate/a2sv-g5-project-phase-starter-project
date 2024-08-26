@@ -46,6 +46,7 @@ class _UpdatePageState extends State<UpdatePage> {
       newImage = File(pickedImage.path);
     });
   }
+
   bool _isSubmitting = false;
 
   @override
@@ -59,7 +60,8 @@ class _UpdatePageState extends State<UpdatePage> {
   void _addHandler(BuildContext context) {
     setState(() {
       _isSubmitting = true;
-    });}
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,186 +105,218 @@ class _UpdatePageState extends State<UpdatePage> {
         },
         builder: (context, state) {
           return SingleChildScrollView(
-            child: Column(
-              children: [
-                // Upload Image Part Start
-                Container(
-                  margin: EdgeInsets.only(left: 32, right: 32, top: 23),
-                  decoration: BoxDecoration(
-                      color: Color.fromRGBO(243, 243, 243, 1),
-                      border: Border.all(
-                          color: Color.fromRGBO(221, 221, 221, 1), width: 2),
-                      borderRadius: BorderRadius.circular(16)),
-                  child: GestureDetector(
-                    onTap: chooseImage,
-                    child: SizedBox(
-                      width: 360,
-                      height: 190,
-                      child: Image(
-                        image: NetworkImage(widget.product.imagePath),
-                        fit: BoxFit.cover,
+            child: Center(
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.89,
+                child: Column(
+                  children: [
+                    // ----------Upload Image Part Start
+                    Container(
+                      // margin: EdgeInsets.only(left: 32, right: 32, top: 23),
+                      // decoration: BoxDecoration(
+                      //     color: Color.fromRGBO(243, 243, 243, 1),
+                      //     border: Border.all(
+                      //         color: Color.fromRGBO(221, 221, 221, 1), width: 2),
+                      //     borderRadius: BorderRadius.circular(16)),
+                      child: GestureDetector(
+                        onTap: chooseImage,
+                        child: SizedBox(
+                          width: 360,
+                          height: 190,
+                          child: Image(
+                            image: NetworkImage(widget.product.imagePath),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
+                    ), // Upload image part ends here
+
+                    SizedBox(
+                      height: 22,
                     ),
-                  ),
-                ), // Upload image part ends here
 
-                SizedBox(
-                  height: 22,
-                ),
+                    // Name Entry Field Start
+                    SingleChildScrollView(
+                      child: Container(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          reusableTextpar("name", FontWeight.w500, 14,Theme.of(context).colorScheme.onSurface),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          SizedBox(
+                              height: 50,
+                              width: 360,
+                              child: TextField(
+                                controller: name_input,
+                                maxLines: 4,
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    filled: true,
+                                    fillColor:
+                                        Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryFixedVariant),
+                              )),
+                          reusableTextpar("category", FontWeight.w500, 14,Theme.of(context).colorScheme.onSurface),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          SizedBox(
+                              height: 50,
+                              width: 360,
+                              child: TextField(
+                                controller: category_input,
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    filled: true,
+                                    fillColor:
+                                        Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryFixedVariant),
+                              )),
+                          reusableTextpar("price", FontWeight.w500, 14,Theme.of(context).colorScheme.onSurface),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          SizedBox(
+                              height: 50,
+                              width: 360,
+                              child: TextField(
+                                controller: price_input,
+                                decoration: InputDecoration(
+                                    suffixIcon: Icon(Icons.attach_money,color: Theme.of(context).colorScheme.onSurface,),
+                                    border: InputBorder.none,
+                                    hintText: "",
+                                    filled: true,
+                                    fillColor:
+                                        Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryFixedVariant),
+                              )),
+                          reusableTextpar("description", FontWeight.w500, 14,Theme.of(context).colorScheme.onSurface),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          SizedBox(
+                              height: 150,
+                              width: 360,
+                              child: TextField(
+                                controller: description_input,
+                                maxLines: 4,
+                                decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    filled: true,
+                                    fillColor:
+                                        Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryFixedVariant),
+                              )),
+                          // End of Input Fields
 
-                // Name Entry Field Start
-                SingleChildScrollView(
-                  child: Container(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      reusableTextpar("name", FontWeight.w500, 14),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      SizedBox(
-                          height: 50,
-                          width: 360,
-                          child: TextField(
-                            controller: name_input,
-                            maxLines: 4,
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                filled: true,
-                                fillColor: Color.fromRGBO(243, 243, 243, 1)),
-                          )),
-                      reusableTextpar("category", FontWeight.w500, 14),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      SizedBox(
-                          height: 50,
-                          width: 360,
-                          child: TextField(
-                            controller: category_input,
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                filled: true,
-                                fillColor: Color.fromRGBO(243, 243, 243, 1)),
-                          )),
-                      reusableTextpar("price", FontWeight.w500, 14),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      SizedBox(
-                          height: 50,
-                          width: 360,
-                          child: TextField(
-                            controller: price_input,
-                            decoration: InputDecoration(
-                               suffixIcon: Icon(Icons.attach_money),
-                                border: InputBorder.none,
-                                hintText: "",
-                                filled: true,
-                                fillColor: Color.fromRGBO(243, 243, 243, 1)),
-                          )),
-                      reusableTextpar("description", FontWeight.w500, 14),
-                      SizedBox(
-                        height: 8,
-                      ),
-                      SizedBox(
-                          height: 150,
-                          width: 360,
-                          child: TextField(
-                            controller: description_input,
-                            maxLines: 4,
-                            decoration: InputDecoration(
-                                border: InputBorder.none,
-                                filled: true,
-                                fillColor: Color.fromRGBO(243, 243, 243, 1)),
-                          )),
-                      // End of Input Fields
-
-                      // Buttons
-                      Container(
-                        margin: EdgeInsets.only(bottom: 22, top: 35),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              width: 366,
-                              height: 45,
-                              child: BlocBuilder<UpdateBloc, UpdateState>(
-                                builder: (context, state) {
-                                  return ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
+                          // Buttons
+                          Container(
+                            margin: EdgeInsets.only(bottom: 22, top: 35),
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  width: 366,
+                                  height: 45,
+                                  child: BlocBuilder<UpdateBloc, UpdateState>(
+                                    builder: (context, state) {
+                                      return ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(10))),
+                                            side: BorderSide(
+                                                color: Color(0xff3F51F3)),
+                                            // overlayColor: Colors.red,
+                                            foregroundColor: Colors.white,
+                                            backgroundColor: Color(0xff3F51F3),
+                                          ),
+                                          child: Text(
+                                            "Update",
+                                            style: GoogleFonts.poppins(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                          onPressed: () {
+                                            final updateModel = ProductModel(
+                                                sellerId:
+                                                    widget.product.sellerId,
+                                                id: widget.product.id,
+                                                name: name_input.text,
+                                                description:
+                                                    description_input.text,
+                                                price: double.parse(
+                                                    price_input.text),
+                                                imagePath:
+                                                    widget.product.imagePath);
+                                            if (price_input.text.isEmpty ||
+                                                name_input.text.isEmpty ||
+                                                description_input
+                                                    .text.isEmpty) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content: Text(
+                                                          'Please fill all the fields')));
+                                            } else if (price_input.text.contains(
+                                                    'abcdefghijklmnopqrstuvwxyz') ||
+                                                price_input.text.contains(
+                                                    'ABCDEFGHIJKLMNOPQRSTUVWXYZ') ||
+                                                price_input.text
+                                                    .contains('!@#%^&*()_+')) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(
+                                                      content: Text(
+                                                          'Price should be a number')));
+                                            } else {
+                                              final productBloc =
+                                                  BlocProvider.of<UpdateBloc>(
+                                                      context);
+                                              productBloc.add(
+                                                  UpdateProductEvent(
+                                                      product: updateModel));
+                                            }
+                                          });
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 16,
+                                ),
+                                SizedBox(
+                                  width: 366,
+                                  height: 45,
+                                  child: OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
                                         shape: RoundedRectangleBorder(
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(10))),
-                                        side: BorderSide(
-                                            color: Color(0xff3F51F3)),
-                                        // overlayColor: Colors.red,
-                                        foregroundColor: Colors.white,
-                                        backgroundColor: Color(0xff3F51F3),
-                                      ),
-                                      child: Text(
-                                        "Update",
-                                        style: GoogleFonts.poppins(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500),
+                                        side: BorderSide(color: Colors.red),
+                                        overlayColor: Colors.red,
+                                        foregroundColor: Colors.red,
                                       ),
                                       onPressed: () {
-                                        final updateModel = ProductModel(
-                                            sellerId: widget.product.sellerId,
-                                            id: widget.product.id,
-                                            name: name_input.text,
-                                            description: description_input.text,
-                                            price:
-                                                double.parse(price_input.text),
-                                            imagePath:
-                                                widget.product.imagePath);
-                                                if (price_input.text.isEmpty || name_input.text.isEmpty || description_input.text.isEmpty) {
-                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                                        content: Text('Please fill all the fields')));
-                                                    
-                                                  }
-                                                else if (price_input.text.contains('abcdefghijklmnopqrstuvwxyz') || price_input.text.contains('ABCDEFGHIJKLMNOPQRSTUVWXYZ') || price_input.text.contains('!@#%^&*()_+')) {
-                                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                                        content: Text('Price should be a number')));
-                                                    
-                                                  }else{
-                                                    final productBloc = BlocProvider.of<UpdateBloc>(context);
-                                                    productBloc.add(UpdateProductEvent(product: updateModel));
-                                                  }
-                                      });
-                                },
-                              ),
+                                        Navigator.pushNamed(context, '/home');
+                                      },
+                                      child: Text("Cancel",
+                                          style: GoogleFonts.poppins(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500))),
+                                ),
+                              ],
                             ),
-                            SizedBox(
-                              height: 16,
-                            ),
-                            SizedBox(
-                              width: 366,
-                              height: 45,
-                              child: OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(10))),
-                                    side: BorderSide(color: Colors.red),
-                                    overlayColor: Colors.red,
-                                    foregroundColor: Colors.red,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pushNamed(context, '/home');
-                                  },
-                                  child: Text("Cancel",
-                                      style: GoogleFonts.poppins(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500))),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )),
-                )
-              ],
+                          ),
+                        ],
+                      )),
+                    )
+                  ],
+                ),
+              ),
             ),
           );
         },

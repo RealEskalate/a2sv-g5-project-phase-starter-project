@@ -3,6 +3,7 @@ import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/home_eve
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_state.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/widgets/bottomnavbar.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_event.dart';
 import 'package:ecommerce_app_ca_tdd/locator.dart';
@@ -29,7 +30,7 @@ class searchPage extends StatefulWidget {
 
 class _searchPageState extends State<searchPage> {
   TextEditingController search_term = TextEditingController();
-  
+
   Future<void> _refresh() {
     context.read<SearchBloc>().add(LoadAllProductEvent());
 
@@ -46,7 +47,10 @@ class _searchPageState extends State<searchPage> {
     BlocProvider(
       create: (context) => sl.get<SearchBloc>()..add(LoadAllProductEvent()),
     );
+
     return Scaffold(
+      bottomNavigationBar: Bottomnavbar(),
+
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Row(
@@ -74,106 +78,141 @@ class _searchPageState extends State<searchPage> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Container(
-          margin: EdgeInsets.only(left: 32, right: 24),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Flexible(
-                    child: Container(
-                      height: 48,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Color.fromRGBO(217, 217, 217, 1)),
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                      ),
-                      child: TextField(
-                        controller: search_term,
-                        decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                            onPressed: _performSearch,
-                            icon: Icon(Icons.arrow_forward_ios),
-                          ),
-                          border: InputBorder.none,
-                          hintText: "Leather",
-                          hintStyle: TextStyle(color: Colors.grey.shade400),
-                          contentPadding: EdgeInsets.only(left: 16, top: 10),
-                        ),
-                        onSubmitted: (value) {
-                          _performSearch();
-                        },
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 7),
-                  Container(
-                    height: 48,
-                    width: 48,
-                    decoration: BoxDecoration(
-                      color: Color.fromRGBO(63, 81, 243, 1),
-                      border: Border.all(
-                        width: 4,
-                        color: Color.fromRGBO(63, 81, 243, 1),
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                    child: IconButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return const SizedBox(height: 338, child: about_product());
-                          },
-                        );
-                      },
-                      icon: Icon(Icons.filter_list, color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 31),
-              BlocBuilder<SearchBloc, SearchState>(
-                builder: (context, state) {
-                  if (state is LoadingState) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (state is LoadedState) {
-                    return RefreshIndicator(
-                      onRefresh: _refresh,
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: state.data.length,
-                        itemBuilder: (context, index) {
-                          final product = state.data[index];
-                          return InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DetailsPage(item: product),
+        child: Center(
+          child: Container(
+            margin: EdgeInsets.only(top: 10),
+            width: MediaQuery.of(context).size.width *
+                0.9, //---------------OVERFLOW!!
+
+            child: Column(
+              children: [
+                Container(
+                  child: Row(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: 7),
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width *
+                              0.70, //------------->OVERFLOW!!
+                          height: 48,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: Color.fromRGBO(217, 217, 217, 1)),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8))),
+                            child: Expanded(
+                              child: TextField(
+                                controller: search_term,
+                                decoration: InputDecoration(
+                                  suffixIcon: IconButton(
+                                      onPressed: () {
+                                        final search = search_term.text;
+                                        context
+                                            .read<SearchBloc>()
+                                            .add(SearchProductEvent(search));
+                                      },
+                                      icon: Icon(
+                                        Icons.arrow_forward,
+                                        color: Color.fromARGB(255, 63, 81, 243),
+                                      )),
+                                  border: InputBorder.none,
+                                  hintText: "Leather",
+                                  hintStyle: TextStyle(color: Colors.grey),
                                 ),
-                              );
-                            },
-                            child: OverflowCard(
-                              product: product,
+                              ),
                             ),
-                          );
-                        },
+                          ),
+                        ),
                       ),
-                    );
-                  } else if (state is FailedState) {
-                    return Center(
-                      child: Text(state.message),
-                    );
-                  } else {
-                    return const SizedBox();
-                  }
-                },
-              ),
-              //
-            ],
+
+                      SizedBox(
+                        width: 7,
+                      ),
+
+                      // ------------------Filter option
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Color.fromRGBO(63, 81, 243, 1),
+                        ),
+                        child: SizedBox(
+                          height: 48,
+                          width: 48,
+                          child: Container(
+                              // color: Colors.blue,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      width: 4,
+                                      color: Color.fromRGBO(63, 81, 243, 1)),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(8))),
+                              child: IconButton(
+                                  onPressed: () {
+                                    showModalBottomSheet(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return const SizedBox(
+                                              height: 338,
+                                              child: about_product());
+                                        });
+                                  },
+                                  icon: Icon(
+                                    Icons.filter_list,
+                                    color: Colors.white,
+                                  ))),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 31),
+
+                BlocBuilder<SearchBloc, SearchState>(
+                  builder: (context, state) {
+                    if (state is LoadingState) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (state is LoadedState) {
+                      return RefreshIndicator(
+                        onRefresh: _refresh,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: state.data.length,
+                          itemBuilder: (context, index) {
+                            final product = state.data[index];
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailsPage(item: product),
+                                  ),
+                                );
+                              },
+                              child: OverflowCard(
+                                product: product,
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    } else if (state is FailedState) {
+                      return Center(
+                        child: Text(state.message),
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  },
+                ),
+
+                //
+              ],
+            ),
           ),
         ),
       ),

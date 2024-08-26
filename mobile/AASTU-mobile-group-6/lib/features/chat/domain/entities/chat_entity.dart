@@ -1,33 +1,31 @@
+import 'package:ecommerce_app_ca_tdd/features/user_auth/data/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 
 class ChatEntity extends Equatable{
-  final String id;
-  final String user1;
-  final String user2;
-  
+  final String chatid;
+  final UserModel user1;
+  final UserModel user2;
 
-  ChatEntity({required this.id, required this.user1, required this.user2,
+  ChatEntity({required this.chatid, required this.user1, required this.user2,
   });
   
-  @override
-  // TODO: implement props
-  List<Object?> get props => [id, user1, user2,];
+  List<Object?> get props => [chatid, user1, user2,];
 
 
-  Map<String, String> toJson() {
+  Map<String, dynamic> toJson() {
     return {
-      '_id': id,
-      'user1': user1,
-      'user2': user2
+      '_id': chatid,
+      'user1': user1.toJson(),
+      'user2': user2.toJson(),
     };
 
   }
 
   factory ChatEntity.fromJson(Map<String, dynamic> json) {
     return ChatEntity(
-      id: json['id'],
-      user1: json['user1'],
-      user2: json['user2']
+      chatid: json['_id'],
+      user1: UserModel.fromJson(json['user1']),
+      user2: UserModel.fromJson(json['user2']),
       );
   }
   

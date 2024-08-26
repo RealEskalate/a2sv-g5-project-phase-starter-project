@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-
 class ImagePickerIconButton extends StatefulWidget {
   @override
   _ImagePickerIconButtonState createState() => _ImagePickerIconButtonState();
@@ -13,12 +12,12 @@ class _ImagePickerIconButtonState extends State<ImagePickerIconButton> {
 
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    
+    final XFile? pickedFile =
+        await _picker.pickImage(source: ImageSource.gallery);
+
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
-        
       });
     }
   }

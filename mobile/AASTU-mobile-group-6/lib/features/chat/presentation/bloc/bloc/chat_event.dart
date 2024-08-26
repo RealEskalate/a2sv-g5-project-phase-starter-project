@@ -1,4 +1,5 @@
 import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/message.dart';
+import 'package:ecommerce_app_ca_tdd/features/user_auth/data/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class ChatEvent extends Equatable {
@@ -25,3 +26,12 @@ class SendMessage extends ChatEvent {
   @override
   List<Object?> get props => [message];
 }
+class ListAllMessagesEvent extends ChatEvent{}
+
+class InitiateChatEvent extends ChatEvent{
+  final String receiver;
+  const InitiateChatEvent(this.receiver);
+  @override
+  List<Object> get props => [receiver];
+  
+  }

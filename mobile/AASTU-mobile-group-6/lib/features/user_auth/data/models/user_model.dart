@@ -2,7 +2,7 @@ import 'package:ecommerce_app_ca_tdd/features/user_auth/domain/entities/user_ent
 
 
 class UserModel extends UserEntity{
-  const UserModel({
+  const UserModel({                        
     required String id,
     required String name, required String email, required String password,
     }) : super(id:id,name: name, email: email, password: password);
@@ -14,7 +14,7 @@ class UserModel extends UserEntity{
       id : json['_id'],
       name: json['name'],
       email: json['email'],
-      password: json['password'],
+      password: json['password']?? '',
       
     );
   }
@@ -24,7 +24,7 @@ class UserModel extends UserEntity{
     return {
       'name': name,
       'email': email,
-      'password': password,
+      'password': password ?? '',
       // 'access_token': '',
     };
   }

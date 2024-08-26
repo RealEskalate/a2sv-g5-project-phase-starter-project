@@ -247,4 +247,3 @@ Widget _duplicate(
     ),
   );
 }
-

@@ -1,12 +1,16 @@
 import 'dart:io';
+import 'package:ecommerce_app_ca_tdd/features/chat/domain/entities/chat_entity.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_bloc.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/bloc/bloc/chat_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/data/models/seller_model.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/add/add_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/detail/detail_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/search/search_event.dart';
+import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/theme_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/product/presentation/bloc/update/bloc/update_bloc.dart';
-import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/HomeChat.dart';
-import 'package:ecommerce_app_ca_tdd/features/product/presentation/pages/chat_page.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/pages/HomeChat.dart';
+import 'package:ecommerce_app_ca_tdd/features/chat/presentation/pages/chat_page.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_bloc.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/get_user/get_user_event.dart';
 import 'package:ecommerce_app_ca_tdd/features/user_auth/presentation/bloc/login/bloc/sign_in_bloc.dart';
@@ -48,9 +52,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await init();
   Bloc.observer = CustomBlocObserver();
-  runApp(
-    const Main(),
-  );
+
+  // wrap myapp with this noifier for darkmode
+  runApp(ChangeNotifierProvider(
+    create: (context) => ThemeProvider(),
+    child: const Main(),
+  ));
 }
 
 class Main extends StatelessWidget {
@@ -60,11 +67,17 @@ class Main extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => sl.get<HomeBloc>()..add(GetProductsEvent()),
+      
       child: MaterialApp(
         theme: ThemeData(textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme,),),
+        // theme: lightmode,
+        // darkTheme: darkmode,
+        theme: Provider.of<ThemeProvider>(context).themeData,
+        themeMode: ThemeMode.system,
+
         debugShowCheckedModeBanner: false,
         // initial for splash page
-        initialRoute: '/splash',
+        initialRoute: '/home',
 
         onGenerateRoute: (settings) {
           if (settings.name == '/detail') {
@@ -77,8 +90,9 @@ class Main extends StatelessWidget {
                       create: (context) => sl.get<DetailBloc>(),
                     ),
                     BlocProvider(
-                      create: (context) =>
-                          sl.get<GetUserBloc>()..add(GetUserInfoEvent())),
+                        create: (context) =>
+                            sl.get<GetUserBloc>()..add(GetUserInfoEvent())),
+                    BlocProvider(create: (context) => sl.get<ChatBloc>()..add(ListAllMessagesEvent())),
                   ],
                   child: DetailsPage(item: item),
                 );
@@ -94,13 +108,27 @@ class Main extends StatelessWidget {
                 );
               },
             );
-          }else if (settings.name == '/chatPage') {
+          } else if (settings.name == '/chatPage') {
             final item = settings.arguments as SellerModel;
+            final cht = settings.arguments as String;
+
+            // final chat = settings.arguments as ChatEntity;
             return MaterialPageRoute(
               builder: (context) {
-                return BlocProvider(
-                  create: (context) => sl.get<GetUserBloc>()..add(GetUserInfoEvent()),
-                  child: ChatPage(sellerID: item),
+                return MultiBlocProvider(
+                  providers: [
+                    BlocProvider(
+                      create: (context) =>
+                          sl.get<GetUserBloc>()..add(GetUserInfoEvent()),
+                    ),
+                    BlocProvider(
+                        create: (context) => sl.get<ChatBloc>()
+                          ..add(InitiateChatEvent(item.id))),
+                  ],
+                  child: ChatPage(
+                    sellerID: item,
+                    cht: cht,
+                  ),
                 );
               },
             );
@@ -142,7 +170,18 @@ class Main extends StatelessWidget {
 
           '/splash': (context) => SplashScreen(),
 
-          '/HomeChat': (context) => Chat(),//Estifanos
+          '/HomeChat': (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (context) =>
+                        sl.get<ChatBloc>()..add(ListAllMessagesEvent()),
+                  ),
+                  BlocProvider(
+                    create: (context) => sl.get<GetUserBloc>()..add(GetUserInfoEvent()),
+                  ),
+                ],
+                child: Chat(),
+              ), //Estifanos
           // '/chatPage': (context) => ChatPage(),//Meron
 
           // '/detail': (context) => DetailsPage(),

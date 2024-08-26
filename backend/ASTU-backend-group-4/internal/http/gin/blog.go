@@ -69,11 +69,11 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 		if errors.As(err, &validationErr) {
 			c.AbortWithStatusJSON(http.StatusBadRequest, infrastructure.ReturnErrorResponse(err))
 		} else if errors.Is(err, auth.ErrNoUserWithId) {
-			c.AbortWithStatusJSON(http.StatusNotFound, err)
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		} else if errors.Is(err, blogDomain.ErrBlogNotFound) {
-			c.AbortWithStatusJSON(http.StatusNotFound, err)
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		} else if errors.Is(err, blogDomain.ErrInvalidID) {
-			c.AbortWithStatusJSON(http.StatusNotFound, err)
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"message": err.Error()})
 		} else {
 			log.Default().Println("Error trying to update blog", err, "blog", blog)
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})

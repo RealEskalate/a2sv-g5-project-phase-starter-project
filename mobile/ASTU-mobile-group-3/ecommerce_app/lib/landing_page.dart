@@ -20,12 +20,12 @@ class _LandingPageState extends State<LandingPage> {
   int currentTab = 0;
 
   final PageStorageBucket bucket = PageStorageBucket();
-  Widget currentScreen = const ProductListPage();
+  Widget currentScreen = ProductListPage();
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> screens = [
-      const ProductListPage(),
+      ProductListPage(),
       const ChatList(),
     ];
     return Scaffold(

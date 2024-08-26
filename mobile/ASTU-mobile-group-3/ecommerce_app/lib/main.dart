@@ -1,3 +1,4 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,7 +25,7 @@ void main() async {
   WidgetsFlutterBinding().ensureSemantics();
   await init();
 
-  runApp(const MyApp());
+  runApp(DevicePreview(builder: (context) => const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -51,12 +52,13 @@ class MyApp extends StatelessWidget {
         )
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: MyTheme.lightTheme,
         routes: {
           AddProductPage.routes: (context) => AddProductPage(),
           ChatList.routes: (context) => const ChatList(),
           ChatRoom.routes: (context) => const ChatRoom(),
-          ProductListPage.routes: (context) => const ProductListPage(),
+          ProductListPage.routes: (context) => ProductListPage(),
           SingleProduct.routes: (context) => SingleProduct(),
           SearchProduct.routes: (context) => const SearchProduct(),
           SplashPage.routes: (context) => const SplashPage(),
@@ -65,7 +67,7 @@ class MyApp extends StatelessWidget {
           UpdateProductPage.routes: (context) => UpdateProductPage(),
           LandingPage.routes: (context) => const LandingPage()
         },
-        initialRoute: SplashPage.routes,
+        initialRoute: SingleProduct.routes,
       ),
     );
   }

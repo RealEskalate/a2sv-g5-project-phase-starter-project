@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/themes/themes.dart';
+import 'package:shimmer/shimmer.dart';
 
 class SkeletonLoading extends StatelessWidget {
   const SkeletonLoading({super.key});
@@ -67,6 +68,95 @@ class SkeletonLoading extends StatelessWidget {
           ],
         )
       ],
+    );
+  }
+}
+
+class ShimmerList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white54,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(10)),
+              child: Container(
+                height: 150,
+                color: Colors.grey.shade300,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Container(
+                height: 20,
+                width: 200,
+                color: Colors.grey.shade300,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Container(
+                height: 20,
+                width: 200,
+                color: Colors.grey.shade300,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Container(
+                height: 14,
+                width: 150,
+                color: Colors.grey.shade300,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Shimmer.fromColors(
+            baseColor: Colors.grey.shade300,
+            highlightColor: Colors.grey.shade100,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  const Icon(Icons.star, color: Colors.grey, size: 15),
+                  const SizedBox(width: 8),
+                  Container(
+                    height: 14,
+                    width: 30,
+                    color: Colors.grey.shade300,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+      ),
     );
   }
 }

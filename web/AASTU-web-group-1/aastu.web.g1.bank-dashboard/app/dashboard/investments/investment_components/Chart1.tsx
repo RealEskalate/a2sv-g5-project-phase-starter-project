@@ -35,21 +35,23 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function LineChartComp() {
+export default function LineChartComp(props:any) {
   const { isDarkMode } = useUser();
   return (
     <Card
       className={`${
-        isDarkMode ? "bg-gray-800 border-none " : "bg-white"
-      }  py-3 rounded-3xl md:min-w-[500px]`}
+        isDarkMode ? "bg-gray-800 border-none " : "bg-white shadow-xl "}  py-3 rounded-3xl md:min-w-[500px]`}
     >
       <CardContent>
         <ChartContainer config={chartConfig} className="">
           <AreaChart
             accessibilityLayer
-            data={chartData}
+            data={props.data}
             margin={{
-              top: 18,
+              top: 20,
+              left:0,
+              bottom:0,
+              right:15
             }}
           >
             <CartesianGrid
@@ -58,7 +60,7 @@ export default function LineChartComp() {
               strokeWidth={2}
             />
             <XAxis
-              dataKey="month"
+              dataKey="time"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
@@ -74,7 +76,7 @@ export default function LineChartComp() {
               content={<ChartTooltipContent indicator="dot" hideLabel />}
             />
             <Area
-              dataKey="desktop"
+              dataKey="value"
               type="linear"
               fill="white"
               fillOpacity={0.1}

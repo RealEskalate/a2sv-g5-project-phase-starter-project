@@ -1,8 +1,6 @@
 "use client";
-
 import { TrendingUp } from "lucide-react";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis, Area } from "recharts";
-
+import { CartesianGrid, Line, LineChart, XAxis, YAxis, Area, AreaChart } from "recharts";
 import {
   Card,
   CardContent,
@@ -17,15 +15,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+
 import { useUser } from "@/contexts/UserContext";
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-];
 
 const chartConfig = {
   desktop: {
@@ -34,70 +25,65 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function Chart2() {
+export default function Chart2(props:any) {
   const { isDarkMode } = useUser();
   return (
     <Card
-      className={` ${
-        isDarkMode ? "bg-gray-800 border-none " : "bg-white"
-      } py-3 rounded-3xl md:min-w-[500px]`}
-    >
-      <CardContent>
-        <ChartContainer config={chartConfig} className="">
-          <LineChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              top: 18,
+    className={`${
+      isDarkMode ? "bg-gray-800 border-none " : "bg-white shadow-xl "}  py-3 rounded-3xl md:min-w-[500px]`}
+  >
+    <CardContent>
+      <ChartContainer config={chartConfig} className="">
+        <AreaChart
+          accessibilityLayer
+          data={props.data}
+          margin={{
+            top: 20,
+            left:0,
+            bottom:0,
+            right:15
+          }}
+        >
+          <CartesianGrid
+            vertical={false}
+            strokeDasharray="3 3"
+            strokeWidth={2}
+          />
+          <XAxis
+            dataKey="time"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+            tickFormatter={(value) => value.slice(0, 5)}
+          />
+          <YAxis
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(value) => `$${value}`}
+          />
+          <ChartTooltip
+            cursor={false}
+            content={<ChartTooltipContent indicator="dot" hideLabel />}
+          />
+          <Area
+            dataKey="value"
+            type="linear"
+            fill="white"
+            fillOpacity={0.1}
+            stroke="#008010"
+            strokeWidth={2}
+            dot={{
+              fill: "#008010",
+              fillOpacity: 1,
+              r: 4,
             }}
-          >
-            <CartesianGrid
-              vertical={false}
-              strokeDasharray="3 3"
-              strokeWidth={2}
-            />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 5)}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) => `$${value}`}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Area
-              dataKey="desktop"
-              type="linear"
-              fill="white"
-              fillOpacity={0.1}
-              stroke="#EDA10D"
-              strokeWidth={2.5}
-              dot={{
-                fill: "white",
-                fillOpacity: 1,
-                r: 4,
-              }}
-              activeDot={{
-                r: 4,
-              }}
-            />
-            <Line
-              dataKey="desktop"
-              type="natural"
-              stroke="#16DBCC"
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+            activeDot={{
+              r: 4,
+            }}
+          />
+        </AreaChart>
+      </ChartContainer>
+    </CardContent>
+  </Card>
   );
 }

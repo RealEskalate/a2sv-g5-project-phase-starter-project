@@ -80,6 +80,7 @@ class _AddUpdateState extends State<AddUpdate> {
         ),
       ),
 
+
       body: SingleChildScrollView(
         child: Center(
           child: Container(
@@ -139,6 +140,7 @@ class _AddUpdateState extends State<AddUpdate> {
                 SizedBox(
                   height: 22,
                 ),
+
 
                 BlocConsumer<addBloc, ProductState>(
                   listener: (context, state) {
@@ -227,6 +229,7 @@ class _AddUpdateState extends State<AddUpdate> {
                             height: 8,
                           ),
 
+
                           //------category box
                           SizedBox(
                               height: 50,
@@ -286,7 +289,7 @@ class _AddUpdateState extends State<AddUpdate> {
                                         .colorScheme
                                         .onPrimaryFixedVariant),
                               )),
-                          // End of Input Fields
+
 
                           // Buttons
                           Container(
@@ -366,3 +369,5 @@ class _AddUpdateState extends State<AddUpdate> {
     );
   }
 }
+
+

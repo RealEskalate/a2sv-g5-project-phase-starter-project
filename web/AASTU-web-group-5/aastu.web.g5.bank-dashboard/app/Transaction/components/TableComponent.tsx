@@ -30,7 +30,7 @@ export function TableComponent({ columns, data }: TableProps) {
 
   return (
     <div className="overflow-x-auto ">
-      <table className="min-w-full bg-white border rounded-[25px]">
+      <table className="min-w-full bg-white dark:bg-gray-800 dark:text-white border rounded-[25px]">
         <thead className="text-[#718EBF] font-Inter ">
           {tableInstance.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -56,7 +56,7 @@ export function TableComponent({ columns, data }: TableProps) {
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className="p-2 border-b border-gray-300 text-sm text-gray-700"
+                  className="p-2 border-b border-gray-300 text-sm text-gray-700 dark:text-white"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>

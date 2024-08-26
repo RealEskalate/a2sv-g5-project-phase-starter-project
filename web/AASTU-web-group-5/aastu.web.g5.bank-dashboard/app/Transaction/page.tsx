@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BarChartComponent } from "./components/BarChartComponent";
@@ -9,6 +7,7 @@ import Card from "../components/common/card";
 import columns from "./components/columns";
 import creditCardColor from "@/app/CreditCards/cardMockData";
 import { useSession } from "next-auth/react";
+import Shimmer from "./Shimmer"; // Import the Shimmer component
 
 interface ExtendedUser {
   name?: string;
@@ -165,7 +164,6 @@ const Transactions: React.FC = () => {
       default:
         break;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeLink, accessToken]);
 
   const handleLinkClick = (linkName: string) => {
@@ -173,7 +171,7 @@ const Transactions: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#F5F7FA] space-y-8 w-[95%] pt-3 overflow-hidden mx-auto">
+    <div className="bg-[#F5F7FA] dark:bg-gray-900 space-y-8 w-[95%] pt-3 overflow-hidden mx-auto">
       {/* First Row - My Cards and My Expenses */}
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 lg:w-[49%] overflow-hidden">
@@ -186,20 +184,24 @@ const Transactions: React.FC = () => {
             </button>
           </div>
           <div className="flex gap-4">
-            {cardData.map((card, index) => (
-              <Card
-                key={index}
-                cardData={card}
-                cardColor={creditCardColor[index % creditCardColor.length]}
-              />
-            ))}
+            {loading ? (
+              <Shimmer /> // Display shimmer effect while loading
+            ) : (
+              cardData.map((card, index) => (
+                <Card
+                  key={index}
+                  cardData={card}
+                  cardColor={creditCardColor[index % creditCardColor.length]}
+                />
+              ))
+            )}
           </div>
         </div>
         <div className="flex-1 lg:w-[49%]">
           <h2 className="text-lg font-semibold mb-4 font-Inter text-[#343C6A]">
             My Expenses
           </h2>
-          <BarChartComponent data={expenseData} />
+          {loading ? <Shimmer /> : <BarChartComponent/>} 
         </div>
       </div>
 
@@ -236,11 +238,23 @@ const Transactions: React.FC = () => {
         </div>
 
         <div className="hidden lg:flex flex-col w-full">
-          {error ? <div>{error}</div> : <TableComponent columns={columns} data={data} />}
+          {error ? (
+            <p className="text-red-500">{error}</p>
+          ) : loading ? (
+            <Shimmer /> // Display shimmer effect while loading
+          ) : activeLink === "recent" || activeLink === "income" ? (
+            <TableComponent columns={columns} data={data} />
+          ) : (
+            <BarChartComponent/>
+          )}
         </div>
 
-        <div className="lg:hidden flex flex-col w-full">
-          <TableCard data={data} />
+        <div className="block lg:hidden">
+          {loading ? (
+            <Shimmer /> // Display shimmer effect while loading
+          ) : (
+            <TableCard data={data} />
+          )}
         </div>
       </div>
     </div>

@@ -69,7 +69,7 @@ export function BarChartComponent() {
   };
 
   return (
-    <Card>
+    <Card className="dark:bg-gray-800">
       <CardContent>
         <ChartContainer config={chartConfig}>
           <BarChart data={chartData} onMouseLeave={handleMouseLeave}>

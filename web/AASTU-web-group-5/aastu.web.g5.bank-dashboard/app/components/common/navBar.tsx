@@ -32,7 +32,7 @@ const NavBar = ({ toggleSidebar, isSidebarVisible }) => {
   const reduxUser = useSelector((state: RootState) => state.user);
 
   const [profilePicture, setProfilePicture] = useState(
-    reduxUser?.profilePicture || "/images/christina.png"
+    "/images/christina.png"
   );
   const user = session?.user as ExtendedUser;
   const dispatch = useDispatch();

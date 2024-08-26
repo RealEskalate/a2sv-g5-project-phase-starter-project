@@ -63,7 +63,7 @@ const CreditCard = () => {
               </span>
             ))
           ) : token ? (
-            <div className="w-screen bg-white py-16 rounded-xl flex flex-col justify-center dark:bg-dark dark:border-[1px] dark:border-gray-700">
+            <div className="max-h-[400px] lg:w-[730px] md:w-[487px] bg-white py-16 rounded-xl flex flex-col justify-center dark:bg-dark dark:border-[1px] dark:border-gray-700">
               <TbFileSad
                 className={`text-gray-300 dark:text-[#993d4b] w-[400px] h-[70px] pb-2 block mx-auto`}
                 strokeWidth={1}
@@ -116,7 +116,7 @@ const CreditCard = () => {
         </div>
 
         <div>
-          <h1 className="text-[19px] mb-3 font-bold text-[#333B69] dark:text-blue-500">Card Setting</h1>
+          <h1 className="text-[19px] mb-3 font-bold text-[#333B69] md:mt-0 mt-6 dark:text-blue-500">Card Setting</h1>
           <CardSetting />
         </div>
       </div>

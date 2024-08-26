@@ -3,8 +3,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/store";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import Notification from "./Notification";
+import { useGetAllTransactionQuery } from "@/lib/service/TransactionService";
+import { Item } from "../../lastTransaction/lastTransactionItems";
 
 interface NavbarProps {
   setter: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,6 +23,9 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
   // State for dropdown visibility
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // state for notification visibility
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+
   // Reference for the dropdown
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -30,6 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setIsDropdownOpen(false);
+        setIsNotificationOpen(false);
       }
     };
 
@@ -46,6 +53,11 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
     setIsDropdownOpen((prev) => !prev);
   };
 
+  // toggle notification dropwon visibility
+  const toggleNotification = () => {
+    setIsNotificationOpen((prev) => !prev);
+  };
+
   // Get the current pathname from next/navigation
   const pathname = usePathname();
 
@@ -55,6 +67,32 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
     text = text.replace("-", " ");
     return text.charAt(1).toUpperCase() + text.slice(2).toLowerCase();
   };
+  // const notifications = [
+  //   { type: "New", description: "Transaction" },
+  //   { type: "New", description: "Transaction" },
+  //   { type: "New", description: "Transaction" },
+  //   { type: "New", description: "Transaction" },
+  // ];
+
+  let access: string = "";
+  const { data: session, status } = useSession();
+  useEffect(() => {}, [status, session]);
+  if (session) {
+    access = session?.user?.accessToken;
+  }
+
+  const { data, isError, isLoading } = useGetAllTransactionQuery(access);
+
+  if (isLoading) {
+    return <p>loading...</p>;
+  }
+  if (isError) {
+    return <p>Error</p>;
+  }
+
+  let transactions: { content: Item[]; totalPages: number } = data?.data || "";
+
+  const notifications = transactions.content;
 
   const title = capitalizeFirstLetter(pathname);
   return (
@@ -110,19 +148,29 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
                 className="flex-shrink-0 min-w-fit"
               />
             </Link>
-
-            <Link
-              href="/"
-              className="sm:flex hidden bg-[#F5F7FA] rounded-full  justify-center items-center"
+            <div
+              className=" sm:flex hidden bg-[#F5F7FA] rounded-full  justify-center items-center"
+              ref={dropdownRef}
             >
-              <Image
-                src="/assets/navbar/notification.svg"
-                width={50}
-                height={50}
-                alt="notification"
-                className="flex-shrink-0 min-w-fit"
-              />
-            </Link>
+              <div className="relative">
+                <Image
+                  src="/assets/navbar/notification.svg"
+                  width={50}
+                  height={50}
+                  alt="notification"
+                  className="flex-shrink-0 min-w-fit"
+                  onClick={toggleNotification}
+                />
+                {notifications.length > 0 && (
+                  <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-white bg-red-600 rounded-full text-xs">
+                    {notifications.length}
+                  </span>
+                )}
+                {isNotificationOpen && (
+                  <Notification notifications={notifications} />
+                )}
+              </div>
+            </div>
 
             <div className="relative" ref={dropdownRef}>
               <div className="flex justify-center items-center w-12 h-12 rounded-full object-scale-down">

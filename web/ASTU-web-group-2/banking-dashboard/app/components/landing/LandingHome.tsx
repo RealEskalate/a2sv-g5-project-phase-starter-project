@@ -14,7 +14,7 @@ const LandingHome = () => {
           initial={{ opacity: 0, y: "40%" }}
           animate={{ opacity: 1, y: "0%" }}
           transition={{ duration: 0.75, ease: "easeOut" }}
-          className=" pt-12 sm:pt-20 pl-12 md:pl-20 lg:pt-32 lg:pl-32 flex flex-col md:w-[40%] z-50  max-sm:w-[20rem] md:mb-[17rem]"
+          className=" pt-12 sm:pt-20 pl-12 md:pl-20 lg:pt-32 lg:pl-32 flex flex-col md:w-[40%] max-sm:w-[20rem] md:mb-[17rem]"
         >
           <m.span
             initial={{ opacity: 0, scale: 0.9 }}

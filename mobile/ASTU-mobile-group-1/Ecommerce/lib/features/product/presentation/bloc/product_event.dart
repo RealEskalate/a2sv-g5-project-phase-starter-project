@@ -59,3 +59,9 @@ class UpdateTextFieldEvent extends ProductEvent {
 class AddProductEvent extends ProductEvent {}
 
 class ResetMessageStateEvent extends ProductEvent {}
+
+class FilterProductEvent extends ProductEvent {
+  final String text;
+
+  const FilterProductEvent({required this.text});
+}

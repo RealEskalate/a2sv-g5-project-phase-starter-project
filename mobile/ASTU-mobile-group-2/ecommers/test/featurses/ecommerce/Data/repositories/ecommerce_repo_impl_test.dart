@@ -29,12 +29,13 @@ void main() {
   });
 
 
-  EcommerceEntity ecommerceEntity = const EcommerceEntity(
+  const EcommerceEntity ecommerceEntity =  EcommerceEntity(
     id: '1',
     name: 'hp pc',
     description: 'brand new hp pc',
     imageUrl: 'http/hp.png',
-    price: 234.4
+    price: 234.4, sellerId: '', sellerName: '', 
+   
   );
 
   // const List<EcommerceEntity> listEcommerceEntity = [
@@ -55,28 +56,35 @@ void main() {
   // ];
 
   String id = '1';
-  const EcommerceModel ecommerceModel =  EcommerceModel(
+  EcommerceModel ecommerceModel =  const EcommerceModel(
     id: '1',
     name: 'hp pc',
     description: 'brand new hp pc',
     imageUrl: 'http/hp.png',
-    price: 234.4
+    price: 234.4,
+    sellerId: '',
+    sellerName: ''
   );
   const List<EcommerceModel> listEcommerceModel = [
-     EcommerceModel(
-    id: '1',
-    name: 'hp pc',
-    description: 'brand new hp pc',
-    imageUrl: 'http/hp.png',
-    price: 234.4
-  ),
+  
   EcommerceModel(
     id: '1',
     name: 'hp pc',
     description: 'brand new hp pc',
     imageUrl: 'http/hp.png',
-    price: 234.4
-  )
+    price: 234.4,
+    sellerId: '',
+    sellerName: ''
+  ),
+   EcommerceModel(
+    id: '1',
+    name: 'hp pc',
+    description: 'brand new hp pc',
+    imageUrl: 'http/hp.png',
+    price: 234.4,
+    sellerId: '',
+    sellerName: ''
+  ),
   ];
 
 

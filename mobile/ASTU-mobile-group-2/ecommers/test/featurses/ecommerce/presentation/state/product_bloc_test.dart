@@ -41,20 +41,20 @@ void main() {
     name: 'pc', 
     description: 'description', 
     imageUrl: 'imageUrl', 
-    price: 123.2);
+    price: 123.2, sellerId: '', sellerName: '');
   const  List<EcommerceEntity> listProduct = [
     EcommerceEntity(
     id: '1', 
     name: 'pc', 
     description: 'description', 
     imageUrl: 'imageUrl', 
-    price: 123.2),
+    price: 123.2, sellerId: '', sellerName: ''),
     EcommerceEntity(
     id: '1', 
     name: 'pc', 
     description: 'description', 
     imageUrl: 'imageUrl', 
-    price: 123.2)
+    price: 123.2, sellerId: '', sellerName: '')
   ];
   group(
     'test the state of the app',

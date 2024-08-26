@@ -24,8 +24,8 @@ void main() {
 
 
   const List<EcommerceEntity> productData = [
-    EcommerceEntity(id: '1', name: 'pc', description: 'hp', imageUrl: 'http', price: 2222.2),
-    EcommerceEntity(id: '1', name: 'pc', description: 'hp', imageUrl: 'http', price: 2222.2),
+    EcommerceEntity(id: '1', name: 'pc', description: 'hp', imageUrl: 'http', price: 2222.2, sellerId: '', sellerName: ''),
+    EcommerceEntity(id: '1', name: 'pc', description: 'hp', imageUrl: 'http', price: 2222.2, sellerId: '', sellerName: ''),
   ];
   
 
@@ -55,7 +55,7 @@ void main() {
       'price': 123,
      
   };
-  const EcommerceEntity singleProduct = EcommerceEntity(id: '1', name: 'pc', description: 'hp', imageUrl: 'http', price: 2222.2);
+  const EcommerceEntity singleProduct = EcommerceEntity(id: '1', name: 'pc', description: 'hp', imageUrl: 'http', price: 2222.2, sellerId: '', sellerName: '');
   String id = '1';
   test(
     'should return detail or product by id',

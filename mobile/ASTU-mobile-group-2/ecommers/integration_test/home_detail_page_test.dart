@@ -4,7 +4,15 @@
 import 'dart:io';
 
 import 'package:bloc_test/bloc_test.dart';
+import 'package:dartz/dartz.dart';
 import 'package:ecommers/core/Icons/back_icons.dart';
+import 'package:ecommers/core/utility/socket_impl.dart';
+import 'package:ecommers/features/chat/domain/entity/chat_entity.dart';
+import 'package:ecommers/features/chat/domain/entity/message_entity.dart';
+import 'package:ecommers/features/chat/domain/usecase/chat_usecase.dart';
+import 'package:ecommers/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:ecommers/features/chat/presentation/bloc/chat_event.dart';
+import 'package:ecommers/features/chat/presentation/bloc/chat_state.dart';
 import 'package:ecommers/features/ecommerce/Domain/entity/ecommerce_entity.dart';
 import 'package:ecommers/features/ecommerce/presentation/UI/add_product/add_product.dart';
 import 'package:ecommers/features/ecommerce/presentation/UI/add_product/input_border.dart';
@@ -31,7 +39,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 
 class MockProductBloc extends MockBloc<ProductEvent, ProductState>
@@ -47,6 +57,9 @@ class MockButtonBloc extends MockBloc<ButtonEvent, BottumState>
 class MockImageBloc extends MockBloc<ImageEvent, ImageState>
     implements ImageBloc {}
 
+class MockSocketService extends Mock implements SocketService {}
+class MockChatBloc extends MockBloc<ChatEvent, ChatState> implements ChatBloc {}
+class MockChatUsecase extends Mock implements ChatUsecase {}
 void main() {
  
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -56,13 +69,30 @@ void main() {
   late MockLoginUserStatesBloc mockLoginUserStatesBloc;
   late MockButtonBloc mockButtonBloc;
   late MockImageBloc mockImageBloc;
-  
+  late MockChatBloc mockChatBloc;
+  late MockChatUsecase mockChatUsecase;
+  late MockSocketService mockSocketService;
+  final MessageEntity messageEntity = MessageEntity (
+      messages: [{'id' : '', 'content': ''}], messageId: ''
+    );
+     final List<ChatEntity> chatEntity = [
+      ChatEntity(
+        senderName: '', recieverId: '', senderId: '', recieverName: '', chatId: '', messages: messageEntity
+      ),
+      
+    ];
 
   setUp(() {
     mockProductBloc = MockProductBloc();
+    mockSocketService = MockSocketService();
     mockLoginUserStatesBloc = MockLoginUserStatesBloc();
     mockButtonBloc = MockButtonBloc();
     mockImageBloc = MockImageBloc();
+    mockChatBloc = MockChatBloc();
+    mockChatUsecase = MockChatUsecase();
+    when(() => mockSocketService.connect()).thenAnswer((_) async => Future.value());
+    
+    GetIt.instance.registerSingleton<SocketService>(mockSocketService);
     HttpOverrides.global = null;
   });
 
@@ -77,6 +107,9 @@ void main() {
  
 
   testWidgets('test add product state ', (WidgetTester tester) async {
+    when(() => mockChatUsecase.getMychats()).thenAnswer(
+      (_) async => Right(chatEntity) // Make sure this matches the expected return type
+    );
     whenListen(
       mockLoginUserStatesBloc,
       Stream.fromIterable([
@@ -99,15 +132,22 @@ void main() {
       initialState: InputIntialState(),
     );
     whenListen(
+      mockChatBloc,
+      Stream.fromIterable([
+        ChatMessageGetSuccess(chatEntity: chatEntity), // or any other initial state
+      ]),
+      initialState: ChatInitialState(),
+    );
+    whenListen(
       mockProductBloc,
       Stream.fromIterable([
         LoadingState(),
         const LoadedAllProductState(
           products: [
-            EcommerceEntity(id: '1', name: 'Product 1', description: 'Description 1', imageUrl: 'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg', price: 100, sellerName: ''),
-            EcommerceEntity(id: '2', name: 'Product 2', description: 'Description 2', imageUrl: 'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg', price: 200),
-            EcommerceEntity(id: '3', name: 'Product 3', description: 'Description 3', imageUrl: 'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg', price: 300),
-            EcommerceEntity(id: '4', name: 'Product 4', description: 'Description 4', imageUrl: 'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg', price: 400),
+            EcommerceEntity(id: '1', name: 'Product 1', description: 'Description 1', imageUrl: 'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg', price: 100, sellerName: '', sellerId: ''),
+            EcommerceEntity(id: '2', name: 'Product 2', description: 'Description 2', imageUrl: 'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg', price: 200, sellerName: '', sellerId: ''),
+            EcommerceEntity(id: '3', name: 'Product 3', description: 'Description 3', imageUrl: 'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg', price: 300, sellerId: '', sellerName: ''),
+            EcommerceEntity(id: '4', name: 'Product 4', description: 'Description 4', imageUrl: 'https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg', price: 400, sellerName: '', sellerId: ''),
           ],
         ),
       ]),
@@ -121,6 +161,9 @@ void main() {
     await tester.pumpWidget(
       MultiBlocProvider(
         providers: [
+           BlocProvider<ChatBloc>(
+              create: (context) => mockChatBloc,
+            ),
               BlocProvider<ProductBloc>.value(value: mockProductBloc),
               BlocProvider<LoginUserStatesBloc>.value(
                   value: mockLoginUserStatesBloc),

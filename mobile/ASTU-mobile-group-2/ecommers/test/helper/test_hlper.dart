@@ -2,6 +2,9 @@
 
 
 import 'package:ecommers/core/network/check_connectivity.dart';
+import 'package:ecommers/features/chat/data/repository_implimentation/chat_repo_impl.dart';
+import 'package:ecommers/features/chat/domain/repository/chat_repo.dart';
+import 'package:ecommers/features/chat/domain/usecase/chat_usecase.dart';
 import 'package:ecommers/features/ecommerce/Data/data_source/local_data_source.dart';
 import 'package:ecommers/features/ecommerce/Data/data_source/remote_data_source.dart';
 import 'package:ecommers/features/ecommerce/Domain/repositories/ecommerce_repositories.dart';
@@ -40,7 +43,11 @@ import 'package:shared_preferences/shared_preferences.dart';
     LoginUserStatesBloc,
     LoginUseCase,
     LoginBloc,
-    LoginRegistrationBloc
+    LoginRegistrationBloc,
+    ChatUsecase,
+    ChatRepositories,
+    ChatRepoImpl,
+    
   ],
   customMocks :[MockSpec<http.Client>(as : #MockHttpClient)],
 

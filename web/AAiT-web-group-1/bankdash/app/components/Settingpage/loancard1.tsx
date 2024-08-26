@@ -9,6 +9,7 @@ const LoanCard = () => {
             <div className="flex flex-row items-center w-64 h-32 rounded-2xl border p-2 shadow-lg">
                 <div className="mr-4">
                     <img src={icon1.src} alt="" />
+                    
                 </div>
                 <div>
                     <p className="text-base" style={{ color: '#718EBF' }}>Personal Loans</p>

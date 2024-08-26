@@ -16,7 +16,7 @@ const Notification = ({ notifications }: NotificationsProps) => {
             key={index}
             className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 cursor-pointer"
           >
-            {notification.type}
+            {index+1  + ". " + notification.amount + " "+ notification.type}
           </li>
         ))}
       </ul>

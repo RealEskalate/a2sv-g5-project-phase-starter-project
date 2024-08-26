@@ -204,22 +204,34 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
                         alt="settings"
                         className="flex-shrink-0"
                       />
-                      <span className="ml-2 text-sm">Setting</span>
+                      <span className="ml-2 text-sm">Settings</span>
                     </Link>
 
-                    <Link
-                      href="/"
-                      className="md:hidden flex bg-[#F5F7FA] rounded-full gap-2 items-center"
+                    <div
+                      className=" md:hidden  flex bg-[#F5F7FA] rounded-full gap-2 items-center cursor-pointer"
+                      ref={dropdownRef}
                     >
-                      <Image
-                        src="/assets/navbar/notification.svg"
-                        width={30}
-                        height={30}
-                        alt="notification"
-                        className="flex-shrink-0"
-                      />
-                      <span className="ml-2 text-sm">Notification</span>
-                    </Link>
+                      <div className="relative">
+                        <Image
+                          src="/assets/navbar/notification.svg"
+                          width={30}
+                          height={30}
+                          alt="notification"
+                          className="flex-shrink-0"
+                          onClick={toggleNotification}
+                        />
+
+                        {notifications.length > 0 && (
+                          <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-white bg-red-600 rounded-full text-xs">
+                            {notifications.length}
+                          </span>
+                        )}
+                        {isNotificationOpen && (
+                          <Notification notifications={notifications} />
+                        )}
+                      </div>
+                        <span onClick={toggleNotification} className="ml-2 text-sm">Notifications</span>
+                    </div>
                     <button
                       onClick={() => signOut({ callbackUrl: "/" })}
                       className="flex bg-[#F5F7FA] rounded-full gap-4 items-center pl-2"

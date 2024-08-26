@@ -123,16 +123,16 @@ const HomePage = () => {
   if (error) return <div>Error fetching cards</div>;
 
   return (
-    <div className="bg-[#F5F7FA] min-h-screen p-5">
+    <div className="bg-[#F5F7FA] min-h-screen p-5 dark:bg-darkPage">
       <ToastContainer />
-      <div className="lg:flex lg:justify-between lg:border-2">
-        <div className="lg:w-[60%] rounded-xl bg-[#F5F7FA] ">
+      <div className="lg:flex lg:justify-between">
+        <div className="lg:w-[60%] rounded-xl bg-[#F5F7FA]  dark:bg-darkPage">
           <div className="credit-card-info flex justify-between  h-16 items-center ">
-            <h3 className="font-bold text-[#343C6A] text-[16px] md:text-[22px] ">
+            <h3 className="font-bold text-[#343C6A] text-[16px] md:text-[22px] dark:text-white">
               My cards
             </h3>
             <Link href="/creditcardpage#add-new-card">
-              <h3 className="font-bold text-[#343C6A] text-[16px] md:text-[22px] ">
+              <h3 className="font-bold text-[#343C6A] text-[16px] md:text-[22px]  dark:text-blue-600">
                 See All
               </h3>
             </Link>
@@ -162,14 +162,14 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div className="lg:w-[35%] lg:pt-3 lg:pb-2">
+        <div className="lg:w-[35%] lg:pt-3 lg:pb-2 ">
           <div>
-            <p className="font-bold text-[#343C6A] text-[16px] md:text-[22px] mb-3">
+            <p className="font-bold text-[#343C6A] text-[16px] md:text-[22px] mb-3 dark:text-white">
               Recent Transaction
             </p>
           </div>
-          <div className="transactionData mt-5  h-[210px] lg:mt-3 rounded-lg lg:h-[215px] bg-white lg:p-5 lg:rounded-lg lg:shadow-md ">
-            {transactionsData!.data.content.map((transaction, index) => (
+          <div className="transactionData mt-5  h-[210px] lg:mt-3 rounded-lg lg:h-[215px] bg-white lg:p-5 lg:rounded-lg lg:shadow-md dark:bg-darkComponent">
+            {transactionsData?.data?.content?.map((transaction, index) => (
               <div key={index} className="flex justify-around  items-center ">
                 <div className="flex left  p-3 items-center space-x-2">
                   <div className="relative left w-12 h-10 rounded-full flex items-center justify-center bg-gray-200">
@@ -205,7 +205,7 @@ const HomePage = () => {
       <div className="my-5 lg:space-y-0 lg:flex lg:justify-between  ">
         <div className="weeklyActivities  h-auto rounded-lg">
           <div>
-            <p className="font-bold text-[#343C6A] text-[16px] md:text-[22px] mb-3">
+            <p className="font-bold text-[#343C6A] text-[16px] md:text-[22px] mb-3 dark:text-white">
               Weekly Activities
             </p>
           </div>
@@ -214,7 +214,7 @@ const HomePage = () => {
 
         <div className="expense my-5 rounded-lg h-auto lg:p-0 lg:m-0">
           <div>
-            <p className="font-bold text-[#343C6A] text-[16px] md:text-[22px] mb-3">
+            <p className="font-bold text-[#343C6A] text-[16px] md:text-[22px] mb-3 dark:text-white">
               Expenses Statistics
             </p>
           </div>
@@ -225,11 +225,11 @@ const HomePage = () => {
       <div className="quickandBalance flex flex-col lg:flex-row items-start lg:items-center lg:justify-between gap-6 lg:gap-8  lg:w-full">
         <div className="quicktransfer w-full lg:w-1/2 p-4 lg:p-6 lg:h-[450px]">
           <div className="my-6">
-            <p className="font-bold text-[#343C6A] text-[16px] md:text-[22px]">
+            <p className="font-bold text-[#343C6A] text-[16px] md:text-[22px] dark:text-white">
               Quick Transfer
             </p>
           </div>
-          <div className="w-full bg-white p-5 rounded-xl shadow-md">
+          <div className="w-full bg-white dark:bg-darkBackground p-5 rounded-xl shadow-md">
             <div className="flex justify-center">
               <div className="flex mt-3 space-x-16">
                 {quickTransfersData?.data.map((user, index) => (
@@ -278,7 +278,7 @@ const HomePage = () => {
 
         <div className="balance w-full lg:w-1/2 p-4 lg:p-6 lg:h-[450px]">
           <div className="my-6">
-            <p className="font-bold text-[#343C6A] text-[16px] md:text-[22px]">
+            <p className="font-bold text-[#343C6A] text-[16px] md:text-[22px] dark:text-white">
               Balance Statistics
             </p>
           </div>

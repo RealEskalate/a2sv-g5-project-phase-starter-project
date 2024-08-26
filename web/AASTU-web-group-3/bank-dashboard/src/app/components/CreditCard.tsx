@@ -8,7 +8,6 @@ import {
 } from "../../../public/Icons";
 import { CardProps } from "../../types/creditCardData";
 
-
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
   const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Add 1 because months are zero-indexed
@@ -17,8 +16,8 @@ function formatDate(dateString: string): string {
 }
 
 function formatCardNumber(cardNumber: string): string {
-  const start = cardNumber.slice(0, 4);
-  const end = cardNumber.slice(-4);
+  const start = cardNumber?.slice(0, 4);
+  const end = cardNumber?.slice(-4);
   return `${start} **** **** ${end}`;
 }
 
@@ -29,7 +28,6 @@ function formatBalance(balance: number): string {
     minimumFractionDigits: 2,
   }).format(balance);
 }
-
 
 export default function CreditCard({
   name,
@@ -69,7 +67,9 @@ export default function CreditCard({
         </div>
 
         <div className="flex justify-between items-end  mt-2 px-5">
-          <p className="font-semibold tracking-wider">{formatCardNumber(cardNumber)}</p>
+          <p className="font-semibold tracking-wider">
+            {formatCardNumber(cardNumber)}
+          </p>
           <Image
             width={24}
             height={24}
@@ -78,7 +78,6 @@ export default function CreditCard({
           />
         </div>
         <div className="absolute bottom-0 w-full h-12 bg-gradient-to-b from-gray-400/40 to-gray-400/0"></div>
-
       </div>
     </div>
   );

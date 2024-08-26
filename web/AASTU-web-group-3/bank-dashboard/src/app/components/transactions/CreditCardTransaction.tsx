@@ -36,7 +36,7 @@ const CreditCardTransaction = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
   return (
-    <div className="lg:w-[65%] xl:w-[68%] rounded-xl bg-[#F5F7FA]">
+    <div className="lg:w-[65%] xl:w-[68%] rounded-xl bg-[#F5F7FA] dark:bg-darkPage">
       <div className="credit-card-info flex justify-between  h-16 items-center ">
         <h1 className="font-semibold text-[#343C6A]">My cards</h1>
         <Link href="/creditcardpage#add-new-card">

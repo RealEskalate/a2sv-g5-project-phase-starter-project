@@ -45,7 +45,7 @@ export function AreaChartComponent() {
   });
 
   return (
-    <div className="Balance-History">
+    <div className="Balance-History dark:bg-darkComponent">
       <ChartContainer config={chartConfig}>
         <AreaChart
           data={chartData}

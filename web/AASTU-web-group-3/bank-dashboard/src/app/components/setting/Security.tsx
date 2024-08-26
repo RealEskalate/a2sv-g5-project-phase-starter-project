@@ -29,7 +29,7 @@ const Security = () => {
   };
 
   return (
-    <div className="p-4 ">
+    <div className="p-4 dark:bg-[#172941]">
       <div className=" flex flex-col py-3">
         <div className="font-semibold text-xl py-2 text-[#333B69] ">
           Two-factor Authentication
@@ -50,10 +50,10 @@ const Security = () => {
           Change Password
         </div>
 
-        <div className="mb-3 w-full md:w-[45%]">
-          <label className="block text-black text-sm mb-2">Password</label>
+        <div className="mb-3 w-full md:w-[45%] ">
+          <label className="block text-black text-sm mb-2 dark:text-white ">Password</label>
           <input
-            className="w-full p-3 text-[#718EBF] border-2 bg-white text-sm border-[#DFEAF2] rounded-lg focus:outline-none"
+            className="w-full p-3 text-[#718EBF] border-2 bg-white text-sm border-[#DFEAF2] rounded-lg focus:outline-none  dark:border-white  dark:bg-[#172941]"
             type="password"
             id="password"
             placeholder="*********"
@@ -66,9 +66,9 @@ const Security = () => {
           />
         </div>
         <div className="mb-3 w-full md:w-[45%]">
-          <label className="block text-black text-sm mb-2">New Password</label>
+          <label className="block text-black text-sm mb-2 dark:text-white">New Password</label>
           <input
-            className="w-full p-3 text-[#718EBF] border-2 bg-white text-sm border-[#DFEAF2] rounded-lg focus:outline-none"
+            className="w-full p-3 text-[#718EBF] border-2 bg-white text-sm border-[#DFEAF2] rounded-lg focus:outline-none  dark:border-white  dark:bg-[#172941]"
             type="password"
             id="newPassword"
             placeholder="*********"

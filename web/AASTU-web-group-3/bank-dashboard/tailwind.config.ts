@@ -19,6 +19,12 @@ const config = {
     },
     extend: {
       colors: {
+        darkBackground: '#172941',
+        darkText: '#FFFFFF',
+        darkAccent: '#1D4ED8',
+        darkPage: '#0f1a2b',
+        darkComponent:'#352F44',
+
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

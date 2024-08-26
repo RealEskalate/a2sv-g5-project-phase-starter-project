@@ -71,101 +71,132 @@ const Page: React.FC = () => {
 
 
   return (
-    <div>
+    <div className="dark:bg-[#0f1a2b] dark:text-lightText">
       <div className="justify-between grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-2 py-8 px-8 w-full">
         {datacorner.map((card) => (
-          <div key={card.index} className="flex  justify-evenly h-[85px] rounded-2xl shadow-xl bg-white p-4">
+          <div
+            key={card.index}
+            className="flex justify-evenly h-[85px] rounded-2xl shadow-xl bg-white dark:bg-darkComponent p-4"
+          >
             <div className="flex items-center">
-            <div className=' bg-[#DCFAF8] rounded-full p-4 mr-3'>
-              <Image width={30} height={30} className="text-gray-500" src={card.icon} alt="Image Icon" />
+              <div className="bg-[#DCFAF8] rounded-full p-4 mr-3">
+                <Image
+                  width={30}
+                  height={30}
+                  className="text-gray-500 dark:text-gray-300"
+                  src={card.icon}
+                  alt="Image Icon"
+                />
               </div>
               <div>
-                <h3 className="text-gray-500 text-sm">{card.title}</h3>
-                <p className="text-black text-2xl font-bold">${card.value}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="gap-6 max-w-full flex flex-col md:flex-row px-9 py-10 ">
-        
-
-        <LineGraphWithDots TotInvestment = {RandInvestment?.data?.yearlyTotalInvestment} />
-        <CurveGraph MonthlyRevenue = {RandInvestment?.data?.monthlyRevenue} />
-      </div>
-      <div className='flex flex-col md:flex-row w-full'>
-
-      <div className='w-full md:w-[55%] px-8'>
-      <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] text-left px-4 py-4">
-        My Investment
-      </h1>
-        {investor.map((item, index) => (
-          <div key={index} className="flex justify-between items-center p-6 min-h-[40px] bg-white shadow-xl rounded-2xl mb-3">
-            <div className="flex items-center space-x-4 w-1/2">
-            <div className=' bg-[#FFE0EB] rounded-xl p-3'>
-              <Image 
-                src={item.icon} 
-                alt={item.titles} 
-                width={30}
-                height={30}
-                className="object-cover rounded-lg"
-              />
-
-            </div>
-              <div className='w-3/4'>
-                <h2 className="text-sm font-medium text-gray-800 items-start">{item.titles}</h2>
-                <p className="text-sm font-light text-gray-500">
-                  {item.jobtitle.join(', ')}
+                <h3 className="text-gray-500 dark:text-gray-200 text-sm">{card.title}</h3>
+                <p className="text-black dark:text-gray-100 text-2xl font-bold">
+                  ${card.value}
                 </p>
               </div>
-            </div> 
-
-            <div className="flex items-center w-1/3 gap-3">
-              <div className="flex flex-col gap-2 ">
-                <span className="hidden sm:block text-lg font-semibold text-gray-800">${item.price}</span>
-                <span className="hidden sm:block text-xs font-light text-gray-500">{item.investmentvalue}</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col w-1/5">
-              <span className={`text-sm font-semibold  ${item.percent > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {item.percent}%
-              </span>
-              <span className="hidden sm:block text-xs font-light text-gray-500">{item.returnval}</span>
             </div>
           </div>
         ))}
       </div>
-
-  <div className="w-11/12 md:w-[40%] py-1">
-  <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] text-left px-4 py-4">
-        Trending Stock
-      </h1>
-  <div className="flex  w-full flex-col bg-white shadow-lg rounded-2xl p-4 py-10 px-5">
-    <div className="flex  font-bold text-[16px] text-[#718EBF] gap-4">
-      <span className="w-1/5">SL No</span>
-      <span className="w-1/3">Name</span>
-      <span className="w-1/4">Price</span>
-      <span className="w-1/5">Return</span>
-    </div>
-    <div className="border-b border-[#D6DDEB] my-2"></div>
-
-    {tabledata.map((item, index) => (
-      <div key={index} className="flex text-base font-normal text-[#232323] gap-4 p-3">
-        <span className="w-1/5">{item.no}</span>
-        <span className="w-1/3">{item.name}</span>
-        <span className="w-1/4">${item.price}</span>
-        <span className= {`w-1/5 ${item.return>0 ? `text-[#16DBAA]`:`text-[#FE5C73]`} `} >{item.return}%</span>
-
+  
+      <div className="gap-6 max-w-full flex flex-col md:flex-row px-9 py-10">
+        <LineGraphWithDots TotInvestment={RandInvestment?.data?.yearlyTotalInvestment} />
+        <CurveGraph MonthlyRevenue={RandInvestment?.data?.monthlyRevenue} />
       </div>
-    ))}
-  </div>
-</div>
-
+  
+      <div className="flex flex-col md:flex-row w-full">
+        <div className="w-full md:w-[55%] px-8">
+          <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] dark:text-gray-100 text-left px-4 py-4">
+            My Investment
+          </h1>
+          {investor.map((item, index) => (
+            <div
+              key={index}
+              className="flex justify-between items-center p-6 min-h-[40px] bg-white dark:bg-darkComponent shadow-xl rounded-2xl mb-3"
+            >
+              <div className="flex items-center space-x-4 w-1/2">
+                <div className="bg-[#FFE0EB] rounded-xl p-3">
+                  <Image
+                    src={item.icon}
+                    alt={item.titles}
+                    width={30}
+                    height={30}
+                    className="object-cover rounded-lg"
+                  />
+                </div>
+                <div className="w-3/4">
+                  <h2 className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                    {item.titles}
+                  </h2>
+                  <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                    {item.jobtitle.join(', ')}
+                  </p>
+                </div>
+              </div>
+  
+              <div className="flex items-center w-1/3 gap-3">
+                <div className="flex flex-col gap-2">
+                  <span className="hidden sm:block text-lg font-semibold text-gray-800 dark:text-gray-200">
+                    ${item.price}
+                  </span>
+                  <span className="hidden sm:block text-xs font-light text-gray-500 dark:text-gray-400">
+                    {item.investmentvalue}
+                  </span>
+                </div>
+              </div>
+  
+              <div className="flex flex-col w-1/5">
+                <span
+                  className={`text-sm font-semibold ${
+                    item.percent > 0 ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'
+                  }`}
+                >
+                  {item.percent}%
+                </span>
+                <span className="hidden sm:block text-xs font-light text-gray-500 dark:text-gray-400">
+                  {item.returnval}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+  
+        <div className="w-11/12 md:w-[40%] py-1">
+          <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] dark:text-gray-100 text-left px-4 py-4">
+            Trending Stock
+          </h1>
+          <div className="flex w-full flex-col bg-white dark:bg-darkComponent shadow-lg rounded-2xl p-4 py-10 px-5">
+            <div className="flex font-bold text-[16px] text-[#718EBF] dark:text-gray-300 gap-4">
+              <span className="w-1/5">SL No</span>
+              <span className="w-1/3">Name</span>
+              <span className="w-1/4">Price</span>
+              <span className="w-1/5">Return</span>
+            </div>
+            <div className="border-b border-[#D6DDEB] dark:border-gray-600 my-2"></div>
+  
+            {tabledata.map((item, index) => (
+              <div
+                key={index}
+                className="flex text-base font-normal text-[#232323] dark:text-gray-200 gap-4 p-3"
+              >
+                <span className="w-1/5">{item.no}</span>
+                <span className="w-1/3">{item.name}</span>
+                <span className="w-1/4">${item.price}</span>
+                <span
+                  className={`w-1/5 ${
+                    item.return > 0 ? 'text-[#16DBAA] dark:text-green-400' : 'text-[#FE5C73] dark:text-red-400'
+                  }`}
+                >
+                  {item.return}%
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
+  
 };
 
 export default Page;

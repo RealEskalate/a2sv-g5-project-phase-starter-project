@@ -24,44 +24,48 @@ const Step3: React.FC<StepProps> = ({ step }) => {
         <label className="block text-sm font-medium">Username</label>
         <input
           {...register('username', { required: 'Username is required' })}
-          className="mt-1 p-2 block w-full border rounded-md"
+                    className="border rounded-md w-full h-12 border-[#CCCCF5] dark:border-darkComponent p-2 bg-white dark:bg-darkPage dark:text-darkText"
+
         />
-        {isSubmitted && errors.username && <p className="text-red-500 text-sm mt-1">{String(errors.username.message)}</p>}
+        {errors.username && <p className="text-red-500 text-sm mt-1">{String(errors.username.message)}</p>}
       </div>
       <div>
         <label className="block text-sm font-medium">Password</label>
         <input
           type="password"
           {...register('password', { required: 'Password is required' })}
-          className="mt-1 p-2 block w-full border rounded-md"
+                    className="border rounded-md w-full h-12 border-[#CCCCF5] dark:border-darkComponent p-2 bg-white dark:bg-darkPage dark:text-darkText"
+
         />
-        {isSubmitted && errors.password && <p className="text-red-500 text-sm mt-1">{String(errors.password.message)}</p>}
+        {errors.password && <p className="text-red-500 text-sm mt-1">{String(errors.password.message)}</p>}
       </div>
       <div>
         <label className="block text-sm font-medium">Currency</label>
         <select
           {...register('preference.currency', { required: 'Currency is required' })}
-          className="mt-1 p-2 block w-full border rounded-md"
+          className="border rounded-md w-full h-12 border-[#CCCCF5] dark:border-darkComponent p-2 bg-white dark:bg-darkPage dark:text-darkText"
+
         >
           <option value="USD">US Dollar (USD)</option>
           <option value="EUR">Euro (EUR)</option>
           <option value="ETB">Ethiopian Birr (ETB)</option>
           <option value="GBP">British Pound (GBP)</option>
         </select>
-        {isSubmitted && (errors.preference as any)?.currency && <p className="text-red-500 text-sm mt-1">{String((errors.preference as any)?.currency.message)}</p>}
+        {(errors.preference as any)?.currency && <p className="text-red-500 text-sm mt-1">{String((errors.preference as any)?.currency.message)}</p>}
       </div>
       <div>
   <label className="block text-sm font-medium">Time Zone</label>
   <select
     {...register('preference.timeZone', { required: 'Time Zone is required' })}
-    className="mt-1 p-2 block w-full border rounded-md"
+    className="border rounded-md w-full h-12 border-[#CCCCF5] dark:border-darkComponent p-2 bg-white dark:bg-darkPage dark:text-darkText"
+
   >
     <option value="UTC">Coordinated Universal Time (UTC)</option>
     <option value="GMT">Greenwich Mean Time (GMT)</option>
     <option value="EAT">East Africa Time (EAT)</option>
     <option value="EST">Eastern Standard Time (EST)</option>
   </select>
-  {isSubmitted && (errors.preference as any)?.timeZone && (
+  { (errors.preference as any)?.timeZone && (
     <p className="text-red-500 text-sm mt-1">
       {String((errors.preference as any)?.timeZone.message)}
     </p>

@@ -71,7 +71,7 @@ export function PieChartComponent() {
   );
 
   return (
-    <Card className="w-full h-full lg:h-fit lg:rounded-3xl">
+    <Card className="w-full h-full lg:h-fit lg:rounded-3xl dark:bg-darkComponent">
       <CardContent className="flex-1 pb-0 lg:h-[400px]">
         <ChartContainer
           config={chartConfig}

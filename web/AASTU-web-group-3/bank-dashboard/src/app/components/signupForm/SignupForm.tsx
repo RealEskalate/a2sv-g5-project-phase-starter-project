@@ -5,6 +5,7 @@ import Step1 from './Step1';
 import Step2 from './Step2';
 import Step3 from './Step3';
 import { useSignUpMutation } from '@/lib/redux/api/authApi';
+// import { useRouter } from 'next/router';
 
 type FormData = {
     name: string;
@@ -56,12 +57,16 @@ const SignUpForm: React.FC = () => {
   
   const [step, setStep] = useState(1);
   const [putSignUp ] = useSignUpMutation()
+  // const router = useRouter()
+
   
   const onSubmit = async (data: FormData) => {
     console.log(data);
     try {
-      await putSignUp(data ).unwrap();
-      window.location.reload()
+      const res =  await putSignUp(data ).unwrap();
+      // if (res.success === true ){
+      //   router.push("/auth/signin")
+      // }
 
     } catch (err) {
       console.error(err);
@@ -94,9 +99,9 @@ const SignUpForm: React.FC = () => {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)} className="max-w-lg mx-auto p-8 border rounded-md shadow-md h-5/6">
+      <form onSubmit={methods.handleSubmit(onSubmit)} className="md:w-1/3 max-w-lg mx-auto p-8 bg-gray-100 dark:bg-darkComponent shadow-lg rounded-lg min-h-[90%] mt-10">
         <div className="flex flex-col justify-between h-full">
-          <div className="flex-1">{renderStep()}</div>
+          <div className="flex-1 justify-center items-center">{renderStep()}</div>
           <div className="flex items-center justify-between mt-8">
             {step > 1 && (
               <button

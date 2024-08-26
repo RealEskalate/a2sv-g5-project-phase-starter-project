@@ -111,15 +111,16 @@ const LineGraphWithDots = ({TotInvestment}:yearlyTotal) => {
   };
 
   return (
-    <div className='w-full md:w-[45%]'>
-      <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] text-left px-4 py-4">
+    <div className="w-full md:w-[45%]">
+      <h1 className="text-[22px] font-bold leading-[26.63px] text-[rgba(51,59,105,1)] dark:text-gray-100 text-left px-4 py-4">
         Yearly Total Investment
       </h1>
-    <div className="flex justify-evenly h-[300px] bg-white rounded-2xl p-4 shadow-lg">
-      <Line data={data}/>
-    </div>
+      <div className="flex justify-evenly h-[300px] bg-white dark:bg-darkComponent rounded-2xl p-4 shadow-lg">
+        <Line data={data} />
+      </div>
     </div>
   );
+  
 };
 
 export default LineGraphWithDots;

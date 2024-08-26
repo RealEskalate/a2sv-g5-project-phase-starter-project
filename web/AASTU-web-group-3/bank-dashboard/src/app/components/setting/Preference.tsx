@@ -81,12 +81,12 @@ const PreferencePage = ({userPrefernce}:userPrefernceType) => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 dark:bg-[#172941]">
       <div className="flex flex-wrap items-end justify-between w-full font-semibold">
         <div className="mb-3 w-full md:w-[45%]">
-          <label className="block text-black text-base mb-2">Currency</label>
+          <label className="block text-black  dark:text-white text-base mb-2">Currency</label>
           <input
-            className="w-full p-3 md:p-2 text-[#718EBF] border-2 text-sm bg-white border-[#DFEAF2] rounded-lg focus:outline-none"
+            className="w-full p-3 md:p-2 text-[#718EBF] border-2 text-sm bg-white border-[#DFEAF2] rounded-lg focus:outline-none dark:border-white  dark:bg-[#172941]"
             type="text"
             id="currency"
             placeholder="USD"
@@ -99,9 +99,9 @@ const PreferencePage = ({userPrefernce}:userPrefernceType) => {
           />
         </div>
         <div className="mb-3 w-full md:w-[45%]">
-          <label className="block text-black text-sm mb-2">Time Zone</label>
+          <label className="block text-black dark:text-white text-sm mb-2">Time Zone</label>
           <input
-            className="w-full p-3 md:p-2 text-[#718EBF] bg-white border-2 text-sm border-[#DFEAF2] rounded-lg focus:outline-none"
+            className="w-full p-3 md:p-2 text-[#718EBF] bg-white border-2 text-sm border-[#DFEAF2] rounded-lg focus:outline-none dark:border-white  dark:bg-[#172941]"
             type="text"
             id="Time Zone"
             placeholder="(GMT-12:00) International Date Line West"

@@ -5,6 +5,7 @@ export const menuItems = [
   { title: "Investments", icon: "/icons/investment.svg", href: "/Investments" },
   { title: "Credit Cards", icon: "/icons/creidtCard.svg", href: "/creditcardpage" },
   { title: "Loans", icon: "/icons/loan.svg", href: "/loans" },
+  { title: "Transfer", icon: "/icons/Dolar.svg", href: "/transfer" },
   { title: "Services", icon: "/icons/service.svg", href: "/services" },
   { title: "Setting", icon: "/icons/setting.svg", href: "/setting" },
 ];
@@ -34,6 +35,7 @@ export const mobileService = '/icons/google.svg'
 export const user = '/icons/tesla.svg'
 
 
+export const transferingPeoples = '/icons/transferingimage.svg'
 
 
 

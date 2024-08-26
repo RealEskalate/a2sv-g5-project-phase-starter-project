@@ -3,7 +3,7 @@ import Form from './component/Form'
 
 const SigninPage = () => {
   return (
-    <div>
+    <div className= ' h-screen flex items-center justify-center'>
       <Suspense>
        <Form/>
       </Suspense>

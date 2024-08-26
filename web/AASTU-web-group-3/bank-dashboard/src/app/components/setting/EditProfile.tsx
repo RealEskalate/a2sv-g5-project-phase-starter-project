@@ -140,7 +140,7 @@ const EditProfile = ({ userData }: EditProfileProps ) => {
 
 
   return (
-    <div className="p-4 flex flex-col md:flex-row gap-8">
+    <div className="p-4 flex flex-col md:flex-row gap-8 dark:bg-[#172941] ">
       <div className="relative rounded-full w-64 h-64 mb-5 md:w-40 md:h-40">
         <Image
           src={currentUser.data.profilePicture}
@@ -171,11 +171,11 @@ const EditProfile = ({ userData }: EditProfileProps ) => {
       >
         {formFields.map((field) => (
           <div key={field.id} className="mb-3 w-full md:w-[45%]">
-            <label className="block text-black text-sm mb-2" htmlFor={field.id}>
+            <label className="block text-black text-sm mb-2 dark:text-white" htmlFor={field.id}>
               {field.label}
             </label>
             <input
-              className="w-full p-3 md:p-2 text-[#718EBF] border-2 text-sm border-[#DFEAF2] rounded-lg focus:outline-none bg-white"
+              className="w-full p-3 md:p-2 text-[#718EBF] border-2 text-sm border-[#DFEAF2] rounded-lg focus:outline-none bg-white dark:border-white dark:bg-[#172941]"
               type={field.type}
               id={field.id}
               defaultValue={field.value}

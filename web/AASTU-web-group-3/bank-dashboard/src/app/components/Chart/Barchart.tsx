@@ -70,7 +70,7 @@ export function BarChartComponent() {
   );
 
   return (
-    <Card className="w-full h-auto lg:ml-4 lg:rounded-3xl ">
+    <Card className="w-full h-auto lg:ml-4 lg:rounded-3xl  dark:bg-darkComponent">
       <CardContent className="p-0 lg:h-auto ">
         <ChartContainer config={chartConfig} className="lg:h-[400px]">
           <BarChart data={chartData} barSize={20}>

@@ -51,8 +51,8 @@ func (a *authService) GenerateAndStoreRefreshToken(ctx context.Context, user dom
 	userID := user.ID.Hex()
 	claims := jwt.MapClaims{
 		"user_id":  userID,
-		"email":    user.Email,
 		"username": user.Username,
+		"email":    user.Email,
 		"isAdmin":  user.IsAdmin,
 		"exp":      time.Now().Add(a.refreshExpiry).Unix(),
 	}
@@ -94,19 +94,19 @@ func (a *authService) RefreshTokens(ctx context.Context, accessToken string) (*d
 
 	userID, ok := claims["user_id"].(string)
 	if !ok {
-		return nil, errors.New("invalid refresh token claims")
+		return nil, errors.New("invalid user id claims")
 	}
 	email, ok := claims["email"].(string)
 	if !ok {
-		return nil, errors.New("invalid refresh token claims")
+		return nil, errors.New("invalid email claims")
 	}
 	username, ok := claims["username"].(string)
 	if !ok {
-		return nil, errors.New("invalid refresh token claims")
+		return nil, errors.New("invalid username claims")
 	}
 	isAdmin, ok := claims["isAdmin"].(bool)
 	if !ok {
-		return nil, errors.New("invalid refresh token claims")
+		return nil, errors.New("invalid isAdmin claims")
 	}
 
 	objectID, err := primitive.ObjectIDFromHex(userID)

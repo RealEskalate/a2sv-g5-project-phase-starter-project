@@ -32,6 +32,10 @@ func SetRouter(router *gin.Engine, bc *blog_controller.BlogController, uc *user_
 		r.DELETE("/:id", bc.DeleteBlog)
 		r.GET("/search", bc.SearchBlogs)
 		r.POST("/filters", bc.FilterBlog)
+		r.GET("/like/:id", bc.AddLike)
+		r.GET("/unlike/:id", bc.Removelike)
+		r.POST("/comment", bc.CreateComment)
+		r.GET("/remove_comment/:id", bc.DeleteComment)
 
 	}
 }

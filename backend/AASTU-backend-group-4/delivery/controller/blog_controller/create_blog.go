@@ -2,8 +2,7 @@ package blog_controller
 
 import (
 	"blog-api/domain"
-	"fmt"
-	"log"
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,17 +18,14 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 	}
 
 	authorID := c.GetString("user_id")
-	fmt.Println("'+++++++++++++++++++++++++++++++++++++'")
-	log.Println(authorID)
-	fmt.Println(authorID)
-	fmt.Println("'+++++++++++++++++++++++++++++++++++++'")
+
 	ID, err := primitive.ObjectIDFromHex(authorID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid author ID"})
 		return
 	}
 
-	createdBlog, err := bc.usecase.CreateBlog(c, &blog, ID)
+	createdBlog, err := bc.usecase.CreateBlog(context.Background(), &blog, ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

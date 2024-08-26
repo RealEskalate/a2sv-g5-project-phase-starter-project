@@ -58,10 +58,10 @@ func JwtAuthMiddleware(secret string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		c.Set("userID", userID)
+		c.Set("user_id", userID)
 		c.Set("email", email)
 		c.Set("username", username)
-		c.Set("isAdmin", isAdmin)
+		c.Set("is_admin", isAdmin)
 		c.Next()
 	}
 }

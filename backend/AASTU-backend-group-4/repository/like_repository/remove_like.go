@@ -12,7 +12,7 @@ func (lr *LikeRepository) RemoveLike(ctx context.Context, userID, likeID primiti
 	filter := bson.M{"_id": likeID}
 
 	existingLike, err := lr.GetLikeByID(ctx, likeID)
-	if err != nil {
+	if err == nil {
 		return errors.New("you haven't liked this blog yet")
 	}
 

@@ -6,8 +6,8 @@ import (
 )
 
 func (bu *BlogUsecase) GetBlogs(ctx context.Context, page, limit int, sortBy string) ([]domain.Blog, int, error) {
-	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
+	// defer cancel()
 
 	blogs, err := bu.blogRepo.GetPaginatedBlogs(ctx, page, limit, sortBy)
 	if err != nil {

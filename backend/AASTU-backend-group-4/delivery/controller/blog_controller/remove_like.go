@@ -1,6 +1,7 @@
 package blog_controller
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,11 +24,11 @@ func (bc *BlogController) Removelike(c *gin.Context) {
 		return
 	}
 
-	err = bc.usecase.RemoveLike(c, userId, likeID, isAdmin)
+	err = bc.usecase.RemoveLike(context.Background(), userId, likeID, isAdmin)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Blog deleted successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Like removed successfully"})
 }

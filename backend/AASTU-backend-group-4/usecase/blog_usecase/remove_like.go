@@ -7,8 +7,8 @@ import (
 )
 
 func (bu *BlogUsecase) RemoveLike(ctx context.Context, userID primitive.ObjectID, likeID primitive.ObjectID, isAdmin bool) error {
-	ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(ctx, bu.contextTimeout)
+	// defer cancel()
 
 	return bu.likeRepo.RemoveLike(ctx, userID, likeID, isAdmin)
 }

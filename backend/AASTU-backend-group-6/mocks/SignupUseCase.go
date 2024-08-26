@@ -114,17 +114,17 @@ func (_m *SignupUseCase) ResetPassword(c context.Context, password domain.ResetP
 	return r0
 }
 
-// VerifyOTP provides a mock function with given fields: c, otp
-func (_m *SignupUseCase) VerifyOTP(c context.Context, otp domain.OtpToken) interface{} {
-	ret := _m.Called(c, otp)
+// VerifyOTP provides a mock function with given fields: c, otp, ip
+func (_m *SignupUseCase) VerifyOTP(c context.Context, otp domain.OtpToken, ip string) interface{} {
+	ret := _m.Called(c, otp, ip)
 
 	if len(ret) == 0 {
 		panic("no return value specified for VerifyOTP")
 	}
 
 	var r0 interface{}
-	if rf, ok := ret.Get(0).(func(context.Context, domain.OtpToken) interface{}); ok {
-		r0 = rf(c, otp)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.OtpToken, string) interface{}); ok {
+		r0 = rf(c, otp, ip)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(interface{})

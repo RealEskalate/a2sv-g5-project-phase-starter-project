@@ -62,7 +62,7 @@ func (b BlogRepository) ReactOnBlog(user_id string, reactionType bool, blog_id s
 		}
 	}
 
-	isLiked, isDisliked := utils.IsAlreadyReacted(user, userID)
+	isLiked, isDisliked := utils.IsAlreadyReacted(user, blogID)
 	filter, update := utils.FilterReactionBlog([]primitive.ObjectID{userID, blogID}, reactionType, isLiked, isDisliked)
 	if len(filter) == 0 || len(update) == 0 {
 		return domain.ErrorResponse{
@@ -85,11 +85,11 @@ func (b BlogRepository) ReactOnBlog(user_id string, reactionType bool, blog_id s
 			Status:  500,
 		}
 	}
-	if reactionType {
-		_ = b.UpdatePopularity(blog_id, "like")
-	} else {
-		_ = b.UpdatePopularity(blog_id, "dislike")
-	}
+	// if reactionType {
+	// 	_ = b.UpdatePopularity(blog_id, "like")
+	// } else {
+	// 	_ = b.UpdatePopularity(blog_id, "dislike")
+	// }
 	return domain.ErrorResponse{}
 }
 
@@ -108,8 +108,9 @@ func (b BlogRepository) UpdatePopularity(blog_id string, rateType string) error 
 
 	err = b.PostCollection.FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
-		return errors.New("internal server error")
+		return errors.New("internal server error : blog not found")
 	}
+
 	update := bson.M{"$inc": bson.M{"popularity": increment}}
 
 	_, err = b.PostCollection.UpdateOne(ctx, filter, update)
@@ -170,19 +171,54 @@ func (b BlogRepository) CommentOnBlog(user_id string, comment domain.Comment) er
 	if err != nil {
 		return err
 	}
-	
+
 	filter := bson.M{"_id": comment.Blog_ID}
-	_, err = b.PostCollection.UpdateOne(context, filter, bson.M{"$push": bson.M{"comment_ids": comment.ID}})	
+	_, err = b.PostCollection.UpdateOne(context, filter, bson.M{"$push": bson.M{"comment_ids": comment.ID}})
 	if err != nil {
 		return err
 	}
 
 	userID, _ := primitive.ObjectIDFromHex(user_id)
 	_, err = b.UserCollection.UpdateOne(context, bson.M{"_id": userID}, bson.M{"$push": bson.M{"comments_id": comment.Blog_ID}})
-	
+
 	if err != nil {
 		return err
 	}
+	_ = b.UpdatePopularity(comment.Blog_ID.Hex(), "comment")
+	return nil
+}
+
+// ReplytOnBlog implements domain.BlogRepository.
+func (b BlogRepository) ReplyCommentOnBlog(user_id string, parent_id string, comment domain.Comment) error {
+	timeOut := b.env.ContextTimeout
+	context, cancel := context.WithTimeout(context.Background(), time.Duration(timeOut)*5*time.Second)
+	defer cancel()
+
+	comment.ID = primitive.NewObjectID()
+
+	post, err := b.GetBlogByID(comment.Blog_ID.Hex(), true)
+	if err != nil || post.Deleted {
+		return errors.New("blog not found")
+	}
+
+	_, err = b.CommentCollection.InsertOne(context, comment)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": comment.Blog_ID}
+	_, err = b.PostCollection.UpdateOne(context, filter, bson.M{"$push": bson.M{"comment_ids": comment.ID}})
+	if err != nil {
+		return err
+	}
+
+	userID, _ := primitive.ObjectIDFromHex(user_id)
+	_, err = b.UserCollection.UpdateOne(context, bson.M{"_id": userID}, bson.M{"$push": bson.M{"comments_id": comment.Blog_ID}})
+
+	if err != nil {
+		return err
+	}
+	_ = b.UpdatePopularity(comment.Blog_ID.Hex(), "reply")
 	return nil
 }
 
@@ -302,17 +338,17 @@ func (b BlogRepository) FilterBlogsByTag(tags []string, pageNo int64, pageSize i
 	var filter bson.D
 
 	var regexFilters bson.A
-    for _, tag := range tags {
-        regexFilters = append(regexFilters, bson.D{
-            {Key: "tags", Value: bson.D{
+	for _, tag := range tags {
+		regexFilters = append(regexFilters, bson.D{
+			{Key: "tags", Value: bson.D{
 				{Key: "$regex", Value: tag},
 				{Key: "$options", Value: "i"},
 			}},
-        })
-    }
-    if len(regexFilters) > 0 {
-        filter = append(filter, bson.E{Key: "$or", Value: regexFilters})
-    }
+		})
+	}
+	if len(regexFilters) > 0 {
+		filter = append(filter, bson.E{Key: "$or", Value: regexFilters})
+	}
 
 	if !startDate.IsZero() && !endDate.IsZero() {
 		filter = append(filter, bson.E{Key: "createdAt", Value: bson.D{
@@ -353,6 +389,15 @@ func (b BlogRepository) FilterBlogsByTag(tags []string, pageNo int64, pageSize i
 }
 
 // GetBlogByID implements domain.BlogRepository.
+func (b BlogRepository) GetCommentByID(comment_id string) (domain.Comment, error) {
+	var comment domain.Comment
+	err := b.CommentCollection.FindOne(context.TODO(), bson.M{"_id": comment_id}).Decode(comment)
+	if err != nil {
+		return domain.Comment{}, err
+	} else {
+		return comment, nil
+	}
+}
 func (b BlogRepository) GetBlogByID(blog_id string, isCalled bool) (domain.Blog, error) {
 	blog_object_id, err := primitive.ObjectIDFromHex(blog_id)
 	if err != nil {
@@ -383,7 +428,7 @@ func (b BlogRepository) GetBlogByID(blog_id string, isCalled bool) (domain.Blog,
 func (b BlogRepository) GetBlogs(pageNo int64, pageSize int64, popularity string) ([]domain.Blog, domain.Pagination, error) {
 	pagination := utils.PaginationByPage(pageNo, pageSize, popularity)
 
-	totalResults, err := b.PostCollection.CountDocuments(context.TODO(), bson.M{"deleted" : false})
+	totalResults, err := b.PostCollection.CountDocuments(context.TODO(), bson.M{"deleted": false})
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
@@ -391,7 +436,7 @@ func (b BlogRepository) GetBlogs(pageNo int64, pageSize int64, popularity string
 	// Calculate total pages
 	totalPages := int64(math.Ceil(float64(totalResults) / float64(pageSize)))
 
-	cursor, err := b.PostCollection.Find(context.TODO(), bson.M{"deleted" : false}, pagination)
+	cursor, err := b.PostCollection.Find(context.TODO(), bson.M{"deleted": false}, pagination)
 	if err != nil {
 		return []domain.Blog{}, domain.Pagination{}, err
 	}
@@ -425,7 +470,7 @@ func (b BlogRepository) GetMyBlogByID(user_id string, blog_id string) (domain.Bl
 	if err != nil {
 		return domain.Blog{}, err
 	}
-	
+
 	pipeline := utils.GetBlogByIdPipeline(blog_object_id)
 	cursor, err := b.PostCollection.Aggregate(context.TODO(), pipeline)
 	if err != nil {
@@ -439,7 +484,7 @@ func (b BlogRepository) GetMyBlogByID(user_id string, blog_id string) (domain.Bl
 		}
 	}
 
-	if myblog.Deleted || myblog.Creator_id != user_object_id{
+	if myblog.Deleted || myblog.Creator_id != user_object_id {
 		return domain.Blog{}, errors.New("blog not found")
 	}
 	return myblog, nil
@@ -490,7 +535,7 @@ func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, 
 	defer cancel()
 
 	pageOption := utils.PaginationByPage(pageNo, pageSize, popularity)
-	filter := bson.M{}	
+	filter := bson.M{}
 	if title != "" {
 		filter["title"] = bson.M{"$regex": title, "$options": "i"}
 	}
@@ -498,7 +543,7 @@ func (b BlogRepository) SearchBlogByTitleAndAuthor(title string, author string, 
 	if author != "" {
 		filter["author"] = bson.M{"$regex": author, "$options": "i"}
 	}
-	
+
 	filter["deleted"] = false
 	totalResults, err := b.PostCollection.CountDocuments(context, filter)
 	if err != nil {
@@ -534,7 +579,7 @@ func (b BlogRepository) UpdateBlogByID(user_id string, blog_id string, blog doma
 	if err != nil {
 		return domain.Blog{}, err
 	}
-	
+
 	update := primitive.D{}
 	if blog.Author != "" {
 		update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "author", Value: blog.Author}}})
@@ -553,7 +598,7 @@ func (b BlogRepository) UpdateBlogByID(user_id string, blog_id string, blog doma
 	}
 
 	update = append(update, primitive.E{Key: "$set", Value: bson.D{{Key: "updatedAt", Value: time.Now()}}})
-	
+
 	filter := primitive.D{{Key: "_id", Value: blog_object_id}}
 	if _, err = b.PostCollection.UpdateOne(context.TODO(), filter, update); err != nil {
 		return domain.Blog{}, err
@@ -562,7 +607,7 @@ func (b BlogRepository) UpdateBlogByID(user_id string, blog_id string, blog doma
 	update_blog, err := b.GetBlogByID(blog_id, true)
 	if err != nil {
 		return domain.Blog{}, err
-	}else if update_blog.Deleted{
+	} else if update_blog.Deleted {
 		return domain.Blog{}, errors.New("blog not found")
 	}
 	return update_blog, nil

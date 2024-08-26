@@ -23,13 +23,14 @@ type Blog struct {
 	Blog_image    string               `bson:"blog_image"`
 	Deleted       bool                 `bson:"deleted"`
 	DeletedAt     time.Time            `bson:"deletedAt"`
-	Comments      []Comment   `bson:"comments"`
+	Comments      []Comment            `bson:"comments"`
 }
 
 type Comment struct {
 	ID                 primitive.ObjectID `bson:"_id,omitempity" json:"id" `
 	Blog_ID            primitive.ObjectID `bson:"blog_id"`
 	Commentor_ID       primitive.ObjectID `bson:"commentor_id"`
+	Parent_ID          primitive.ObjectID `bson:"parent_id"`
 	Commentor_username string             `bson:"commentor_username"`
 	Content            string             `bson:"content" validate:"required,min=1,max=255"`
 	Deleted            bool               `bson:"deleted"`
@@ -43,6 +44,7 @@ type BlogUsecase interface {
 	UpdateBlogByID(user_id string, blog_id string, blog Blog) (Blog, error)
 	DeleteBlogByID(user_id string, blog_id string) ErrorResponse
 	CommentOnBlog(user_id string, comment Comment) error
+	ReplyCommentOnBlog(user_id string, parent_id string, comment Comment) error
 	ReactOnBlog(user_id string, reactionType string, blog_id string) ErrorResponse
 
 	SearchBlogByTitleAndAuthor(title string, author string, pageNo string, pageSize string, popularity string) ([]Blog, Pagination, ErrorResponse)
@@ -58,6 +60,7 @@ type BlogRepository interface {
 	UpdateBlogByID(user_id string, blog_id string, blog Blog) (Blog, error)
 	DeleteBlogByID(user_id string, blog_id string) ErrorResponse
 	CommentOnBlog(user_id string, comment Comment) error
+	GetCommentByID(comment_id string) (Comment, error)
 	ReactOnBlog(user_id string, reactionType bool, blog_id string) ErrorResponse
 
 	SearchBlogByTitleAndAuthor(title string, author string, pageNo int64, pageSize int64, popularity string) ([]Blog, Pagination, error)

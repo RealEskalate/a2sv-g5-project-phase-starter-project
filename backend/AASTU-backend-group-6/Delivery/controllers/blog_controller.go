@@ -59,6 +59,7 @@ func (b BlogController) ReactOnBlog(c *gin.Context) {
 }
 
 // CommentOnBlog implements domain.BlogUsecase.
+
 func (b BlogController) CommentOnBlog(c *gin.Context) {
 	var comment domain.Comment
 	userID := c.GetString("user_id")
@@ -84,6 +85,46 @@ func (b BlogController) CommentOnBlog(c *gin.Context) {
 		return
 	}
 	err := b.BlogUsecase.CommentOnBlog(userID, comment)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
+			Message: err.Error(),
+			Status:  http.StatusInternalServerError,
+		})
+		return
+	}
+	c.JSON(http.StatusCreated, domain.SuccessResponse{
+		Message: "Comment created successfully",
+		Status:  http.StatusCreated,
+	})
+}
+
+func (b BlogController) ReplyCommentOnBlog(c *gin.Context) {
+	var comment domain.Comment
+	userID := c.GetString("user_id")
+	if userID == "" {
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{
+			Message: "Authentication failed.",
+			Status:  http.StatusUnauthorized,
+		})
+		return
+	}
+	if err := c.ShouldBind(&comment); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Message: err.Error(),
+			Status:  http.StatusBadRequest,
+		})
+		return
+	}
+	if err := b.Validator.ValidateStruct(comment); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
+			Message: "Invalid request payload.",
+			Status:  http.StatusBadRequest,
+		})
+		return
+	}
+
+	parentID := c.GetString("parent_id")
+	err := b.BlogUsecase.ReplyCommentOnBlog(userID, parentID, comment)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
 			Message: err.Error(),
@@ -333,7 +374,7 @@ func (b BlogController) GetMyBlogs(c *gin.Context) {
 	}
 
 	user_id := c.GetString("user_id")
-	
+
 	if user_id == "" {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: "User id is required",
@@ -364,7 +405,7 @@ func (b BlogController) SearchBlogByTitleAndAuthor(c *gin.Context) {
 		pageNo = "1"
 	}
 	if pageSize == "" {
-		pageSize = "1"
+		pageSize = "10"
 	}
 
 	popularity := c.Query("popularity")
@@ -398,7 +439,7 @@ func (b BlogController) UpdateBlogByID(c *gin.Context) {
 		c.Abort()
 	}
 	user_id := c.GetString("user_id")
-	if user_id == ""{
+	if user_id == "" {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{
 			Message: "User id is required",
 			Status:  http.StatusBadRequest,

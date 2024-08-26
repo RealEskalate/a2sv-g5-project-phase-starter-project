@@ -2,6 +2,7 @@ package controllers
 
 import (
 	domain "blogs/Domain"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -38,7 +39,11 @@ func (s *SignupController) VerifyOTP(c *gin.Context) {
 		return
 	}
 
-	response := s.SignupUsecase.VerifyOTP(c, otp)
+	ip := c.ClientIP()
+
+	fmt.Println("IP: ", ip , "from controller")
+
+	response := s.SignupUsecase.VerifyOTP(c, otp , ip)
 	HandleResponse(c, response)
 
 }

@@ -93,13 +93,11 @@ func (uc *UserUseCase) UpdateUser(c context.Context, req domain.UserUpdateReques
 }
 
 
-func (uc *UserUseCase) PromoteandDemoteUser(c context.Context , userId string , promotion domain.UserPromotionRequest , role string) interface{} {
+func (uc *UserUseCase) PromoteandDemoteUser(c context.Context , userId string , promotion domain.UserPromotionRequest) interface{} {
 	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
 	defer cancel()
 
-	if role != "admin" {
-		return &domain.ErrorResponse{Message: "Unauthorized to promote/demote user", Status: 403}
-	}
+	
 
 	// Fetch the user from the database
 	_, err := uc.UserRepository.FindUserByID(ctx, userId)
@@ -125,4 +123,8 @@ func (uc *UserUseCase) PromoteandDemoteUser(c context.Context , userId string , 
 	
 }
 
-
+func (uc *UserUseCase) FindUserByID(c context.Context, id string) (domain.User, error) {
+	ctx, cancel := context.WithTimeout(c, uc.contextTimeout)
+	defer cancel()
+	return uc.UserRepository.FindUserByID(ctx, id)
+}

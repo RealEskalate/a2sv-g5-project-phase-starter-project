@@ -1,10 +1,8 @@
 package domain
 
-import "time"
+import "github.com/gin-gonic/gin"
 
-type RateLimiter struct {
-	Email          string
-	Count          int
-	LastRequest    time.Time
-	SuspendedUntil time.Time
+type RateLimiter interface {
+	RateLimitMiddleware() gin.HandlerFunc
+	FlushAfterSuccess(ip string) error
 }

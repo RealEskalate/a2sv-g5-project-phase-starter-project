@@ -16,12 +16,14 @@ type BlogUseCasetestSuite struct {
 	suite.Suite
 	mockBlogRepository *mocks.BlogRepository
 	BlogUsecase        domain.BlogUsecase
+	mockAIService      *mocks.AIService
 }
 
 // SetupTest runs before each test case
 func (s *BlogUseCasetestSuite) SetupTest() {
 	s.mockBlogRepository = new(mocks.BlogRepository)
-	s.BlogUsecase = usecase.NewBlogUsecase(s.mockBlogRepository, time.Second*2)
+	s.mockAIService = new(mocks.AIService)
+	s.BlogUsecase = usecase.NewBlogUsecase(s.mockBlogRepository, s.mockAIService, time.Second*2)
 }
 
 // TearDownTest runs after each test case
@@ -44,9 +46,10 @@ func (s *BlogUseCasetestSuite) TestCreateBlog() {
 	}
 
 	s.mockBlogRepository.On("CreateBlog", &blog).Return(nil)
+	s.mockAIService.On("Validate_Blog", blog.Content).Return(nil)
 
 	err := s.BlogUsecase.CreateBlog(context.Background(), &blog)
-	s.NoError(err)
+	s.Nil(err)
 }
 
 // TestRetrieveBlog tests the RetrieveBlog method
@@ -54,7 +57,7 @@ func (s *BlogUseCasetestSuite) TestRetrieveBlog() {
 	s.mockBlogRepository.On("RetrieveBlog", 1, "popularity", "asc").Return([]domain.Blog{}, 0, nil)
 
 	blogs, count, err := s.BlogUsecase.RetrieveBlog(context.Background(), 1, "popularity", "asc")
-	s.NoError(err)
+	s.Nil(err)
 	s.Equal([]domain.Blog{}, blogs)
 	s.Equal(0, count)
 }
@@ -70,7 +73,7 @@ func (s *BlogUseCasetestSuite) TestUpdateBlog() {
 	s.mockBlogRepository.On("UpdateBlog", blog, "123", true, "my-uid").Return(nil)
 
 	err := s.BlogUsecase.UpdateBlog(context.Background(), blog, "123", true, "my-uid")
-	s.NoError(err)
+	s.Nil(err)
 }
 
 // TestDeleteBlog tests the DeleteBlog method
@@ -78,7 +81,7 @@ func (s *BlogUseCasetestSuite) TestDeleteBlog() {
 	s.mockBlogRepository.On("DeleteBlog", "123", true, "my-uid").Return(nil)
 
 	err := s.BlogUsecase.DeleteBlog(context.Background(), "123", true, "my-uid")
-	s.NoError(err)
+	s.Nil(err)
 }
 
 // TestSearchBlog tests the SearchBlog method
@@ -86,7 +89,7 @@ func (s *BlogUseCasetestSuite) TestSearchBlog() {
 	s.mockBlogRepository.On("SearchBlog", "Test", "Author").Return([]domain.Blog{}, nil)
 
 	blogs, err := s.BlogUsecase.SearchBlog(context.Background(), "Test", "Author")
-	s.NoError(err)
+	s.Nil(err)
 	s.Equal([]domain.Blog{}, blogs)
 }
 
@@ -98,6 +101,6 @@ func (s *BlogUseCasetestSuite) TestFilterBlog() {
 	s.mockBlogRepository.On("FilterBlog", tags, date).Return([]domain.Blog{}, nil)
 
 	blogs, err := s.BlogUsecase.FilterBlog(context.Background(), tags, date)
-	s.NoError(err)
+	s.Nil(err)
 	s.Equal([]domain.Blog{}, blogs)
 }

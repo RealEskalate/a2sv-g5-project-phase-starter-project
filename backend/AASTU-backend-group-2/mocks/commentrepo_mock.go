@@ -14,43 +14,47 @@ type CommentRepository struct {
 }
 
 // CreateComment provides a mock function with given fields: BlogID, userID, comment
-func (_m *CommentRepository) CreateComment(BlogID string, userID string, comment domain.Comment) error {
+func (_m *CommentRepository) CreateComment(BlogID string, userID string, comment domain.Comment) *domain.AppError {
 	ret := _m.Called(BlogID, userID, comment)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateComment")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string, domain.Comment) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string, string, domain.Comment) *domain.AppError); ok {
 		r0 = rf(BlogID, userID, comment)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // DeleteComment provides a mock function with given fields: commentID
-func (_m *CommentRepository) DeleteComment(commentID string) error {
+func (_m *CommentRepository) DeleteComment(commentID string) *domain.AppError {
 	ret := _m.Called(commentID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteComment")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string) *domain.AppError); ok {
 		r0 = rf(commentID)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // GetComments provides a mock function with given fields: BlogID
-func (_m *CommentRepository) GetComments(BlogID string) ([]domain.Comment, error) {
+func (_m *CommentRepository) GetComments(BlogID string) ([]domain.Comment, *domain.AppError) {
 	ret := _m.Called(BlogID)
 
 	if len(ret) == 0 {
@@ -58,8 +62,8 @@ func (_m *CommentRepository) GetComments(BlogID string) ([]domain.Comment, error
 	}
 
 	var r0 []domain.Comment
-	var r1 error
-	if rf, ok := ret.Get(0).(func(string) ([]domain.Comment, error)); ok {
+	var r1 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string) ([]domain.Comment, *domain.AppError)); ok {
 		return rf(BlogID)
 	}
 	if rf, ok := ret.Get(0).(func(string) []domain.Comment); ok {
@@ -70,28 +74,32 @@ func (_m *CommentRepository) GetComments(BlogID string) ([]domain.Comment, error
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(string) error); ok {
+	if rf, ok := ret.Get(1).(func(string) *domain.AppError); ok {
 		r1 = rf(BlogID)
 	} else {
-		r1 = ret.Error(1)
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*domain.AppError)
+		}
 	}
 
 	return r0, r1
 }
 
 // UpdateComment provides a mock function with given fields: commentID, comment
-func (_m *CommentRepository) UpdateComment(commentID string, comment domain.Comment) error {
+func (_m *CommentRepository) UpdateComment(commentID string, comment domain.Comment) *domain.AppError {
 	ret := _m.Called(commentID, comment)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateComment")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string, domain.Comment) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string, domain.Comment) *domain.AppError); ok {
 		r0 = rf(commentID, comment)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0

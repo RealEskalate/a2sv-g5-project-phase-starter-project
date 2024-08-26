@@ -20,19 +20,19 @@ func NewLikeUsecase(Likerepo domain.LikeRepository, timeout time.Duration) domai
 
 }
 
-func (luse *LikeUsecase) GetLikes(c context.Context, post_id string) ([]domain.Like, error) {
+func (luse *LikeUsecase) GetLikes(c context.Context, post_id string) ([]domain.Like, *domain.AppError) {
 	_, cancel := context.WithTimeout(c, luse.contextTimeout)
 	defer cancel()
 	return luse.LikeRepo.GetLikes(post_id)
 }
 
-func (luse *LikeUsecase) CreateLike(c context.Context, user_id string, post_id string) error {
+func (luse *LikeUsecase) CreateLike(c context.Context, user_id string, post_id string) *domain.AppError {
 	_, cancel := context.WithTimeout(c, luse.contextTimeout)
 	defer cancel()
 	return luse.LikeRepo.CreateLike(user_id, post_id)
 }
 
-func (luse *LikeUsecase) DeleteLike(c context.Context, like_id string) error {
+func (luse *LikeUsecase) DeleteLike(c context.Context, like_id string) *domain.AppError {
 	_, cancel := context.WithTimeout(c, luse.contextTimeout)
 	defer cancel()
 	return luse.LikeRepo.DeleteLike(like_id)

@@ -14,7 +14,7 @@ type AIService struct {
 }
 
 // GeneratePost provides a mock function with given fields: title, description
-func (_m *AIService) GeneratePost(title string, description string) (*domain.PostResponse, error) {
+func (_m *AIService) GeneratePost(title string, description string) (*domain.PostResponse, *domain.AppError) {
 	ret := _m.Called(title, description)
 
 	if len(ret) == 0 {
@@ -22,8 +22,8 @@ func (_m *AIService) GeneratePost(title string, description string) (*domain.Pos
 	}
 
 	var r0 *domain.PostResponse
-	var r1 error
-	if rf, ok := ret.Get(0).(func(string, string) (*domain.PostResponse, error)); ok {
+	var r1 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string, string) (*domain.PostResponse, *domain.AppError)); ok {
 		return rf(title, description)
 	}
 	if rf, ok := ret.Get(0).(func(string, string) *domain.PostResponse); ok {
@@ -34,13 +34,55 @@ func (_m *AIService) GeneratePost(title string, description string) (*domain.Pos
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(string, string) error); ok {
+	if rf, ok := ret.Get(1).(func(string, string) *domain.AppError); ok {
 		r1 = rf(title, description)
 	} else {
-		r1 = ret.Error(1)
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*domain.AppError)
+		}
 	}
 
 	return r0, r1
+}
+
+// Validate_Blog provides a mock function with given fields: blog
+func (_m *AIService) Validate_Blog(blog string) *domain.AppError {
+	ret := _m.Called(blog)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Validate_Blog")
+	}
+
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string) *domain.AppError); ok {
+		r0 = rf(blog)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
+	}
+
+	return r0
+}
+
+// Validate_Comment provides a mock function with given fields: comment
+func (_m *AIService) Validate_Comment(comment string) *domain.AppError {
+	ret := _m.Called(comment)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Validate_Comment")
+	}
+
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string) *domain.AppError); ok {
+		r0 = rf(comment)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
+	}
+
+	return r0
 }
 
 // NewAIService creates a new instance of AIService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

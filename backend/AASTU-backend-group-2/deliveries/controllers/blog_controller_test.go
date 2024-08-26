@@ -24,6 +24,7 @@ type BlogControllerSuite struct {
 	MockCommentUsecase *mocks.CommentUsecase
 	MockDislikeUsecase *mocks.DisLikeUsecase
 	MockAIService      *mocks.AIService
+	MockMediaUpload    *mocks.MediaUpload
 }
 
 func (suite *BlogControllerSuite) SetupTest() {
@@ -32,12 +33,14 @@ func (suite *BlogControllerSuite) SetupTest() {
 	suite.MockCommentUsecase = new(mocks.CommentUsecase)
 	suite.MockDislikeUsecase = new(mocks.DisLikeUsecase)
 	suite.MockAIService = new(mocks.AIService)
+	suite.MockMediaUpload = new(mocks.MediaUpload)
 	suite.BlogController = controllers.NewBlogController(
 		suite.MockBlogUsecase,
 		suite.MockLikeUsecase,
 		suite.MockCommentUsecase,
 		suite.MockDislikeUsecase,
 		suite.MockAIService,
+		suite.MockMediaUpload,
 	)
 	gin.SetMode(gin.TestMode)
 }

@@ -22,7 +22,7 @@ func NewCommentUsecase(Commentrepo domain.CommentRepository, aiserv domain.AISer
 
 }
 
-func (cuse *CommentUsecase) CreateComment(c context.Context, blogID string, user_id string, comment domain.Comment) error {
+func (cuse *CommentUsecase) CreateComment(c context.Context, blogID string, user_id string, comment domain.Comment) *domain.AppError {
 	_, cancel := context.WithTimeout(c, cuse.contextTimeout)
 	defer cancel()
 	if err := cuse.Aiservice.Validate_Comment(comment.Comment); err != nil {
@@ -31,19 +31,19 @@ func (cuse *CommentUsecase) CreateComment(c context.Context, blogID string, user
 	return cuse.CommentRepo.CreateComment(blogID, user_id, comment)
 }
 
-func (cuse *CommentUsecase) GetComments(c context.Context, blogID string) ([]domain.Comment, error) {
+func (cuse *CommentUsecase) GetComments(c context.Context, blogID string) ([]domain.Comment, *domain.AppError) {
 	_, cancel := context.WithTimeout(c, cuse.contextTimeout)
 	defer cancel()
 	return cuse.CommentRepo.GetComments(blogID)
 }
 
-func (cuse *CommentUsecase) UpdateComment(c context.Context, comment_id string, comment domain.Comment) error {
+func (cuse *CommentUsecase) UpdateComment(c context.Context, comment_id string, comment domain.Comment) *domain.AppError {
 	_, cancel := context.WithTimeout(c, cuse.contextTimeout)
 	defer cancel()
 	return cuse.CommentRepo.UpdateComment(comment_id, comment)
 }
 
-func (cuse *CommentUsecase) DeleteComment(c context.Context, comment_id string) error {
+func (cuse *CommentUsecase) DeleteComment(c context.Context, comment_id string) *domain.AppError {
 	_, cancel := context.WithTimeout(c, cuse.contextTimeout)
 	defer cancel()
 	return cuse.CommentRepo.DeleteComment(comment_id)

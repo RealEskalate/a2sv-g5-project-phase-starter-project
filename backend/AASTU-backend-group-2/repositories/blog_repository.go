@@ -3,9 +3,6 @@ package repositories
 import (
 	"blog_g2/domain"
 	"context"
-	"errors"
-	"log"
-
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -32,23 +29,21 @@ func NewBlogRepository(mongoClient *mongo.Client) domain.BlogRepository {
 		dislikeCollection: mongoClient.Database("Blog-manager").Collection("Dislikes"),
 		commentCollection: mongoClient.Database("Blog-manager").Collection("Comments"),
 	}
-
 }
 
 const perpage = 10
 
-func (br *BlogRepository) CreateBlog(blog *domain.Blog) error {
-	log.Println(blog)
+func (br *BlogRepository) CreateBlog(blog *domain.Blog) *domain.AppError {
 	blog.ID = primitive.NewObjectID()
 	result, err := br.collection.InsertOne(context.TODO(), blog, options.InsertOne())
 	if err != nil {
-		return err
+		return domain.ErrBlogInsertionFailed
 	}
 	blog.ID = result.InsertedID.(primitive.ObjectID)
 	return nil
 }
 
-func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) ([]domain.Blog, int, error) {
+func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) ([]domain.Blog, int, *domain.AppError) {
 	if pgnum == 0 {
 		pgnum = 1
 	}
@@ -57,32 +52,22 @@ func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) 
 
 	count, err := br.collection.CountDocuments(context.TODO(), bson.M{})
 	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Total documents: %d\n", count)
-
-	if direct == "" {
-		direct = "desc"
+		return nil, 0, domain.ErrBlogCountFailed
 	}
 
 	if direct != "asc" && direct != "desc" {
-		return nil, 0, errors.New("invalid direct parameter")
+		return nil, 0, domain.ErrInvalidDirectParameter
 	}
 
 	if direct == "asc" {
 		sorto = 1
 	}
 
-	if sortby == "" {
-		sortby = "date"
-	}
-
 	if sortby != "date" && sortby != "popularity" {
-		return nil, 0, errors.New("invalid sortby parameter")
+		return nil, 0, domain.ErrInvalidSortParameter
 	}
 
 	if sortby == "popularity" {
-
 		pipeline := mongo.Pipeline{
 			{
 				{Key: "$addFields", Value: bson.D{
@@ -111,18 +96,18 @@ func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) 
 
 		cursor, err := br.collection.Aggregate(context.Background(), pipeline)
 		if err != nil {
-			return nil, 0, err
+			return nil, 0, domain.ErrBlogAggregationFailed
 		}
 
 		var blogs []domain.Blog
 
 		if err = cursor.All(context.Background(), &blogs); err != nil {
-			return nil, 0, err
+			return nil, 0, domain.ErrBlogRetrievalFailed
 		}
 
 		return blogs, int(count), nil
 
-	} else if sortby == "date" {
+	} else {
 		findoptions := options.Find()
 		findoptions.SetSkip(int64(skip))
 		findoptions.SetLimit(perpage)
@@ -130,147 +115,117 @@ func (br *BlogRepository) RetrieveBlog(pgnum int, sortby string, direct string) 
 
 		cursor, err := br.collection.Find(context.Background(), bson.D{}, findoptions)
 		if err != nil {
-			return nil, 0, err
+			return nil, 0, domain.ErrBlogRetrievalFailed
 		}
 
 		var blogs []domain.Blog
 		if err = cursor.All(context.Background(), &blogs); err != nil {
-			return nil, 0, err
+			return nil, 0, domain.ErrBlogDecodingFailed
 		}
 		return blogs, int(count), nil
 	}
-
-	return nil, 0, errors.New("no blogs found")
-
 }
 
-func (br *BlogRepository) UpdateBlog(updatedBlog domain.Blog, blogID string, isAdmin bool, userid string) error {
-	// Convert the blogID to a MongoDB ObjectID
+func (br *BlogRepository) UpdateBlog(updatedBlog domain.Blog, blogID string, isAdmin bool, userid string) *domain.AppError {
 	ID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
-		return err
+		return domain.ErrInvalidObjectID
 	}
 
-	// Convert the blogID to a MongoDB ObjectID
 	userID, err := primitive.ObjectIDFromHex(userid)
 	if err != nil {
-		return err
+		return domain.ErrInvalidObjectID
 	}
 
-	// Retrieve the existing blog by its ID
 	var existingBlog domain.Blog
 	filter := bson.D{{Key: "_id", Value: ID}}
 
 	err = br.collection.FindOne(context.TODO(), filter).Decode(&existingBlog)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return errors.New("blog not found")
+			return domain.ErrBlogNotFound
 		}
-		return err
+		return domain.ErrBlogRetrievalFailed
 	}
 
-	// Check if the user is an admin or the owner of the blog
 	if !isAdmin && existingBlog.UserID != userID {
-		return errors.New("permission denied: you do not have the right to update this blog")
+		return domain.ErrPermissionDenied
 	}
 
-	// Proceed to update the blog
 	updatedBlog.ID = ID
 	bsonModel, err := bson.Marshal(updatedBlog)
 	if err != nil {
-		return err
+		return domain.ErrBlogUpdateFailed
 	}
 
 	var blog bson.M
 	err = bson.Unmarshal(bsonModel, &blog)
 	if err != nil {
-		return err
+		return domain.ErrBlogUpdateFailed
 	}
 
 	update := bson.D{{Key: "$set", Value: blog}}
 	_, err = br.collection.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
-		return err
+		return domain.ErrBlogUpdateFailed
 	}
 
 	return nil
 }
 
-func (br *BlogRepository) DeleteBlog(blogID string, isAdmin bool, userid string) error {
-	// Convert the blogID to a MongoDB ObjectID
+func (br *BlogRepository) DeleteBlog(blogID string, isAdmin bool, userid string) *domain.AppError {
 	ID, err := primitive.ObjectIDFromHex(blogID)
 	if err != nil {
-		return err
+		return domain.ErrInvalidObjectID
 	}
-	// Convert the userID to a MongoDB ObjectID
+
 	userID, err := primitive.ObjectIDFromHex(userid)
 	if err != nil {
-		return err
+		return domain.ErrInvalidObjectID
 	}
 
-	// Retrieve the existing blog by its ID
-	var existingBlog domain.Blog
+	var blog domain.Blog
 	filter := bson.D{{Key: "_id", Value: ID}}
 
-	err = br.collection.FindOne(context.TODO(), filter).Decode(&existingBlog)
+	err = br.collection.FindOne(context.TODO(), filter).Decode(&blog)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return errors.New("blog not found")
+			return domain.ErrBlogNotFound
 		}
-		return err
+		return domain.ErrBlogRetrievalFailed
 	}
 
-	// Check if the user is an admin or the owner of the blog
-	if !isAdmin && existingBlog.UserID != userID {
-		return errors.New("permission denied: you do not have the right to delete this blog")
+	if !isAdmin && blog.UserID != userID {
+		return domain.ErrPermissionDenied
 	}
 
-	// Start a session for transaction
-	session, err := br.collection.Database().Client().StartSession()
+	session, err := br.client.StartSession()
 	if err != nil {
-		return err
+		return domain.ErrSessionStartFailed
 	}
 	defer session.EndSession(context.TODO())
 
 	err = mongo.WithSession(context.TODO(), session, func(sc mongo.SessionContext) error {
-		// Start the transaction
 		if err := session.StartTransaction(); err != nil {
 			return err
 		}
 
-		// Delete the blog post
-		blogQuery := bson.M{"_id": ID}
-		_, err := br.collection.DeleteOne(sc, blogQuery)
-		if err != nil {
-			session.AbortTransaction(sc)
+		if _, err := br.collection.DeleteOne(sc, filter); err != nil {
 			return err
 		}
 
-		// Delete associated comments
-		commentQuery := bson.M{"post_id": ID}
-		_, err = br.commentCollection.DeleteMany(sc, commentQuery)
-		if err != nil {
-			session.AbortTransaction(sc)
+		if _, err := br.likeCollection.DeleteMany(sc, bson.M{"blogid": ID}); err != nil {
 			return err
 		}
 
-		// Delete associated likes
-		likeQuery := bson.M{"post_id": ID}
-		_, err = br.likeCollection.DeleteMany(sc, likeQuery)
-		if err != nil {
-			session.AbortTransaction(sc)
+		if _, err := br.dislikeCollection.DeleteMany(sc, bson.M{"blogid": ID}); err != nil {
 			return err
 		}
 
-		// Delete associated dislikes
-		dislikeQuery := bson.M{"post_id": ID}
-		_, err = br.dislikeCollection.DeleteMany(sc, dislikeQuery)
-		if err != nil {
-			session.AbortTransaction(sc)
+		if _, err := br.commentCollection.DeleteMany(sc, bson.M{"blogid": ID}); err != nil {
 			return err
 		}
 
-		// Commit the transaction
 		if err := session.CommitTransaction(sc); err != nil {
 			return err
 		}
@@ -279,13 +234,33 @@ func (br *BlogRepository) DeleteBlog(blogID string, isAdmin bool, userid string)
 	})
 
 	if err != nil {
-		return err
+		return domain.ErrBlogDeletionFailed
 	}
 
 	return nil
 }
 
-func (br *BlogRepository) SearchBlog(postName string, authorName string) ([]domain.Blog, error) {
+func (br *BlogRepository) GetBlogByID(blogID string) (domain.Blog, *domain.AppError) {
+	ID, err := primitive.ObjectIDFromHex(blogID)
+	if err != nil {
+		return domain.Blog{}, domain.ErrInvalidObjectID
+	}
+
+	var blog domain.Blog
+	filter := bson.D{{Key: "_id", Value: ID}}
+
+	err = br.collection.FindOne(context.TODO(), filter).Decode(&blog)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return domain.Blog{}, domain.ErrBlogNotFound
+		}
+		return domain.Blog{}, domain.ErrBlogRetrievalFailed
+	}
+
+	return blog, nil
+}
+
+func (br *BlogRepository) SearchBlog(postName string, authorName string) ([]domain.Blog, *domain.AppError) {
 	var results []domain.Blog
 
 	filter := bson.M{
@@ -296,17 +271,21 @@ func (br *BlogRepository) SearchBlog(postName string, authorName string) ([]doma
 
 	cursor, err := br.collection.Find(context.Background(), filter)
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrInternalServerError
 	}
 
 	if err = cursor.All(context.Background(), &results); err != nil {
-		return nil, err
+		return nil, domain.ErrInternalServerError
+	}
+
+	if len(results) == 0 {
+		return nil, domain.ErrNotFound
 	}
 
 	return results, nil
 }
 
-func (br *BlogRepository) FilterBlog(tag []string, date time.Time) ([]domain.Blog, error) {
+func (br *BlogRepository) FilterBlog(tag []string, date time.Time) ([]domain.Blog, *domain.AppError) {
 	var results []domain.Blog
 
 	filter := bson.M{
@@ -320,11 +299,15 @@ func (br *BlogRepository) FilterBlog(tag []string, date time.Time) ([]domain.Blo
 
 	cursor, err := br.collection.Find(context.Background(), filter)
 	if err != nil {
-		return nil, err
+		return nil, domain.ErrInternalServerError
 	}
 
 	if err = cursor.All(context.Background(), &results); err != nil {
-		return nil, err
+		return nil, domain.ErrInternalServerError
+	}
+
+	if len(results) == 0 {
+		return nil, domain.ErrNotFound
 	}
 
 	return results, nil

@@ -15,43 +15,47 @@ type CommentUsecase struct {
 }
 
 // CreateComment provides a mock function with given fields: ctx, BlogID, userID, comment
-func (_m *CommentUsecase) CreateComment(ctx context.Context, BlogID string, userID string, comment domain.Comment) error {
+func (_m *CommentUsecase) CreateComment(ctx context.Context, BlogID string, userID string, comment domain.Comment) *domain.AppError {
 	ret := _m.Called(ctx, BlogID, userID, comment)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateComment")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, domain.Comment) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, domain.Comment) *domain.AppError); ok {
 		r0 = rf(ctx, BlogID, userID, comment)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // DeleteComment provides a mock function with given fields: ctx, commentID
-func (_m *CommentUsecase) DeleteComment(ctx context.Context, commentID string) error {
+func (_m *CommentUsecase) DeleteComment(ctx context.Context, commentID string) *domain.AppError {
 	ret := _m.Called(ctx, commentID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteComment")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.AppError); ok {
 		r0 = rf(ctx, commentID)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // GetComments provides a mock function with given fields: ctx, BlogID
-func (_m *CommentUsecase) GetComments(ctx context.Context, BlogID string) ([]domain.Comment, error) {
+func (_m *CommentUsecase) GetComments(ctx context.Context, BlogID string) ([]domain.Comment, *domain.AppError) {
 	ret := _m.Called(ctx, BlogID)
 
 	if len(ret) == 0 {
@@ -59,8 +63,8 @@ func (_m *CommentUsecase) GetComments(ctx context.Context, BlogID string) ([]dom
 	}
 
 	var r0 []domain.Comment
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) ([]domain.Comment, error)); ok {
+	var r1 *domain.AppError
+	if rf, ok := ret.Get(0).(func(context.Context, string) ([]domain.Comment, *domain.AppError)); ok {
 		return rf(ctx, BlogID)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, string) []domain.Comment); ok {
@@ -71,28 +75,32 @@ func (_m *CommentUsecase) GetComments(ctx context.Context, BlogID string) ([]dom
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, string) *domain.AppError); ok {
 		r1 = rf(ctx, BlogID)
 	} else {
-		r1 = ret.Error(1)
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*domain.AppError)
+		}
 	}
 
 	return r0, r1
 }
 
 // UpdateComment provides a mock function with given fields: ctx, commentID, comment
-func (_m *CommentUsecase) UpdateComment(ctx context.Context, commentID string, comment domain.Comment) error {
+func (_m *CommentUsecase) UpdateComment(ctx context.Context, commentID string, comment domain.Comment) *domain.AppError {
 	ret := _m.Called(ctx, commentID, comment)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateComment")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, domain.Comment) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(context.Context, string, domain.Comment) *domain.AppError); ok {
 		r0 = rf(ctx, commentID, comment)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0

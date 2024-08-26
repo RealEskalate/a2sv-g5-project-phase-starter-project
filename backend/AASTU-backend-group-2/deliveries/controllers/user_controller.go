@@ -41,9 +41,9 @@ func (uc *UserController) UpdateUserDetails(c *gin.Context) {
 	}
 	user.ID = userID
 
-	err = uc.Userusecase.UpdateUserDetails(c, &user)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	erro := uc.Userusecase.UpdateUserDetails(c, &user)
+	if erro != nil {
+		c.JSON(erro.Status(), gin.H{"error": erro.Message()})
 		return
 	}
 
@@ -76,9 +76,9 @@ func (uc *UserController) RegisterUser(c *gin.Context) {
 	}
 	user.JoinedAt = time.Now()
 	user.IsAdmin = false
-	err = uc.Userusecase.RegisterUser(c, &user)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	erro := uc.Userusecase.RegisterUser(c, &user)
+	if erro != nil {
+		c.JSON(erro.Status(), gin.H{"error": erro.Message()})
 		return
 	}
 	c.JSON(200, gin.H{"message": "User registered successfully", "user": user})
@@ -93,7 +93,7 @@ func (uc *UserController) VerifyEmail(c *gin.Context) {
 
 	err := uc.Userusecase.VerifyUserEmail(c, token)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(err.Status(), err.Message())
 		return
 	}
 
@@ -118,9 +118,9 @@ func (uc *UserController) LoginUser(c *gin.Context) {
 		c.JSON(400, gin.H{"error": "Invalid email address"})
 		return
 	}
-	token, err := uc.Userusecase.LoginUser(c, user)
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	token, erro := uc.Userusecase.LoginUser(c, user)
+	if erro != nil {
+		c.JSON(erro.Status(), gin.H{"error": erro.Message()})
 		return
 	}
 	c.JSON(200, gin.H{"message": "user logged in", "token": token})
@@ -144,7 +144,7 @@ func (uc *UserController) ForgotPassword(c *gin.Context) {
 
 	err := uc.Userusecase.ForgotPassword(c, info.Email)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(err.Status(), err.Message())
 		return
 	}
 
@@ -172,7 +172,7 @@ func (uc *UserController) ResetPassword(c *gin.Context) {
 	err := uc.Userusecase.ResetPassword(c, token, info.NewPassword)
 	if err != nil {
 		fmt.Printf("Error resetting password: %v\n", err)
-		c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(err.Status(), err.Message())
 		return
 	}
 
@@ -186,7 +186,7 @@ func (uc *UserController) LogoutUser(c *gin.Context) {
 	err := uc.Userusecase.LogoutUser(c, userid)
 
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(err.Status(), gin.H{"error": err.Message()})
 		return
 	}
 
@@ -214,9 +214,9 @@ func (uc *UserController) PromoteDemoteUser(c *gin.Context) {
 		return
 	}
 
-	err = uc.Userusecase.PromoteDemoteUser(c, ID, isAdmin)
-	if err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	erro := uc.Userusecase.PromoteDemoteUser(c, ID, isAdmin)
+	if erro != nil {
+		c.IndentedJSON(erro.Status(), gin.H{"error": erro.Message()})
 		return
 	}
 

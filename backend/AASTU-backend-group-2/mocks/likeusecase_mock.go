@@ -15,43 +15,47 @@ type LikeUsecase struct {
 }
 
 // CreateLike provides a mock function with given fields: _a0, user_id, post_id
-func (_m *LikeUsecase) CreateLike(_a0 context.Context, user_id string, post_id string) error {
+func (_m *LikeUsecase) CreateLike(_a0 context.Context, user_id string, post_id string) *domain.AppError {
 	ret := _m.Called(_a0, user_id, post_id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateLike")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *domain.AppError); ok {
 		r0 = rf(_a0, user_id, post_id)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // DeleteLike provides a mock function with given fields: _a0, like_id
-func (_m *LikeUsecase) DeleteLike(_a0 context.Context, like_id string) error {
+func (_m *LikeUsecase) DeleteLike(_a0 context.Context, like_id string) *domain.AppError {
 	ret := _m.Called(_a0, like_id)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteLike")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.AppError); ok {
 		r0 = rf(_a0, like_id)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // GetLikes provides a mock function with given fields: _a0, post_id
-func (_m *LikeUsecase) GetLikes(_a0 context.Context, post_id string) ([]domain.Like, error) {
+func (_m *LikeUsecase) GetLikes(_a0 context.Context, post_id string) ([]domain.Like, *domain.AppError) {
 	ret := _m.Called(_a0, post_id)
 
 	if len(ret) == 0 {
@@ -59,8 +63,8 @@ func (_m *LikeUsecase) GetLikes(_a0 context.Context, post_id string) ([]domain.L
 	}
 
 	var r0 []domain.Like
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) ([]domain.Like, error)); ok {
+	var r1 *domain.AppError
+	if rf, ok := ret.Get(0).(func(context.Context, string) ([]domain.Like, *domain.AppError)); ok {
 		return rf(_a0, post_id)
 	}
 	if rf, ok := ret.Get(0).(func(context.Context, string) []domain.Like); ok {
@@ -71,10 +75,12 @@ func (_m *LikeUsecase) GetLikes(_a0 context.Context, post_id string) ([]domain.L
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, string) *domain.AppError); ok {
 		r1 = rf(_a0, post_id)
 	} else {
-		r1 = ret.Error(1)
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*domain.AppError)
+		}
 	}
 
 	return r0, r1

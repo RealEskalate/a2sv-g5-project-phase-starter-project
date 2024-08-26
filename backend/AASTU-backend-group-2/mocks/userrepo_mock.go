@@ -14,25 +14,27 @@ type UserRepository struct {
 }
 
 // ForgotPassword provides a mock function with given fields: email
-func (_m *UserRepository) ForgotPassword(email string) error {
+func (_m *UserRepository) ForgotPassword(email string) *domain.AppError {
 	ret := _m.Called(email)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ForgotPassword")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string) *domain.AppError); ok {
 		r0 = rf(email)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // LoginUser provides a mock function with given fields: user
-func (_m *UserRepository) LoginUser(user domain.User) (string, error) {
+func (_m *UserRepository) LoginUser(user domain.User) (string, *domain.AppError) {
 	ret := _m.Called(user)
 
 	if len(ret) == 0 {
@@ -40,8 +42,8 @@ func (_m *UserRepository) LoginUser(user domain.User) (string, error) {
 	}
 
 	var r0 string
-	var r1 error
-	if rf, ok := ret.Get(0).(func(domain.User) (string, error)); ok {
+	var r1 *domain.AppError
+	if rf, ok := ret.Get(0).(func(domain.User) (string, *domain.AppError)); ok {
 		return rf(user)
 	}
 	if rf, ok := ret.Get(0).(func(domain.User) string); ok {
@@ -50,118 +52,132 @@ func (_m *UserRepository) LoginUser(user domain.User) (string, error) {
 		r0 = ret.Get(0).(string)
 	}
 
-	if rf, ok := ret.Get(1).(func(domain.User) error); ok {
+	if rf, ok := ret.Get(1).(func(domain.User) *domain.AppError); ok {
 		r1 = rf(user)
 	} else {
-		r1 = ret.Error(1)
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*domain.AppError)
+		}
 	}
 
 	return r0, r1
 }
 
 // LogoutUser provides a mock function with given fields: uid
-func (_m *UserRepository) LogoutUser(uid string) error {
+func (_m *UserRepository) LogoutUser(uid string) *domain.AppError {
 	ret := _m.Called(uid)
 
 	if len(ret) == 0 {
 		panic("no return value specified for LogoutUser")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string) *domain.AppError); ok {
 		r0 = rf(uid)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // PromoteDemoteUser provides a mock function with given fields: userid, isAdmin
-func (_m *UserRepository) PromoteDemoteUser(userid string, isAdmin bool) error {
+func (_m *UserRepository) PromoteDemoteUser(userid string, isAdmin bool) *domain.AppError {
 	ret := _m.Called(userid, isAdmin)
 
 	if len(ret) == 0 {
 		panic("no return value specified for PromoteDemoteUser")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string, bool) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string, bool) *domain.AppError); ok {
 		r0 = rf(userid, isAdmin)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // RegisterUser provides a mock function with given fields: user
-func (_m *UserRepository) RegisterUser(user *domain.User) error {
+func (_m *UserRepository) RegisterUser(user *domain.User) *domain.AppError {
 	ret := _m.Called(user)
 
 	if len(ret) == 0 {
 		panic("no return value specified for RegisterUser")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*domain.User) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(*domain.User) *domain.AppError); ok {
 		r0 = rf(user)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // ResetPassword provides a mock function with given fields: token, newPassword
-func (_m *UserRepository) ResetPassword(token string, newPassword string) error {
+func (_m *UserRepository) ResetPassword(token string, newPassword string) *domain.AppError {
 	ret := _m.Called(token, newPassword)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ResetPassword")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string, string) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string, string) *domain.AppError); ok {
 		r0 = rf(token, newPassword)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // UpdateUserDetails provides a mock function with given fields: user
-func (_m *UserRepository) UpdateUserDetails(user *domain.User) error {
+func (_m *UserRepository) UpdateUserDetails(user *domain.User) *domain.AppError {
 	ret := _m.Called(user)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UpdateUserDetails")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*domain.User) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(*domain.User) *domain.AppError); ok {
 		r0 = rf(user)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0
 }
 
 // VerifyUserEmail provides a mock function with given fields: token
-func (_m *UserRepository) VerifyUserEmail(token string) error {
+func (_m *UserRepository) VerifyUserEmail(token string) *domain.AppError {
 	ret := _m.Called(token)
 
 	if len(ret) == 0 {
 		panic("no return value specified for VerifyUserEmail")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
+	var r0 *domain.AppError
+	if rf, ok := ret.Get(0).(func(string) *domain.AppError); ok {
 		r0 = rf(token)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*domain.AppError)
+		}
 	}
 
 	return r0

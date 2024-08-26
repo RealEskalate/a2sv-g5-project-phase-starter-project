@@ -69,9 +69,9 @@ func (oc *OAuthController) HandleGoogleCallback(c *gin.Context) {
 
 	_ = oc.Userusecase.RegisterUser(c, &user)
 
-	logintoken, err := oc.Userusecase.LoginUser(c, user)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	logintoken, erro := oc.Userusecase.LoginUser(c, user)
+	if erro != nil {
+		c.JSON(erro.Status(), gin.H{"error": erro.Message()})
 		return
 	}
 

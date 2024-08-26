@@ -22,15 +22,25 @@ type BlogController struct {
 	Env *config.Env
 }
 
-func getclaim(c *gin.Context) (*domain.JwtCustomClaims, error) {
+func getclaim(c *gin.Context) (*domain.JwtCustomClaims, *domain.Error) {
 	claim, exists := c.Get("claim")
 	if !exists {
-		return nil, errors.New("claim not set")
+		customError := domain.Error{
+			StatusCode: http.StatusUnauthorized,
+			Message:    "Unauthorized access",
+		}
+		return nil, &customError
 	}
 
 	userClaims, ok := claim.(domain.JwtCustomClaims)
 	if !ok {
-		return nil, errors.New("invalid claim type")
+		customError := domain.Error{
+			Err:        errors.New("error asserting claims"),
+			StatusCode: http.StatusInternalServerError,
+			Message:    "Internal server error",
+		}
+
+		return nil, &customError
 	}
 
 	return &userClaims, nil
@@ -39,40 +49,57 @@ func getclaim(c *gin.Context) (*domain.JwtCustomClaims, error) {
 func (bc *BlogController) CreateBlog(c *gin.Context) {
 	claims, err := getclaim(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	fmt.Println(claims)
 	var req domain.BlogCreationRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		customError := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid request data",
+		}
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
 
 	blog, err := bc.BlogUsecase.CreateBlog(c.Request.Context(), &req, claims)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	blog.AuthorName = claims.Username
 
-	c.JSON(http.StatusCreated, blog)
+	success := domain.Error{
+		StatusCode: http.StatusCreated,
+		Message:    "Blog created successfully",
+	}
+
+	c.JSON(success.StatusCode, success.Message)
 }
 
 func (bc *BlogController) GetBlogByID(c *gin.Context) {
 	id, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		customError := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
 
-	blog, err := bc.BlogUsecase.GetBlogByID(c.Request.Context(), id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	blog, customError := bc.BlogUsecase.GetBlogByID(c.Request.Context(), id)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+	}
 
-	c.JSON(http.StatusOK, blog)
+	c.JSON(success.StatusCode, blog)
 }
 
 func (bc *BlogController) GetAllBlogs(c *gin.Context) {
@@ -80,93 +107,137 @@ func (bc *BlogController) GetAllBlogs(c *gin.Context) {
 	limitStr := c.DefaultQuery("limit", "10")
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid limit format"})
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid limit format",
+		}
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	sortBy := c.DefaultQuery("sortBy", "likes")
 
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page format"})
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid page format",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
-	blogs, err := bc.BlogUsecase.GetAllBlogs(c.Request.Context(), pageInt, limit, sortBy)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	blogs, customError := bc.BlogUsecase.GetAllBlogs(c.Request.Context(), pageInt, limit, sortBy)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
 
-	c.JSON(http.StatusOK, blogs)
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+	}
+
+	c.JSON(success.StatusCode, blogs)
 }
 
 func (bc *BlogController) UpdateBlog(c *gin.Context) {
-	claims, err := getclaim(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+	claims, er := getclaim(c)
+	if er != nil {
+		c.JSON(er.StatusCode, gin.H{"error": er.Message})
 		return
 	}
 
 	id, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
-	blog, err := bc.BlogUsecase.GetBlogByID(c.Request.Context(), id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	blog, customError := bc.BlogUsecase.GetBlogByID(c.Request.Context(), id)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
 	if claims.UserID != blog.AuthorID {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "You are not authorized to update this blog"})
+		customError := domain.Error{
+			StatusCode: http.StatusUnauthorized,
+			Message:    "You are not authorized to update this blog",
+		}
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
 
 	var newBlog domain.BlogUpdateRequest
 	if err := c.ShouldBindJSON(&newBlog); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid request data",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
-	blogs, err := bc.BlogUsecase.UpdateBlog(c.Request.Context(), id, &newBlog)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	blogs, customError := bc.BlogUsecase.UpdateBlog(c.Request.Context(), id, &newBlog)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+	}
 
-	c.JSON(http.StatusOK, blogs)
+	c.JSON(success.StatusCode, blogs)
 }
 
 func (bc *BlogController) DeleteBlog(c *gin.Context) {
-	claims, err := getclaim(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+	claims, er := getclaim(c)
+	if er != nil {
+		c.JSON(er.StatusCode, gin.H{"error": er.Message})
 		return
 	}
 
 	id, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
-	blog, err := bc.BlogUsecase.GetBlogByID(c.Request.Context(), id)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Blog not found"})
+	blog, customError := bc.BlogUsecase.GetBlogByID(c.Request.Context(), id)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
 	if claims.UserID != blog.AuthorID {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "You are not authorized to update this blog"})
+		customError := domain.Error{
+			StatusCode: http.StatusUnauthorized,
+			Message:    "You are not authorized to delete this blog",
+		}
+
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
 
-	if err := bc.BlogUsecase.DeleteBlog(c.Request.Context(), id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if customError := bc.BlogUsecase.DeleteBlog(c.Request.Context(), id); customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+		Message:    "Blog deleted successfully",
+	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Blog deleted successfully"})
+	c.JSON(success.StatusCode, gin.H{"message": success.Message})
 }
 
 // Delivery/controllers/blog_controller.go
@@ -176,94 +247,133 @@ func (bc *BlogController) SearchBlogs(c *gin.Context) {
 	author := c.Query("author")
 
 	// Call the use case with the search criteria
-	blogs, err := bc.BlogUsecase.SearchBlogs(c, title, author)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	blogs, customError := bc.BlogUsecase.SearchBlogs(c, title, author)
+	if customError != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": customError.Message})
 		return
 	}
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+	}
 
-	c.JSON(http.StatusOK, blogs)
+	c.JSON(success.StatusCode, blogs)
 }
-
-// func (bc *BlogController) FilterBlogsByTags(c *gin.Context) {
-// 	tags := c.QueryArray("tags")
-// 	blogs, err := bc.BlogUsecase.FilterBlogsByTags(c.Request.Context(), tags)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, blogs)
-// }
-
-// func (bc *BlogController) FilterBlogsByDate(c *gin.Context) {
-// 	date := c.Query("date")
-// 	blogs, err := bc.BlogUsecase.FilterBlogsByDate(c.Request.Context(), date)
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, blogs)
-// }
 
 func (bc *BlogController) FilterBlogs(c *gin.Context) {
 	tags := c.QueryArray("tags")
 	startDate := c.Query("startDate")
 	endDate := c.Query("endDate")
 	popularity := c.Query("popularity")
-	blogs, err := bc.BlogUsecase.FilterBlogs(c.Request.Context(), popularity, tags, startDate, endDate)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	blogs, customError := bc.BlogUsecase.FilterBlogs(c.Request.Context(), popularity, tags, startDate, endDate)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
-	c.JSON(http.StatusOK, blogs)
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+	}
+	c.JSON(success.StatusCode, blogs)
 }
 func (bc *BlogController) TrackView(c *gin.Context) {
-	id, _ := primitive.ObjectIDFromHex(c.Param("id"))
-	err := bc.BlogUsecase.TrackView(c.Request.Context(), id)
+	id, err := primitive.ObjectIDFromHex(c.Param("id"))
+
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "View tracked successfully"})
+	customError := bc.BlogUsecase.TrackView(c.Request.Context(), id)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
+		return
+	}
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+		Message:    "View tracked successfully",
+	}
+	c.JSON(success.StatusCode, gin.H{"message": success.Message})
 }
 
 func (bc *BlogController) TrackLike(c *gin.Context) {
-	id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+	id, er := primitive.ObjectIDFromHex(c.Param("id"))
+
+	if er != nil {
+		er := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+
+		c.JSON(er.StatusCode, gin.H{"error": er.Message})
+		return
+
+	}
 	claims, err := getclaim(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	userID := claims.UserID
-	err = bc.BlogUsecase.TrackLike(c.Request.Context(), id, userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	customError := bc.BlogUsecase.TrackLike(c.Request.Context(), id, userID)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Like tracked successfully"})
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+		Message:    "Like tracked successfully",
+	}
+	c.JSON(success.StatusCode, gin.H{"message": success.Message})
 }
 
 func (bc *BlogController) TrackDislike(c *gin.Context) {
-	id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+	id, er := primitive.ObjectIDFromHex(c.Param("id"))
+	if er != nil {
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+		return
+	}
 	claims, err := getclaim(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	userID := claims.UserID
-	err = bc.BlogUsecase.TrackDislike(c.Request.Context(), id, userID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	customError := bc.BlogUsecase.TrackDislike(c.Request.Context(), id, userID)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Dislike tracked successfully"})
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+		Message:    "Dislike tracked successfully",
+	}
+	c.JSON(success.StatusCode, gin.H{"message": success.Message})
+
 }
 
 func (bc *BlogController) AddComment(c *gin.Context) {
-	post_id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+	post_id, er := primitive.ObjectIDFromHex(c.Param("id"))
+	if er != nil {
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+		return
+	}
+
 	claims, err := getclaim(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	var comment domain.Comment
@@ -272,21 +382,34 @@ func (bc *BlogController) AddComment(c *gin.Context) {
 		return
 	}
 	userID := claims.UserID
-	err = bc.BlogUsecase.AddComment(c.Request.Context(), post_id, userID, &comment)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	customError := bc.BlogUsecase.AddComment(c.Request.Context(), post_id, userID, &comment)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Comment added successfully"})
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+		Message:    "Comment added successfully",
+	}
+	c.JSON(success.StatusCode, gin.H{"message": success.Message})
 }
 
 func (bc *BlogController) AddReply(c *gin.Context) {
 
-	post_id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+	post_id, er := primitive.ObjectIDFromHex(c.Param("id"))
+	if er != nil {
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+		return
+	}
 	comment_id, _ := primitive.ObjectIDFromHex(c.Param("comment_id"))
 	claims, err := getclaim(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	var reply domain.Comment
@@ -295,46 +418,70 @@ func (bc *BlogController) AddReply(c *gin.Context) {
 		return
 	}
 	userID := claims.UserID
-	err = bc.BlogUsecase.AddReply(c.Request.Context(), post_id, comment_id, userID, &reply)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	customError := bc.BlogUsecase.AddReply(c.Request.Context(), post_id, comment_id, userID, &reply)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Reply added successfully"})
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+		Message:    "Reply added successfully",
+	}
+
+	c.JSON(success.StatusCode, success.Message)
 }
 
-
 func (bc *BlogController) TrackCommentPopularity(c *gin.Context) {
-	post_id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+	post_id, er := primitive.ObjectIDFromHex(c.Param("id"))
+
+	if er != nil {
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+		return
+
+	}
 	comment_id, _ := primitive.ObjectIDFromHex(c.Param("comment_id"))
 	metric := c.Query("metric")
 	claims, err := getclaim(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 	userID := claims.UserID
-	err = bc.BlogUsecase.TrackCommentPopularity(c.Request.Context(), post_id, comment_id, userID, metric)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	customError := bc.BlogUsecase.TrackCommentPopularity(c.Request.Context(), post_id, comment_id, userID, metric)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Like tracked successfully"})
-}
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+		Message:    "Comment popularity tracked successfully",
+	}
+	c.JSON(success.StatusCode, gin.H{"message": success.Message})
 
+}
 
 func (bc *BlogController) GetComments(c *gin.Context) {
 	// Convert the post ID from the URL parameter to an ObjectID
 	postID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
 	// Retrieve the comments from the use case
-	comments, err := bc.BlogUsecase.GetComments(c.Request.Context(), postID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	comments, customError := bc.BlogUsecase.GetComments(c.Request.Context(), postID)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
 
@@ -348,28 +495,41 @@ func (bc *BlogController) GetComments(c *gin.Context) {
 	}
 
 	// Send the response with a status code of 200 (OK)
-	c.JSON(http.StatusOK, response)
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+	}
+	c.JSON(success.StatusCode, response)
 }
 
 func (bc *BlogController) DeleteComment(c *gin.Context) {
 	// Convert the post ID from the URL parameter to an ObjectID
 	postID, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
 	// Convert the comment ID from the URL parameter to an ObjectID
 	commentID, err := primitive.ObjectIDFromHex(c.Param("comment_id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid comment ID"})
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
 		return
 	}
 
 	// Retrieve the claims (user data)
-	claims, err := getclaim(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authorized"})
+	claims, er := getclaim(c)
+	if er != nil {
+		c.JSON(er.StatusCode, gin.H{"error": er.Message})
 		return
 	}
 
@@ -377,39 +537,68 @@ func (bc *BlogController) DeleteComment(c *gin.Context) {
 	userID := claims.UserID
 
 	// Call the use case to delete the comment
-	err = bc.BlogUsecase.DeleteComment(c.Request.Context(), postID, commentID, userID)
-	if err != nil {
-		if err.Error() == "you are not authorized to delete this comment" {
-			c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
-		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
+	customError := bc.BlogUsecase.DeleteComment(c.Request.Context(), postID, commentID, userID)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
 		return
 	}
 
 	// Send a success response
-	c.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully"})
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+		Message:    "Comment deleted successfully",
+	}
+	c.JSON(success.StatusCode, success.Message)
 }
 
 func (bc *BlogController) UpdateComment(c *gin.Context) {
-	post_id, _ := primitive.ObjectIDFromHex(c.Param("id"))
-	comment_id, _ := primitive.ObjectIDFromHex(c.Param("comment_id"))
-	claims, err := getclaim(c)
+	post_id, err := primitive.ObjectIDFromHex(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+		return
+	}
+
+	// Convert the comment ID from the URL parameter to an ObjectID
+	comment_id, err := primitive.ObjectIDFromHex(c.Param("comment_id"))
+	if err != nil {
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid ID format",
+		}
+
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+		return
+	}
+	claims, er := getclaim(c)
+	if er != nil {
+		c.JSON(er.StatusCode, gin.H{"error": er.Message})
 		return
 	}
 	userID := claims.UserID
 	var comment domain.Comment
 	if err := c.BindJSON(&comment); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
-		return
-	}
-	err = bc.BlogUsecase.UpdateComment(c.Request.Context(), post_id, comment_id, userID, &comment)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Comment updated successfully"})
-}
+		err := domain.Error{
+			StatusCode: http.StatusBadRequest,
+			Message:    "Invalid request",
+		}
 
+		c.JSON(err.StatusCode, gin.H{"error": err.Message})
+		return
+	}
+	customError := bc.BlogUsecase.UpdateComment(c.Request.Context(), post_id, comment_id, userID, &comment)
+	if customError != nil {
+		c.JSON(customError.StatusCode, gin.H{"error": customError.Message})
+		return
+	}
+
+	success := domain.Error{
+		StatusCode: http.StatusOK,
+		Message:    "Comment updated successfully",
+	}
+	c.JSON(success.StatusCode, gin.H{"message": success.Message})
+}

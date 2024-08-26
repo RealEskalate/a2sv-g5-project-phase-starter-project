@@ -1097,7 +1097,7 @@ packages:
     dependency: transitive
     description:
       name: vm_service
-<<<<<<< HEAD
+<<<<<<< HEAD:
       sha256: "3923c89304b715fb1eb6423f017651664a03bf5f4b29983627c4da791f74a4ec"
       url: "https://pub.dev"
     source: hosted

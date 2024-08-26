@@ -33,8 +33,11 @@ func ForgotPasswordHandler(email string) error {
 	// Generate a token valid for 1 hour
 	hashedEmail = sha256.Sum256([]byte(email))
 
+	emailConfig, _ := NewEmailConfig()
+	emailserv := NewEmailService(emailConfig)
+
 	token := passwordreset.NewToken(email, time.Hour*1, hashedEmail[:], []byte(secretKey))
-	if err := sendResetEmail(email, token); err != nil {
+	if err := emailserv.SendResetEmail(email, token); err != nil {
 		return err
 	}
 	return nil
@@ -109,9 +112,10 @@ func UserVerification(email string) error {
 
 	// Generate a token valid for 1 hour
 	hashedEmail = sha256.Sum256([]byte(email))
-
+	emailConfig, _ := NewEmailConfig()
+	emailserv := NewEmailService(emailConfig)
 	token := passwordreset.NewToken(email, time.Hour*1, hashedEmail[:], []byte(secretKey))
-	if err := sendResetEmail(email, token); err != nil {
+	if err := emailserv.SendVerificationEmail(email, token); err != nil {
 		return err
 	}
 	return nil

@@ -73,9 +73,7 @@ func (lrep *LikeRepository) CreateLike(user_id string, post_id string) *domain.A
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		if err := lrep.deleteDisLike(user_id, post_id); err != nil {
-			errChan <- domain.ErrDislikeRemovalFailed
-		}
+		lrep.deleteDisLike(user_id, post_id)
 	}()
 
 	wg.Add(1)

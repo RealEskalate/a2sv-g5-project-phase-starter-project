@@ -151,11 +151,11 @@ func (suite *UserControllerTestSuite) TestForgotPassword_Success() {
 // }
 
 func (suite *UserControllerTestSuite) TestResetPassword_Success() {
-	suite.mockUsecase.On("ResetPassword", mock.Anything, "mock-token", "newpassword").Return(nil).Once()
+	suite.mockUsecase.On("ResetPassword", mock.Anything, "mock-token", "Abem@12hhshsd").Return(nil).Once()
 
 	recorder := httptest.NewRecorder()
 	context, _ := gin.CreateTestContext(recorder)
-	context.Request = httptest.NewRequest(http.MethodPost, "/user/reset-password?token=mock-token", bytes.NewReader([]byte(`{"newPassword":"newpassword"}`)))
+	context.Request = httptest.NewRequest(http.MethodPost, "/user/reset-password?token=mock-token", bytes.NewReader([]byte(`{"password":"Abem@12hhshsd"}`)))
 
 	suite.controller.ResetPassword(context)
 

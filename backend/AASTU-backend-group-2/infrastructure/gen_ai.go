@@ -102,6 +102,10 @@ func (s *GeminiAIService) Validate_Comment(comment string) *domain.AppError {
 
 	resp, err := s.model.GenerateContent(context.Background(), prompt...)
 	if err != nil {
+		if strings.Contains(err.Error(), "FinishReasonSafety") {
+			return domain.ErrOffensiveComment
+
+		}
 		return domain.ErrGeminiContentGeneration
 	}
 
@@ -140,7 +144,7 @@ func (s *GeminiAIService) Validate_Blog(blog string) *domain.AppError {
 	resp, err := s.model.GenerateContent(context.Background(), prompt...)
 	if err != nil {
 		if strings.Contains(err.Error(), "FinishReasonSafety") {
-			return domain.ErrGeminiSafetyBlock
+			return domain.ErrOffensiveBlogContent
 		}
 		return domain.ErrGeminiContentGeneration
 	}

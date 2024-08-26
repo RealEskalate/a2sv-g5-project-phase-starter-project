@@ -17,6 +17,18 @@ type AIController struct {
 func NewAIController(model infrastructure.AIModel, uc usecase.BlogUsecase) *AIController {
 	return &AIController{model: model, usecase: uc}
 }
+
+// RecommendTitle godoc
+// @Summary Recommend a title for the blog
+// @Description Generate a recommended title based on the provided content
+// @Tags AI
+// @Accept  json
+// @Produce  json
+// @Param data body infrastructure.Data true "Input Data"
+// @Success 200 {object} map[string]string
+// @Failure 406 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /ai/recommend/title [post]
 func (c *AIController) RecommendTitle(ctx *gin.Context) {
 	data := infrastructure.Data{}
 	if err := ctx.BindJSON(&data); err != nil {
@@ -31,6 +43,18 @@ func (c *AIController) RecommendTitle(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// RecommendContent godoc
+// @Summary Recommend content for the blog
+// @Description Generate recommended content based on the provided data
+// @Tags AI
+// @Accept  json
+// @Produce  json
+// @Param data body infrastructure.Data true "Input Data"
+// @Success 200 {object} map[string]string
+// @Failure 406 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /ai/recommend/content [post]
+
 func (c *AIController) RecommendContent(ctx *gin.Context) {
 	data := infrastructure.Data{}
 	if err := ctx.BindJSON(&data); err != nil {
@@ -44,6 +68,18 @@ func (c *AIController) RecommendContent(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
+
+// RecommendTags godoc
+// @Summary Recommend tags for the blog
+// @Description Generate recommended tags based on the provided data
+// @Tags AI
+// @Accept  json
+// @Produce  json
+// @Param data body infrastructure.Data true "Input Data"
+// @Success 200 {object} map[string]string
+// @Failure 406 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /ai/recommend/tags [post]
 func (c *AIController) Recommendtags(ctx *gin.Context) {
 	data := infrastructure.Data{}
 	if err := ctx.BindJSON(&data); err != nil {
@@ -58,6 +94,17 @@ func (c *AIController) Recommendtags(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// Summarize godoc
+// @Summary Summarize the provided content
+// @Description Generate a summary of the provided content
+// @Tags AI
+// @Accept  json
+// @Produce  json
+// @Param data body infrastructure.Data true "Input Data"
+// @Success 200 {object} map[string]string
+// @Failure 406 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /ai/summarize [post]
 func (c *AIController) Sumarize(ctx *gin.Context) {
 	data := infrastructure.Data{}
 	if err := ctx.BindJSON(&data); err != nil {
@@ -71,6 +118,18 @@ func (c *AIController) Sumarize(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{"summary": resp})
 }
+
+// SummarizeBlog godoc
+// @Summary Summarize a blog by ID
+// @Description Generate a summary of a blog's content based on its ID
+// @Tags blog
+// @Accept  json
+// @Produce  json
+// @Param blogId path string true "Blog ID"
+// @Success 200 {object} map[string]string
+// @Failure 406 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /ai/summarize/{blogId} [post]
 func (c *AIController) SumarizeBlog(ctx *gin.Context) {
 	blogID, _ := ctx.Params.Get("blogId")
 	bID, err := repository.IsValidObjectID(blogID)
@@ -91,6 +150,18 @@ func (c *AIController) SumarizeBlog(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{"summary": resp})
 }
+
+// Chat godoc
+// @Summary Chat with the AI model
+// @Description Send a message to the AI model and get a response
+// @Tags AI
+// @Accept  json
+// @Produce  json
+// @Param message body map[string]string{"message": string } true "Chat Message"
+// @Success 200 {object} map[string]string
+// @Failure 406 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /ai/chat [post]
 func (c *AIController) Chat(ctx *gin.Context) {
 	message := struct {
 		Message string `json:"message,omitempty"`
@@ -107,6 +178,17 @@ func (c *AIController) Chat(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"response": resp})
 }
 
+// RefineBlog godoc
+// @Summary Refine a blog's content
+// @Description Refine the content of a blog based on its ID
+// @Tags blog
+// @Accept  json
+// @Produce  json
+// @Param blogId path string true "Blog ID"
+// @Success 200 {object} map[string]string
+// @Failure 406 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /ai/refine/{blogId} [post]
 func (c *AIController) RefineBlog(ctx *gin.Context) {
 	blogID, _ := ctx.Params.Get("blogId")
 	blog, err := c.usecase.GetBlogByBLogId(blogID)

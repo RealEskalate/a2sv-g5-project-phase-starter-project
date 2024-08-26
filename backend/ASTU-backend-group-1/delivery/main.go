@@ -17,7 +17,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-// @title TODO APIs
+// @title Blog API
 // @version 1.0
 // @description Testing Swagger APIs.
 // @termsOfService http://swagger.io/terms/

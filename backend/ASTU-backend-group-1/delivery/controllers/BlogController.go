@@ -18,6 +18,16 @@ func NewBlogController(uc usecase.BlogUsecase) *BlogController {
 	return &BlogController{usecase: uc}
 }
 
+// @Summary Create a new blog
+// @Description Create a new blog post with the provided data.
+// @Tags blogs
+// @Accept json
+// @Produce json
+// @Param blog body domain.Blog true "Blog data"
+// @Success 200 {object} domain.Blog
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /blogs [post]
 func (cont *BlogController) HandleCreateBlog(ctx *gin.Context) {
 	var blog domain.Blog
 	err := ctx.ShouldBindJSON(&blog)
@@ -39,6 +49,17 @@ func (cont *BlogController) HandleCreateBlog(ctx *gin.Context) {
 	}
 }
 
+// @Summary Get all blogs
+// @Description Retrieve a list of all blogs with pagination.
+// @Tags blogs
+// @Accept json
+// @Produce json
+// @Param pageNumber query int false "Page number"
+// @Param pageSize query int false "Page size"
+// @Success 200 {array} domain.Blog
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /blogs [get]
 func (cont *BlogController) HandleGetAllBlogs(ctx *gin.Context) {
 	page := ctx.Query("pageNumber")
 	ipage, err := strconv.Atoi(page)
@@ -61,6 +82,15 @@ func (cont *BlogController) HandleGetAllBlogs(ctx *gin.Context) {
 	}
 }
 
+// @Summary Get a blog by ID
+// @Description Retrieve a specific blog by its ID.
+// @Tags blogs
+// @Accept json
+// @Produce json
+// @Param blogId path string true "Blog ID"
+// @Success 200 {object} domain.Blog
+// @Failure 404 {object} map[string]string
+// @Router /blogs/{blogId} [get]
 func (cont *BlogController) HandleGetBlogById(ctx *gin.Context) {
 	blogs, err := cont.usecase.GetBlogByBLogId(ctx.Param("blogId"))
 	if err != nil {
@@ -70,6 +100,14 @@ func (cont *BlogController) HandleGetBlogById(ctx *gin.Context) {
 	}
 }
 
+// @Summary Get popular blogs
+// @Description Retrieve the most popular blogs.
+// @Tags blogs
+// @Accept json
+// @Produce json
+// @Success 200 {array} domain.Blog
+// @Failure 404 {object} map[string]string
+// @Router /blogs/popular [get]
 func (cont *BlogController) HandleGetPopularBlog(ctx *gin.Context) {
 	blogs, err := cont.usecase.FindPopularBlog()
 	if err != nil {
@@ -79,8 +117,18 @@ func (cont *BlogController) HandleGetPopularBlog(ctx *gin.Context) {
 	}
 }
 
+// @Summary Filter blogs
+// @Description Filter blogs based on provided filters and pagination.
+// @Tags blogs
+// @Accept json
+// @Produce json
+// @Param filter body domain.BlogFilterOption true "Filter and pagination options"
+// @Success 200 {array} domain.Blog
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /blogs/filter [post]
 func (cont *BlogController) HandleFilterBlogs(ctx *gin.Context) {
-	
+
 	var blf domain.BlogFilterOption
 	err := ctx.ShouldBindJSON(&blf)
 	if err != nil {
@@ -102,7 +150,6 @@ func (cont *BlogController) HandleFilterBlogs(ctx *gin.Context) {
 	x.PageSize = ipageSize
 	blf.Pagination = x
 
-
 	blogs, err := cont.usecase.FilterBlogs(blf)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
@@ -111,7 +158,17 @@ func (cont *BlogController) HandleFilterBlogs(ctx *gin.Context) {
 	}
 }
 
-// todo: start tesing  here
+// @Summary Update a blog
+// @Description Update an existing blog post by its ID.
+// @Tags blogs
+// @Accept json
+// @Produce json
+// @Param blogId path string true "Blog ID"
+// @Param blog body domain.Blog true "Updated blog data"
+// @Success 200 {object} domain.Blog
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /blogs/{blogId} [put]
 func (cont *BlogController) HandleBlogUpdate(ctx *gin.Context) {
 	var updateBlog domain.Blog
 	err := ctx.ShouldBindJSON(&updateBlog)
@@ -127,6 +184,16 @@ func (cont *BlogController) HandleBlogUpdate(ctx *gin.Context) {
 	}
 }
 
+// @Summary Delete a blog
+// @Description Delete a blog post by its ID.
+// @Tags blogs
+// @Accept json
+// @Produce json
+// @Param blogId path string true "Blog ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /blogs/{blogId} [delete]
 func (cont *BlogController) HandleBlogDelete(ctx *gin.Context) {
 	claims, err := infrastructure.GetClaims(ctx)
 	if err != nil {
@@ -141,6 +208,17 @@ func (cont *BlogController) HandleBlogDelete(ctx *gin.Context) {
 	}
 }
 
+// @Summary Like or dislike a blog
+// @Description Like, dislike, or view a blog post by its ID.
+// @Tags blogs
+// @Accept json
+// @Produce json
+// @Param type path string true "Interaction type (like, dislike, view)"
+// @Param blogId path string true "Blog ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /blogs/{blogId}/{type} [post]
 func (cont *BlogController) HandleBlogLikeOrDislike(ctx *gin.Context) {
 	interactionType := ctx.Param("type")
 	blogId := ctx.Param("blogId")
@@ -175,6 +253,17 @@ func (cont *BlogController) HandleBlogLikeOrDislike(ctx *gin.Context) {
 	}
 }
 
+// @Summary Comment on a blog
+// @Description Add a comment to a blog post.
+// @Tags comments
+// @Accept json
+// @Produce json
+// @Param blogId path string true "Blog ID"
+// @Param comment body domain.Comment true "Comment data"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /blogs/{blogId}/comments [post]
 func (cont *BlogController) HandleCommentOnBlog(ctx *gin.Context) {
 	blogId := ctx.Param("blogId")
 	var newComment domain.Comment
@@ -198,6 +287,18 @@ func (cont *BlogController) HandleCommentOnBlog(ctx *gin.Context) {
 	}
 }
 
+// @Summary Get all comments for a blog
+// @Description Retrieve all comments for a specific blog with pagination.
+// @Tags comments
+// @Accept json
+// @Produce json
+// @Param blogId path string true "Blog ID"
+// @Param pageNumber query int false "Page number"
+// @Param pageSize query int false "Page size"
+// @Success 200 {array} domain.Comment
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /blogs/{blogId}/comments [get]
 func (cont *BlogController) HandleGetAllComments(ctx *gin.Context) {
 	blogId := ctx.Param("blogId")
 	page := ctx.Query("pageNumber")
@@ -214,7 +315,7 @@ func (cont *BlogController) HandleGetAllComments(ctx *gin.Context) {
 	x.Page = ipage
 	x.PageSize = ipageSize
 
-	comments, err := cont.usecase.GetAllComments(blogId,x)
+	comments, err := cont.usecase.GetAllComments(blogId, x)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -222,6 +323,16 @@ func (cont *BlogController) HandleGetAllComments(ctx *gin.Context) {
 	}
 }
 
+// @Summary Get a comment by ID
+// @Description Retrieve a specific comment by its ID.
+// @Tags comments
+// @Accept json
+// @Produce json
+// @Param blogId path string true "Blog ID"
+// @Param commentId path string true "Comment ID"
+// @Success 200 {object} domain.Comment
+// @Failure 404 {object} map[string]string
+// @Router /blogs/{blogId}/comments/{commentId} [get]
 func (cont *BlogController) HandleGetCommentById(ctx *gin.Context) {
 	blogId := ctx.Param("blogId")
 	commentId := ctx.Param("commentId")
@@ -233,6 +344,18 @@ func (cont *BlogController) HandleGetCommentById(ctx *gin.Context) {
 	}
 }
 
+// @Summary Like or dislike a comment
+// @Description Like, dislike, or view a comment on a blog post.
+// @Tags comments
+// @Accept json
+// @Produce json
+// @Param type path string true "Interaction type (like, dislike, view)"
+// @Param blogId path string true "Blog ID"
+// @Param commentId path string true "Comment ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /blogs/{blogId}/comments/{commentId}/{type} [post]
 func (cont *BlogController) HandleCommentLikeOrDislike(ctx *gin.Context) {
 	interactionType := ctx.Param("type")
 	blogId := ctx.Param("blogId")
@@ -269,6 +392,18 @@ func (cont *BlogController) HandleCommentLikeOrDislike(ctx *gin.Context) {
 	}
 }
 
+// @Summary Reply to a comment
+// @Description Add a reply to a comment on a blog post.
+// @Tags replies
+// @Accept json
+// @Produce json
+// @Param blogId path string true "Blog ID"
+// @Param commentId path string true "Comment ID"
+// @Param reply body domain.Reply true "Reply data"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /blogs/{blogId}/comments/{commentId}/replies [post]
 func (cont *BlogController) HandleReplyOnComment(ctx *gin.Context) {
 	var newReply domain.Reply
 	blogId := ctx.Param("blogId")
@@ -292,6 +427,19 @@ func (cont *BlogController) HandleReplyOnComment(ctx *gin.Context) {
 	}
 }
 
+// @Summary Get all replies for a comment
+// @Description Retrieve all replies for a specific comment with pagination.
+// @Tags replies
+// @Accept json
+// @Produce json
+// @Param blogId path string true "Blog ID"
+// @Param commentId path string true "Comment ID"
+// @Param pageNumber query int false "Page number"
+// @Param pageSize query int false "Page size"
+// @Success 200 {array} domain.Reply
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /blogs/{blogId}/comments/{commentId}/replies [get]
 func (cont *BlogController) HandleGetAllRepliesForComment(ctx *gin.Context) {
 	blogId := ctx.Param("blogId")
 	commentId := ctx.Param("commentId")
@@ -309,7 +457,7 @@ func (cont *BlogController) HandleGetAllRepliesForComment(ctx *gin.Context) {
 	x.Page = ipage
 	x.PageSize = ipageSize
 
-	replies, err := cont.usecase.GetAllReplies(blogId, commentId,x)
+	replies, err := cont.usecase.GetAllReplies(blogId, commentId, x)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusNotFound, err)
 	} else {
@@ -317,6 +465,17 @@ func (cont *BlogController) HandleGetAllRepliesForComment(ctx *gin.Context) {
 	}
 }
 
+// @Summary Get a reply by ID
+// @Description Retrieve a specific reply by its ID.
+// @Tags replies
+// @Accept json
+// @Produce json
+// @Param blogId path string true "Blog ID"
+// @Param commentId path string true "Comment ID"
+// @Param replyId path string true "Reply ID"
+// @Success 200 {object} domain.Reply
+// @Failure 404 {object} map[string]string
+// @Router /blogs/{blogId}/comments/{commentId}/replies/{replyId} [get]
 func (cont *BlogController) HandleGetReplyById(ctx *gin.Context) {
 	blogId := ctx.Param("blogId")
 	commentId := ctx.Param("commentId")
@@ -329,6 +488,19 @@ func (cont *BlogController) HandleGetReplyById(ctx *gin.Context) {
 	}
 }
 
+// @Summary Like or dislike a reply
+// @Description Like, dislike, or view a reply to a comment on a blog post.
+// @Tags replies
+// @Accept json
+// @Produce json
+// @Param type path string true "Interaction type (like, dislike, view)"
+// @Param blogId path string true "Blog ID"
+// @Param commentId path string true "Comment ID"
+// @Param replyId path string true "Reply ID"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /blogs/{blogId}/comments/{commentId}/replies/{replyId}/{type} [post]
 func (cont *BlogController) HandleReplyLikeOrDislike(ctx *gin.Context) {
 	like := ctx.Param("type")
 	commentId := ctx.Param("commentId")

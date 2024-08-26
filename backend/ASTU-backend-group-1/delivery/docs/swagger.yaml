@@ -1,4 +1,132 @@
 definitions:
+  controllers.UserRegistration:
+    description: User Registration model
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  domain.Blog:
+    description: Represents a blog post.
+    properties:
+      author_id:
+        type: string
+      blog_id:
+        type: string
+      comments:
+        type: integer
+      content:
+        type: string
+      date:
+        type: string
+      dislikes:
+        items:
+          type: string
+        type: array
+      likes:
+        items:
+          type: string
+        type: array
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      views:
+        type: integer
+    required:
+    - content
+    - tags
+    - title
+    type: object
+  domain.BlogFilterOption:
+    properties:
+      filter:
+        $ref: '#/definitions/domain.BlogFilters'
+      pagination:
+        $ref: '#/definitions/domain.PaginationInfo'
+    type: object
+  domain.BlogFilters:
+    properties:
+      author_id:
+        type: string
+      blog_id:
+        type: string
+      date:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+    type: object
+  domain.Comment:
+    description: Represents a comment on a blog post.
+    properties:
+      author_id:
+        type: string
+      blog_id:
+        type: string
+      comment_id:
+        type: string
+      content:
+        type: string
+      dislikes:
+        items:
+          type: string
+        type: array
+      likes:
+        items:
+          type: string
+        type: array
+      replies:
+        type: integer
+      views:
+        type: integer
+    required:
+    - content
+    type: object
+  domain.PaginationInfo:
+    properties:
+      page:
+        type: integer
+      pageSize:
+        type: integer
+    type: object
+  domain.Reply:
+    description: Represents a reply to a comment.
+    properties:
+      author_id:
+        type: string
+      blog_id:
+        type: string
+      comment_id:
+        type: string
+      content:
+        type: string
+      dislikes:
+        items:
+          type: string
+        type: array
+      likes:
+        items:
+          type: string
+        type: array
+      reply_id:
+        type: string
+      views:
+        type: integer
+    required:
+    - content
+    type: object
   domain.User:
     properties:
       email:
@@ -19,6 +147,20 @@ definitions:
         type: string
       username:
         type: string
+    required:
+    - email
+    - username
+    type: object
+  infrastructure.Data:
+    properties:
+      content:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
     type: object
 info:
   contact:
@@ -27,9 +169,834 @@ info:
     url: http://www.swagger.io/support
   description: Testing Swagger APIs.
   termsOfService: http://swagger.io/terms/
-  title: TODO APIs
+  title: Blog API
   version: "1.0"
 paths:
+  /ai/chat:
+    post:
+      consumes:
+      - application/json
+      description: Send a message to the AI model and get a response
+      parameters:
+      - description: Chat Message
+        in: body
+        name: message
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "406":
+          description: Not Acceptable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Chat with the AI model
+      tags:
+      - AI
+  /ai/recommend/tags:
+    post:
+      consumes:
+      - application/json
+      description: Generate recommended tags based on the provided data
+      parameters:
+      - description: Input Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/infrastructure.Data'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "406":
+          description: Not Acceptable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Recommend tags for the blog
+      tags:
+      - AI
+  /ai/recommend/title:
+    post:
+      consumes:
+      - application/json
+      description: Generate a recommended title based on the provided content
+      parameters:
+      - description: Input Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/infrastructure.Data'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "406":
+          description: Not Acceptable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Recommend a title for the blog
+      tags:
+      - AI
+  /ai/refine/{blogId}:
+    post:
+      consumes:
+      - application/json
+      description: Refine the content of a blog based on its ID
+      parameters:
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "406":
+          description: Not Acceptable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Refine a blog's content
+      tags:
+      - blog
+  /ai/summarize:
+    post:
+      consumes:
+      - application/json
+      description: Generate a summary of the provided content
+      parameters:
+      - description: Input Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/infrastructure.Data'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "406":
+          description: Not Acceptable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Summarize the provided content
+      tags:
+      - AI
+  /ai/summarize/{blogId}:
+    post:
+      consumes:
+      - application/json
+      description: Generate a summary of a blog's content based on its ID
+      parameters:
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "406":
+          description: Not Acceptable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Summarize a blog by ID
+      tags:
+      - blog
+  /blogs:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a list of all blogs with pagination.
+      parameters:
+      - description: Page number
+        in: query
+        name: pageNumber
+        type: integer
+      - description: Page size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Blog'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all blogs
+      tags:
+      - blogs
+    post:
+      consumes:
+      - application/json
+      description: Create a new blog post with the provided data.
+      parameters:
+      - description: Blog data
+        in: body
+        name: blog
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Blog'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Blog'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new blog
+      tags:
+      - blogs
+  /blogs/{blogId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a blog post by its ID.
+      parameters:
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a blog
+      tags:
+      - blogs
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a specific blog by its ID.
+      parameters:
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Blog'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a blog by ID
+      tags:
+      - blogs
+    put:
+      consumes:
+      - application/json
+      description: Update an existing blog post by its ID.
+      parameters:
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      - description: Updated blog data
+        in: body
+        name: blog
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Blog'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Blog'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a blog
+      tags:
+      - blogs
+  /blogs/{blogId}/{type}:
+    post:
+      consumes:
+      - application/json
+      description: Like, dislike, or view a blog post by its ID.
+      parameters:
+      - description: Interaction type (like, dislike, view)
+        in: path
+        name: type
+        required: true
+        type: string
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Like or dislike a blog
+      tags:
+      - blogs
+  /blogs/{blogId}/comments:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all comments for a specific blog with pagination.
+      parameters:
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: pageNumber
+        type: integer
+      - description: Page size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Comment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all comments for a blog
+      tags:
+      - comments
+    post:
+      consumes:
+      - application/json
+      description: Add a comment to a blog post.
+      parameters:
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      - description: Comment data
+        in: body
+        name: comment
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Comment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Comment on a blog
+      tags:
+      - comments
+  /blogs/{blogId}/comments/{commentId}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a specific comment by its ID.
+      parameters:
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      - description: Comment ID
+        in: path
+        name: commentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Comment'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a comment by ID
+      tags:
+      - comments
+  /blogs/{blogId}/comments/{commentId}/{type}:
+    post:
+      consumes:
+      - application/json
+      description: Like, dislike, or view a comment on a blog post.
+      parameters:
+      - description: Interaction type (like, dislike, view)
+        in: path
+        name: type
+        required: true
+        type: string
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      - description: Comment ID
+        in: path
+        name: commentId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Like or dislike a comment
+      tags:
+      - comments
+  /blogs/{blogId}/comments/{commentId}/replies:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all replies for a specific comment with pagination.
+      parameters:
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      - description: Comment ID
+        in: path
+        name: commentId
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: pageNumber
+        type: integer
+      - description: Page size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Reply'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all replies for a comment
+      tags:
+      - replies
+    post:
+      consumes:
+      - application/json
+      description: Add a reply to a comment on a blog post.
+      parameters:
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      - description: Comment ID
+        in: path
+        name: commentId
+        required: true
+        type: string
+      - description: Reply data
+        in: body
+        name: reply
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Reply'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Reply to a comment
+      tags:
+      - replies
+  /blogs/{blogId}/comments/{commentId}/replies/{replyId}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a specific reply by its ID.
+      parameters:
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      - description: Comment ID
+        in: path
+        name: commentId
+        required: true
+        type: string
+      - description: Reply ID
+        in: path
+        name: replyId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Reply'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a reply by ID
+      tags:
+      - replies
+  /blogs/{blogId}/comments/{commentId}/replies/{replyId}/{type}:
+    post:
+      consumes:
+      - application/json
+      description: Like, dislike, or view a reply to a comment on a blog post.
+      parameters:
+      - description: Interaction type (like, dislike, view)
+        in: path
+        name: type
+        required: true
+        type: string
+      - description: Blog ID
+        in: path
+        name: blogId
+        required: true
+        type: string
+      - description: Comment ID
+        in: path
+        name: commentId
+        required: true
+        type: string
+      - description: Reply ID
+        in: path
+        name: replyId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Like or dislike a reply
+      tags:
+      - replies
+  /blogs/filter:
+    post:
+      consumes:
+      - application/json
+      description: Filter blogs based on provided filters and pagination.
+      parameters:
+      - description: Filter and pagination options
+        in: body
+        name: filter
+        required: true
+        schema:
+          $ref: '#/definitions/domain.BlogFilterOption'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Blog'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Filter blogs
+      tags:
+      - blogs
+  /blogs/popular:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve the most popular blogs.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Blog'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get popular blogs
+      tags:
+      - blogs
   /users:
     get:
       description: Retrieves users by optional username or email query
@@ -429,7 +1396,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/domain.User'
+          $ref: '#/definitions/controllers.UserRegistration'
       produces:
       - application/json
       responses:

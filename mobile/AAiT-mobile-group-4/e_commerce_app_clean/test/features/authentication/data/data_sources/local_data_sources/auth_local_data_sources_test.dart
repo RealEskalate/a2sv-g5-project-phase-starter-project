@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:application1/core/error/exception.dart';
 import 'package:application1/features/authentication/data/data_sources/local/local_data_source_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -38,13 +37,14 @@ void main() {
     );
 
     test(
-      'Should recieve a cache exception when there is no token',
+      'Should return an empty stiring when there is no token',
       () async {
         // arrange
         when(mockSharedPreferences.getString(KEY)).thenReturn(null);
         // act
+        var result = await authLocalDataSourceImpl.getToken();
         // assert
-        expect(()async => await authLocalDataSourceImpl.getToken(), throwsA(isA<CacheException>()));
+        expect(result, '');
       },
     );
   });

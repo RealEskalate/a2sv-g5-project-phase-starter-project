@@ -34,7 +34,7 @@ class _SignUpPageState extends State<SignUpPage> {
       listener: (context, state) {
         if (state is AuthSignedUpState) {
           ScaffoldMessenger.of(context).showSnackBar(customSnackBar('Sign up successful', Theme.of(context).primaryColor));
-          Navigator.pushNamed(context, '/sign_in_page');
+          Navigator.pushReplacementNamed(context, '/sign_in_page');
         } else if (state is AuthErrorState) {
           ScaffoldMessenger.of(context)
               .showSnackBar(customSnackBar(state.message, Theme.of(context).secondaryHeaderColor));
@@ -58,7 +58,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     children: [
                       IconButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          Navigator.pushReplacementNamed(context, '/sign_in_page');
                         },
                         icon: Icon(Icons.arrow_back_ios_rounded,
                             size: 20, color: Theme.of(context).primaryColor),

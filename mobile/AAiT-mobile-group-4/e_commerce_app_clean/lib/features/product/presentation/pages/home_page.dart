@@ -14,10 +14,15 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProductBloc>().add(LoadAllProductEvent());
+  }
+  
   @override
   Widget build(BuildContext context) {
-    context.read<ProductBloc>().add(LoadAllProductEvent());
-    context.read<AuthBloc>().add(GetCurrentUserEvent());
     return Scaffold(
       body: Center(
         child: Column(

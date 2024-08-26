@@ -99,7 +99,7 @@ class ChatPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          withTime(
+                          WithTime(
                             text: 'Have a great working week ajsgj sjhfge wiywiory asgfjsd skfhkds sjkfdjgf !!', 
                             isCurrentUser: index % 2 != 0 ? true : false, 
                             type: index % 3 != 0 ?'text': 'text',
@@ -122,7 +122,7 @@ class ChatPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          withTime(
+                          WithTime(
                             text: 'Have a great working week!!', 
                             isCurrentUser: index % 2 != 0 ? true : false, 
                             type: index % 3 != 0 ?'text': 'text',
@@ -131,9 +131,9 @@ class ChatPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: const ProfilePicWidget(bgColor: Color.fromARGB(255, 228, 146, 119), radius: 25),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 10.0),
+                        child: ProfilePicWidget(bgColor: Color.fromARGB(255, 228, 146, 119), radius: 25),
                       ),
                     ],
                   ),

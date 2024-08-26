@@ -36,7 +36,7 @@ class ProductModel extends ProductEntity {
         price: price,
         imageUrl: imageUrl,
       );
-  static List<ProductEntity> toProductListEntity(List<ProductModel> model) {
-    return model.map((product) => product.toProductEntity()).toList();
-  }
+  // static List<ProductEntity> toProductListEntity(List<ProductModel> model) {
+  //   return model.map((product) => product.toProductEntity()).toList();
+  // }
 }

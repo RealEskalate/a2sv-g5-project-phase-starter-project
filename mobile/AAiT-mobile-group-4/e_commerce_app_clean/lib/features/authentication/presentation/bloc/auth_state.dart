@@ -27,6 +27,8 @@ final class AuthUserLoaded extends AuthState {
   List<Object> get props => [userEntity];
 }
 
+final class NoUserState extends AuthState {}
+
 final class AuthSignedInState extends AuthState {}
 
 final class AuthLogOutState extends AuthState {}

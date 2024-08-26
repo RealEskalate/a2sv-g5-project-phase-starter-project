@@ -38,7 +38,7 @@ void main() async {
           useMaterial3: false,
           iconTheme: const IconThemeData(color: Color.fromARGB(255, 14, 8, 1)),
         ),
-        initialRoute: '/Root_page',
+        initialRoute: '/cover_page',
         onGenerateRoute: (settings) {
           if(settings.name == '/Root_page'){
             return createRoute(const RootPage());

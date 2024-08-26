@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../product/presentation/widgets/components/styles/text_style.dart';
+import '../bloc/auth_bloc.dart';
 
 class CoverPage extends StatefulWidget {
   const CoverPage({super.key});
@@ -13,14 +15,14 @@ class _CoverPageState extends State<CoverPage> {
   @override
   void initState() {
     super.initState();
-    _navigateToHome();
-  }
-
-  // ignore: always_declare_return_types
-  _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 2), () {});
-    // ignore: use_build_context_synchronously
-    Navigator.pushNamed(context, '/sign_in_page');
+    BlocProvider.of<AuthBloc>(context).add(GetCurrentUserEvent());
+    Future.delayed(const Duration(seconds: 4), () {
+      if (BlocProvider.of<AuthBloc>(context).state is AuthUserLoaded) {
+        Navigator.pushReplacementNamed(context, '/home_page');
+      } else {
+        Navigator.pushReplacementNamed(context, '/sign_in_page');
+      }
+    });
   }
 
   @override
@@ -35,7 +37,7 @@ class _CoverPageState extends State<CoverPage> {
           gradient: LinearGradient(
             begin: Alignment.bottomCenter,
             end: Alignment.topCenter,
-            colors: [Color.fromRGBO(63, 82, 243, 1),Color.fromRGBO(63, 81, 243, 0.5)]
+            colors: [Color.fromRGBO(63, 82, 243, 1),Color.fromRGBO(63, 81, 243, 0)]
       ),),
       child: Scaffold(
         backgroundColor: Colors.transparent,

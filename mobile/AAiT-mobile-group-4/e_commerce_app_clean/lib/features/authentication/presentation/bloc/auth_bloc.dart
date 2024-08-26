@@ -29,7 +29,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       final result = await getCurrentUserUsecase(NoParams());
       result.fold(
-        (failure) => emit(AuthErrorState(message: failure.message)),
+        (failure) => emit(NoUserState()),
         (success) => emit(AuthUserLoaded(userEntity: success)),
       );
     });

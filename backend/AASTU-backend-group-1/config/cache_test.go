@@ -18,16 +18,20 @@ func (suite *CacheTestSuite) SetupTest() {
 }
 
 func (suite *CacheTestSuite) TestGetCache() {
-	// Setup expected behavior
-	suite.cacheMock.On("GetCache", "some_key").Return ("some_value", nil)
+    // Setup expected behavior with the exact cache key used in the test
+    suite.cacheMock.On("GetCache", "some_key").Return("some_value", nil)
 
-	// Call the method
-	result, err := suite.cacheMock.GetCache("some_key")
+    // Call the method under test
+    result, err := suite.cacheMock.GetCache("some_key")
 
-	// Assert results
-	assert.NoError(suite.T(), err)
-	assert.Equal(suite.T(), "some_value", result)
+    // Assert results
+    assert.NoError(suite.T(), err)
+    assert.Equal(suite.T(), "some_value", result)
+
+    // Verify the mock expectations
+    suite.cacheMock.AssertExpectations(suite.T())
 }
+
 
 func (suite *CacheTestSuite) TestSetCache() {
 	// Setup expected behavior

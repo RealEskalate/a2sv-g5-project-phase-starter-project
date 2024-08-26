@@ -140,7 +140,7 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
               </div>
 
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50 border-[1px] border-[#afafaf]">
+                <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-2 z-50 bg-slate-400">
                   <div className="flex flex-col gap-1">
                     <div className="lg:hidden md:hidden flex gap-4 items-center justify-center">
                       <Link

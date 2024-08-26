@@ -13,14 +13,14 @@ type AIController struct {
 
 func (ctrl *AIController) GenerateContent(c *gin.Context) {
     var request struct {
-        Keywords string `json:"keywords" binding:"required"`
+        Prompt string `json:"keywords" binding:"required"`
     }
     if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-    content, err := ctrl.AIUsecase.GenerateBlogContent(c.Request.Context(), request.Keywords)
+    content, err := ctrl.AIUsecase.GenerateBlogContent(c.Request.Context(), request.Prompt)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return

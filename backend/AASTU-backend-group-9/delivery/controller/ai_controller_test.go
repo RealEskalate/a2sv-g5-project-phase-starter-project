@@ -41,11 +41,11 @@ func (suite *AIControllerSuite) TestGenerateContent() {
 		w := httptest.NewRecorder()
 		c, _ := gin.CreateTestContext(w)
 		var request struct {
-			Keywords string `json:"keywords" binding:"required"`
+			Prompt string `json:"keywords" binding:"required"`
 		}
-		request.Keywords = "test"
+		request.Prompt = "test"
 		resp := []genai.Part{}
-		suite.AIUsecase.On("GenerateBlogContent", mock.Anything, request.Keywords).Return(resp, nil).Once()
+		suite.AIUsecase.On("GenerateBlogContent", mock.Anything, request.Prompt).Return(resp, nil).Once()
 		payload, _ := json.Marshal(request)
 		req, _ := http.NewRequest(http.MethodPost, "/generate_content", bytes.NewBuffer(payload))
 		c.Request = req

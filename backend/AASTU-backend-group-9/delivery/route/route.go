@@ -15,9 +15,7 @@ func Setup(env *config.Env, timeout time.Duration, db database.Database, gin *gi
 	// All Public APIs
 	NewSignupRouter(env, timeout, db, publicRouter)
 	NewLoginRouter(env, timeout, db, publicRouter)
-	RegisterBlogRoutes(env, timeout, db, publicRouter)
 	NewForgotPasswordRouter(env, db, publicRouter)
-	// NewRefreshTokenRouter(env, timeout, db, publicRouter)
 
 	protectedRouter := gin.Group("")
 	// Middleware to verify AccessToken
@@ -27,5 +25,5 @@ func Setup(env *config.Env, timeout time.Duration, db database.Database, gin *gi
 	NewProfileRouter(env, timeout, db, protectedRouter)
 	NewLogoutRouter(env, timeout, db, protectedRouter)
 	RegisterAIRoutes(env, timeout, protectedRouter, ai)
-
+	RegisterBlogRoutes(env, timeout, db, protectedRouter)
 }

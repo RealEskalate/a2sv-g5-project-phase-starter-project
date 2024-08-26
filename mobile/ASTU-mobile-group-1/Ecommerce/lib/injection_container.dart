@@ -66,6 +66,7 @@ Future<void> init() async {
 
   sl.registerLazySingleton<RemoteDataSource>(() => RemoteDataSourceImpl(
       client: sl(),
+      productLocalDataSource: sl(),
       accessToken:
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVlQGdtYWlsLmNvbSIsInN1YiI6IjY2Y2M0NTNlZGFiNDNjMWEyZTk4MDMwYSIsImlhdCI6MTcyNDY2MzE4MywiZXhwIjoxNzI1MDk1MTgzfQ.fsrJ3pS6R_N4jzAnOZBBX6RzD7PcZoxOxnPzzYWskY0'));
 

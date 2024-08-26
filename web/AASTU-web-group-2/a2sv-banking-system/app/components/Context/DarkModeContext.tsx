@@ -1,6 +1,6 @@
 // DarkModeContext.tsx
 "use client";
-// DarkModeContext.tsx
+
 import React, {
   createContext,
   useState,
@@ -10,7 +10,7 @@ import React, {
 } from "react";
 
 interface DarkModeContextType {
-  darkMode: boolean;
+  darkMode: boolean | undefined;
   toggleDarkMode: () => void;
 }
 
@@ -21,27 +21,30 @@ const DarkModeContext = createContext<DarkModeContextType | undefined>(
 export const DarkModeProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  let mode = true;
-  if (localStorage.getItem("darkMode")) {
-    if (localStorage.getItem("darkMode") == "true") {
-      mode = true;
-    } else {
-      mode = false;
-    }
-  }
-  const [darkMode, setDarkMode] = useState<boolean>(mode);
+  const [darkMode, setDarkMode] = useState<boolean | undefined>(undefined);
 
   useEffect(() => {
-    document.body.classList.toggle("dark", darkMode);
+    if (typeof window !== "undefined") {
+      const storedMode = localStorage.getItem("darkMode");
+      setDarkMode(storedMode === "true");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (darkMode !== undefined) {
+      document.body.classList.toggle("dark", darkMode);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("darkMode", String(darkMode));
+      }
+    }
   }, [darkMode]);
 
   const toggleDarkMode = () => {
-    localStorage.setItem("darkMode", String(!darkMode));
     setDarkMode((prevMode) => !prevMode);
   };
 
   return (
-    <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>
+    <DarkModeContext.Provider value={{ darkMode: darkMode ?? false, toggleDarkMode }}>
       {children}
     </DarkModeContext.Provider>
   );

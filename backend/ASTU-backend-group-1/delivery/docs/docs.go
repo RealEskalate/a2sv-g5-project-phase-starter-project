@@ -726,7 +726,6 @@ const docTemplate = `{
     },
     "definitions": {
         "domain.User": {
-            "description": "User model",
             "type": "object",
             "properties": {
                 "email": {

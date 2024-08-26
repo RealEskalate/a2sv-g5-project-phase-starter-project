@@ -25,13 +25,24 @@ func NewUserController(userUsecase domain.UserUsecase) *UserController {
 
 }
 
+// UserRegistration represents the required fields for user registration.
+// @Description User Registration model
+// @Model UserRegistration
+// @Property email string "Email of the user" required:true
+// @Property password string "Password of the user" required:true
+type UserRegistration struct {
+	Username string `json:"username,omitempty"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
 // Register godoc
 // @Summary      Register a new user
 // @Description  Creates a new user account
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        user body domain.User true "User info"
+// @Param        user body UserRegistration true "User info"
 // @Success      201 {object} map[string]string "message"
 // @Failure      406 {object} map[string]string "error"
 // @Failure      500 {object} map[string]string "error"

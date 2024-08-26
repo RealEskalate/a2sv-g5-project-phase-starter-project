@@ -1,6 +1,5 @@
 definitions:
   domain.User:
-    description: User model
     properties:
       email:
         type: string

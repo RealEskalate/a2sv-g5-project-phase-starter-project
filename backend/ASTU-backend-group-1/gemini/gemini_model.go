@@ -3,7 +3,9 @@ package gemini
 import (
 	"astu-backend-g1/infrastructure"
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/google/generative-ai-go/genai"
@@ -56,13 +58,23 @@ func (g *GeminiModel) CheckPromptContent(content string) error {
 	return nil
 }
 
-func (g *GeminiModel) Refine(content string) (string, error) {
-	prompt := fmt.Sprintf(g.prompts.Refine, content)
-	refinedContent, err := g.SendPrompt(prompt)
+func (g *GeminiModel) Refine(data infrastructure.Data) (infrastructure.Data, error) {
+	prompt := fmt.Sprintf(g.prompts.Refine, data.Content, data.Title, data.Tags)
+	jsonString, err := g.SendPrompt(prompt)
 	if err != nil {
-		return "", err
+		return infrastructure.Data{}, err
 	}
-	return refinedContent, nil
+	jsonString = strings.TrimPrefix(jsonString, "```json\n")
+	jsonString = strings.TrimSuffix(jsonString, "\n```")
+	var d infrastructure.Data
+	err = json.Unmarshal([]byte(jsonString), &d)
+	if err != nil {
+		log.Fatalf("Error decoding JSON: %v", err)
+	}
+	if err != nil {
+		return infrastructure.Data{}, err
+	}
+	return d, nil
 }
 
 func (g *GeminiModel) Validate(data infrastructure.Data) error {

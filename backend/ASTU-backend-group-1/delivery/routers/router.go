@@ -14,14 +14,16 @@ import (
 type MainRouter struct {
 	blogController controllers.BlogController
 	authController infrastructure.GeneralAuthorizationController
+	aiController   controllers.AIController
 	handler        controllers.UserController
 }
 
-func NewMainRouter(uc controllers.UserController, bc controllers.BlogController, authc infrastructure.GeneralAuthorizationController) *MainRouter {
+func NewMainRouter(uc controllers.UserController, bc controllers.BlogController, authc infrastructure.GeneralAuthorizationController, ac controllers.AIController) *MainRouter {
 	return &MainRouter{
 		blogController: bc,
 		authController: authc,
 		handler:        uc,
+		aiController:   ac,
 	}
 }
 

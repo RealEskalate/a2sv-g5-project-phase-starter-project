@@ -60,7 +60,7 @@ func (useCase *userUsecase) LoginUser(uname string, password string, email strin
 
 		return accesstoken, refreshToken, nil
 	} else {
-		return "", "", errors.New("Invalid login credentials")
+		return "", "", errors.New("invalid login credentials")
 	}
 }
 
@@ -80,7 +80,7 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 		return "", err
 	}
 	if user.IsActive == false {
-		return "", errors.New("Account not activated")
+		return "", errors.New("account not activated")
 	}
 	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	confirmationToken := make([]byte, 64)
@@ -114,11 +114,11 @@ func (useCase *userUsecase) ResetPassword(email string, token string, password s
 		return "", err
 	}
 	if !user.IsActive {
-		return "", errors.New("Account not activated")
+		return "", errors.New("account not activated")
 	}
 	if user.VerifyToken == token {
 		if user.ExpirationDate.Before(time.Now()) {
-			return "Token has expired", errors.New("Token expired")
+			return "Token has expired", errors.New("token expired")
 		}
 		user.Password, _ = infrastructure.PasswordHasher(password)
 		_, err := useCase.userRepository.Update(user.ID, domain.User{Password: user.Password, IsAdmin: user.IsAdmin})
@@ -179,17 +179,19 @@ func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	}
 	u.VerifyToken = string(confirmationToken)
 	nUser, err := useCase.userRepository.Create(u)
+	config, err := config.LoadConfig()
+	if err != nil {
+		return domain.User{}, err
+	}
 	if !nUser.IsAdmin {
-		config_domain, err := config.LoadConfig()
-		if err != nil {
-			return domain.User{}, err
-		}
 		// link := "`http://localhost:8000/`users/accountVerification/?email=" + u.Email + "&token=" + string(confirmationToken)
-		link := config_domain.Domain + "/users/accountVerification/?email=" + u.Email + "&token=" + string(confirmationToken)
+		link := config.Domain + "/users/accountVerification/?email=" + u.Email + "&token=" + string(confirmationToken)
 		err = infrastructure.SendEmail(u.Email, "Registration Confirmation", "This sign up Confirmation email to verify: ", link)
 		if err != nil {
 			return nUser, err
 		}
+	} else {
+		infrastructure.SendEmail(nUser.Email, "Welcome! You Are Our First Admin", "Congratulations! As the first user to join our site, you have been automatically granted admin privileges. Thank you for being an early supporter.", config.Domain)
 	}
 	if err != nil {
 		return domain.User{}, err
@@ -214,7 +216,7 @@ func (useCase *userUsecase) ChangePassword(email string, oldPassword string, new
 		return "", err
 	}
 	if !user.IsActive {
-		return "", errors.New("Account not activated")
+		return "", errors.New("account not activated")
 	}
 	oldPassword, _ = infrastructure.PasswordHasher(oldPassword)
 	if user.Password == oldPassword {
@@ -226,7 +228,7 @@ func (useCase *userUsecase) ChangePassword(email string, oldPassword string, new
 		}
 		return "Password change successful", nil
 	}
-	return "Invalid password", errors.New("Invalid password")
+	return "Invalid password", errors.New("invalid password")
 }
 func (useCase *userUsecase) Delete(userId string) error {
 	return useCase.userRepository.Delete(userId)
@@ -243,7 +245,12 @@ func (useCase *userUsecase) PromteUser(username string) (domain.User, error) {
 	if err != nil {
 		return user, fmt.Errorf("user not found")
 	}
-	return user, err
+	config, err := config.LoadConfig()
+	if err != nil {
+		return domain.User{}, err
+	}
+	infrastructure.SendEmail(user.Email, "Promotion To Admin", "This is a message for announcing you that you have been promoted to be an admin in our site", config.Domain)
+	return user, nil
 }
 func (useCase *userUsecase) DemoteUser(username string) (domain.User, error) {
 	user, err := useCase.GetByUsername(username)
@@ -257,6 +264,11 @@ func (useCase *userUsecase) DemoteUser(username string) (domain.User, error) {
 	if err != nil {
 		return user, fmt.Errorf("user not found")
 	}
+	config, err := config.LoadConfig()
+	if err != nil {
+		return domain.User{}, err
+	}
+	infrastructure.SendEmail(user.Email, "Demotion Notice", "We regret to inform you that you have been demoted from your admin position on our site. Thank you for your contributions and understanding.", config.Domain)
 	return user, err
 }
 func (useCase *userUsecase) PromteUserByEmail(email string) (domain.User, error) {
@@ -271,6 +283,7 @@ func (useCase *userUsecase) PromteUserByEmail(email string) (domain.User, error)
 	if err != nil {
 		return user, fmt.Errorf("user not found")
 	}
+
 	return user, err
 }
 func (useCase *userUsecase) DemoteUserByEmail(email string) (domain.User, error) {

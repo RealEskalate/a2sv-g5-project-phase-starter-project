@@ -123,11 +123,19 @@ func (bc *BlogController) GetBlogByID(c *gin.Context) {
 
 func (bc *BlogController) GetBlogs(c *gin.Context) {
 	var filterQuery blogDomain.FilterQuery
-	popularity, err := strconv.ParseFloat(c.Query("popularity"), 32)
+	popularityFrom, err := strconv.ParseFloat(c.Query("popularityFrom"), 32)
+	if err != nil {
+		popularityFrom = 0
+	}
+	popularityTo, err := strconv.ParseFloat(c.Query("popularityTo"), 32)
+	if err != nil {
+		popularityTo = 0
+	}
 	filterQuery.CreatedAtFrom = c.Query("created_at_from")
 	filterQuery.CreatedAtTo = c.Query("created_at_to")
 	filterQuery.Tags = c.QueryArray("tags")
-	filterQuery.Popularity = float32(popularity)
+	filterQuery.PopularityFrom = float32(popularityFrom)
+	filterQuery.PopularityTo = float32(popularityTo)
 
 	var pagination infrastructure.PaginationRequest
 	pagination.Limit, _ = strconv.Atoi(c.Query("limit"))

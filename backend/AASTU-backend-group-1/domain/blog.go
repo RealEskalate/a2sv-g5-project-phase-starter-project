@@ -37,6 +37,17 @@ type Comment struct {
 	Date    time.Time          `bson:"date" json:"date"`
 }
 
+type Tag struct {
+	ID  string `bson:"_id" json:"id"`
+}
+
+type TagRepository interface {
+	InsertTag(tag *Tag) error
+	GetTags() ([]*Tag, error)
+	DeleteTag(tag *Tag) error
+	CheckTag(tags []string) error
+}
+
 type BlogRepository interface {
 	InsertBlog(blog *Blog) (*Blog, error)
 	GetBlogByID(id string) (*Blog, error)
@@ -63,6 +74,7 @@ type BlogRepository interface {
 	DeleteComment(commentID string) error
 	GetCommentByID(commentID string) (*Comment, error)
 	GetTotalBlogs() (int, error)
+
 }
 
 type BlogUsecase interface {
@@ -81,4 +93,11 @@ type BlogUsecase interface {
 	RemoveLike(id string, claim *LoginClaims) error
 	GenerateAiContent(prompt string) (string, error)
 	DeleteComment(commentID string, claim *LoginClaims) error
+	DeleteTag(tag *Tag, claim *LoginClaims) error
+	InsertTag(tag *Tag, claim *LoginClaims) error
+	GetTags() ([]*Tag, error)
+	CheckTag(tags []string) error
+
+
+
 }

@@ -26,6 +26,7 @@ func (b *BlogController) InsertBlog(ctx *gin.Context) {
 		return
 	}
 
+	
 	if blog.Title == "" {
 		ctx.JSON(http.StatusBadRequest, domain.APIResponse{
 			Status:  http.StatusBadRequest,

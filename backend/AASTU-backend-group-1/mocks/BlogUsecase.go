@@ -16,6 +16,21 @@ type BlogUsecase struct {
 	mock.Mock
 }
 
+// DeleteTag implements domain.BlogUsecase.
+func (_m *BlogUsecase) DeleteTag(tag *domain.Tag) error {
+	panic("unimplemented")
+}
+
+// GetTags implements domain.BlogUsecase.
+func (_m *BlogUsecase) GetTags() ([]*domain.Tag, error) {
+	panic("unimplemented")
+}
+
+// InsertTag implements domain.BlogUsecase.
+func (_m *BlogUsecase) InsertTag(tag *domain.Tag) error {
+	panic("unimplemented")
+}
+
 // AddComment provides a mock function with given fields: comment
 func (_m *BlogUsecase) AddComment(comment *domain.Comment) error {
 	ret := _m.Called(comment)

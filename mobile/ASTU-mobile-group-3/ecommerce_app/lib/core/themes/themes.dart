@@ -6,7 +6,11 @@ class MyTheme {
   static const Color skeletonColor2 = Color.fromARGB(255, 231, 231, 231);
 
   ///
+  ///
   static const Color ecRed = Color.fromARGB(255, 255, 19, 19);
+
+  // static const Color skeletonColor1 = Color.fromARGB(255, 236, 236, 236);
+  // static const Color skeletonColor2 = Color.fromARGB(255, 231, 231, 231);
   static const Color ecInputGrey = Color.fromARGB(255, 243, 243, 243);
   static const Color ecTextGrey = Color.fromARGB(255, 170, 170, 170);
   static const Color ecGrey = Color.fromARGB(255, 170, 170, 170);

@@ -14,6 +14,17 @@ import 'features/auth/domain/usecases/log_out_usecase.dart';
 import 'features/auth/domain/usecases/sign_up_usecase.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/cubit/user_input_validation_cubit.dart';
+import 'features/chat/data/data_resources/remote_chat_data_source.dart';
+import 'features/chat/data/data_resources/socket_io_sesrvice.dart';
+import 'features/chat/data/repositories/chat_repository_impl.dart';
+import 'features/chat/domain/repository/chat_repository.dart';
+import 'features/chat/domain/usecases/AcknowledgeMessageDeliveryUseCase.dart';
+import 'features/chat/domain/usecases/CreateChatRoomUseCase.dart';
+import 'features/chat/domain/usecases/OnMessageReceivedUseCase.dart';
+import 'features/chat/domain/usecases/RetrieveChatRoomsUseCase.dart';
+import 'features/chat/domain/usecases/RetrieveMessagesUseCase.dart';
+import 'features/chat/domain/usecases/SendMessageUseCase.dart';
+import 'features/chat/presentation/bloc/chat_bloc.dart';
 import 'features/product/data/data_resources/local_product_data_source.dart';
 import 'features/product/data/data_resources/remote_product_data_source.dart';
 import 'features/product/data/repositories/product_repository_impl.dart';
@@ -28,10 +39,18 @@ import 'features/product/presentation/bloc/product_bloc.dart';
 
 final locator = GetIt.instance;
 
+void initSocketIOService() {
+  locator.registerLazySingleton<SocketIOService>(
+    () => SocketIOServiceImpl(authLocalDataSource: locator()),
+  );
+}
+
 Future<void> init() async {
   //! External Instances
 
   locator.registerLazySingleton(() => http.Client());
+
+  initSocketIOService();
 
   //! Core instances
   locator.registerLazySingleton(() => InputDataValidator());
@@ -87,6 +106,31 @@ Future<void> init() async {
   locator.registerFactory(() => InputValidationCubit(locator()));
   locator.registerFactory(
       () => UserInputValidationCubit(inputDataValidator: locator()));
+
+  // locator.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(
+  //     remoteAuthDataSource: locator(), authLocalDataSource: locator()));
+
+  // chat feature
+  locator.registerLazySingleton(() => OnMessageReceivedUseCase(locator()));
+  locator.registerLazySingleton(
+      () => AcknowledgeMessageDeliveryUseCase(locator()));
+  locator.registerLazySingleton(() => CreateChatRoomUseCase(locator()));
+  locator.registerLazySingleton(() => RetrieveChatRoomsUseCase(locator()));
+  locator.registerLazySingleton(() => RetrieveMessagesUseCase(locator()));
+  locator.registerLazySingleton(() => SendMessageUseCase(locator()));
+
+  locator.registerFactory(() => ChatBloc(locator(), locator(), locator(),
+      locator(), locator(), locator(), locator()));
+
+  locator.registerLazySingleton<ChatRemoteDataSource>(() =>
+      ChatRemoteDataSourceImpl(
+          httpClient: locator(), authLocalDataSource: locator()));
+
+  locator.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl(
+      chatRemoteDataSource: locator(), socketIOService: locator()));
+
+  //
+
   //! Shared pref
 
   final sharedPreferences = await SharedPreferences.getInstance();

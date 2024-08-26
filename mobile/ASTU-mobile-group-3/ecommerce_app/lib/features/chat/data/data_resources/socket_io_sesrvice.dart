@@ -1,47 +1,75 @@
 import 'dart:async';
-import 'package:socket_io/socket_io.dart';
+import 'dart:developer';
+
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+import '../../../../core/constants/constants.dart';
+import '../../../auth/data/data_source/auth_local_data_source.dart';
 import '../../domain/entity/message.dart';
 
 abstract class SocketIOService {
-  Future<void> emitSendMessage(String chatId, MessageEntity message);
-  Future<void> emitMessageDelivered(String messageId);
-  Stream<MessageEntity> onMessageReceived();
+  IO.Socket get socket;
+  void connect();
+  void disconnect();
+  Future<void> emitSendMessage(String chatId, String content, String type);
 }
 
 class SocketIOServiceImpl implements SocketIOService {
-  final Socket socket;
-  final _messageStreamController = StreamController<MessageEntity>.broadcast();
+  late IO.Socket socket;
+  final AuthLocalDataSource authLocalDataSource;
 
-  SocketIOServiceImpl({required this.socket}) {
-    _setupListeners();
+  final StreamController<MessageEntity> _messageStreamController =
+      StreamController<MessageEntity>.broadcast();
+
+  SocketIOServiceImpl({required this.authLocalDataSource}) {
+    socket = IO.io(AppData.chatserver, <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': false,
+      'extraHeaders': {
+        'Authorization': 'Bearer ${authLocalDataSource.getToken()}'
+      }
+    });
   }
 
-  void _setupListeners() {
+  @override
+  void connect() {
+    socket.connect();
+  }
+
+  // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRhZ2ltQGdtYWlsLmNvbSIsInN1YiI6IjY2Y2EyODBhZjk4ZDMyYzY4ZWFkY2UxNSIsImlhdCI6MTcyNDUyNDU4NCwiZXhwIjoxNzI0OTU2NTg0fQ.P435ttt-_a53CUjJ7ZFeoaDvm-MNmcZapRBUkkqY7eM
+
+  @override
+  Future<void> emitSendMessage(
+      String chatId, String content, String type) async {
+    final messagePayload = {'chatId': chatId, 'content': content, 'type': type};
+
+    socket.emit('message:send', messagePayload);
+
+    socket.on('message:delivered', (data) {
+      log('${data} message deliverd');
+    });
+  }
+
+  void _setupMessageListener() {
     socket.on('message:received', (data) {
-      final message = MessageEntity.fromJson(data);
+      final message = _parseMessage(data);
       _messageStreamController.add(message);
     });
   }
 
-  @override
-  Future<void> emitSendMessage(String chatId, MessageEntity message) async {
-    socket.emit('send:message', {
-      'chatId': chatId,
-      'message': {},
-    });
+  MessageEntity _parseMessage(dynamic data) {
+    return MessageEntity(
+      messageId: data['messageId'],
+      sender: data['sender'],
+      chat: data['chat'],
+      content: data['content'],
+    );
   }
 
-  @override
-  Future<void> emitMessageDelivered(String messageId) async {
-    socket.emit('message:delivered', {'messageId': messageId});
-  }
+  Stream<MessageEntity> get messageStream => _messageStreamController.stream;
 
   @override
-  Stream<MessageEntity> onMessageReceived() {
-    return _messageStreamController.stream;
-  }
-
-  void dispose() {
-    _messageStreamController.close();
+  void disconnect() {
+    socket.disconnect();
   }
 }

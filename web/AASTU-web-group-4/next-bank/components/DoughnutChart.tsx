@@ -111,14 +111,14 @@ export default function Component() {
                         <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          className="dark:text-white fill-foreground text-3xl font-bold"
+                          className="dark:text-yellow-500 fill-foreground text-3xl font-bold"
                         >
                           {desktopData[activeIndex].desktop.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
-                          className="dark:text-white fill-muted-foreground"
+                          className="dark:text-yellow-500 fill-muted-foreground"
                         >
                           expense
                         </tspan>

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import '../../../authentication/domain/entity/user.dart';
 import '../../../authentication/presentation/bloc/blocs.dart';
 import '../../../authentication/presentation/bloc/events.dart';
 import '../../../authentication/presentation/bloc/states.dart';
 import '../../../authentication/presentation/pages/sign_in.dart';
-
-// import '../../../chat/data/data_source/remote_data_source.dart';
 import '../bloc/blocs.dart';
 import '../bloc/events.dart';
 import '../bloc/states.dart';
@@ -18,11 +16,12 @@ import 'search_page.dart';
 
 class HomePage extends StatefulWidget {
   final User user;
-  const HomePage({super.key, required this.user});
+  HomePage({super.key, required this.user});
+  String formattedDate = DateFormat('MMMM dd, yyyy').format(DateTime.now());
+
 
   Future<void> _refreshProducts(BuildContext context) async {
-    print('refreshing');
-    print(user);
+    print('Refreshing products...');
     BlocProvider.of<ProductBloc>(context).add(GetAllProductEvent());
   }
 
@@ -31,7 +30,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Widget bigTitle(title, button) {
+  Widget bigTitle(String title) {
     return Container(
       margin: const EdgeInsets.all(10),
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
@@ -41,23 +40,33 @@ class _HomePageState extends State<HomePage> {
           Text(
             title,
             style: const TextStyle(
-                color: Colors.black, fontWeight: FontWeight.w500, fontSize: 24),
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+              fontSize: 24,
+            ),
           ),
           Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                  border: Border.all(
-                      width: 1, style: BorderStyle.solid, color: Colors.grey),
-                  borderRadius: const BorderRadius.all(Radius.circular(11))),
-              child: IconButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (BuildContext context) {
-                      return const SearchPage();
-                    }));
-                  },
-                  icon: const Icon(Icons.search, color: Colors.grey)))
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 1,
+                style: BorderStyle.solid,
+                color: Colors.grey,
+              ),
+              borderRadius: const BorderRadius.all(Radius.circular(11)),
+            ),
+            child: IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (BuildContext context) {
+                    return const SearchPage();
+                  }),
+                );
+              },
+              icon: const Icon(Icons.search, color: Colors.grey),
+            ),
+          ),
         ],
       ),
     );
@@ -82,23 +91,27 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  "July 14, 2023",
+
+                  'formattedDate',
                   style: TextStyle(
-                      color: Colors.grey, fontWeight: FontWeight.w500),
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 Row(
                   children: [
-                    Text("Hello,"),
+                    const Text("Hello,"),
                     Text(
                       widget.user.username,
-                      style: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.w500),
-                    )
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ],
-                )
+                ),
               ],
             ),
           ),
@@ -106,69 +119,53 @@ class _HomePageState extends State<HomePage> {
             width: 45,
             height: 45,
             decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(11)),
-                border: Border.all(
-                    width: 1, color: const Color.fromARGB(255, 205, 203, 203))),
-            child: Stack(
-              children: [
-                IconButton(
-                    onPressed: () {
-                      context.read<UserBloc>().add(LogOutEvent());
-                    },
-                    icon: const Icon(
-                      Icons.logout_outlined,
-                      color: Colors.grey,
-                      size: 25,
-                    )),
-                // Positioned(
-                //     top: 10,
-                //     right: 10,
-                //     child: Container(
-                //       width: 12,
-                //       height: 12,
-                //       decoration: const BoxDecoration(
-                //           color: Colors.blue, shape: BoxShape.circle),
-                //     ))
-              ],
+              borderRadius: const BorderRadius.all(Radius.circular(11)),
+              border: Border.all(
+                width: 1,
+                color: const Color.fromARGB(255, 205, 203, 203),
+              ),
             ),
-          )
+            child: IconButton(
+              onPressed: () {
+                context.read<UserBloc>().add(LogOutEvent());
+              },
+              icon: const Icon(
+                Icons.logout_outlined,
+                color: Colors.grey,
+                size: 25,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  // void chats() async {
-  //   var chats = await ChatRemoteDataSourceImpl(client: http.Client()).getMyChats();
-  //   print(chats[0]);
-  // }
-
   @override
   Widget build(BuildContext context) {
-    print(widget.user.username);
-    // chats();
     return BlocConsumer<UserBloc, UserState>(
       listener: (context, state) {
-        if (state is LogOutLoadingState){
-           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Logging out"),
-            ));
-        }
-        else if (state is LoggedOutState){
+        if (state is LogOutLoadingState) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("Logged out Successfully"),
-            ));
-             Navigator.push(
+              content: Text("Logging out..."),
+            ),
+          );
+        } else if (state is LoggedOutState) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Logged out successfully"),
+            ),
+          );
+          Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) { 
-              
-              return SignIn();}),
+            MaterialPageRoute(builder: (context) {
+              return SignIn();
+            }),
           );
         }
       },
       builder: (context, state) {
-        context.read<ProductBloc>().add(GetAllProductEvent());
         return Scaffold(
           body: Container(
             padding: const EdgeInsets.all(10),
@@ -176,40 +173,33 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: [
                 header(),
-                bigTitle("Available Products", Icons.search),
-                
-          Container(
-            child: Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () => widget._refreshProducts(context),
-                        child: BlocBuilder<ProductBloc, ProductState>(
-                          builder: (context, state) {
-                            if (state is LoadingState) {
-                              return const CircularProgressIndicator();
-                            } else if (state is LoadedState) {
-                              // print(state.products);
-                              if (state.products.isEmpty) {
-                                return const Text('No products available');
-                              }
-                              return ListView.builder(
-                                itemCount: state.products.length,
-                                itemBuilder: (context, index) {
-                                  return ProductCard(
-                                      product: state.products[index]);
-                                },
-                              );
-                            } else if (state is ErrorState) {
-                              print(state.message);
-                              return const Text('Failed to fetch products');
-                            } else {
-                              return Container();
-                            }
-                          },
-                        ),
-                      ),
+                bigTitle("Available Products"),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () => widget._refreshProducts(context),
+                    child: BlocBuilder<ProductBloc, ProductState>(
+                      builder: (context, state) {
+                        if (state is LoadingState) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if (state is LoadedState) {
+                          if (state.products.isEmpty) {
+                            return const Center(child: Text('No products available'));
+                          }
+                          return ListView.builder(
+                            itemCount: state.products.length,
+                            itemBuilder: (context, index) {
+                              return ProductCard(product: state.products[index]);
+                            },
+                          );
+                        } else if (state is ErrorState) {
+                          return Center(child: Text('Failed to fetch products: ${state.message}'));
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      },
                     ),
-          ),
-                
+                  ),
+                ),
               ],
             ),
           ),
@@ -220,10 +210,11 @@ class _HomePageState extends State<HomePage> {
               shape: const CircleBorder(),
               backgroundColor: const Color(0xFF3F51F3),
               onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (BuildContext context) {
-                  return  AddProduct(user: widget.user,);
-                }));
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (BuildContext context) {
+                    return AddProduct(user: widget.user);
+                  }),
+                );
               },
               child: const Icon(
                 Icons.add,

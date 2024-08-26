@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+
 class CustomTextField extends StatefulWidget {
   final String name;
   final String placeHolder;
   final TextEditingController controller;
   final String hintText;
-  final bool ispassword;
-  final String? Function(String value)? validator; // Make the validator nullable
+  final bool isPassword;
+  final Widget? suffixIcon;
+  final String? Function(String? value)? validator; // Make the validator nullable
 
   const CustomTextField({
     Key? key,
@@ -14,7 +16,8 @@ class CustomTextField extends StatefulWidget {
     required this.controller,
     required this.hintText,
     required this.validator,
-    this.ispassword = false,
+    this.isPassword = false,
+    this.suffixIcon,
   }) : super(key: key);
 
   @override
@@ -22,6 +25,8 @@ class CustomTextField extends StatefulWidget {
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
+  bool _obscureText = true;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -40,9 +45,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
           ),
           TextFormField(
-            obscureText: widget.ispassword,
+            obscureText: widget.isPassword ? _obscureText : false,
             controller: widget.controller,
-            validator: (value) => widget.validator!(value!), // Wrap the existing validator function
+            validator: widget.validator,
             decoration: InputDecoration(
               hintText: widget.hintText,
               hintStyle: const TextStyle(
@@ -51,7 +56,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 fontWeight: FontWeight.w400,
                 fontSize: 15,
               ),
-              fillColor: Color(0xFFFAFAFA),
+              fillColor: const Color(0xFFFAFAFA),
               filled: true,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(5),
@@ -69,6 +74,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   width: 2,
                 ),
               ),
+              suffixIcon: widget.isPassword
+                  ? IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                    )
+                  : widget.suffixIcon,
             ),
           ),
         ],

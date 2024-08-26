@@ -1,41 +1,35 @@
 import 'package:flutter/material.dart';
 
 class Logo extends StatelessWidget {
-  final double width;
-  final double height;
-  final double fontSize;
-  const Logo({super.key, this.width = 150, this.height = 84, this.fontSize = 65});
+  final double? width;
+  final double? height;
+  final double? fontSize;
+  
+  const Logo({super.key, this.width, this.height, this.fontSize});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-                  child: Container(
-                   decoration: BoxDecoration(
-                      border: Border.all(color: Color.fromARGB(255, 161, 167, 218), width: 0.9),
-                      boxShadow: const [BoxShadow(
-                        color: Colors.grey,
-                        blurRadius: 3,
-                        offset: Offset(0.1, 0.3)
-                      )],
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                    width: width,
-                    height: height,
-                    child:   Align(
-                      alignment: Alignment.center,
-                       
-                        child: Text(
-                      "ECOM",
-                      style: TextStyle(
-                        color: const Color(0xFF3F51F3),
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.w900,
-                        fontFamily: 'CaveatBrush',
-                        
-                      ),
-                    )),
-                  ),
-                );
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white, // Background color
+        border: Border.all(
+            color: const Color(0xFF3F51F3), width: 1.0), // Border
+        borderRadius: BorderRadius.circular(12.0),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFF3F51F3).withOpacity(0.3),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(vertical : 10.0, horizontal: 15.0 ),
+      child: Image.asset(
+        'assets/images/Ecom.png',
+        width: width,   // Set the width of the image
+        height: height, // Set the height of the image
+        fit: BoxFit.contain, // Ensure the image fits within the given dimensions
+      ),
+    );
   }
 }

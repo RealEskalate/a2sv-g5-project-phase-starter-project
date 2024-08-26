@@ -62,7 +62,6 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return BlocConsumer<UserBloc, UserState>(
       listener: (context, state) {
-        print(state);
         if (state is LoginLoadingState) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -73,7 +72,7 @@ class _SignInState extends State<SignIn> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: Colors.red,
+              backgroundColor: const Color.fromARGB(255, 248, 92, 81),
             ),
           );
         } else if (state is UserLoggedState) {
@@ -86,7 +85,6 @@ class _SignInState extends State<SignIn> {
               backgroundColor: Colors.green,
             ),
           );
-          print("state in sign in ${state.user}");
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => HomePage(user: state.user)),
@@ -95,91 +93,55 @@ class _SignInState extends State<SignIn> {
       },
       builder: (context, state) {
         return Scaffold(
-            backgroundColor: Colors.white,
-            body: SingleChildScrollView(
+          backgroundColor: Colors.white,
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 100,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 100),
+                  const Logo(width: 120, height: 50, fontSize: 30),
+                  const BigTitle(text: "Sign into your account"),
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        CustomTextField(
+                          name: "Email",
+                          controller: emailController,
+                          hintText: "ex: jon.smith@email.com",
+                          isPassword: false,
+                          validator: validateEmail,
+                        ),
+                        CustomTextField(
+                          name: "Password",
+                          controller: passwordController,
+                          hintText: "********",
+                          isPassword: true,
+                          validator: validatePassword,
+                        ),
+                        CustomButton(
+                          name: 'SIGN IN',
+                          login: true,
+                          formKey: _formKey,
+                          controllers: [emailController, passwordController],
+                          onPressed: () => _submitForm(context),
+                        ),
+                        const SizedBox(height: 40),
+                        LinkedText(
+                          description: "Don’t have an account?",
+                          linkedText: " SIGN UP",
+                          navigateTo: const SignUp(),
+                        ),
+                      ],
                     ),
-                    const Logo(width: 144, height: 50, fontSize: 48),
-                    const BigTitle(text: "Sign into your account"),
-                    SingleChildScrollView(
-                      // child: Column(
-                      //   children: [
-                      //     CustomTextField(
-                      //       validator: validateEmail,
-                      //         name: "Email",
-                      //         controller: emailController,
-                      //         hintText: "ex: jon.smith@email.com"),
-                      //     CustomTextField(
-                      //       validator: (value) {
-                      //       },
-                      //         name: "Password",
-                      //         controller: passwordController,
-                      //         hintText: "********"),
-                      //     CustomButton(
-
-                      //       name: 'SIGN IN',
-                      //       controllers: [emailController, passwordController],
-                      //       login: true,
-                      //     ),
-                      //     const SizedBox(height: 40),
-                      //     const LinkedText(
-                      //         description: "Don’t have an account?",
-                      //         linkedText: " SIGN UP",
-                      //         navigateTo: SignUp()),
-                      //   ],
-                      // ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Logo(width: 144, height: 40, fontSize: 30),
-                          const BigTitle(text: "Sign into your account"),
-                          Form(
-                            key: _formKey,
-                            child: Column(
-                              children: [
-                                CustomTextField(
-                                  name: "Email",
-                                  controller: emailController,
-                                  hintText: "ex: jon.smith@email.com",
-                                  validator: validateEmail,
-                                  ispassword: false,
-                                ),
-                                CustomTextField(
-                                  name: "Password",
-                                  controller: passwordController,
-                                  hintText: "********",
-                                  validator: validatePassword,
-                                  ispassword: true,
-                                ),
-                                CustomButton(
-                                  name: 'SIGN IN',
-                                  controllers: [
-                                    emailController,
-                                    passwordController
-                                  ],
-                                  login: true,
-                                  onPressed: () {
-                                    _submitForm(context);
-                                  },
-                                ),
-                                const SizedBox(height: 40),
-                                LinkedText(
-                                  description: "Don’t have an account?",
-                                  linkedText: " SIGN UP",
-                                  navigateTo: SignUp(),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ]),
-            ));
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
       },
     );
   }

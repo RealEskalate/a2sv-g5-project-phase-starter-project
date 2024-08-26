@@ -31,8 +31,8 @@ class GetUserLoading extends AuthState {
   GetUserLoading();
 }
 class GetUserSuccess extends AuthState {
-  final String name;
-  GetUserSuccess({required this.name});
+  final User user;
+  GetUserSuccess({required this.user});
 }
 class AuthFailure extends AuthState {
   AuthFailure();

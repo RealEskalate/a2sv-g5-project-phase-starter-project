@@ -15,6 +15,8 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+                                    context.read<AuthBloc>().add(GetUserEvent());
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
@@ -56,14 +58,15 @@ class Home extends StatelessWidget {
                             listener: (context, state) {
                               // print(state);
 
-                              if (state is LoginSuccess) {
-                                context.read<AuthBloc>().add(GetUserEvent());
-                              }
+                              
+                                // context.read<AuthBloc>().add(GetUserEvent());
+                              
                             },
                             builder: (BuildContext context, AuthState state) {
+                              print(state);
                               if (state is GetUserSuccess) {
                                 return Text(
-                                  state.name,
+                                  state. user.name,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15,
@@ -184,20 +187,37 @@ class Home extends StatelessWidget {
             ],
           ),
         ),
-        floatingActionButton: Builder(builder: (context) {
-          return FloatingActionButton(
-            backgroundColor: Colors.blue,
-            onPressed: () {
-              Navigator.pushNamed(context, '/insertitem');
-            },
-            child: Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 36,
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton(
+              heroTag: "btn1",
+              backgroundColor: Colors.blue,
+              onPressed: () {
+          Navigator.pushNamed(context, '/insertitem');
+              },
+              child: Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 36,
+              ),
+              shape: CircleBorder(),
             ),
-            shape: CircleBorder(),
-          );
-        }
+            SizedBox(height: 10),
+            FloatingActionButton(
+              heroTag: "btn2",
+              backgroundColor: Colors.blue,
+              onPressed: () {
+          Navigator.pushNamed(context, '/chats');
+              },
+              child: Icon(
+          Icons.message,
+          color: Colors.white,
+          size: 36,
+              ),
+              shape: CircleBorder(),
+            ),
+          ],
         ),
       ),
     );

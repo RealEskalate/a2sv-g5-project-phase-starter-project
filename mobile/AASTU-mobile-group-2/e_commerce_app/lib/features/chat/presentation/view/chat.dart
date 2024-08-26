@@ -1,5 +1,7 @@
 import 'package:e_commerce_app/features/auth/presentation/view/widgets.dart';
+import 'package:e_commerce_app/features/chat/domain/entities/chat_entity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,8 +10,10 @@ import 'dart:io';
 import 'package:chat_bubbles/bubbles/bubble_normal_audio.dart';
 import 'package:bubble/bubble.dart';
 
+import '../bloc/messages/message_bloc.dart';
+
 class Chat extends StatefulWidget {
-  const Chat({super.key});
+  Chat({super.key});
 
   @override
   _ChatState createState() => _ChatState();
@@ -24,7 +28,7 @@ class _ChatState extends State<Chat> {
       isUser: true,
       name: 'User',
       date: '8/23/2024',
-      profileImage: File('assets/smile.pngg'),
+      profileImage: File('assets/smile.png'),
     ),
     Message(
       type: 'image',
@@ -133,7 +137,6 @@ class _ChatState extends State<Chat> {
     // print(getFileDuration(_filePath!));
     setState(() {
       _isRecording = false;
-    
     });
   }
 
@@ -169,19 +172,27 @@ class _ChatState extends State<Chat> {
     super.dispose();
   }
 
-  void _sendMessage() {
-    if (_controller.text.isNotEmpty) {
-      setState(() {
-        messages.add(Message(
-            type: "type",
-            content: "content",
-            isUser: true,
-            name: "name",
-            date: "date"));
-        _controller.clear();
-      });
-    }
-  }
+  // void _sendMessage() {
+  //   if (_controller.text.isNotEmpty) {
+  //     setState(() {
+  //       messages.add(Message(
+  //           type: "type",
+  //           content: "content",
+  //           isUser: true,
+  //           name: "name",
+  //           date: "date"));
+  //       _controller.clear();
+  //     });
+
+  //     context.read<MessageBloc>().add(
+  //           MessageSent(
+  //             chat,
+  //             _messageController.text,
+  //             'text',
+  //           ),
+  //         );
+  //   }
+  // }
 
   void _sendImage() {
     // Implement image sending functionality
@@ -193,17 +204,26 @@ class _ChatState extends State<Chat> {
 
   @override
   Widget build(BuildContext context) {
+    final route = ModalRoute.of(context);
+
+    if (route == null || route.settings.arguments == null) {
+      // debugPrint("bbb");
+      return Scaffold(
+        body: Center(
+          child: Text("No chat Availbale"),
+        ),
+      );
+    }
+
+    final chatId = route.settings.arguments as String;
+
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
-
+    // context.read<MessageBloc>().add(MessageSocketConnectionRequested(chat));
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.arrow_back),
-            ),
             const SizedBox(width: 8),
             Container(
               width: screenWidth * 0.15,
@@ -278,29 +298,31 @@ class _ChatState extends State<Chat> {
           // ),
 
           Expanded(
-            child: ListView.builder(
-              itemCount: messages.length,
-              itemBuilder: (context, index) {
-                final message = messages[index];
-                return Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                  child: Row(
-                    mainAxisAlignment: message.isUser
-                        ? MainAxisAlignment.start
-                        : MainAxisAlignment.end,
-                    children: [
-                      if (message.isUser)
-                        _buildProfileAvatar(message.profileImage),
-                      SizedBox(width: 10),
-                      Expanded(child: _buildMessageContent(message)),
-                      if (!message.isUser)
-                        _buildProfileAvatar(message.profileImage),
-                    ],
-                  ),
-                );
-              },
-            ),
+            child:  ListView.builder(
+                  itemCount: messages.length,
+                  itemBuilder: (context, index) {
+                    final message = messages[index];
+                    return Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: message.isUser
+                            ? MainAxisAlignment.start
+                            : MainAxisAlignment.end,
+                        children: [
+                          if (message.isUser)
+                            _buildProfileAvatar(message.profileImage),
+                          SizedBox(width: 10),
+                          Expanded(child: _buildMessageContent(message)),
+                          if (!message.isUser)
+                            _buildProfileAvatar(message.profileImage),
+                        ],
+                      ),
+                    );
+                  },
+                )
+              
+            
           ),
 
           ///mjd
@@ -335,7 +357,28 @@ class _ChatState extends State<Chat> {
                     controller: _controller,
                     hint: 'Type a message',
                     iconButton: IconButton(
-                        icon: Icon(Icons.send), onPressed: _sendMessage),
+                        icon: Icon(Icons.send),
+                        onPressed: () {
+                          if (_controller.text.isNotEmpty) {
+                            setState(() {
+                              messages.add(Message(
+                                  type: "type",
+                                  content: "content",
+                                  isUser: true,
+                                  name: "name",
+                                  date: "date"));
+                              _controller.clear();
+                            });
+
+                            context.read<MessageBloc>().add(
+                                  MessageSent(
+                                    chatId,
+                                    _controller.text,
+                                    'text',
+                                  ),
+                                );
+                          }
+                        }),
                   ),
                 ),
                 IconButton(
@@ -368,7 +411,6 @@ class _ChatState extends State<Chat> {
   }
 
   Widget _buildMessageContent(Message message) {
-    
     // duration = await FlutterSoundHelper().duration(File(message.content));
     return Column(
       crossAxisAlignment:
@@ -390,7 +432,6 @@ class _ChatState extends State<Chat> {
   }
 
   Widget _buildMessageBubble(Message message) {
-     
     switch (message.type) {
       case 'text':
         return Bubble(
@@ -418,7 +459,6 @@ class _ChatState extends State<Chat> {
             _isPlaying ? _stopAudio() : _playAudio();
           },
           sent: message.isUser,
-          
         );
       default:
         return SizedBox.shrink();
@@ -474,3 +514,115 @@ class AudioUtils {
     }
   }
 }
+// import 'package:e_commerce_app/features/chat/domain/entities/chat_entity.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+
+// import '../bloc/messages/message_bloc.dart';
+
+
+
+// class Chat extends StatelessWidget {
+//   final TextEditingController _messageController = TextEditingController();
+  
+//   Chat({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+
+//         final route = ModalRoute.of(context);
+
+//     if (route == null || route.settings.arguments == null) {
+//       // debugPrint("bbb");
+//       return Scaffold(
+//         body: Center(
+//           child: Text("No chat Availbale"),
+//         ),
+//       );
+//     }
+
+//     final chat = route.settings.arguments as ChatEntity;
+//     context.read<MessageBloc>().add(MessageSocketConnectionRequested(chat));
+
+//     return BlocListener<MessageBloc, MessageState>(
+//       listener: (context, state) {
+//         if (state is MessageLoadFailure) {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//             SnackBar(
+//               content: Text('Loading failed'),
+//             ),
+//             );
+//         } else if (state is MessageSentSuccess) {
+//           _messageController.clear();
+//         } else if (state is MessageSentFailure) {
+//             ScaffoldMessenger.of(context).showSnackBar(
+//             SnackBar(
+//               content: Text('sending failed'),
+//             ),
+//             );
+//         }
+//       },
+//       child: Scaffold(
+//         appBar: AppBar(
+//           title: Text('Inbox ${chat.sender.name} <> ${chat.reciever.name}'),
+//         ),
+//         body: SafeArea(
+//           child: Padding(
+//             padding: const EdgeInsets.fromLTRB(18, 18, 18, 0),
+//             child: Column(
+//               children: [
+//                 // Message List
+//                 Expanded(
+//                   child: BlocBuilder<MessageBloc, MessageState>(
+//                     builder: (context, state) {
+//                       return RefreshIndicator(
+//                         onRefresh: () async {
+//                           context
+//                               .read<MessageBloc>()
+//                               .add(MessageSocketConnectionRequested(chat));
+//                         },
+//                         child: ListView.builder(
+//                           itemCount: state.messages.length,
+//                           itemBuilder: (context, index) {
+//                             final message = state.messages[index];
+
+//                             return Text(
+//                                message.message,
+//                             );
+//                           },
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+
+//                 // Message Input
+//                 TextField(
+//                   controller: _messageController,
+//                   decoration: InputDecoration(
+//                     hintText: 'Type a message',
+//                     suffixIcon: IconButton(
+//                       onPressed: () {
+//                         context.read<MessageBloc>().add(
+//                               MessageSent(
+//                                 chat,
+//                                 _messageController.text,
+//                                 'text',
+//                               ),
+//                             );
+//                       },
+//                       icon: const Icon(
+//                         Icons.send,
+//                         color: Colors.indigoAccent,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

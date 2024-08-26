@@ -7,7 +7,8 @@ import '../entities/chat_entity.dart';
 abstract class ChatRepository {
   Future<Either<Failure,List<ChatEntity>>> getAllChats();
   Future<Either<Failure,ChatEntity>> createChatById(String sellerId);
-  Future<Either<Failure,ChatEntity>> getChatById(String chatId);
+
+  Future<Either<Failure,List<MessageEntity>>> getMessagesById(String chatId);
   Future<Either<Failure,bool>> deleteChatById(String chatId);
-  Future<Either<Failure,MessageEntity>> sendMessage(String chatId, String message, String content);
+  Future<Either<Failure,bool>> sendMessage(String chatId, String message, String content);
 }

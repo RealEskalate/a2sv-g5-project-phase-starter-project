@@ -1,3 +1,4 @@
+import 'package:e_commerce_app/features/auth/domain/entities/user.dart';
 import 'package:e_commerce_app/features/product/domain/entities/product.dart';
 import 'package:e_commerce_app/features/product/presentation/bloc/home/home_bloc.dart';
 import 'package:e_commerce_app/features/product/presentation/bloc/insert_product/insert_product_bloc.dart';
@@ -47,7 +48,8 @@ class _AddItemState extends State<AddItem> {
         imageUrl: selectedImage!,
         name: name_controller.text,
         description: description_controller.text,
-        price: double.parse(price_controller.text),
+        price: double.parse(price_controller.text), seller: User(email: "", id: "", name: ""),
+        
       );
 
       context
@@ -67,6 +69,8 @@ class _AddItemState extends State<AddItem> {
         name: name_controller.text,
         description: description_controller.text,
         price: double.parse(price_controller.text),
+        seller: User(email: "", id: "", name: ""),
+        
       );
       context
           .read<UpdateProductBloc>()

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:e_commerce_app/core/constants/constants.dart';
+import 'package:e_commerce_app/core/services/auth_services.dart';
 import 'package:e_commerce_app/features/auth/data/data_sources/local_data_sources.dart';
 import 'package:http/http.dart' as http;
 
@@ -49,20 +50,21 @@ class AuthRemoteDataSources {
       throw Exception('Failed to register');
     }
   }
-  Future<String> getUser() async {
-    final accessToken = await AuthLocalDataSource.getToken();
-    final response = await client.post(
+  Future<UserModel> getUser() async {
+    final accessToken = await AuthServices.getToken();
+    print(accessToken);
+    final response = await client.get(
       Uri.parse(Urls.currentUserUrl,),
      headers: {
       'Authorization': 'Bearer $accessToken',
      } 
     );
-    print(response.body);
-    print(response.statusCode);
+    // print(response.body);
+    // print(response.statusCode);
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       print(response.body);
-      return json.decode(response.body)['data']["name"];
+      return UserModel.fromJson(json.decode(response.body)['data']);
     } else {
       throw Exception('Failed to get user');
     }

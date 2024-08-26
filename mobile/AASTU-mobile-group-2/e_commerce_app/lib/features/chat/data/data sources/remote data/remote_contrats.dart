@@ -4,7 +4,7 @@ import '../../models/chat_model.dart';
 
 abstract class ChatRemoteDataSource {
   Future<List<ChatModel>> getAllChat();
-  Stream<MessageModel> getChatById(String chatId);
+  Future<List<MessageModel>> getMessagesById(String chatId);
   Future<ChatModel> createChatById(String sellerId);
   Future<bool> deleteChatById(String chatId);
   Future<bool> sendMessage(String chatId, String message, String content);

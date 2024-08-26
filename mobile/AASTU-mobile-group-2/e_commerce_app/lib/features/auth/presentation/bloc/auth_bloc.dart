@@ -1,4 +1,7 @@
 import 'dart:async';
+
+import 'package:dartz/dartz.dart';
+import 'package:e_commerce_app/core/failure/failure.dart';
 import 'package:e_commerce_app/features/auth/domain/usecase/get_user.dart';
 import 'package:e_commerce_app/features/auth/domain/usecase/login.dart';
 import 'package:e_commerce_app/features/auth/presentation/bloc/auth_event.dart';
@@ -38,11 +41,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         (user) => emit(SignUpSuccess(user: user)));
   }
 
-  FutureOr<void> _onGetUser(GetUserEvent event, Emitter<AuthState> emit) {
+  FutureOr<void> _onGetUser(GetUserEvent event, Emitter<AuthState> emit)  async{
     emit(GetUserLoading());
-    getUser.execute().then((value) {
-      value.fold((failure) => emit(AuthFailure()),
-          (name) => emit(GetUserSuccess(name: name)));
-    });
+    final result = await getUser.execute();
+    print(result);
+
+    result.fold((failure) => emit(AuthFailure()),
+        (user) => emit(GetUserSuccess(user: user)));
   }
 }

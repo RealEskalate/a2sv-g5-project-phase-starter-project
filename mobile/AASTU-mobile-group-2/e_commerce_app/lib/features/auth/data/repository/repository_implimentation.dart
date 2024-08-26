@@ -4,6 +4,8 @@ import 'package:e_commerce_app/features/auth/data/data_sources/local_data_source
 import 'package:e_commerce_app/features/auth/data/data_sources/remote_data_sources.dart';
 import 'package:e_commerce_app/features/auth/domain/entities/user.dart';
 import 'package:e_commerce_app/features/auth/domain/repository/auth_repository.dart';
+import 'package:e_commerce_app/features/product/data/data_sources/product_remote_data_source.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/network/network_info.dart';
 
@@ -59,18 +61,18 @@ class AuthRepositoryImplimentation extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, String>> getCurrentUser()  async{
+  Future<Either<Failure, User>> getCurrentUser()  async{
       if (await networkInfo.isConnected) {
       try {
             final result = await authRemoteDataSources.getUser();
-
-        return Right(result);
+        print(result);
+        return Right(result.toUser());
       } catch (e) {
         print(e);
-        return left(Failure("failed to get user"));
+        return Left(Failure("failed to get user"));
       }
     } else {
-      return left(Failure("network not available"));
+      return Left(Failure("network not available"));
     }
   }
 }

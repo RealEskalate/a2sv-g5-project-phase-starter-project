@@ -1,7 +1,7 @@
 import 'package:e_commerce_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:e_commerce_app/features/auth/presentation/view/splash.dart';
-import 'package:e_commerce_app/features/chat/presentation/view/chat.dart';
-import 'package:e_commerce_app/features/chat/presentation/view/chat_list_page.dart';
+import 'package:e_commerce_app/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:e_commerce_app/features/chat/presentation/bloc/messages/message_bloc.dart';
 import 'package:e_commerce_app/features/product/domain/usecase/insert_product_usecase.dart';
 import 'package:e_commerce_app/features/product/presentation/bloc/home/home_bloc.dart';
 import 'package:e_commerce_app/features/product/presentation/bloc/insert_product/insert_product_bloc.dart';
@@ -17,7 +17,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'features/auth/presentation/view/login.dart';
 import 'features/auth/presentation/view/signup.dart';
-import 'features/product/presentation/view/chat.dart';
+import 'features/chat/presentation/view/chat.dart';
+import 'features/chat/presentation/view/chat_list_page.dart';
 import 'features/product/presentation/view/search_product.dart';
 
 void main() async {
@@ -34,6 +35,14 @@ class Root extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => getIt<HomeBloc>()..add(HomeLoaded()),
+          
+        ),
+        BlocProvider(
+          create: (context) => getIt<ChatBloc>()..add(LoadCurrentChats()),
+          
+        ),
+        BlocProvider(
+          create: (context) => getIt<MessageBloc>(),
           
         ),
         BlocProvider(
@@ -60,15 +69,18 @@ class Root extends StatelessWidget {
             useMaterial3: true,
             appBarTheme: AppBarTheme(backgroundColor: Colors.white)),
 
-        home: const Scaffold(
+        home:  Scaffold(
           // body: Home(),
-          // body: Splash(),
-<<<<<<< HEAD
-          body: Chat()
-=======
-          body: Chat(),
-          // body: ChatPeopleList(),
->>>>>>> 35b08cdab62075fde43aad61127c6ec7d249e5e9
+          body: FutureBuilder(
+            future: Future.delayed(Duration(seconds: 2)),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Splash();
+              } else {
+                return Home();
+              }
+            },
+          ),
         ),
         // initialRoute: '/home',
         routes: {
@@ -78,6 +90,9 @@ class Root extends StatelessWidget {
           '/searchpage': (context) => SearchPage(),
           '/signup': (context) => SignUpScreen(),
           '/login': (context) => LoginScreen(),
+          '/chats': (context) => ChatPeopleList(),
+          '/chat': (context) => Chat(),
+          
         },
       ),
     );

@@ -5,6 +5,10 @@ import 'package:e_commerce_app/features/auth/domain/repository/auth_repository.d
 import 'package:e_commerce_app/features/auth/domain/usecase/login.dart';
 import 'package:e_commerce_app/features/auth/domain/usecase/signup.dart';
 import 'package:e_commerce_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:e_commerce_app/features/chat/data/data%20sources/Local%20data/local_data_source.dart';
+import 'package:e_commerce_app/features/chat/data/data%20sources/remote%20data/remote_data_source.dart';
+import 'package:e_commerce_app/features/chat/domain/repository/chat_repository.dart';
+import 'package:e_commerce_app/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:e_commerce_app/features/product/data/data_sources/product_remote_data_source.dart';
 import 'package:e_commerce_app/features/product/data/repositories/product_repository_implimentation.dart';
 import 'package:e_commerce_app/features/product/domain/repositories/product_repository.dart';
@@ -24,6 +28,13 @@ import 'package:http/http.dart' as http;
 
 import 'features/auth/data/data_sources/local_data_sources.dart';
 import 'features/auth/domain/usecase/get_user.dart';
+import 'features/chat/data/data repository/data_repository.dart';
+import 'features/chat/data/data sources/Local data/local_contrat.dart';
+import 'features/chat/data/data sources/remote data/remote_contrats.dart';
+import 'features/chat/domain/usecases/get_all_chats_usecase.dart';
+import 'features/chat/domain/usecases/get_messages_by_id.dart';
+import 'features/chat/domain/usecases/send_message_usecase.dart';
+import 'features/chat/presentation/bloc/messages/message_bloc.dart';
 import 'features/product/data/data_sources/product_local_data_source.dart';
 import 'features/product/presentation/bloc/search/search_product_bloc.dart';
 
@@ -72,4 +83,24 @@ Future<void> setup() async {
   getIt.registerSingleton<GetUser>(GetUser(getIt()));
   getIt.registerSingleton<SignUp>(SignUp(getIt()));
   getIt.registerSingleton<AuthBloc>(AuthBloc(login: getIt(), signUp: getIt(), getUser: getIt()));
+  //chat
+  getIt.registerSingleton<ChatRemoteDataSource>(
+      ChatRemoteDataSourceImpl(client: httpClient));
+
+  getIt.registerSingleton<LocalContrat>(
+      LocalDataSource());
+  
+  getIt.registerSingleton<ChatRepositoryImpl>(
+    ChatRepositoryImpl(
+      localContrat: getIt(),
+      remoteContrats: getIt(),
+      networkInfo: getIt(),
+    ),
+  );
+  getIt.registerSingleton<GetAllChatsUseCase>(GetAllChatsUseCase(getIt()));
+
+  getIt.registerSingleton<GetMessagesByIdUsecase>(GetMessagesByIdUsecase(getIt()));
+  getIt.registerSingleton<SendMessageUseCase>(SendMessageUseCase(getIt()));
+  getIt.registerSingleton<MessageBloc>(MessageBloc(getMessagesById: getIt(), sendMessage: getIt()));
+  getIt.registerSingleton<ChatBloc>(ChatBloc(chatRepositoryImpl: getIt()));
 }

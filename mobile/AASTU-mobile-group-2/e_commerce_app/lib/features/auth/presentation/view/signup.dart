@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart';
 import 'package:e_commerce_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:e_commerce_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:e_commerce_app/features/auth/presentation/bloc/auth_state.dart';
@@ -21,7 +22,7 @@ class SignUpScreen extends StatelessWidget {
           email: emailController.text,
           password: passwordController.text));
     }
-
+  
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

@@ -7,10 +7,10 @@ import 'package:e_commerce_app/features/chat/data/models/message_model.dart';
 abstract class LocalContrat{ 
 
   Future<void> cacheGetChatByIdLocal(ChatModel message);
-  Future<Either<Failure, List<MessageModel>>> getChatByIdLocal(String userId);
+  Future<List<MessageModel>> getChatByIdLocal(String userId);
 
   Future <void> cacheGetAllChatsLocal(List<ChatModel> chat);
-  Future<Either<Failure, List<ChatModel>>> getAllChatLocal();
+  Future<List<ChatModel>> getAllChatLocal();
 
 
 }

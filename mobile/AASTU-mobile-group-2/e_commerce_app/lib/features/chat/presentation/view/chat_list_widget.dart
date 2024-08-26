@@ -1,21 +1,19 @@
+import 'package:e_commerce_app/features/chat/domain/entities/chat_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-Widget chatListItem({
-  required String imageName,
-  required String title,
-  required String subtitle,
-  required String time,
-  int unreadMessages = 2,
+Widget chatListItem(BuildContext context,{
+  required ChatEntity chat,
+  
 }) {
   return ListTile(
     contentPadding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
     leading: CircleAvatar(
       radius: 28,
-      backgroundImage: AssetImage('image/$imageName'),
+      backgroundImage: AssetImage('assets/smile.png'),
     ),
     title: Text(
-      title,
+      "title",
       style: GoogleFonts.lexend(
         textStyle: TextStyle(
           fontSize: 18,
@@ -24,7 +22,7 @@ Widget chatListItem({
       ),
     ),
     subtitle: Text(
-      subtitle,
+      "subtitle",
       style: GoogleFonts.lexend(
         textStyle: const TextStyle(
           fontSize: 12,
@@ -37,7 +35,7 @@ Widget chatListItem({
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Text(
-          time,
+          "time",
           style: GoogleFonts.lexend(
             textStyle: TextStyle(
               color: Color.fromARGB(255, 121, 124, 123),
@@ -46,7 +44,7 @@ Widget chatListItem({
             ),
           ),
         ),
-        if (unreadMessages > 0)
+        if (2 > 0)
           Container(
             margin: EdgeInsets.only(top: 4.0),
             padding: EdgeInsets.all(6.0),
@@ -55,7 +53,7 @@ Widget chatListItem({
               color: const Color.fromARGB(255, 63, 81, 243),
             ),
             child: Text(
-              unreadMessages.toString(),
+              "2",
               style: GoogleFonts.abhayaLibre(
                 textStyle: TextStyle(
                   fontWeight: FontWeight.w700,
@@ -68,7 +66,7 @@ Widget chatListItem({
       ],
     ),
     onTap: () {
-      // Handle on tap
+      Navigator.pushNamed(context, '/chat',arguments: chat.sender.id);
     },
   );
 }

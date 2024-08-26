@@ -1,6 +1,10 @@
 import 'package:e_commerce_app/features/chat/presentation/view/chat_list_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math' as math;
+
+import '../bloc/chat_bloc.dart';
+
 class ChatPeopleList extends StatefulWidget {
   const ChatPeopleList({super.key});
 
@@ -72,16 +76,43 @@ class _ChatPeopleListState extends State<ChatPeopleList>
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(20),
-                        child: ListView.builder(
-                          itemCount: 20,
-                          itemBuilder: (context, index) {
-                            return chatListItem(
-                              imageName: 'smile.png', 
-                              title: 'Contact $index',
-                              subtitle: 'Hey, how are you?',
-                              time: '12:0${index} PM',
-                              unreadMessages: index % 3,
-                            );
+                        child: BlocConsumer<ChatBloc, ChatState>(
+                          listener: (context, chatState) {
+                            // TODO: implement listener
+                          },
+                          builder: (context, chatState) {
+                            // return ListView.builder(
+                            //   itemCount: 20,
+                            //   itemBuilder: (context, index) {
+                            //     return chatListItem(
+                            //       context,
+                            //       imageName: 'smile.png',
+                            //       title: 'Contact $index',
+                            //       subtitle: 'Hey, how are you?',
+                            //       time: '12:0${index} PM',
+                            //       unreadMessages: index % 3,
+                            //     );
+                            //   },
+                            // );
+                            if (chatState is LoadingCurrentChats) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            } else if (chatState is CurrentChatsLoaded) {
+                              final chatListItems = chatState.chats.map((chat) {
+                                return chatListItem(context,
+                                  
+                                  chat: chat,
+                                  
+                                );
+                              }).toList();
+
+                              return ListView(
+                                children: chatListItems,
+                              );
+                            } else {
+                              return const Center(
+                                  child: Text('No chats found'));
+                            }
                           },
                         ),
                       ),
@@ -104,9 +135,8 @@ class _ChatPeopleListState extends State<ChatPeopleList>
                                         animation: _controller,
                                         builder: (context, child) {
                                           return Transform.rotate(
-                                            angle: _controller.value *
-                                                2 *
-                                                math.pi,
+                                            angle:
+                                                _controller.value * 2 * math.pi,
                                             child: ShaderMask(
                                               shaderCallback: (rect) {
                                                 return SweepGradient(
@@ -178,42 +208,31 @@ class _ChatPeopleListState extends State<ChatPeopleList>
                                               children: [
                                                 AnimatedBuilder(
                                                   animation: _controller,
-                                                  builder:
-                                                      (context, child) {
+                                                  builder: (context, child) {
                                                     return Transform.rotate(
-                                                      angle: _controller
-                                                              .value *
+                                                      angle: _controller.value *
                                                           2 *
                                                           math.pi,
                                                       child: ShaderMask(
-                                                        shaderCallback:
-                                                            (rect) {
+                                                        shaderCallback: (rect) {
                                                           return SweepGradient(
                                                             colors: [
-                                                              Colors
-                                                                  .blue[200]!,
+                                                              Colors.blue[200]!,
                                                               const Color
-                                                                  .fromRGBO(
-                                                                      199,
-                                                                      254,
-                                                                      224,
-                                                                      1),
-                                                              Colors
-                                                                  .blue[200]!,
+                                                                  .fromRGBO(199,
+                                                                  254, 224, 1),
+                                                              Colors.blue[200]!,
                                                             ],
                                                             stops: [
                                                               0.0,
                                                               0.10,
                                                               5.0
                                                             ],
-                                                          ).createShader(
-                                                              rect);
+                                                          ).createShader(rect);
                                                         },
-                                                        child:
-                                                            CircleAvatar(
-                                                          radius:
-                                                              screenWidth *
-                                                                  0.109,
+                                                        child: CircleAvatar(
+                                                          radius: screenWidth *
+                                                              0.109,
                                                           backgroundColor:
                                                               Colors.white,
                                                         ),
@@ -222,14 +241,11 @@ class _ChatPeopleListState extends State<ChatPeopleList>
                                                   },
                                                 ),
                                                 CircleAvatar(
-                                                  radius:
-                                                      screenWidth * 0.1,
-                                                  backgroundColor:
-                                                      Colors.blue,
+                                                  radius: screenWidth * 0.1,
+                                                  backgroundColor: Colors.blue,
                                                 ),
                                                 CircleAvatar(
-                                                  radius:
-                                                      screenWidth * 0.086,
+                                                  radius: screenWidth * 0.086,
                                                   backgroundImage:
                                                       const AssetImage(
                                                           'assets/smile.png'),

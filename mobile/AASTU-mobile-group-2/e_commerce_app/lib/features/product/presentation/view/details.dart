@@ -1,3 +1,4 @@
+import 'package:e_commerce_app/features/chat/presentation/bloc/chat_bloc.dart';
 import 'package:e_commerce_app/features/product/domain/entities/product.dart';
 import 'package:e_commerce_app/features/product/presentation/bloc/home/home_bloc.dart';
 import 'package:e_commerce_app/features/product/presentation/bloc/update/update_product_bloc.dart';
@@ -5,14 +6,15 @@ import 'package:e_commerce_app/features/product/presentation/view/widgets/widget
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../chat/presentation/bloc/messages/message_bloc.dart';
 
 class DetailsPage extends StatelessWidget {
-  DetailsPage({super.key});
+  const DetailsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    bool isOwner = false;
-    
     final route = ModalRoute.of(context);
 
     if (route == null || route.settings.arguments == null) {
@@ -24,33 +26,21 @@ class DetailsPage extends StatelessWidget {
       );
     }
 
- final product = route.settings.arguments as ProductEntity;
+    final product = route.settings.arguments as ProductEntity;
 
-void update() {
+    void update() {
+      Navigator.pushNamed(context, "/insertitem", arguments: product);
+      context.read<UpdateProductBloc>().add(UpdateInitiated());
+    }
+
+    void delete() {
+      context.read<UpdateProductBloc>().add(ProductDeleted(product: product));
       Navigator.pushNamed(
-        context, "/insertitem",
-        arguments: product
-        
-        );
-        context
-          .read<UpdateProductBloc>()
-          .add(UpdateInitiated());
+        context,
+        "/home",
+      );
+      context.read<HomeBloc>().add(HomeLoaded());
     }
-void delete() {
-      
-        context
-          .read<UpdateProductBloc>()
-          .add(ProductDeleted(product: product));
-          Navigator.pushNamed(
-        context, "/home",
-        
-        
-        );
-         context
-          .read<HomeBloc>()
-          .add(HomeLoaded());
-    }
-   
 
     return SafeArea(
       child: Scaffold(
@@ -66,10 +56,8 @@ void delete() {
                   Container(
                     // height: 200,
                     // clipBehavior: Clip.antiAlias,
-                    decoration: BoxDecoration(
-                  
-                    ),
-                    child:  Image.network(
+                    decoration: BoxDecoration(),
+                    child: Image.network(
                       product.imageUrl,
                       // height: 200,
                       fit: BoxFit.fitHeight,
@@ -198,26 +186,69 @@ void delete() {
                     SizedBox(
                       height: 30,
                     ),
-                    Row(
-                      children: [
-                        // OutlinedButton(
-                        //   onPressed: () {},
-                        //   child: Text("DELETE"),
-                        // ),
-                        // Spacer(),
-                        // ElevatedButton(onPressed: (){
+                    BlocConsumer<AuthBloc, AuthState>(
+                      listener: (context, state) {
+                        // TODO: implement listener
+                      },
+                      builder: (context, state) {
+                        if (state is GetUserSuccess) {
+                          if (state.user.id == product.seller.id) {
+                            return Row(
+                              children: [
+                                // OutlinedButton(
+                                //   onPressed: () {},
+                                //   child: Text("DELETE"),
+                                // ),
+                                // Spacer(),
+                                // ElevatedButton(onPressed: (){
 
-                        // }, child: Text("UPDATE"))
-                        Expanded(
-                          child: DeleteButton(title: "DELETE",callback: delete,),
-                        ),
-                        SizedBox(
-                          width: 50,
-                        ),
-                        Expanded(
-                          child: BackgroundButton(title: "UPDATE",callback:update                                                                                                                                                                                                             ),
-                        )
-                      ],
+                                // }, child: Text("UPDATE"))
+                                Expanded(
+                                  child: DeleteButton(
+                                    title: "DELETE",
+                                    callback: delete,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 50,
+                                ),
+                                Expanded(
+                                  child: BackgroundButton(
+                                      title: "UPDATE", callback: update),
+                                )
+                              ],
+                            );
+                          }
+                        } else {
+                          return Container();
+                        }
+                        return Container();
+                        // return Row(
+                        //   children: [
+                        //     // OutlinedButton(
+                        //     //   onPressed: () {},
+                        //     //   child: Text("DELETE"),
+                        //     // ),
+                        //     // Spacer(),
+                        //     // ElevatedButton(onPressed: (){
+
+                        //     // }, child: Text("UPDATE"))
+                        //     Expanded(
+                        //       child: DeleteButton(
+                        //         title: "DELETE",
+                        //         callback: delete,
+                        //       ),
+                        //     ),
+                        //     SizedBox(
+                        //       width: 50,
+                        //     ),
+                        //     Expanded(
+                        //       child: BackgroundButton(
+                        //           title: "UPDATE", callback: update),
+                        //     )
+                        //   ],
+                        // );
+                      },
                     ),
                   ],
                 ),
@@ -225,20 +256,31 @@ void delete() {
             ],
           ),
         ),
-        floatingActionButton: isOwner ? null : Builder(builder: (context) {
-          return FloatingActionButton(
-            backgroundColor: Colors.blue,
-            onPressed: () {
-              Navigator.pushNamed(context, '/insertitem');
-            },
-            child: Icon(
-              Icons.add,
-              color: Colors.white,
-              size: 36,
-            ),
-            shape: CircleBorder(),
-          );
-        }
+        floatingActionButton: BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {
+            // TODO: implement listener
+          },
+          builder: (context, state) {
+            if (state is GetUserSuccess) {
+              return FloatingActionButton(
+                heroTag: "btn1",
+                backgroundColor: Colors.blue,
+                onPressed: () {
+                      context.read<ChatBloc>().add(CreateChat(product.seller.id));
+
+                  Navigator.pushNamed(context, '/chat',
+                      arguments: product.seller.id);
+                },
+                child: Icon(
+                  Icons.message,
+                  color: Colors.white,
+                  size: 36,
+                ),
+                shape: CircleBorder(),
+              );
+            }
+            return Container();
+          },
         ),
       ),
     );
@@ -251,7 +293,7 @@ void delete() {
 
 class SizeCard extends StatefulWidget {
   SizeCard({super.key, required this.size});
-   int size;
+  int size;
 
   @override
   State<SizeCard> createState() => _SizeCardState();

@@ -25,50 +25,52 @@ class LocalDataSource implements LocalContrat {
   }
 
   @override
-  Future<Either<Failure, List<MessageModel>>> getChatByIdLocal(String userId) async {
+  Future<List<MessageModel>> getChatByIdLocal(String userId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       List<String>? encodedMessages = prefs.getStringList(_messagesKey);
 
       if (encodedMessages == null) {
-        return Right([]);
+        return [];
       }
 
       List<MessageModel> messages = encodedMessages
-          .map((encodedMessage) => MessageModel.fromJson(json.decode(encodedMessage)))
+          .map((encodedMessage) =>
+              MessageModel.fromJson(json.decode(encodedMessage)))
           .where((message) => message.chatId == userId)
           .toList();
 
-      return Right(messages);
+      return messages;
     } catch (e) {
-      return Left(Failure('Failed to retrieve messages by chat ID'));
+      throw Failure('Failed to retrieve messages by chat ID');
     }
   }
 
   @override
   Future<void> cacheGetAllChatsLocal(List<ChatModel> chats) async {
     final prefs = await SharedPreferences.getInstance();
-    List<String> encodedChats = chats.map((chat) => json.encode(chat.toJson())).toList();
+    List<String> encodedChats =
+        chats.map((chat) => json.encode(chat.toJson())).toList();
     await prefs.setStringList(_chatsKey, encodedChats);
   }
 
   @override
-  Future<Either<Failure, List<ChatModel>>> getAllChatLocal() async {
+  Future<List<ChatModel>> getAllChatLocal() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       List<String>? encodedChats = prefs.getStringList(_chatsKey);
 
       if (encodedChats == null) {
-        return Right([]);
+        return [];
       }
 
       List<ChatModel> chats = encodedChats
           .map((encodedChat) => ChatModel.fromJson(json.decode(encodedChat)))
           .toList();
 
-      return Right(chats);
+      return chats;
     } catch (e) {
-      return Left(Failure('Failed to retrieve all chats'));
+      throw Failure('Failed to retrieve chats');
     }
   }
 }

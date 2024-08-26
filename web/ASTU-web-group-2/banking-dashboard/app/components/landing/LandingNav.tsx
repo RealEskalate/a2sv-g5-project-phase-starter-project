@@ -1,11 +1,9 @@
-"use client";
-
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-
-import { motion as m } from 'framer-motion';
-import React, { useEffect, useState } from "react";
+import { motion as m, AnimatePresence } from "framer-motion";
+import React, { useState } from "react";
+import { AiOutlineClose } from "react-icons/ai"; // Import the close icon from React Icons
 import SignIn from "../signIn/SignIn";
 
 interface LandingNavProps {
@@ -15,9 +13,12 @@ interface LandingNavProps {
   aboutRef: React.RefObject<HTMLDivElement>;
 }
 
-const LandingNav: React.FC<LandingNavProps> = ({ bgWhite, homeRef, servicesRef, aboutRef }) => {
-
-
+const LandingNav: React.FC<LandingNavProps> = ({
+  bgWhite,
+  homeRef,
+  servicesRef,
+  aboutRef,
+}) => {
   const [isMenuVisible, setIsMenuVisible] = useState<boolean>(false);
   const [isSignInModalVisible, setIsSignInModalVisible] = useState<boolean>(false);
   const { data: session, status } = useSession();
@@ -30,7 +31,7 @@ const LandingNav: React.FC<LandingNavProps> = ({ bgWhite, homeRef, servicesRef, 
     if (ref.current) {
       window.scrollTo({
         top: ref.current.offsetTop,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   };
@@ -38,6 +39,7 @@ const LandingNav: React.FC<LandingNavProps> = ({ bgWhite, homeRef, servicesRef, 
   const toggleSignInModal = () => {
     setIsSignInModalVisible(!isSignInModalVisible);
   };
+
   return (
     <m.header 
      
@@ -47,13 +49,36 @@ const LandingNav: React.FC<LandingNavProps> = ({ bgWhite, homeRef, servicesRef, 
     >
       <Link href="/" className="font-extrabold text-[25px] cursor-pointer">BankDash</Link>
 
-      <div className="flex items-center">
+      {/* Desktop Navigation Links */}
+      <div className="hidden sm:flex gap-10 items-center">
+        <div className="cursor-pointer text-white" onClick={() => scrollToRef(homeRef)}>
+          Home
+        </div>
+        <div className="cursor-pointer text-white" onClick={() => scrollToRef(servicesRef)}>
+          Services
+        </div>
+        <div className="cursor-pointer text-white" onClick={() => scrollToRef(aboutRef)}>
+          About Us
+        </div>
+        {status === "authenticated" ? (
+          <Link href="/dashboard">
+            <div className="cursor-pointer text-white">Dashboard</div>
+          </Link>
+        ) : (
+          <div onClick={toggleSignInModal} className="cursor-pointer text-white">
+            Login
+          </div>
+        )}
+      </div>
+
+      {/* Mobile Menu Toggle Button */}
+      <div className="flex items-center sm:hidden">
         <Image
           src="assets/landing/hamburger.svg"
           width={25}
           height={25}
           alt="hamburger"
-          className="sm:hidden absolute right-5"
+          className={`absolute right-5 ${isMenuVisible&&"hidden"}`}
           onClick={toggleMenu}
         />
 

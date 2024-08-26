@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import StoreProvider from "./StoreProvider";
-import { AuthProvider } from "./AuthProvider";
+import StoreProvider from "../providers/StoreProvider";
+import { AuthProvider } from "../providers/AuthProvider";
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

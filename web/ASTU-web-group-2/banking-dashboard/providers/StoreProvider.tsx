@@ -2,7 +2,6 @@
 import { useRef } from "react";
 import { Provider } from "react-redux";
 import { store, AppStore } from "@/lib/store";
-import "./globals.css";
 
 export default function StoreProvider({
   children,

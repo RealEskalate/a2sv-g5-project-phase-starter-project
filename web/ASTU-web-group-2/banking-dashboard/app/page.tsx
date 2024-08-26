@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useState, useEffect, useRef } from "react";
 import LandingNav from "./components/landing/LandingNav";
 import LandingHome from "./components/landing/LandingHome";
@@ -27,8 +27,8 @@ const Page = () => {
   return (
     <div>
       <div className={`${bgWhite ? "fixed" : ""} w-[100%]`}>
-        <LandingNav 
-          bgWhite={bgWhite} 
+        <LandingNav
+          bgWhite={bgWhite}
           homeRef={homeRef}
           servicesRef={servicesRef}
           aboutRef={aboutRef}

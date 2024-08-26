@@ -1,5 +1,8 @@
-'use client';
-import { useGetAllCardInfoQuery, useLazyRetiriveCardInfoQuery } from "@/lib/service/CardService";
+"use client";
+import {
+  useGetAllCardInfoQuery,
+  useLazyRetiriveCardInfoQuery,
+} from "@/lib/service/CardService";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -20,12 +23,10 @@ interface Card {
 
 interface FullCard extends Card {
   cardNumber: string;
-  bank?: string; 
+  bank?: string;
 }
 
-
 const CardList = () => {
-  
   const { data: session, status } = useSession();
   const accessToken = session?.user.accessToken!;
   
@@ -48,7 +49,10 @@ const CardList = () => {
         
         const fullCardsPromises = limitedData.map(async (card: Card) => {
           try {
-            const { data: cardDetails } = await retrieveCardInfo({ token: accessToken, id: card.id });
+            const { data: cardDetails } = await retrieveCardInfo({
+              token: accessToken,
+              id: card.id,
+            });
             return {
               ...card,
               cardNumber: cardDetails?.cardNumber || "",
@@ -98,25 +102,43 @@ const CardList = () => {
             className="grid grid-flow-col h-[69px] lg:h-[90px] justify-between mb-[10px] sm:mb-[15px] items-center pl-[20px] bg-white rounded-3xl grid-col-12"
           >
             <div className="col-span-1">
-              <img src={icons[Math.floor(Math.random() * icons.length)]} className="lg:w-[60px] w-[45px]" alt={`Card Icon`} />
+              <img
+                src={icons[Math.floor(Math.random() * icons.length)]}
+                className="lg:w-[60px] w-[45px]"
+                alt={`Card Icon`}
+              />
             </div>
             <div className="col-span-2">
-              <p className="text-[14px] md:text-[12px] lg:text-[16px] text-[#333B69]">Card Type</p>
-              <span className="text-[12px] sm:text-[15px] text-[#718EBF]">{card.cardType}</span>
+              <p className="text-[14px] md:text-[12px] lg:text-[16px] text-[#333B69]">
+                Card Type
+              </p>
+              <span className="text-[12px] sm:text-[15px] text-[#718EBF]">
+                {card.cardType}
+              </span>
             </div>
             <div className="col-span-[2.5]">
-              <p className="text-[14px] md:text-[12px] lg:text-[16px] text-[#333B69]">Bank</p>
-              <span className="text-[12px] md:text-[12px] lg:text-[16px] text-[#718EBF]">{card.bank}</span>
+              <p className="text-[14px] md:text-[12px] lg:text-[16px] text-[#333B69]">
+                Bank
+              </p>
+              <span className="text-[12px] md:text-[12px] lg:text-[16px] text-[#718EBF]">
+                {card.bank}
+              </span>
             </div>
             <div className="hidden col-span-[2.5] sm:block">
-              <p className="text-[14px] md:text-[12px] lg:text-[16px] text-[#333B69] font-medium">Card Number</p>
+              <p className="text-[14px] md:text-[12px] lg:text-[16px] text-[#333B69] font-medium">
+                Card Number
+              </p>
               <span className="text-[12px] sm:text-[15px] text-[#718EBF]">
-                {'*'.repeat(4)} {'*'.repeat(4)} {card.cardNumber.slice(-4)}
+                {"*".repeat(4)} {"*".repeat(4)} {card.cardNumber.slice(-4)}
               </span>
             </div>
             <div className="hidden col-span-2 sm:block">
-              <p className="text-[14px] sm:text-[16px] text-[#333B69] font-medium">Card Holder</p>
-              <span className="text-[12px] sm:text-[15px] text-[#718EBF]">{card.cardHolder}</span>
+              <p className="text-[14px] sm:text-[16px] text-[#333B69] font-medium">
+                Card Holder
+              </p>
+              <span className="text-[12px] sm:text-[15px] text-[#718EBF]">
+                {card.cardHolder}
+              </span>
             </div>
             <div className="col-span-2">
               <p className="text-[14px] sm:text-[16px] text-[#1814F3] font-medium">

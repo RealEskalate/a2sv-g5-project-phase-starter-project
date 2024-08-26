@@ -34,19 +34,21 @@ class RemoteDataSourceImpl extends RemoteDataSource {
           'Content-Type': 'application/json',
         },
       );
-
+        print(response.statusCode);
       if (response.statusCode == 200) {
         final result = json.decode(response.body)['data'];
         final List<ChatModel> answer = [];
         result.forEach((json) {
           answer.add(ChatModel.fromJson(json));
         });
-
+        // print(answer);
         return answer;
       } else {
+        // print(response.body.toString);
         throw Exception();
       }
     } catch (e) {
+      // print(e.toString());
       throw ServerException();
     }
   }

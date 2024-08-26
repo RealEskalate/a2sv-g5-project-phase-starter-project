@@ -20,7 +20,9 @@ import 'features/chat/data/data_source/remote_data_source/remote_data_source.dar
 import 'features/chat/data/data_source/remote_data_source/remote_data_source_impl.dart';
 import 'features/chat/data/repository/chat_repository_impl.dart';
 import 'features/chat/domain/repositories/chat_repository.dart';
+import 'features/chat/domain/usecases/get_chat_message_usecase.dart';
 import 'features/chat/domain/usecases/get_message_usecase.dart';
+import 'features/chat/domain/usecases/my_chat_usecase.dart';
 import 'features/chat/domain/usecases/send_message_usecase.dart';
 import 'features/chat/presentation/bloc/chat_bloc.dart';
 import 'features/product/data/data_sources/local_data_source.dart';
@@ -32,7 +34,9 @@ import 'features/product/domain/usecases/get_all_prodcuts_usecase.dart';
 import 'features/product/domain/usecases/get_product_usecase.dart';
 import 'features/product/domain/usecases/insert_prodcut_usecase.dart';
 import 'features/product/domain/usecases/update_product_usecase.dart';
+
 import 'features/product/presentation/bloc/product_bloc.dart';
+import './features/chat/domain/usecases/my_chat_usecase.dart';
 
 final sl = GetIt.instance;
 
@@ -46,10 +50,17 @@ Future<void> init() async {
   sl.registerFactory(() => ChatBloc(
         getMessagesUseCase: sl(),
         sendMessageUseCase: sl(),
+        myChatUsecase: sl(),
+        getChatMessagesUseCase:sl(),
+
       ));
   // usecase
   sl.registerFactory(() => GetMessageUsecase(chatRepository: sl()));
   sl.registerFactory(() => SendMessageUsecase(chatRepository: sl()));
+  sl.registerLazySingleton(() => MyChatUsecase(chatRepository: sl()));
+  //
+  sl.registerFactory(() => GetChatMessageUsecase(chatRepository:sl()));
+
 
   // repository
   sl.registerLazySingleton<ChatRepository>(
@@ -58,7 +69,7 @@ Future<void> init() async {
   sl.registerLazySingleton<RemoteDataSource>(() => RemoteDataSourceImpl(
       client: sl(),
       accessToken:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImJiQGdtYWlsLmNvbSIsInN1YiI6IjY2YzQ4Mjg3NjE5OGYxNTBlNjQzY2M5YiIsImlhdCI6MTcyNDYxNDcyNywiZXhwIjoxNzI1MDQ2NzI3fQ.-ispT0AF7tTEpKmX2GBqqVfhR6r-hPWyf1hyGbjA3Q0'));
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVlQGdtYWlsLmNvbSIsInN1YiI6IjY2Y2M0NTNlZGFiNDNjMWEyZTk4MDMwYSIsImlhdCI6MTcyNDY2MzE4MywiZXhwIjoxNzI1MDk1MTgzfQ.fsrJ3pS6R_N4jzAnOZBBX6RzD7PcZoxOxnPzzYWskY0'));
 
   // auth Feature
 
@@ -71,6 +82,7 @@ Future<void> init() async {
       logOutUsecase: sl(),
       checkSignedInUsecase: sl(),
       getUserUsecase: sl(),
+      
     ),
   );
 
@@ -80,6 +92,8 @@ Future<void> init() async {
   sl.registerFactory(() => LogOutUsecase(repository: sl()));
   sl.registerFactory(() => CheckSignedInUsecase(repository: sl()));
   sl.registerFactory(() => GetUserUsecase(repository: sl()));
+
+  
 
   // repository
 

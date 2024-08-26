@@ -53,6 +53,7 @@ const Page = () => {
   useEffect(() => {
     const fetchSession = async () => {
       try {
+
         const sessionData = (await getSession()) as SessionDataType | null;
         setAccess_token(await Refresh());
         if (sessionData && sessionData.user) {
@@ -69,7 +70,7 @@ const Page = () => {
 
     fetchSession();
   }, [router]);
-  console.log(access_token)
+  console.log("bayba", access_token)
   useEffect(() => {
     const addingData = async () => {
       if (!access_token) return;
@@ -80,6 +81,7 @@ const Page = () => {
       }
     };
     addingData();
+    setLoading(false);
   }, [access_token]);
 
   if (loading) {
@@ -87,9 +89,9 @@ const Page = () => {
     return (
       <div className="flex-col bg-gray-100 p-4">
         <div className="flex mx-5 my-4 gap-4 overflow-x-auto">
-          <div className={`${shimmerClass} w-40 h-10 rounded-md mb-4`} />
-          <div className={`${shimmerClass} w-full h-8 rounded-md mb-4`} />
-          <div className={`${shimmerClass} w-full h-32 rounded-md`} />
+          <div className={`${shimmerClass} w-40 h-10 rounded-md mb-4 dark:border-[#333B69]` } />
+          <div className={`${shimmerClass} w-full h-8 rounded-md mb-4 dark:border-[#333B69]`} />
+          <div className={`${shimmerClass} w-full h-32 rounded-md dark:border-[#333B69]`} />
         </div>
       </div>
     );
@@ -99,10 +101,10 @@ const Page = () => {
 
 
   
-  if (!session) {
-    router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
-    return null;
-  }
+  // if (!session) {
+  //   router.push(`./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`);
+  //   return null;
+  // }
 
   const getBackgroundColor = (index: number) => {
     const colors = ['bg-[#FFE0EB]', 'bg-[#E0F7FA]', 'bg-[#FFF9C4]'];
@@ -110,11 +112,11 @@ const Page = () => {
   };
 
   return (
-    <div className='flex-col bg-[#f5f7fa]'>
+    <div className='flex-col bg-[#f5f7fa] dark:bg-[#090b0e] dark:text-[#9faaeb]'>
 
 
 
-      <div className='flex mx-5 my-4 rounded-3xl gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden'>
+      <div className='flex mx-5 my-4 rounded-3xl gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden dark:bg-[#020817] dark:border-[#333B69]  '>
       <InformationCard
         logoBgColor="#e7edff"
         logo={
@@ -161,8 +163,8 @@ const Page = () => {
         cardBgColor="bg-[#ffffff]"
       />
       </div>
-      <h1 className='text-[#343C6A] font-semibold mx-5 my-4 text-2xl md:font-bold'>Bank Services List</h1>
-      <div className='flex-col gap-5'>
+      <h1 className='text-[#343C6A] font-semibold mx-5 my-4 text-2xl md:font-bold dark:text-[#9faaeb]'>Bank Services List</h1>
+      <div className='flex-col gap-5 dark:bg-[#020817]'>
         {bankInfo.map((item, index) => (
           <BankServiceList
             key={item.id}
@@ -171,6 +173,7 @@ const Page = () => {
               <svg className="w-8 h-8" viewBox="0 0 24 24">
                 <image
                   href={item.icon}
+                  
                   x="3" // Adjust this value to center the image horizontally
                   y="3" // Adjust this value to center the image vertically
                   width="18" // Smaller width

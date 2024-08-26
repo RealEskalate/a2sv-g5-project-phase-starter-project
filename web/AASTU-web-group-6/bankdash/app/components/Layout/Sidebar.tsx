@@ -85,7 +85,7 @@ const Sidebar = ({
     },
     {
       label: "Settings",
-      url: "/settings/editprofile",
+      url: "/settings",
       icon: "icon-setting",
       additionalActivePaths: [
         "/settings/editprofile",

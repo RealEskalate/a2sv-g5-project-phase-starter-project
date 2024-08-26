@@ -2,7 +2,6 @@ import React from "react";
 
 interface MenuItem {
   label: string;
-  url: string; // Removed as we're no longer using URL routing
   section: string;
 }
 

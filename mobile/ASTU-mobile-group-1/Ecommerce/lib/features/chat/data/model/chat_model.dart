@@ -11,7 +11,7 @@ class ChatModel extends ChatEntity {
   // Factory constructor to create a ChatModel from a JSON map
   factory ChatModel.fromJson(Map<String, dynamic> json) {
     return ChatModel(
-      chatId: json['_id'],
+      chatId: json['_id'] as String,
       user1: userEntityFromJson(json['user1']),
       user2: userEntityFromJson(json['user2']),
     );
@@ -30,18 +30,17 @@ class ChatModel extends ChatEntity {
 // Function to convert UserEntity to JSON
 Map<String, dynamic> userEntityToJson(UserEntity user) {
   return {
-    '_id': user.id,
-    'name': user.name,
-    'email': user.email,
-    'accessToken': '',
+    '_id': user.id.toString(),
+    'name': user.name.toString(),
+    'email': user.email.toString(),
   };
 }
 
 // Function to convert JSON to UserEntity
 UserEntity userEntityFromJson(Map<String, dynamic> json) {
   return UserEntity(
-    id: json['_id'],
-    name: json['name'],
-    email: json['email'],
+    id: json['_id'].toString(),
+    name: json['name'].toString(),
+    email: json['email'].toString(),
   );
 }

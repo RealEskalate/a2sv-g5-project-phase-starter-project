@@ -8,7 +8,6 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import '../../../../../core/constants/constants.dart';
 import '../../../../../core/error/exception.dart';
-import '../../../../../core/error/failure.dart';
 import '../../model/chat_model.dart';
 import '../../model/message_model.dart';
 import 'remote_data_source.dart';

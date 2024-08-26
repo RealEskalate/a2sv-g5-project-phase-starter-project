@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 class Urls {
   static String baseUrl =
       'https://g5-flutter-learning-path-be.onrender.com/api/v2';
+=======
+
+class Urls {
+  static String baseUrl =
+      'https://g5-flutter-learning-path-be.onrender.com/api/v3';
+>>>>>>> 649d183acce68aab0981c5f49789321ae8d749f1
 
   static String getProductById(String id) => '$baseUrl/products/$id';
   static String getAllProducts() => '$baseUrl/products';

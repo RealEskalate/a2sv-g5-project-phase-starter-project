@@ -21,11 +21,11 @@ import 'features/chat/data/data_source/remote_data_source/remote_data_source_imp
 import 'features/chat/data/data_source/remote_data_source/socket_service.dart';
 import 'features/chat/data/repository/chat_repository_impl.dart';
 import 'features/chat/domain/repositories/chat_repository.dart';
-import 'features/chat/domain/usecases/delete_chat.dart';
+import 'features/chat/domain/usecases/delete_chat_usecase.dart';
 import 'features/chat/domain/usecases/get_chat_message_usecase.dart';
 import 'features/chat/domain/usecases/initiate_chat_usecase.dart';
-import 'features/chat/domain/usecases/my_chat.dart';
-import 'features/chat/domain/usecases/my_chat_by_id.dart';
+import 'features/chat/domain/usecases/my_chat_by_id_usecase.dart';
+import 'features/chat/domain/usecases/my_chat_usecase.dart';
 import 'features/chat/domain/usecases/send_message_usecase.dart';
 import 'features/chat/presentation/bloc/chat_bloc.dart';
 import 'features/product/data/data_sources/local_data_source.dart';
@@ -146,10 +146,10 @@ Future<void> init() async {
 
   sl.registerLazySingleton<ChatRepository>(()=>ChatRepositoryImpl(sl()));
 
-  sl.registerLazySingleton(()=>DeleteChat(chatRepository: sl()));
+  sl.registerLazySingleton(()=>DeleteChatUsecase(chatRepository: sl()));
   sl.registerLazySingleton(()=>InitiateChatUsecase(chatRepository: sl()));
   sl.registerLazySingleton(()=>GetChatMessageUsecase(chatRepository: sl()));
-  sl.registerLazySingleton(()=>MyChat(chatRepository: sl()));
+  sl.registerLazySingleton(()=>MyChatUsecase(chatRepository: sl()));
   sl.registerLazySingleton(()=>MyChatById(chatRepository: sl()));
   sl.registerLazySingleton(()=>SendMessageUsecase(chatRepository: sl()));
 

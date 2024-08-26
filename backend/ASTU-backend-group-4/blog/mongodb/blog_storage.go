@@ -335,7 +335,7 @@ func (b *BlogStorage) UpdateBlog(ctx context.Context, id string, blog blogDomain
 		return blogDomain.ErrUnableToUpdateBlog
 	}
 
-	if result.ModifiedCount == 0 {
+	if result.MatchedCount == 0 {
 		return blogDomain.ErrBlogNotFound
 	}
 

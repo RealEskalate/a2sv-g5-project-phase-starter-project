@@ -21,6 +21,7 @@ type Config struct {
 	Port     string   `mapstructure:"port"`
 	Jwt      Jwt      `mapstructure:"jwt"`
 	Gemini   Gemini   `mapstructure:"gemini"`
+	Domain  string   `mapstructure:"domain"`
 }
 type Jwt struct {
 	JwtKey string `mapstructure:"jwtKey"`

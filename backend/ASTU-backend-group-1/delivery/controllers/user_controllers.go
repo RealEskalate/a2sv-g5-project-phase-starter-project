@@ -5,6 +5,7 @@ import (
 	"astu-backend-g1/domain"
 	"astu-backend-g1/infrastructure"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -164,7 +165,7 @@ func (c *UserController) LoginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	access_token, err := c.userUsecase.LoginUser(user.Username, user.Password)
+	access_token, err := c.userUsecase.LoginUser(user.Username, user.Password,user.Email)
 	if err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
@@ -261,7 +262,7 @@ func (c *UserController) DeleteUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.String(http.StatusNoContent, "")
+	ctx.JSON(http.StatusNoContent, gin.H{"message":"user deleted from database"})
 }
 
 // UpdateUser godoc
@@ -276,19 +277,33 @@ func (c *UserController) DeleteUser(ctx *gin.Context) {
 // @Failure      406 {object} map[string]string "error"
 // @Failure      500 {object} map[string]string "error"
 // @Router       /users/{id} [put]
-func (c *UserController) UpdateUser(ctx *gin.Context) {
+func (c *UserController) UpdateProfiles(ctx *gin.Context) {
 	userId := ctx.Param("id")
 	updateData := domain.User{}
 	if err := ctx.ShouldBind(&updateData); err != nil {
 		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
 		return
 	}
-	updatedUser, err := c.userUsecase.Update(userId, updateData)
+	updatedUser, err := c.userUsecase.UpdateUser(userId, updateData)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.IndentedJSON(http.StatusOK, updatedUser)
+}
+
+func (c *UserController) ChangePassword(ctx *gin.Context) {
+	userdata := domain.ChangePassword{}
+	if err := ctx.ShouldBind(&userdata); err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+		return
+	}
+	_ ,err := c.userUsecase.ChangePassword(userdata.Email, userdata.OldPassword, userdata.NewPassword)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully"})
 }
 
 // RefreshAccessToken godoc
@@ -331,7 +346,8 @@ func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
 		fmt.Println("this is the refresh claims", refreshClaims)
 
 		if refreshClaims.ExpiresAt < time.Now().Unix() {
-			_, err := c.userUsecase.Update(TheUser.ID, domain.User{RefreshToken: ""})
+
+			_, err := c.userUsecase.UpdateUser(TheUser.ID, domain.User{RefreshToken: ""})
 			if err != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
 			}
@@ -358,7 +374,7 @@ func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
 			}
 			ctx.IndentedJSON(200, gin.H{"refreshed access token": newToken})
 			TheUser.RefreshToken = refresh
-			_, err = c.userUsecase.Update(TheUser.ID, domain.User{RefreshToken: refresh})
+			_, err = c.userUsecase.UpdateUser(TheUser.ID, domain.User{RefreshToken: refresh})
 			if err != nil {
 				ctx.IndentedJSON(http.StatusUnauthorized, gin.H{"error": err})
 				return
@@ -369,4 +385,82 @@ func (c *UserController) RefreshAccessToken(ctx *gin.Context) {
 		}
 	}
 	ctx.IndentedJSON(http.StatusForbidden, gin.H{"error": "couldn't refrsh the token"})
+}
+
+// Promote godoc
+// @Summary      Promote user
+// @Description  Promotes a user to admin by username
+// @Tags         users
+// @Produce      json
+// @Param        username path string true "Username"
+// @Success      200 {object} map[string]string "message"
+// @Failure      406 {object} map[string]string "error"
+// @Router       /users/promote/{username} [post]
+func (c *UserController) Promote(ctx *gin.Context) {
+	username := ctx.Param("username")
+	_, err := c.userUsecase.PromteUser(username)
+	log.Println(err)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "User promoted to admin"})
+}
+
+// Demote godoc
+// @Summary      Demote user
+// @Description  Demotes a user to regular user by username
+// @Tags         users
+// @Produce      json
+// @Param        username path string true "Username"
+// @Success      200 {object} map[string]string "message"
+// @Failure      406 {object} map[string]string "error"
+// @Router       /users/demote/{username} [post]
+func (c *UserController) Demote(ctx *gin.Context) {
+	username := ctx.Param("username")
+	_, err := c.userUsecase.DemoteUser(username)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "User demoted to user"})
+}
+
+// PromoteByEmail godoc
+// @Summary      Promote user by email
+// @Description  Promotes a user to admin by email
+// @Tags         users
+// @Produce      json
+// @Param        email path string true "Email"
+// @Success      200 {object} map[string]string "message"
+// @Failure      406 {object} map[string]string "error"
+// @Router       /users/promoteByEmail/{email} [post]
+func (c *UserController) PromoteByEmail(ctx *gin.Context) {
+	email := ctx.Param("email")
+	_, err := c.userUsecase.PromteUserByEmail(email)
+	log.Println(err)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "User promoted to admin"})
+}
+
+// DemoteByEmail godoc
+// @Summary      Demote user by email
+// @Description  Demotes a user to regular user by email
+// @Tags         users
+// @Produce      json
+// @Param        email path string true "Email"
+// @Success      200 {object} map[string]string "message"
+// @Failure      406 {object} map[string]string "error"
+// @Router       /users/demoteByEmail/{email} [post]
+func (c *UserController) DemoteByEmail(ctx *gin.Context) {
+	email := ctx.Param("email")
+	_, err := c.userUsecase.DemoteUserByEmail(email)
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"error": err})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "User demoted to user"})
 }

@@ -80,14 +80,6 @@ type Blog struct {
 	Views    int      `json:"views,omitempty" bson:"views,omitempty"  `
 }
 
-// BlogFilters represents filters used for querying blogs.
-// @Description Filters used for querying blogs.
-// @Model BlogFilters
-// @Property BlogId string "ID of the blog post"
-// @Property AuthorId string "ID of the author"
-// @Property Title string "Title of the blog post"
-// @Property Date time.Time "Date of the blog post"
-// @Property Tags array[string] "Tags associated with the blog post"
 type BlogFilters struct {
 	BlogId   string    `json:"blog_id,omitempty" bson:"_id,omitempty"`
 	AuthorId string    `json:"author_id,omitempty" bson:"author_id,omitempty"`

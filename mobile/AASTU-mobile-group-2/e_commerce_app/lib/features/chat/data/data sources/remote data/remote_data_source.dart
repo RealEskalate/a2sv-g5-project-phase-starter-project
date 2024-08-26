@@ -165,6 +165,8 @@ class ChatRemoteDataSourceImpl extends ChatRemoteDataSource {
           .build(),
     );
     print(chatId);
+    print(message);
+    print(type);
     try {
       socket.emit('message:send', {
         'chatId': chatId,

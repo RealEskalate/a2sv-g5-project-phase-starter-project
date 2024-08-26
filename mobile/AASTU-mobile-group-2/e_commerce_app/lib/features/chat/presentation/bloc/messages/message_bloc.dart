@@ -56,6 +56,7 @@ class MessageBloc extends Bloc<MessageEvent, MessageState> {
         event.chat, event.content, event.type);
 
     emit(result.fold((l) => MessageSentFailure(state.messages),
+    
         (r) => MessageSentSuccess(state.messages)));
   }
 }

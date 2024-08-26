@@ -107,6 +107,7 @@ class ChatRepositoryImpl extends ChatRepository {
       try {
         final result =
             await remoteContrats.sendMessage(chatId, message, content);
+            print("result $result");
         return Right(result);
       } on ServerException {
         return Left(ServerFailure("FAILED TO CONNECT TO SERVER"));

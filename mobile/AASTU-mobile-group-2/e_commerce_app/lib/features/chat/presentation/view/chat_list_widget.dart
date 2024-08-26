@@ -66,7 +66,7 @@ Widget chatListItem(BuildContext context,{
       ],
     ),
     onTap: () {
-      Navigator.pushNamed(context, '/chat',arguments: chat.sender.id);
+      Navigator.pushNamed(context, '/chat',arguments: chat.id);
     },
   );
 }

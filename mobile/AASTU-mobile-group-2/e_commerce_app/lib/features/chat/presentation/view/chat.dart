@@ -367,7 +367,7 @@ class _ChatState extends State<Chat> {
                                   isUser: true,
                                   name: "name",
                                   date: "date"));
-                              _controller.clear();
+                              // _controller.clear();
                             });
 
                             context.read<MessageBloc>().add(

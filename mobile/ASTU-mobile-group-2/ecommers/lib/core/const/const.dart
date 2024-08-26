@@ -13,12 +13,12 @@ class Urls {
 
 class LoginApi {
   static const String registerApi =
-      'https://g5-flutter-learning-path-be.onrender.com/api/v2/auth/register';
+      'https://g5-flutter-learning-path-be.onrender.com/api/v3/auth/register';
   static const String loginApi =
-      'https://g5-flutter-learning-path-be.onrender.com/api/v2/auth/login';
+      'https://g5-flutter-learning-path-be.onrender.com/api/v3/auth/login';
 
   static const String findMe =
-      'https://g5-flutter-learning-path-be.onrender.com/api/v2/users/me';
+      'https://g5-flutter-learning-path-be.onrender.com/api/v3/users/me';
 }
 
 class ChatApi {

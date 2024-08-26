@@ -5,10 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
-import 'core/utility/socket_impl.dart';
 import 'features/chat/presentation/UI/Chat_page/IndividualChatPage.dart';
 import 'features/chat/presentation/UI/chatScreen/chatapp.dart';
 import 'features/chat/presentation/bloc/chat_bloc.dart';
+import 'features/chat/presentation/bloc/socket/socket_bloc.dart';
 import 'features/ecommerce/presentation/UI/add_product/add_product.dart';
 import 'features/ecommerce/presentation/UI/home/Product_detail/detail_page.dart';
 import 'features/ecommerce/presentation/UI/home/home.dart';
@@ -41,7 +41,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        
+        BlocProvider<SocketBloc>(
+          create: (context) => di.locator<SocketBloc>(),
+        ),
         BlocProvider<ProductBloc>(
           create: (context) => di.locator<ProductBloc>(),
         ),

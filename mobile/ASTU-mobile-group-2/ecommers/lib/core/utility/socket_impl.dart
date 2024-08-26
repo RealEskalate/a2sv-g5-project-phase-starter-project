@@ -42,6 +42,10 @@ class SocketService {
         _isInitialized = true;
       }
     });
+    socket.on('message:delivered', (data) {
+        print('Message delivered to recipient: $data');
+        // Add any additional handling here if needed
+    });
 
     socket.on('disconnect', (_) {
       print('Disconnected from the socket server');
@@ -72,18 +76,22 @@ class SocketService {
     socket.disconnect();
   }
 
-  void sendMessage(String chatId, String message) async {
+  Future<void> sendMessage(String chatId, String message) async {
+    print('chatId $chatId');
+    print(message);
     await _ensureInitialized();
     Map<String, String> messageSend = {
       'chatId': chatId,
       'content': message,
       'type': 'text',
     };
+    
     print(12344444);
     socket.emit('message:send', messageSend);
     print('Message sent: $messageSend');
   }
 
+  
   void listen(String event, Function(dynamic) callback) async {
     await _ensureInitialized();
     socket.on(event, callback);

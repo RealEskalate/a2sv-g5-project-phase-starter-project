@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../../../core/utility/global_message_part.dart';
 import '../../../../../core/utility/socket_impl.dart';
 import '../../../domain/entity/chat_entity.dart';
 
+import '../../bloc/socket/socket_bloc.dart';
+import '../../bloc/socket/socket_event.dart';
+import '../../bloc/socket/socket_state.dart';
 import 'chat_app_bar.dart';
 import 'single_text.dart';
 
@@ -28,24 +32,9 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
   void initState() {
     super.initState();
     _socketProvider = GetIt.instance<SocketService>();
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
-    });
-
-    _initializeSocketService();
-  }
-
-  void _initializeSocketService() async {
-    // Ensure socket connection
-    await _socketProvider.connect();
-
-    // Listen for incoming messages
-    _socketProvider.listen('message:received', (data) {
-      print(data);
-      print('Message received:');
-      print('=============================================================================');
-      
     });
   }
 
@@ -73,40 +62,44 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.white,
-        appBar:  PreferredSize(
+        appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: ChatAppBar(name: data['name']),
         ),
-        body: GestureDetector(
-          onTap: unfocusTextFields,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
-                  child: ListView.separated(
-                    controller: _scrollController,
-                    itemBuilder: (BuildContext context, int index) {
-                      final current = messageList?[index] ?? {};
+        body: BlocBuilder<SocketBloc, SocketState>(
+          builder: (context, state) {
+            return GestureDetector(
+              onTap: unfocusTextFields,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+                      child: ListView.separated(
+                        controller: _scrollController,
+                        itemBuilder: (BuildContext context, int index) {
+                          final current = messageList?[index] ?? {};
 
-                      return SingleText(
-                          profile_pic: 'assets/image/profileG.jpg',
-                          name: data['name'],
-                          text: current['content'],
-                          isMe: current['senderId'] == data['itMe'],
-                          time: '22:34');
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return const SizedBox(height: 20);
-                    },
-                    itemCount: messageList?.length ?? 0,
+                          return SingleText(
+                              profile_pic: 'assets/image/profileG.jpg',
+                              name: data['name'],
+                              text: current['content'],
+                              isMe: current['senderId'] == data['itMe'],
+                              time: '22:34');
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return const SizedBox(height: 20);
+                        },
+                        itemCount: messageList?.length ?? 0,
+                      ),
+                    ),
                   ),
-                ),
+                  _buildInputBar(data['chatId'], data['itMe']),
+                ],
               ),
-              _buildInputBar(data['chatId'], data['itMe']),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
@@ -153,16 +146,15 @@ class _IndividualChatPageState extends State<IndividualChatPage> {
                     ),
                     onPressed: () {
                       if (textInputControl.text.isNotEmpty) {
-                        _socketProvider.sendMessage(
-                            chatId, textInputControl.text);
-                        setState(() {
-                          GlobalMessagePart.gloablMessage[chatId]?.add({
-                            'content': textInputControl.text,
-                            'senderId': senderId
-                          });
-                          _scrollToBottom();
-                          textInputControl.clear();
+                        context
+                            .read<SocketBloc>()
+                            .add(SendMessage(chatId, textInputControl.text));
+                        GlobalMessagePart.gloablMessage[chatId]?.add({
+                          'content': textInputControl.text,
+                          'senderId': senderId
                         });
+                        _scrollToBottom();
+                        textInputControl.clear();
                       }
                     },
                   ),

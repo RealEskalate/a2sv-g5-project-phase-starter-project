@@ -35,7 +35,7 @@ class _SignInPageState extends State<SignInPage> {
           context.read<AuthBloc>().add(GetUserEvent());
         } else if (state is UserIsReady) {
           Navigator.pushNamedAndRemoveUntil(
-              context, route.homePage, (Route<dynamic> route) => false);
+              context, route.bottomNav, (Route<dynamic> route) => false);
         } else if (state is ErrorState) {
           showCustomSnackBar(context, state.message);
         }

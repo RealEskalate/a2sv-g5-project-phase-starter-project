@@ -70,7 +70,7 @@ class _AddUpdatePageState extends State<AddUpdatePage> {
           Navigator.pushReplacementNamed(context, route.detailPage);
         } else if (state is LoadedAllProductsState) {
           Navigator.pushNamedAndRemoveUntil(
-              context, route.homePage, (Route<dynamic> route) => false);
+              context, route.bottomNav, (Route<dynamic> route) => false);
         } else {
           log(state.toString());
         }

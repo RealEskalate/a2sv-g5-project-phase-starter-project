@@ -4,6 +4,7 @@ import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/chat/presentation/pages/chat_home_screen.dart';
 import '../../features/chat/presentation/pages/individiual_chat_screen.dart';
+import '../../features/chat/presentation/widget/nav_bar.dart';
 import '../../features/product/presentation/pages/add_update_page.dart';
 import '../../features/product/presentation/pages/detail_page.dart';
 import '../../features/product/presentation/pages/home_page.dart';
@@ -18,6 +19,7 @@ const String signInPage = 'signIn';
 const String signUpPage = 'signUp';
 const String chatHomeScreen = 'chattHomeScreen';
 const String individiualChatScreen= 'individiualChatScreen';
+const String bottomNav = 'bottomNav';
 
 Route<dynamic> controller(RouteSettings settings) {
   switch (settings.name) {
@@ -124,7 +126,10 @@ Route<dynamic> controller(RouteSettings settings) {
       return PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>
               const SplashPage());
-
+    case bottomNav:
+      return PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const GeneralPage());
     case signUpPage:
       return PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) =>

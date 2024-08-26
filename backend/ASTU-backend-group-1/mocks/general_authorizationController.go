@@ -53,6 +53,26 @@ func (_m *GeneralAuthorizationController) AuthenticationMiddleware() gin.Handler
 	return r0
 }
 
+// OWNERMiddleware provides a mock function with given fields:
+func (_m *GeneralAuthorizationController) OWNERMiddleware() gin.HandlerFunc {
+	ret := _m.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for OWNERMiddleware")
+	}
+
+	var r0 gin.HandlerFunc
+	if rf, ok := ret.Get(0).(func() gin.HandlerFunc); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(gin.HandlerFunc)
+		}
+	}
+
+	return r0
+}
+
 // USERMiddleware provides a mock function with given fields:
 func (_m *GeneralAuthorizationController) USERMiddleware() gin.HandlerFunc {
 	ret := _m.Called()

@@ -1,10 +1,13 @@
 package usecase
 
 import (
+	"astu-backend-g1/config"
 	"astu-backend-g1/domain"
 	"astu-backend-g1/infrastructure"
 	"crypto/rand"
 	"errors"
+	"fmt"
+	"log"
 	"math/big"
 	"time"
 )
@@ -21,7 +24,8 @@ func (useCase *userUsecase) Get() ([]domain.User, error) {
 	return useCase.userRepository.Get(domain.UserFilterOption{})
 }
 
-func (useCase *userUsecase) LoginUser(uname string, password string) (string, error) {
+func (useCase *userUsecase) LoginUser(uname string, password string,email string) (string, error) {
+	if uname != "" {
 	user, err := useCase.GetByUsername(uname)
 	if err != nil {
 		return "", err
@@ -34,9 +38,30 @@ func (useCase *userUsecase) LoginUser(uname string, password string) (string, er
 		return "", err
 	}
 	user.RefreshToken = refreshToken
-	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken})
+	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken,IsAdmin: user.IsAdmin})
 
 	return accesstoken, nil
+} else if email != "" {
+	user, err := useCase.GetByEmail(email)
+	
+	if err != nil {
+		return "", err
+	}
+	if user.IsActive == false {
+		return "", errors.New("Account not activated")
+	}
+	accesstoken, refreshToken, err := infrastructure.GenerateToken(&user, password)
+	if err != nil {
+		return "", err
+	}
+	log.Println(user)
+	user.RefreshToken = refreshToken
+	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: refreshToken,IsAdmin:user.IsAdmin})
+
+	return accesstoken, nil
+}else{
+	return "", errors.New("Invalid login credentials")
+}
 }
 
 func (useCase *userUsecase) Logout(email string) error {
@@ -45,7 +70,7 @@ func (useCase *userUsecase) Logout(email string) error {
 		return err
 	}
 	user.RefreshToken = ""
-	useCase.userRepository.Update(user.ID, user)
+	useCase.userRepository.Update(user.ID, domain.User{RefreshToken: "",IsAdmin:user.IsAdmin})
 	return nil
 }
 
@@ -69,8 +94,12 @@ func (useCase *userUsecase) ForgetPassword(email string) (string, error) {
 	user.VerifyToken = string(confirmationToken)
 
 	expirationTime := time.Now().Add(2 * time.Hour)
-	useCase.userRepository.Update(user.ID, domain.User{VerifyToken: string(confirmationToken), ExpirationDate: expirationTime})
-	link := "http://localhost:8000/users/resetPassword/?email=" + user.Email + "&token=" + string(confirmationToken)
+	useCase.userRepository.Update(user.ID, domain.User{VerifyToken: string(confirmationToken), ExpirationDate: expirationTime,IsAdmin: user.IsAdmin})
+	config_domain,err:= config.LoadConfig()
+	if err != nil {
+		return "", err
+	}
+	link :=config_domain.Domain + "/users/resetPassword/?email=" + user.Email + "&token=" + string(confirmationToken)
 	err = infrastructure.SendEmail(user.Email, "Password Reset", "This is the password reset link: ", link)
 	if err != nil {
 		return "", err
@@ -92,7 +121,7 @@ func (useCase *userUsecase) ResetPassword(email string, token string, password s
 			return "Token has expired", errors.New("Token expired")
 		}
 		user.Password, _ = infrastructure.PasswordHasher(password)
-		_, err := useCase.userRepository.Update(user.ID, domain.User{Password: user.Password})
+		_, err := useCase.userRepository.Update(user.ID, domain.User{Password: user.Password,IsAdmin: user.IsAdmin})
 		if err != nil {
 			return "password has not been updated", err
 		}
@@ -104,7 +133,7 @@ func (useCase *userUsecase) ResetPassword(email string, token string, password s
 func (useCase *userUsecase) GetByID(userID string) (domain.User, error) {
 	filter := domain.UserFilter{UserId: userID}
 	opts := domain.UserFilterOption{Filter: filter}
-	users, err := useCase.userRepository.Get(opts)
+	users, err := useCase.userRepository.Get(opts)	
 	return users[0], err
 }
 
@@ -123,7 +152,7 @@ func (useCase *userUsecase) AccountVerification(uemail string, confirmationToken
 		return err
 	}
 	if user.VerifyToken == confirmationToken {
-		_, err := useCase.userRepository.Update(user.ID, domain.User{IsActive: true})
+		_, err := useCase.userRepository.Update(user.ID, domain.User{IsActive: true,IsAdmin: user.IsAdmin})
 		return err
 	} else {
 		return errors.New("invalid token")
@@ -151,7 +180,11 @@ func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	u.VerifyToken = string(confirmationToken)
 	nUser, err := useCase.userRepository.Create(u)
 	if !nUser.IsAdmin {
-		link := "`http://localhost:8000/`users/accountVerification/?email=" + u.Email + "&token=" + string(confirmationToken)
+		config_domain,err:=config.LoadConfig()
+		if err != nil {
+			return nUser, err
+		}
+		link := config_domain.Domain + "/users/accountVerification/?email=" + u.Email + "&token=" + string(confirmationToken)
 		err = infrastructure.SendEmail(u.Email, "Registration Confirmation", "This sign up Confirmation email to verify: ", link)
 	}
 	if err != nil {
@@ -160,10 +193,93 @@ func (useCase *userUsecase) Create(u *domain.User) (domain.User, error) {
 	return nUser, err
 }
 
-func (useCase *userUsecase) Update(userId string, updateData domain.User) (domain.User, error) {
+func (useCase *userUsecase) UpdateUser(userId string, updateData domain.User) (domain.User, error) {
+	user,err := useCase.GetByEmail(updateData.Email)
+	updateData.IsAdmin = user.IsAdmin
+	updateData.IsActive = user.IsActive
+	updateData.Password = ""
+	if err != nil {
+		return user,err
+	}
 	return useCase.userRepository.Update(userId, updateData)
 }
 
+func (useCase *userUsecase) ChangePassword(email string, oldPassword string, newPassword string) (string, error) {
+	user, err := useCase.GetByEmail(email)
+	if err != nil {
+		return "", err
+	}
+	if !user.IsActive {
+		return "", errors.New("Account not activated")
+	}
+	oldPassword, _ = infrastructure.PasswordHasher(oldPassword)
+	if user.Password == oldPassword {
+		user.Password, _ = infrastructure.PasswordHasher(newPassword)
+		user.Password = newPassword
+		_, err := useCase.userRepository.Update(user.ID, domain.User{Password: newPassword,IsAdmin: user.IsAdmin})
+		if err != nil {
+			return "password has not been updated", err
+		}
+		return "Password change successful", nil
+	}
+	return "Invalid password", errors.New("Invalid password")
+}
 func (useCase *userUsecase) Delete(userId string) error {
 	return useCase.userRepository.Delete(userId)
+}
+func (useCase *userUsecase) PromteUser(username string) (domain.User, error) {
+	user, err := useCase.GetByUsername(username)
+	if user.IsAdmin {
+		return user,fmt.Errorf("user is already an admin")
+	}
+	if err != nil {
+		return user,fmt.Errorf("user not found")
+	}
+	user,err= useCase.userRepository.Update(user.ID, domain.User{IsAdmin: true})
+	if err !=nil{ 
+	return user,fmt.Errorf("user not found")
+	}
+	return user,err
+}
+func (useCase *userUsecase) DemoteUser(username string) (domain.User, error) {
+	user, err := useCase.GetByUsername(username)
+	if !user.IsAdmin {
+		return user,errors.New("user is not an admin")
+	}
+	if err != nil {
+		return user,fmt.Errorf("user not found")
+	}
+	user,err= useCase.userRepository.Update(user.ID, domain.User{IsAdmin: false})
+	if err !=nil{
+		return user,fmt.Errorf("user not found")
+	}
+	return user,err
+}
+func (useCase *userUsecase) PromteUserByEmail(email string) (domain.User, error) {
+	user, err := useCase.GetByEmail(email)
+	if user.IsAdmin {
+		return user,fmt.Errorf("user is already an admin")
+	}
+	if err != nil {
+		return user,fmt.Errorf("user not found")
+	}
+	user,err= useCase.userRepository.Update(user.ID, domain.User{IsAdmin: true})
+	if err !=nil{ 
+	return user,fmt.Errorf("user not found")
+	}
+	return user,err
+}
+func (useCase *userUsecase) DemoteUserByEmail(email string) (domain.User, error) {
+	user, err := useCase.GetByEmail(email)
+	if !user.IsAdmin {
+		return user,errors.New("user is not an admin")
+	}
+	if err != nil {
+		return user,fmt.Errorf("user not found")
+	}
+	user,err= useCase.userRepository.Update(user.ID, domain.User{IsAdmin: false})
+	if err !=nil{
+		return user,fmt.Errorf("user not found")
+	}
+	return user,err
 }

@@ -287,7 +287,7 @@ const SignUpForm = () => {
                 Currency
               </label>
               <select
-                id='timeZone'
+                id='currency'
                 {...register('currency')}
                 className='w-full border-2 border-[#DFEAF2] p-5 py-3 rounded-xl placeholder:text-blue-steel focus:border-blue-steel outline-none'
               >

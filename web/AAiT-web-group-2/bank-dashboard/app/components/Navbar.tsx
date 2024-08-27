@@ -20,7 +20,7 @@ const Navbar = ({onMenuClick}: {onMenuClick: () => void}) => {
         { session.status === "unauthenticated" && 
         <div className="flex gap-4 text-lg ">
           <Link className='text-custom-purple font-semibold text-lg hover:text-blue-500' href='/auth/signup'>Signup</Link>
-          <Link className='text-custom-purple font-semibold text-lg hover:text-blue-500' href='/auth/login'>Signin</Link>
+          <Link className='text-custom-purple font-semibold text-lg hover:text-blue-500' href='/auth/signin'>Signin</Link>
         </div>
         }
 

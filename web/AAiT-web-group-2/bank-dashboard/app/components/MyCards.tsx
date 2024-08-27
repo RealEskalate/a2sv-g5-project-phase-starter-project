@@ -51,23 +51,23 @@ const MyCards = () => {
       </div>
       <div className="flex justify-between items-center px-6 w-full">
         <div className="flex flex-col items-start w-1/2">
-          <span className="font-extralight text-[14px] sm:text-[16px]">
+          <span className="font-extralight text-[clamp(13px,2.5vw,16px)]">
             CARD HOLDER
           </span>
-          <span className="text-[16px] sm:text-[18px]">Eddy Cusuma</span>
+          <span className="text-[clamp(13px,2.5vw,16px)]">Eddy Cusuma</span>
         </div>
         <div className="flex flex-col items-start w-1/2">
           <span className="font-extralight text-[14px] sm:text-[16px]">
             VALID THRU
           </span>
-          <span className="text-[16px] sm:text-[18px]">12/22</span>
+          <span className="text-[clamp(13px,2.5vw,16px)]">12/22</span>
         </div>
       </div>
       <div className="flex justify-between items-center bg-my-card-bg-2 h-[70px] w-full px-6 rounded-b-lg">
-        <div className="text-[18px] sm:text-[26px]">3778 **** **** 1234</div>
+        <div className="text-[clamp(15px,2.5vw,22px)]">3778 **** **** 1234</div>
         <div className="flex justify-center items-center -space-x-3">
-          <div className="w-8 h-8 sm:w-6 sm:h-6 bg-white bg-opacity-50 rounded-full"></div>
-          <div className="w-8 h-8 sm:w-6 sm:h-6 bg-white bg-opacity-50 rounded-full"></div>
+          <div className="md:w-8 md:h-8 w-6 h-6 bg-white bg-opacity-50 rounded-full"></div>
+          <div className="md:w-8 md:h-8 w-6 h-6 bg-white bg-opacity-50 rounded-full"></div>
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { UserSignup } from '@/types/UserSignUp'
 
 export const bankApi = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://bank-dashboard-latest.onrender.com/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://bank-dashboard-aait-team-2.onrender.com/' }),
   endpoints: builder => ({
     getUserByUsername: builder.query<{data: User}, string>({
       query: (username) => `/user/${username}`

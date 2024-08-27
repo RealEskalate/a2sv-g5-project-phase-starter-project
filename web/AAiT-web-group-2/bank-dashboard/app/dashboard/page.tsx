@@ -13,19 +13,20 @@ const Dashboard = () => {
   return (
     <div className="flex flex-col space-y-6">
       <div className="flex flex-col justify-start lg:space-x-4 lg:flex-row lg:items-center ">
-        <div className="flex flex-col w-full lg:w-[63%]">
+        <div className=" flex flex-col
+         w-full lg:w-[63%]">
           <div className="flex justify-between items-center pb-4 text-[#343C6A] font-semibold">
             <p className="text-[22px]">My Cards</p>
             <a href="#" className="text-[17px]">
               See All
             </a>
           </div>
-          <div className="wrapper flex space-x-4 min-w-[400px] max-w-[700px] overflow-x-scroll whitespace-nowrap scroll-smooth snap-mandatory">
+          <div className="wrapper flex space-x-4 min-w-full max-w-[700px] overflow-x-scroll whitespace-nowrap scroll-smooth snap-mandatory">
             <MyCards />
             <MyCards />
           </div>
         </div>
-        <div className=" lg:w-[37%] w-full">
+        <div className="flex-initial lg:w-[37%] w-full">
           <p className="pb-3 text-[#343C6A] text-[22px] w-full font-semibold">
             Recent Transactions
           </p>

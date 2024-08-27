@@ -11,7 +11,7 @@ import { getAllCards } from "@/services/cardfetch";
 import { colors } from "@/constants";
 import { TbFileSad } from "react-icons/tb";
 import MyCardsLoad from "@/components/loadingComponents/MyCardsLoad";
-import CurrencyConverter from '@/components/CurrencyConverter';
+import CurrencyConverter from "@/components/CurrencyConverter";
 
 const Accounts = () => {
   const [cards, setCards] = useState<any[]>([]);
@@ -32,7 +32,7 @@ const Accounts = () => {
 
         const data = await getAllCards(storedToken);
         setCards(data.slice(0, 1));
-        console.log("shuluka",cards);
+        console.log("shuluka", cards);
         setError(null);
       } catch (err) {
         setError("Failed to fetch cards data!");
@@ -83,7 +83,7 @@ const Accounts = () => {
               </Link>
             </div>
             <div className="flex flex-1 items-stretch">
-            {loading ? (
+              {loading ? (
                 <MyCardsLoad count={1} />
               ) : Array.isArray(cards) && cards.length > 0 ? (
                 cards.map((card: any, index: number) => (
@@ -105,7 +105,7 @@ const Accounts = () => {
                     className={`text-gray-300 dark:text-[#993d4b] w-[80px] h-[80px] pb-2 block mx-auto font-thin`}
                     strokeWidth={1}
                   />
-                  
+
                   <span className="mx-auto my-auto md:text-xl text-sm text-[#993d4b] mb-5">
                     {error ? error : "There are no cards for now!"}
                   </span>
@@ -123,7 +123,7 @@ const Accounts = () => {
             <h2 className="text-lg font-semibold mb-4 dark:text-blue-500">
               Debit & Credit Overview
             </h2>
-            <div className='flex-1'>
+            <div className="flex-1">
               <AccountBarChart />
             </div>
           </div>
@@ -133,12 +133,13 @@ const Accounts = () => {
               <InvoicesCard />
             </div>
             {/* <h2 className="text-lg font-semibold mb-4">Currency Converter</h2> */}
-            <div className="mb-1">
-              <h2 className="text-lg font-semibold mt-2 mb-4">Currency Converter</h2>
-              <CurrencyConverter/>
+            <div className="py-10 ">
+              <h2 className="text-lg font-semibold mt-2 py-4">
+                Currency Converter
+              </h2>
+              <CurrencyConverter />
             </div>
           </div>
-          
         </div>
       </div>
     </div>
@@ -146,8 +147,6 @@ const Accounts = () => {
 };
 
 export default Accounts;
-
-
 
 // "use client";
 // import { useState, useEffect } from "react";
@@ -291,7 +290,7 @@ export default Accounts;
 //               <CurrencyConverter/>
 //             </div>
 //           </div>
-          
+
 //         </div>
 //       </div>
 //     </div>

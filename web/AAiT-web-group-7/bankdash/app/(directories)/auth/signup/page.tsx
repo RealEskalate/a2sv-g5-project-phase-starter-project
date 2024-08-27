@@ -30,16 +30,16 @@ interface FormValues {
 }
 
 const Signup = () => {
-  const { register, setValue, handleSubmit, formState, watch } =
+  const router = useRouter();
+  const { register, setValue, handleSubmit, formState } =
     useForm<FormValues>();
 
-  const [registerUser] = useUserRegistrationMutation();
-
+  const [registerUser, {isLoading, isError, isSuccess}] = useUserRegistrationMutation();
   const { errors } = formState;
 
   // onSubmit function
   const onSubmit = async (formData: FormValues) => {
-    console.log("formData", formData);
+    // console.log("formData", formData);
 
     try {
       const { data, error } = await registerUser({
@@ -57,11 +57,15 @@ const Signup = () => {
         preference: formData.preference,
       }).unwrap();
 
-      console.log("response from server upon registration", data);
+      if (data) {
+        // console.log("data", data);
+        router.push("/auth/login");
+      }
     } catch (error) {
       console.log("error from server upon registration", error);
     }
   };
+  
 
   const handleProfilePictureChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -112,6 +116,7 @@ const Signup = () => {
                   {errors.name?.message}
                 </p>
               </div>
+              
 
               <div className="w-[350px] flex flex-col gap-2">
                 <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
@@ -200,6 +205,7 @@ const Signup = () => {
                 {errors.username?.message}
               </p>
             </div>
+            
 
             <div className="w-[350px] flex flex-col gap-2">
               <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
@@ -285,6 +291,7 @@ const Signup = () => {
             </div>
             </div>
           </div>
+          
 
           <div className="flex justify-between  ">
             <div className="signup-container w-fit h-fit flex flex-col gap-6">
@@ -361,6 +368,7 @@ const Signup = () => {
                     {...register("preference.receiveMerchantOrder")}
                   />
                 </div>
+                
 
                 <div className=" flex flex-row-reverse gap-2">
                   <label className="text-[14px] font-epilogue font-semibold leading-[22px] text-[#515B6F]">
@@ -390,8 +398,13 @@ const Signup = () => {
                 type="submit"
                 className="w-full py-1 bg-[#4640DE] text-white rounded-[6px] text-center text-[16px] font-semibold"
               >
-                Submit Preferences
+                {
+                  isLoading ? "loading..." : 'Submit Preferences'
+                }
               </button>
+              {
+                isSuccess && <p className="text-green-500 text-center w-[200px] mx-auto">Registration successful redirecting to login page</p>
+              }
               <div className="text-center text-sm text-gray-500">
                 Already have an account? {' '}
                 <Link href='/auth/login' className="hover:underline text-[#4640DE]" >Login</Link>
@@ -406,3 +419,7 @@ const Signup = () => {
 };
 
 export default Signup;
+
+
+
+

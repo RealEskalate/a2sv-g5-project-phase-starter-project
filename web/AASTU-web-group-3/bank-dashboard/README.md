@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# BankDash
 
-## Getting Started
+Welcome to the **BankDash**! This project manages various banking operations through a web application. It includes features like user authentication, account management, loans, investments, transactions, and more. The project is developed using Next.js, TypeScript, Tailwind CSS, and Redux for state management.
+![Screenshot](../Screenshot%202024-08-26%20200823.png)
 
-First, run the development server:
+## Table of Contents
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- [Project Structure](#project-structure)
+- [Setup Instructions](#setup-instructions)
+- [Features](#features)
+- [Technologies Used](#technologies-used)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+This project is structured into several branches, each managed by different teams. Each branch corresponds to a specific feature set or module of the banking system. Below are the main branches:
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Setup Instructions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+To set up the project locally, follow these steps:
 
-## Deploy on Vercel
+1. **Clone the repository**:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   git clone https://github.com/RealEskalate/a2sv-g5-starter-project
+2. **Pull from branch**:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+   ```bash
+   git pull origin aastu.web.g3.main
+3. **Navigate to the project directory**:
+
+   ```bash
+   cd bank-dashboard
+4. **Install dependencies**:
+
+   ```bash
+   npm install
+4. **Run the development server**:
+
+   ```bash
+   npm run dev
+
+5. **Open application**
+    ```bash
+    via localhost:300 on browser
+
+## Features
+
+### Authentication (Group 1)
+
+- **Login Page**: Secure login with email and password.
+- **Sign-up Page**: Register a new account with multi-step forms.
+
+### Dashboard 
+
+- Overview of user’s financial status, including account balances, recent transactions, and alerts.
+
+### Account Management 
+
+- View and edit account details.
+- Manage multiple bank accounts under one user profile.
+
+### Investments 
+
+- Browse available investment options.
+- Manage investment portfolios.
+
+### Loans 
+
+- Apply for new loans.
+- Manage existing loans, view repayment schedules, and make payments.
+
+### Transactions 
+
+- View all transaction history.
+- Transfer money between accounts or to external accounts.
+
+### Services 
+
+- Access various banking services like bill payments and subscriptions.
+
+### Settings 
+- Update personal information and account preferences.
+- Manage notification settings and security options.
+
+## Technologies Used
+
+- **Next.js 14**: Framework for building React applications with server-side rendering and static site generation.
+- **TypeScript**: Type-safe JavaScript for better development experience.
+- **Tailwind CSS**: Utility-first CSS framework for rapid UI development.
+- **Redux Toolkit (RTK Query)**: State management and data fetching.
+- **NextAuth.js**: Authentication library for handling login and sign-up.

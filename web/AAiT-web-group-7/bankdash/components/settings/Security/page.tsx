@@ -3,6 +3,7 @@ import { Switch } from "@/components/ui/switch";
 import React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import ErrorMessage from "@/components/Message/ErrorMessage";
 interface FormData {
   password: string;
   confirmPassword: string;
@@ -51,34 +52,14 @@ const SecuritySettings = () => {
                 message: "Password is required",
               },
               minLength: {
-                value: 8,
-                message: "Password must be at least 8 characters",
+                value: 6,
+                message: "Password must be at least 6 characters",
               },
             })}
             className="w-[510px] border border-[#DFEAF2] rounded-xl px-4 py-3"
+            placeholder="Enter your current password"
           />
-          <p
-            className="text-red-600 flex  text-xs font-semibold gap-1
-              "
-          >
-            {errors.password && (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                className="size-4"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
-                />
-              </svg>
-            )}
-            {errors.password?.message}{" "}
-          </p>
+          <ErrorMessage message={errors.password?.message} />
         </div>
 
         <div className="flex flex-col items-start justify-center gap-2">
@@ -91,57 +72,21 @@ const SecuritySettings = () => {
                 message: "Password is required",
               },
               minLength: {
-                value: 8,
-                message: "Password must be at least 8 characters",
+                value: 6,
+                message: "Password must be at least 6 characters",
               },
             })}
             className="w-[510px] border border-[#DFEAF2] rounded-xl px-4 py-3"
+            placeholder="Enter your new password"
           />
-          <p
-            className="text-red-600 text-xs flex font-semibold gap-1
-            "
-          >
-            {errors.confirmPassword && (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                className="size-4"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
-                />
-              </svg>
-            )}
-            {errors.confirmPassword?.message}{" "}
-          </p>
+          <ErrorMessage message={errors.confirmPassword?.message} />
+
           {!errors.confirmPassword && passwordMismatch && (
-            <div
-              className="text-red-600 flex text-xs  font-semibold gap-1
-                "
-            >
-              {
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"
-                  />
-                </svg>
+            <ErrorMessage
+              message={
+                "New password must be different from the existing password."
               }
-              New password must be different from the existing password.
-            </div>
+            />
           )}
         </div>
 

@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const cardApi = createApi({
   reducerPath: 'cardApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://bank-dashboard-latest.onrender.com",
+    baseUrl: "https://bank-dashboard-aait-latest-sy48.onrender.com",
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {

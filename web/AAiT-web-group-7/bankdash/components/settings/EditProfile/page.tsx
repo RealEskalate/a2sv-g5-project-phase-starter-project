@@ -220,7 +220,6 @@ const EditProfile = () => {
 
               <div className="flex flex-col items-start justify-center gap-2">
                 <label className="text-[#232323] ">Country</label>
-
                 <select
                   {...register("Country", {
                     required: {

@@ -15,10 +15,11 @@ type Form = {
   PresentAddress: string;
   City: string;
   Country: string;
+  profileImage: string;
 };
 const EditProfile = () => {
   const form = useForm<Form>();
-  const { register, handleSubmit, formState } = form;
+  const { register, handleSubmit, formState,setValue } = form;
   const { errors } = formState;
   const onSubmit = (data: Form) => {
     console.log(data);
@@ -38,6 +39,8 @@ const EditProfile = () => {
 
     if (file) {
       setProfileImage(file);
+      setValue("profileImage", file.name)
+      
     }
   };
   return (

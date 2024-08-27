@@ -2,7 +2,7 @@
 import React from "react";
 import { useState } from "react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useEffect } from "react";
 import ErrorMessage from "@/components/Message/ErrorMessage";
 import { Switch } from "@/components/ui/switch";
@@ -11,9 +11,15 @@ import { timezones } from "@/components/constants/timezones";
 import { CountryData } from "@/components/constants/countries";
 import { useUserRegistrationMutation } from "@/redux/api/authentication-controller";
 
-interface FormData {
+interface prefData {
   timezone: string;
   currency: string;
+  transaction: boolean;
+  merchant: boolean;
+  recommendation: boolean;
+  twoFactorAuth: boolean;
+}
+interface FormData {
   Name: string;
   Email: string;
   DOT: string;
@@ -24,9 +30,6 @@ interface FormData {
   PresentAddress: string;
   City: string;
   Country: string;
-  transaction: boolean;
-  merchant: boolean;
-  recommendation: boolean;
   profilePicture: File;
 }
 
@@ -34,38 +37,49 @@ const PageLayout = () => {
   const [registerUser] = useUserRegistrationMutation();
   const [activeButton, setActiveButton] = useState("edit");
   const [profileImage, setProfileImage] = useState<File | null>(null);
-  
 
   const form = useForm<FormData>();
-  const { register, handleSubmit, formState, setValue } = form;
+  const { register, handleSubmit, formState, setValue,getValues } = form;
+
+  const {
+    control,
+    handleSubmit: handleSubmitPref,
+    formState: { errors: errorsPref },
+  } = useForm<prefData>({
+    defaultValues: {
+      currency: "",
+      timezone: "",
+      transaction: false,
+      merchant: false,
+      recommendation: false,
+      twoFactorAuth: false,
+    },
+  });
+
   const { errors } = formState;
-  const [filledElements, setFilledElements] = useState(0);
 
-  const handleSwitchChange =
-    (checkParameter: any) => (e: React.FormEvent<HTMLButtonElement>) => {
-      const inputElement = e.currentTarget.querySelector("input");
-      if (inputElement) {
-        const isChecked = inputElement.checked;
-        setValue(checkParameter, isChecked);
-      }
-    };
-
-  const onSubmit = async (formData: FormData) => {
+  const onSubmit = (formData: FormData) => {
     console.log("formData", formData);
+    setActiveButton("preferences");
+  };
+  const onsubmitPref = async (formData: prefData) => {
+    console.log("formData", formData);
+    const allValues = getValues();
+    console.log("All Form Values:", allValues);
 
     try {
       const { data, error } = await registerUser({
-        name: formData.Name,
-        email: formData.Email,
-        dateOfBirth: formData.DOT,
-        password: formData.password,
-        username: formData.UN,
-        permanentAddress: formData.PA,
-        postalCode: formData.PC,
-        presentAddress: formData.PresentAddress,
-        city: formData.City,
-        country: formData.Country,
-        profilePicture: formData.profilePicture,
+        name: allValues.Name,
+        email: allValues.Email,
+        dateOfBirth: allValues.DOT,
+        permanentAddress: allValues.PA,
+        postalCode: allValues.PC,
+        username: allValues.UN,
+        password: allValues.password,
+        presentAddress: allValues.PresentAddress,
+        city: allValues.City,
+        country: allValues.Country,
+        profilePicture: allValues.profilePicture,
         currency: formData.currency,
         sentOrReceiveDigitalCurrency: formData.transaction,
         receiveMerchantOrder: formData.merchant,
@@ -76,7 +90,7 @@ const PageLayout = () => {
 
       console.log("response from server upon registration", data);
     } catch (error) {
-      console.log("error from server upon registration", error);
+      console.log("error from server upon registration");
     }
   };
 
@@ -89,35 +103,19 @@ const PageLayout = () => {
     if (file) {
       setProfileImage(file);
       setValue("profilePicture", file);
-
     }
   };
-  useEffect(() => {
-    if (filledElements === 10) {
-      console.log("No errors!");
-      setActiveButton(() => {
-        if (filledElements === 10) {
-          return "preferences";
-        } else {
-          return "edit";
-        }
-      });
-    } else {
-      console.log("Errors:", errors);
-      setActiveButton("edit");
-    }
-  }, [filledElements, errors, setActiveButton]);
 
-  const handleClick = () => {
-    setFilledElements(() => (10 - Object.keys(errors).length));
-  };
 
   return (
     <div className="px-5 py-5 flex justify-center">
       <div className="flex flex-col rounded-3xl w-fill px-10  bg-white ">
         <h1 className="text-4xl font-poppins font-bold text-center text-[#4640DE] py-5 flex flex-row justify-center gap-2">
           Sign Up Today
-          <img src="/pubimg/signup.svg" className="size-10 flex flex-row justify-center text-[#4640DE]" />
+          <img
+            src="/pubimg/signup.svg"
+            className="size-10 flex flex-row justify-center text-[#4640DE]"
+          />
         </h1>
         <div className="flex flex-row font-serif   w-fill text-[#718EBF] gap-12 ">
           <div
@@ -145,9 +143,12 @@ const PageLayout = () => {
             <div className="">Preferences</div>
           </div>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <div>
           {activeButton === "edit" && (
-            <div className="flex flex-col text-sm">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col text-sm"
+            >
               <div className="flex  gap-8 py-10">
                 <div className="relative ">
                   {profileImage ? (
@@ -176,9 +177,10 @@ const PageLayout = () => {
                       onChange={handleProfilePictureChange}
                       className="hidden"
                     />
-
                   </div>
-                  <ErrorMessage message={(errors.profilePicture?.message) as string} />
+                  <ErrorMessage
+                    message={errors.profilePicture?.message as string}
+                  />
                 </div>
                 <div className="flex flex-col items-center gap-5">
                   <div className="flex gap-8">
@@ -367,7 +369,6 @@ const PageLayout = () => {
                   <div className="flex w-full justify-end  ">
                     <button
                       type="submit"
-                      onClick={handleClick}
                       className="px-10 py-3 text-white rounded-xl bg-[#1814F3]"
                     >
                       Next
@@ -375,78 +376,124 @@ const PageLayout = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </form>
           )}
           {activeButton === "preferences" && (
-            <div className="flex flex-col mt-10 text-sm space-y-10">
+            <form
+              onSubmit={handleSubmitPref(onsubmitPref)}
+              className="flex flex-col mt-10 text-sm space-y-10"
+            >
               <div className="flex flex-row gap-5">
                 <div className="flex flex-col gap-3">
                   <div className="text-[#232323]">Currency</div>
-                  <select
-                    className="text-[#718EBF] rounded-xl w-[510px]  border border-[#DFEAF2] py-3 px-5"
-                    {...register("currency", {
-                      required: {
-                        value: true,
-                        message: "Select a currency",
-                      },
-                    })}
-                  >
-                    <option value="">Select a currency</option>
-                    {Currencies.map((currency) => (
-                      <option value={currency.value}>{currency.label}</option>
-                    ))}
-                  </select>
-                  <ErrorMessage message={errors.currency?.message} />
+                  <Controller
+                    name="currency"
+                    control={control}
+                    rules={{ required: "Select a currency" }}
+                    render={({ field }) => (
+                      <select
+                        {...field}
+                        className="text-[#718EBF] rounded-xl w-[510px] border border-[#DFEAF2] py-3 px-5"
+                      >
+                        <option value="">Select a currency</option>
+                        {Currencies.map((currency) => (
+                          <option key={currency.value} value={currency.value}>
+                            {currency.label}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  />
+                  <ErrorMessage message={errorsPref.currency?.message} />
                 </div>
                 <div className="flex flex-col gap-3">
                   <div className="text-[#232323]">Time Zone</div>
 
-                  <select
-                    className="text-[#718EBF] rounded-xl w-[510px]  border border-[#DFEAF2] py-3 px-5"
-                    {...register("timezone", {
-                      required: {
-                        value: true,
-                        message: "Select a timezone",
-                      },
-                    })}
-                  >
-                    <option value="">Select a currency</option>
-                    {timezones.map((time) => (
-                      <option value={time.offset}>{`(${
-                        time.offset === 0
-                          ? "GMT"
-                          : time.offset > 0
-                          ? "GMT+"
-                          : "GMT-"
-                      }${
-                        Math.abs(time.offset) > 0 ? Math.abs(time.offset) : ""
-                      }) ${time.name}`}</option>
-                    ))}
-                  </select>
-                  <ErrorMessage message={errors.timezone?.message} />
+                  <Controller
+                    name="timezone"
+                    control={control}
+                    rules={{ required: "Select a timezone" }}
+                    render={({ field }) => (
+                      <select
+                        {...field}
+                        className="text-[#718EBF] rounded-xl w-[510px] border border-[#DFEAF2] py-3 px-5"
+                      >
+                        <option value="">Select a timezone</option>
+                        {timezones.map((time) => (
+                          <option key={time.name} value={time.offset}>
+                            {`(${
+                              time.offset === 0
+                                ? "GMT"
+                                : time.offset > 0
+                                ? "GMT+"
+                                : "GMT-"
+                            }${
+                              Math.abs(time.offset) > 0
+                                ? Math.abs(time.offset)
+                                : ""
+                            }) ${time.name}`}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  />
+                  <ErrorMessage message={errorsPref.timezone?.message} />
                 </div>
               </div>
               <div className="flex flex-col gap-5">
                 <div className="font-semibold">Notification</div>
                 <div className="flex items-center gap-4">
-                  <Switch {...register("transaction")} />
-                  <div>I send or receive digita currency</div>
+                  <Controller
+                    name="transaction"
+                    control={control}
+                    render={({ field }) => (
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <div>Send or Receive digital currency</div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Switch {...register("merchant")} />
-                  <div>I receive merchant order</div>
+                  <Controller
+                    name="merchant"
+                    control={control}
+                    render={({ field }) => (
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <div>Receive merchant order</div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Switch {...register("recommendation")} />
-                  <div>There are recommendation for my account</div>
+                  <Controller
+                    name="recommendation"
+                    control={control}
+                    render={({ field }) => (
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <div>Get recommendation</div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Switch
-                    {...register("recommendation")}
-                    onChange={handleSwitchChange("recommendation")}
+                  <Controller
+                    name="twoFactorAuth"
+                    control={control}
+                    render={({ field }) => (
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    )}
                   />
 
-                  <div>Enable or disable two factor authentication</div>
+                  <div>Enable two factor authentication</div>
                 </div>
               </div>
               <div className="flex w-full justify-between mt-10 ">
@@ -465,9 +512,9 @@ const PageLayout = () => {
                   Sign Up
                 </button>
               </div>
-            </div>
+            </form>
           )}
-        </form>
+        </div>
         <div
           className={`text-center flex justify-center text-gray-500 ${
             activeButton === "edit" ? "-mt-8" : "mt-8"

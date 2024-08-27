@@ -6,6 +6,8 @@ import (
 	"errors"
 	"sort"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 type BlogUsecases struct {
@@ -14,11 +16,11 @@ type BlogUsecases struct {
 	UserUsecase domain.IUserUsecase
 }
 
-func NewBlogUsecase(aiService domain.AiService, blogrepo domain.IBlogRepository, userusecase domain.IUserUsecase) domain.IBlogUsecase {
+func NewBlogUsecase(aiService domain.AiService, blogRepo domain.IBlogRepository, userUsecase domain.IUserUsecase) domain.IBlogUsecase {
 	return &BlogUsecases{
 		AiService:   aiService,
-		BlogRepo:    blogrepo,
-		UserUsecase: userusecase,
+		BlogRepo:    blogRepo,
+		UserUsecase: userUsecase,
 	}
 }
 
@@ -42,15 +44,12 @@ func (u *BlogUsecases) GetAllBlogs(ctx context.Context, sortOrder string, page, 
 		blogWithPopularityList[i] = blogWithPopularity{Blog: blog, Popularity: popularity}
 	}
 
-	if sortOrder == "ASC" {
-		sort.Slice(blogWithPopularityList, func(i, j int) bool {
+	sort.Slice(blogWithPopularityList, func(i, j int) bool {
+		if sortOrder == "ASC" {
 			return blogWithPopularityList[i].Popularity < blogWithPopularityList[j].Popularity
-		})
-	} else {
-		sort.Slice(blogWithPopularityList, func(i, j int) bool {
-			return blogWithPopularityList[i].Popularity > blogWithPopularityList[j].Popularity
-		})
-	}
+		}
+		return blogWithPopularityList[i].Popularity > blogWithPopularityList[j].Popularity
+	})
 
 	sortedBlogs := make([]domain.Blog, len(blogs))
 	for i, bw := range blogWithPopularityList {
@@ -65,16 +64,18 @@ func (u *BlogUsecases) GetBlogByID(ctx context.Context, id int) (domain.Blog, er
 }
 
 func (u *BlogUsecases) CreateBlog(ctx context.Context, blog domain.Blog) (domain.Blog, error) {
-	blog.ID = generateUniqueID() // Generate a new unique ID
+	blog.ID = generateUniqueID()
 
-	user, err := u.UserUsecase.GetUserByUsername(ctx, blog.Author)
-	if err != nil {
-		return domain.Blog{}, err
+	claims, ok := ctx.Value("user").(jwt.MapClaims)
+	if !ok {
+		return domain.Blog{}, errors.New("failed to get user claims from context")
 	}
 
-	authorID := user.ID
+	username := claims["username"].(string)
+	userID := int(claims["id"].(float64))
+	blog.Author = username
 
-	_, err = u.UserUsecase.AddBlog(ctx, authorID, blog)
+	_, err := u.UserUsecase.AddBlog(ctx, userID, blog)
 	if err != nil {
 		return domain.Blog{}, err
 	}
@@ -83,23 +84,30 @@ func (u *BlogUsecases) CreateBlog(ctx context.Context, blog domain.Blog) (domain
 }
 
 func (u *BlogUsecases) UpdateBlog(ctx context.Context, id int, updatedBlog domain.Blog) (domain.Blog, error) {
+	claims, ok := ctx.Value("user").(jwt.MapClaims)
+	if !ok {
+		return domain.Blog{}, errors.New("failed to get user claims from context")
+	}
+
+	username := claims["username"].(string)
 	existingBlog, err := u.BlogRepo.GetBlogByID(ctx, id)
 	if err != nil {
 		return domain.Blog{}, err
 	}
 
+	if username != existingBlog.Author {
+		return domain.Blog{}, errors.New("you are not authorized to update this blog")
+	}
+
 	if updatedBlog.Title != "" {
 		existingBlog.Title = updatedBlog.Title
 	}
-
 	if updatedBlog.Content != "" {
 		existingBlog.Content = updatedBlog.Content
 	}
-
 	if !updatedBlog.Date.IsZero() {
 		existingBlog.Date = updatedBlog.Date
 	}
-
 	if len(updatedBlog.Tags) > 0 {
 		existingBlog.Tags = updatedBlog.Tags
 	}
@@ -108,6 +116,14 @@ func (u *BlogUsecases) UpdateBlog(ctx context.Context, id int, updatedBlog domai
 }
 
 func (u *BlogUsecases) DeleteBlog(ctx context.Context, id int) error {
+	claims, ok := ctx.Value("user").(jwt.MapClaims)
+	if !ok {
+		return errors.New("failed to get user claims from context")
+	}
+
+	username := claims["username"].(string)
+	userRole := claims["role"].(string)
+
 	blog, err := u.BlogRepo.GetBlogByID(ctx, id)
 	if err != nil {
 		return err
@@ -118,17 +134,20 @@ func (u *BlogUsecases) DeleteBlog(ctx context.Context, id int) error {
 		return err
 	}
 
+	if userRole != "admin" && blog.Author != username {
+		return errors.New("you are not authorized to delete this blog")
+	}
+
 	u.UserUsecase.DeleteBlog(ctx, user.ID, id)
 
 	return u.BlogRepo.DeleteBlog(ctx, id)
 }
 
 func (u *BlogUsecases) Search(ctx context.Context, author string, tags []string, title string) ([]domain.Blog, error) {
+	blogMap := make(map[int]int)
 	var results []domain.Blog
 	var tempResults []domain.Blog
 	var err error
-
-	blogMap := make(map[int]int)
 
 	if author != "" {
 		tempResults, err = u.BlogRepo.SearchByAuthor(ctx, author)
@@ -184,22 +203,29 @@ func (u *BlogUsecases) Search(ctx context.Context, author string, tags []string,
 	return results, nil
 }
 
-func (u *BlogUsecases) LikeBlog(ctx context.Context, blogID int, authorID int) (domain.Blog, error) {
+func (u *BlogUsecases) LikeBlog(ctx context.Context, blogID int) (domain.Blog, error) {
 	blog, err := u.BlogRepo.GetBlogByID(ctx, blogID)
 	if err != nil {
 		return domain.Blog{}, err
 	}
 
+	claims, ok := ctx.Value("user").(jwt.MapClaims)
+	if !ok {
+		return domain.Blog{}, errors.New("failed to get user claims from context")
+	}
+
+	user := claims["username"].(string)
+
 	for _, like := range blog.Likes {
-		if like.UserID == authorID {
+		if like.User == user {
 			return domain.Blog{}, errors.New("user already liked this blog")
 		}
 	}
 
 	newLike := domain.Like{
-		ID:     len(blog.Likes) + 1,
-		UserID: authorID,
-		Date:   time.Now(),
+		ID:   len(blog.Likes) + 1,
+		User: user,
+		Date: time.Now(),
 	}
 	blog.Likes = append(blog.Likes, newLike)
 
@@ -211,22 +237,29 @@ func (u *BlogUsecases) LikeBlog(ctx context.Context, blogID int, authorID int) (
 	return blog, nil
 }
 
-func (u *BlogUsecases) DislikeBlog(ctx context.Context, blogID int, authorID int) (domain.Blog, error) {
+func (u *BlogUsecases) DislikeBlog(ctx context.Context, blogID int) (domain.Blog, error) {
 	blog, err := u.BlogRepo.GetBlogByID(ctx, blogID)
 	if err != nil {
 		return domain.Blog{}, err
 	}
 
+	claims, ok := ctx.Value("user").(jwt.MapClaims)
+	if !ok {
+		return domain.Blog{}, errors.New("failed to get user claims from context")
+	}
+
+	user := claims["username"].(string)
+
 	for _, dislike := range blog.Dislikes {
-		if dislike.UserID == authorID {
+		if dislike.User == user {
 			return domain.Blog{}, errors.New("user already disliked this blog")
 		}
 	}
 
 	newDislike := domain.Dislike{
-		ID:     len(blog.Dislikes) + 1,
-		UserID: authorID,
-		Date:   time.Now(),
+		ID:   len(blog.Dislikes) + 1,
+		User: user,
+		Date: time.Now(),
 	}
 	blog.Dislikes = append(blog.Dislikes, newDislike)
 
@@ -238,15 +271,22 @@ func (u *BlogUsecases) DislikeBlog(ctx context.Context, blogID int, authorID int
 	return blog, nil
 }
 
-func (u *BlogUsecases) AddComent(ctx context.Context, blogID int, authorID int, content string) (domain.Blog, error) {
+func (u *BlogUsecases) AddComment(ctx context.Context, blogID int, content string) (domain.Blog, error) {
 	blog, err := u.BlogRepo.GetBlogByID(ctx, blogID)
 	if err != nil {
 		return domain.Blog{}, err
 	}
 
+	claims, ok := ctx.Value("user").(jwt.MapClaims)
+	if !ok {
+		return domain.Blog{}, errors.New("failed to get user claims from context")
+	}
+
+	user := claims["username"].(string)
+
 	newComment := domain.Comment{
 		ID:      len(blog.Comments) + 1,
-		UserID:  authorID,
+		User:    user,
 		Content: content,
 		Date:    time.Now(),
 	}

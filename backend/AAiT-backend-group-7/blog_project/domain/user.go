@@ -56,7 +56,6 @@ type IUserController interface {
 	CreateUser(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
-	AddBlog(c *gin.Context)
 	Login(c *gin.Context)
 	Logout(c *gin.Context)
 	ForgetPassword(c *gin.Context)

@@ -1,6 +1,8 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { useUserLoginMutation } from "@/redux/api/authentication-controller";
 import { signIn } from "next-auth/react";
 import ErrorMessage from "@/components/Message/ErrorMessage";
@@ -11,9 +13,11 @@ interface FormValues {
 }
 
 const Login = () => {
+  const router = useRouter();
   const [login, { isLoading }] = useUserLoginMutation();
   const { register, handleSubmit, formState } = useForm<FormValues>();
   const { errors } = formState;
+  const [loginErrorMessage, setErrorMessage] = useState("");
   const onSubmit = async (inputData: FormValues) => {
     console.log("inputData", inputData);
 
@@ -25,6 +29,12 @@ const Login = () => {
         callbackUrl: "/",
       });
       console.log("response", response);
+      if (response?.ok) {
+        setErrorMessage("");
+        router.push("/");
+      } else {
+        setErrorMessage("Invalid email or password");
+      }
     } catch (error) {
       console.log("error", error);
     }
@@ -72,7 +82,14 @@ const Login = () => {
                   },
                 })}
               />
+              <div>
               <ErrorMessage message={errors.password?.message} />
+              {!errors.password && loginErrorMessage && (
+              <ErrorMessage message={loginErrorMessage} />
+
+            )}
+              </div>
+              
             </div>
             <button
               className="bg-[#4640DE] text-white rounded-[80px] px-[24px] py-[12px] w-max-[408px] h-[50px] mt-3"

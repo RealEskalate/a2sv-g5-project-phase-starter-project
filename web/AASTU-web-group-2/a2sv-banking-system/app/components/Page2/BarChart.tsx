@@ -43,7 +43,7 @@ const BarChart: React.FC<{ token: string }> = ({ token }) => {
   useEffect(() => {
     const fetchBalanceHistory = async () => {
       try {
-        const response = await getBalanceHistory(6, token); // Fetching data for the last 6 months
+        const response = await getBalanceHistory(token); // Fetching data for the last 6 months
         const data = response.data;
 
 

@@ -1,25 +1,35 @@
-// DarkModeContext.tsx
-"use client"
-// DarkModeContext.tsx
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+"use client";
+
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+} from "react";
+import useLocalStorageState from "use-local-storage-state";
 
 interface DarkModeContextType {
   darkMode: boolean;
   toggleDarkMode: () => void;
 }
 
-const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined);
+const DarkModeContext = createContext<DarkModeContextType | undefined>(
+  undefined
+);
 
-export const DarkModeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [darkMode, setDarkMode] = useState<boolean>(false);
-
-  useEffect(() => {
-    document.body.classList.toggle('dark', darkMode);
-  }, [darkMode]);
+export const DarkModeProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [darkMode, setDarkMode] = useLocalStorageState("darkMode", {
+    defaultValue: true,
+  });
 
   const toggleDarkMode = () => {
-    setDarkMode(prevMode => !prevMode);
+    setDarkMode((prevMode) => !prevMode);
   };
+
+  React.useEffect(() => {
+    document.body.classList.toggle("dark", darkMode);
+  }, [darkMode]);
 
   return (
     <DarkModeContext.Provider value={{ darkMode, toggleDarkMode }}>
@@ -31,7 +41,7 @@ export const DarkModeProvider: React.FC<{ children: ReactNode }> = ({ children }
 export const useDarkMode = () => {
   const context = useContext(DarkModeContext);
   if (context === undefined) {
-    throw new Error('useDarkMode must be used within a DarkModeProvider');
+    throw new Error("useDarkMode must be used within a DarkModeProvider");
   }
   return context;
 };

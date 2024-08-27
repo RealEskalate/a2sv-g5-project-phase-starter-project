@@ -14,13 +14,15 @@ const ImageComponent: React.FC<ImageComponentProps> = ({ src, alt, width, height
   return (
     <div className='flex'>
       <div className='flex flex-col gap-4'>
-        <div className='flex justify-center'>
+        <div className='flex '>
           <Image
             width={width}
             height={height}
-            className='rounded-full'
+            // className='rounded-full'
             alt={alt}
             src={src}
+            className="w-full h-full object-cover rounded-full  dark:fill-black "
+
           />
         </div>
         <div className='flex flex-col gap-2'>

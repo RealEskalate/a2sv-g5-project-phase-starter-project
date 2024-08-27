@@ -12,7 +12,7 @@ const PageOne = () => {
       <div className="flex flex-col gap-10 w-1/2">
         {/* Welcome Text */}
         <h1 className="text-4xl font-black text-[#202430] dark:text-[#cdd6f4] mt-4 justify-center">
-          Basic Information
+          Basics
         </h1>
 
         {/* Form Container */}

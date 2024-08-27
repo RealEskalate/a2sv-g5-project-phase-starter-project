@@ -14,9 +14,22 @@ import { useRouter } from "next/navigation";
 import { getCards } from "@/lib/api/cardController";
 import { GetCardsResponse, Card as CardType } from "@/types/cardController.Interface";
 import Refresh from "../api/auth/[...nextauth]/token/RefreshToken";
+import { TransactionData, TransactionResponse } from "@/types/transactionController.interface";
 
-
+import {
+  getTransactionIncomes,
+  getTransactions,
+  getTransactionsExpenses,
+} from "@/lib/api/transactionController";
 // import {RecentTransaction} from "@/components/RecentTransaction"
+import {
+MdHome,
+MdSettings,
+MdAttachMoney,
+MdAccountBalance,
+} from "react-icons/md";
+import { ShimmerCreditCard } from "../creditCards/Shimmer";
+
 type DataItem = {
   heading: string;
   text: string;
@@ -35,18 +48,56 @@ type Data = {
   data: string;
   refresh_token: string;
 };
-
+type AllowedProperties = {
+  ListCardLoading: () => JSX.Element;
+  // Add other allowed properties here
+};
 type SessionDataType = {
   user: Data;
 };
-
+// export const ListCardLoading = () => {
+//   return (
+//     <div className="flex gap-3 items-center rounded-2xl px-5 py-4 bg-white dark:bg-[#020817] w-[48%] md:w-[23%] animate-pulse">
+//       <div className="text-3xl px-2 py-2 rounded-xl bg-gray-200 dark:bg-[#333B69]">
+//         <div className="w-8 h-8 bg-gray-300 dark:bg-[#555B85] rounded-full"></div>
+//       </div>
+//       <div className="flex justify-between w-full flex-col">
+//         <div>
+//           <div className="h-4 bg-gray-300 dark:bg-[#555B85] rounded w-full mb-2"></div>
+//           <div className="h-4 bg-gray-300 dark:bg-[#555B85] rounded w-full"></div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
 export default function Home() {
   const [session, setSession] = useState<Data | null>(null);
   const [access_token, setAccess_token] = useState("");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [getCard, setGetCards] = useState<CardType[]>();
+  const [transaction, setTransaction] = useState<TransactionData[]>([])
 
+  const createTransactionColumn = (transaction: TransactionData): Column => {
+    return {
+      icon: MdAccountBalance, // Default icon, you can customize based on type
+      iconStyle: "text-[#16DBCC] bg-[#DCFAF8]", // Default iconStyle, you can customize based on type
+      data: [
+        {
+          heading: transaction.description,
+          text: formatDate(transaction.date),
+          headingStyle: "text-sm font-bold text-nowrap",
+          dataStyle: "text-xs text-nowrap text-[#718EBF]",
+        },
+        {
+          heading: transaction.amount < 0 ? `-${Math.abs(transaction.amount)}` : `+${transaction.amount}`,
+          text: transaction.receiverUserName || "unknown source",
+          headingStyle: `text-xs font-bold ${transaction.amount < 0 ? "text-[#FE5C73]" : "text-[#16DBAA]"}`,
+          dataStyle: "text-xs text-nowrap",
+        },
+      ],
+    };
+  };
   // getting the session ends here
   useEffect(() => {
     const fetchSession = async () => {
@@ -78,6 +129,10 @@ export default function Home() {
         const cardData = await getCards(access_token, 0, 3);
         console.log("Fetching Complete", cardData.content)
         setGetCards(cardData.content);
+
+        // Fetch Transactions
+        const transactionData:TransactionResponse = await getTransactions(0, 3, access_token)
+        setTransaction(transactionData.data.content)
       }
     };
     addingData();
@@ -108,21 +163,23 @@ export default function Home() {
 
             <div className="flex">
               <div className="flex min-w-max min-h-max [&::-webkit-scrollbar]:hidden">
-              {getCard &&
-              getCard.map((items, index) => (
-                <CreditCard
-                  key={items.id}
-                  balance={String(items.balance)}
-                  cardHolder={items.cardHolder}
-                  validThru={formatDate(items.expiryDate)}
-                  cardNumber="3778 **** **** 1234"
-                  filterClass=""
-                  bgColor={index % 2 === 0 ? "from-[#4C49ED] to-[#0A06F4]" : "bg-white"}
-                  textColor={index%2 == 0 ? "text-white": "text-black"}
-                  iconBgColor="bg-opacity-10"
-                  showIcon={true}
-                ></CreditCard>
-              ))}  
+              {loading && <ShimmerCreditCard/>}
+
+                    {!loading && getCard &&
+                    getCard.map((items, index) => (
+                      <CreditCard
+                        key={items.id}
+                        balance={String(items.balance)}
+                        cardHolder={items.cardHolder}
+                        validThru={formatDate(items.expiryDate)}
+                        cardNumber="3778 **** **** 1234"
+                        filterClass=""
+                        bgColor={index % 2 === 0 ? "from-[#4C49ED] to-[#0A06F4]" : "bg-white"}
+                        textColor={index%2 == 0 ? "text-white": "text-black"}
+                        iconBgColor="bg-opacity-10"
+                        showIcon={true}
+                      ></CreditCard>
+                    ))}   
               </div>
             </div>
           </div>
@@ -135,7 +192,7 @@ export default function Home() {
       </div>
 
       {/* Web Version */}
-      <div className="hidden md:flex flex-col  px-6 py-4 bg-[#f5f7fa] h-[130vh]">
+      <div className="hidden md:flex flex-col  px-1 py-4 bg-[#f5f7fa] h-[170vh] dark:bg-[#090b0e]">
            {/* <div className="flex items-center justify-between">
               <h1 className="mx-4 my-4 font-bold text-[#343C6A] text-2xl">My Cards</h1>
               <h1 className="mx-4 my-4 font-bold text-[#343C6A] text-lg">See All</h1>
@@ -148,7 +205,10 @@ export default function Home() {
               <h1 className="mx-4 my-4 font-bold text-[#343C6A] text-lg">See All</h1>
             </div>
             <div className="flex space-x-6 overflow-x-auto [&::-webkit-scrollbar]:hidden">
-              {getCard &&
+              
+            {loading && <ShimmerCreditCard/>}
+
+              {!loading && getCard &&
               getCard.map((items, index) => (
                 <CreditCard
                   key={items.id}
@@ -166,11 +226,11 @@ export default function Home() {
             </div>
           </div>
   
-  <div className="flex flex-col justify-between w-1/2 flex-grow-0">
-    <h1 className="mx-4 my-4 font-bold text-[#343C6A] text-2xl">Recent Transaction</h1>
-    <RecentTransaction />
-  </div>
-</div>
+          <div className="flex flex-col justify-between w-1/2 flex-grow-0">
+            <h1 className="mx-4 my-4 font-bold text-[#343C6A] text-2xl">Recent Transaction</h1>
+            <RecentTransaction />
+          </div>
+        </div>
 
         <div className="flex space-x-6">
             <div className=" w-1/2">

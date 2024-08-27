@@ -26,17 +26,18 @@ import {
 } from "@/lib/api/transactionController";
 import Refresh from "@/app/api/auth/[...nextauth]/token/RefreshToken";
 import { IconType } from "react-icons";
+import { ShimmerPieChartPage } from "@/app/creditCards/Shimmer";
 
 const initialChartData = [
-  { browser: "shopping", visitors: 0, fill: "var(--color-shopping)" },
-  { browser: "transfer", visitors: 0, fill: "var(--color-transfer)" },
-  { browser: "deposit", visitors: 0, fill: "var(--color-deposit)" },
-  {browser: "service", visitors: 0, fill: "var(--color-service)"}
+  { browser: "shopping", amount: 0, fill: "var(--color-shopping)" },
+  { browser: "transfer", amount: 0, fill: "var(--color-transfer)" },
+  { browser: "deposit", amount: 0, fill: "var(--color-deposit)" },
+  { browser: "service", amount: 0, fill: "var(--color-service)" },
 ];
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  Amount: {
+    label: "Amount",
   },
   shopping: {
     label: "Shopping",
@@ -86,7 +87,6 @@ export function ExpenseStatistics() {
   const router = useRouter();
   const [access_token, setAccess_token] = useState("");
 
-
   useEffect(() => {
     const fetchSession = async () => {
       const sessionData = (await getSession()) as SessionDataType | null;
@@ -99,25 +99,22 @@ export function ExpenseStatistics() {
           `./api/auth/signin?callbackUrl=${encodeURIComponent("/accounts")}`
         );
       }
-      setLoading(false);
     };
 
     fetchSession();
   }, [router]);
-
-
 
   useEffect(() => {
     const fetchAndProcessExpenses = async () => {
       try {
         if (access_token) {
           const { data } = await getTransactionsExpenses(0, 1000, access_token);
-          console.log("worked", data)
+          console.log("worked", data);
           const typeAmounts: { [key: string]: number } = {
             shopping: 0,
             transfer: 0,
             deposit: 0,
-            service: 0
+            service: 0,
           };
 
           data.content.forEach((transaction: any) => {
@@ -129,21 +126,21 @@ export function ExpenseStatistics() {
           });
 
           setChartData([
-            { browser: "shopping", visitors: typeAmounts.shopping, fill: "var(--color-shopping)" },
-            { browser: "transfer", visitors: typeAmounts.transfer, fill: "var(--color-transfer)" },
-            { browser: "deposit", visitors: typeAmounts.deposit, fill: "var(--color-deposit)" },
-            { browser: "service", visitors: typeAmounts.service, fill: "var(--color-service)" },
+            { browser: "shopping", amount: typeAmounts.shopping, fill: "var(--color-shopping)" },
+            { browser: "transfer", amount: typeAmounts.transfer, fill: "var(--color-transfer)" },
+            { browser: "deposit", amount: typeAmounts.deposit, fill: "var(--color-deposit)" },
+            { browser: "service", amount: typeAmounts.service, fill: "var(--color-service)" },
           ]);
 
-          setLoading(false);
         }
       } catch (error) {
         console.error("Error fetching expenses:", error);
-        setLoading(false);
       }
     };
 
     fetchAndProcessExpenses();
+    setLoading(false);
+
   });
 
   return (
@@ -156,19 +153,19 @@ export function ExpenseStatistics() {
       <CardContent className="flex-1 pb-0">
         <div className="flex justify-center items-center">
           {loading ? (
-            <p>Loading...</p>
+          <ShimmerPieChartPage/>
           ) : (
-            <ChartContainer 
+            <ChartContainer
               config={chartConfig}
               className="aspect-square h-72 w-full max-w-[300px]" // Ensure full width within a max limit
             >
               <PieChart>
                 <ChartTooltip
-                  content={<ChartTooltipContent nameKey="visitors" hideLabel />}
+                  content={<ChartTooltipContent nameKey="amount" hideLabel />}
                 />
                 <Pie
                   data={chartData}
-                  dataKey="visitors"
+                  dataKey="amount"
                   paddingAngle={0} // Adds margin between the slices
                 >
                   <LabelList

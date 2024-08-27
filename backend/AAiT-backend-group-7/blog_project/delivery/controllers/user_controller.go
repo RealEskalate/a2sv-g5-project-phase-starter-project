@@ -28,7 +28,7 @@ func (uc *UserController) GetAllUsers(c *gin.Context) {
 }
 
 func (uc *UserController) GetUserByID(c *gin.Context) {
-	id, err := strconv.Atoi(c.Query("id"))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -81,7 +81,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 }
 
 func (uc *UserController) UpdateUser(c *gin.Context) {
-	id, err := strconv.Atoi(c.Query("id"))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -125,7 +125,7 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 }
 
 func (uc *UserController) DeleteUser(c *gin.Context) {
-	id, err := strconv.Atoi(c.Query("id"))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -185,8 +185,8 @@ func (uc *UserController) ForgetPassword(c *gin.Context) {
 }
 
 func (uc *UserController) ResetPassword(c *gin.Context) {
-	username := c.Query("username")
-	password := c.Query("password")
+	username := c.Param("username")
+	password := c.Param("password")
 	if err := uc.userUsecase.ResetPassword(c, username, password); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -195,7 +195,7 @@ func (uc *UserController) ResetPassword(c *gin.Context) {
 }
 
 func (uc *UserController) PromoteUser(c *gin.Context) {
-	id, err := strconv.Atoi(c.Query("id"))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -210,7 +210,7 @@ func (uc *UserController) PromoteUser(c *gin.Context) {
 }
 
 func (uc *UserController) DemoteUser(c *gin.Context) {
-	id, err := strconv.Atoi(c.Query("id"))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return

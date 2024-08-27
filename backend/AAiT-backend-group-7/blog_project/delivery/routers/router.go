@@ -17,12 +17,12 @@ func SetupRouter(blogController domain.IBlogController, userController domain.IU
 	{
 		blogs.GET("/", blogController.GetAllBlogs)
 		blogs.POST("/", blogController.CreateBlog)
-		blogs.PUT("/", blogController.UpdateBlog)
-		blogs.DELETE("/", blogController.DeleteBlog)
+		blogs.PUT("/:id", blogController.UpdateBlog)
+		blogs.DELETE("/:id", blogController.DeleteBlog)
 
-		blogs.POST("/comment", blogController.AddComment)
-		blogs.POST("/like", blogController.LikeBlog)
-		blogs.POST("/dislike", blogController.DislikeBlog)
+		blogs.POST("/comment/:id", blogController.AddComment)
+		blogs.POST("/like/:id", blogController.LikeBlog)
+		blogs.POST("/dislike/:id", blogController.DislikeBlog)
 		blogs.POST("/search", blogController.Search)
 		blogs.POST("/generate-content", blogController.AiRecommendation)
 	}
@@ -39,11 +39,11 @@ func SetupRouter(blogController domain.IBlogController, userController domain.IU
 	users.Use(infrastructure.JwtAuthMiddleware(os.Getenv("jwt_secret")))
 	{
 		users.GET("/", infrastructure.AdminMiddleware(), userController.GetAllUsers)
-		users.GET("/user", infrastructure.AdminMiddleware(), userController.GetUserByID)
-		users.PUT("/", userController.UpdateUser)
-		users.DELETE("/", userController.DeleteUser)
-		users.POST("/promote", infrastructure.AdminMiddleware(), userController.PromoteUser)
-		users.POST("/demote", infrastructure.AdminMiddleware(), userController.DemoteUser)
+		users.GET("/:id", infrastructure.AdminMiddleware(), userController.GetUserByID)
+		users.PUT("/:id", userController.UpdateUser)
+		users.DELETE("/:id", userController.DeleteUser)
+		users.POST("/promote/:id", infrastructure.AdminMiddleware(), userController.PromoteUser)
+		users.POST("/demote/:id", infrastructure.AdminMiddleware(), userController.DemoteUser)
 	}
 
 	// Upload routes

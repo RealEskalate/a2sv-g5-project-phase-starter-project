@@ -53,7 +53,7 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 }
 
 func (bc *BlogController) UpdateBlog(c *gin.Context) {
-	id, err := strconv.Atoi(c.Query("id"))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid blog ID"})
 		return
@@ -74,7 +74,7 @@ func (bc *BlogController) UpdateBlog(c *gin.Context) {
 }
 
 func (bc *BlogController) DeleteBlog(c *gin.Context) {
-	id, err := strconv.Atoi(c.Query("id"))
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid blog ID"})
 		return
@@ -103,7 +103,7 @@ func (bc *BlogController) LikeBlog(c *gin.Context) {
 }
 
 func (bc *BlogController) DislikeBlog(c *gin.Context) {
-	blogID, err := strconv.Atoi(c.Query("id"))
+	blogID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid blog ID"})
 		return
@@ -118,7 +118,7 @@ func (bc *BlogController) DislikeBlog(c *gin.Context) {
 }
 
 func (bc *BlogController) AddComment(c *gin.Context) {
-	blogID, err := strconv.Atoi(c.Query("id"))
+	blogID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid blog ID"})
 		return

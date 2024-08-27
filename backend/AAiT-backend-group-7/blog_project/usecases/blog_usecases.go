@@ -66,12 +66,16 @@ func (u *BlogUsecases) GetBlogByID(ctx context.Context, id int) (domain.Blog, er
 func (u *BlogUsecases) CreateBlog(ctx context.Context, blog domain.Blog) (domain.Blog, error) {
 	blog.ID = generateUniqueID()
 
-	user, err := u.UserUsecase.GetUserByUsername(ctx, blog.Author)
-	if err != nil {
-		return domain.Blog{}, err
+	claims, ok := ctx.Value("user").(jwt.MapClaims)
+	if !ok {
+		return domain.Blog{}, errors.New("failed to get user claims from context")
 	}
 
-	_, err = u.UserUsecase.AddBlog(ctx, user.ID, blog)
+	username := claims["username"].(string)
+	userID := int(claims["id"].(float64))
+	blog.Author = username
+
+	_, err := u.UserUsecase.AddBlog(ctx, userID, blog)
 	if err != nil {
 		return domain.Blog{}, err
 	}

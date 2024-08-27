@@ -1,0 +1,11 @@
+database:
+  url: your_database_url 
+  username: your_database_username
+  password: your_database_password 
+  name: your_database_name 
+server:
+  url: your_project_url 
+  port: your_project_port
+email:
+  key: your_app_password 
+  address: your_email_address

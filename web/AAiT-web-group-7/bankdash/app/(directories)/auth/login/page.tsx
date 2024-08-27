@@ -31,9 +31,9 @@ const Login = () => {
       console.log("response", response);
       if (response?.ok) {
         setErrorMessage("");
-        router.push("/");
+        router.push("/dashboard");
       } else {
-        setErrorMessage("Invalid email or password");
+        setErrorMessage("Invalid Username or password");
       }
     } catch (error) {
       console.log("error", error);

@@ -9,15 +9,14 @@ export const options = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: {},
+        userName: {},
         password: {},
       },
       async authorize(credentials, req) {
-        const userName = credentials?.username;
+        const userName = credentials?.userName;
         const password = credentials?.password;
-        console.log(userName, password,"miew");
         try {
-          const response = await fetch(
+          const fetchResponse = await fetch(
             "https://bank-dashboard-aait-latest-sy48.onrender.com/auth/login",
             {
               method: "POST",
@@ -27,16 +26,13 @@ export const options = {
               body: JSON.stringify({ userName, password }),
             }
           );
-          console.log("first",response)
-          const data = await response.json();
-          console.log("data returned from the server on fetching", data);
-          if (data.success) {
-            return data;
-          } else {
-            throw new Error("Invalid email or password");
-          }
-        } catch (error) {
-          console.log("error", error);
+          const responseData = await fetchResponse.json();
+          console.log("data returned from the server on fetching", responseData);
+          if (responseData.success) {
+            return responseData;
+          } 
+        } catch (err) {
+          console.log("error", err);
         }
       },
     }),

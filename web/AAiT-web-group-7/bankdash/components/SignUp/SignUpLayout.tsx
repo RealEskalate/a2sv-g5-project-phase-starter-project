@@ -115,8 +115,9 @@ const PageLayout = () => {
   return (
     <div className="px-5 py-5 flex justify-center">
       <div className="flex flex-col rounded-3xl w-fill px-10  bg-white ">
-        <h1 className="text-4xl font-poppins font-bold text-center text-[#4640DE] py-5">
-          Sign Up Today!
+        <h1 className="text-4xl font-poppins font-bold text-center text-[#4640DE] py-5 flex flex-row justify-center gap-2">
+          Sign Up Today
+          <img src="/pubimg/signup.svg" className="size-10 flex flex-row justify-center text-[#4640DE]" />
         </h1>
         <div className="flex flex-row font-serif   w-fill text-[#718EBF] gap-12 ">
           <div

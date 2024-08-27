@@ -25,23 +25,47 @@ const EditProfile = () => {
   };
   const CountryData = Country.getAllCountries();
   const [selectedCountry, setSelectedCountry] = useState("");
+  const [profileImage, setProfileImage] = useState<File | null>(null);
 
   const handleCountryChange = (e: any) => {
     setSelectedCountry(e.target.value);
   };
+  const handleProfilePictureChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    console.log(file);
+
+    if (file) {
+      setProfileImage(file);
+    }
+  };
   return (
-    <div className="flex flex-col text-sm">
+    <form  onSubmit={handleSubmit(onSubmit)} className="flex flex-col text-sm">
       <div className="flex  gap-8 py-10">
         <div className="relative">
-          <img src="pubimg/pp.png" className="rounded-full" />
-          <button className="bg-[#1814F3] h-8 w-8 flex justify-center items-center rounded-full absolute right-0 top-20">
-            <img src="pubimg/pencil.svg" />
-          </button>
+          {profileImage ? (
+            <img
+              src={URL.createObjectURL(profileImage)}
+              className="size-32 rounded-full"
+            />
+          ) : (
+            <img src="/pubimg/placepp.png" className="size-32" />
+          )}
+          <div className="bg-[#1814F3] h-8 w-8 flex justify-center items-center rounded-full absolute right-0 top-20 hover:brightness-200 transition duration-200">
+            <label htmlFor="fileInput" className="cursor-pointer">
+              <img src="/pubimg/pencil.svg" />
+            </label>
+            <input
+              id="fileInput"
+              type="file"
+              accept="image/*"
+              onChange={handleProfilePictureChange}
+              className="hidden"
+            />
+          </div>
         </div>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col items-center gap-5"
-        >
+        <div className="flex flex-col items-center gap-5">
           <div className="flex gap-8">
             <div className="flex flex-col gap-3">
               <div className="flex flex-col items-start justify-center gap-2 ">
@@ -228,9 +252,9 @@ const EditProfile = () => {
               Save
             </button>
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+    </form>
   );
 };
 

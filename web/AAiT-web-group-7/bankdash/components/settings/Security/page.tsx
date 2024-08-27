@@ -57,6 +57,7 @@ const SecuritySettings = () => {
               },
             })}
             className="w-[510px] border border-[#DFEAF2] rounded-xl px-4 py-3"
+            placeholder="Enter your current password"
           />
           <ErrorMessage message={errors.password?.message} />
         </div>
@@ -76,6 +77,7 @@ const SecuritySettings = () => {
               },
             })}
             className="w-[510px] border border-[#DFEAF2] rounded-xl px-4 py-3"
+            placeholder="Enter your new password"
           />
           <ErrorMessage message={errors.confirmPassword?.message} />
 

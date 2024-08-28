@@ -10,10 +10,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewProfileRouter(db *mongo.Database, group *gin.RouterGroup) {
-	profilecollection := (*db).Collection("profiles")
+func NewProfileRouter(db mongo.Database, group *gin.RouterGroup) {
+	profilecollection := db.Collection("profiles")
 
-	profile_repo := repository.NewProfileRepository(context.TODO(), db, &profilecollection)
+	profile_repo := repository.NewProfileRepository(context.TODO(), db, profilecollection)
 	profile_service := service.NewProfileService(profile_repo)
 	profile_controller := controller.NewProfileController(profile_service)
 

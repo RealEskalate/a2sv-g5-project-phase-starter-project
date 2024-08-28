@@ -17,8 +17,8 @@ type profileRepository struct {
 	context    context.Context
 }
 
-func NewProfileRepository(ctx context.Context, db *mongo.Database, collection *mongo.Collection) interfaces.ProfileRepository {
-	return profileRepository{db: db, collection: collection, context: ctx}
+func NewProfileRepository(ctx context.Context, db mongo.Database, collection mongo.Collection) interfaces.ProfileRepository {
+	return profileRepository{db: &db, collection: &collection, context: ctx}
 }
 func (repo profileRepository) GetUserProfile(user_id string) (*entities.Profile, error) {
 	userID, err := primitive.ObjectIDFromHex(user_id)
@@ -27,6 +27,7 @@ func (repo profileRepository) GetUserProfile(user_id string) (*entities.Profile,
 	}
 
 	filter := bson.D{{"userId", userID}}
+	
 	user := (*repo.collection).FindOne(context.TODO(), filter)
 
 	if err = mongo.ErrNoDocuments; err != nil {

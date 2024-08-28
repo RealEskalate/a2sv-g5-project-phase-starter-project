@@ -15,7 +15,7 @@ import (
 
 func NewBlogRouter(db *mongo.Database, group *gin.RouterGroup, model *genai.GenerativeModel, redis *redis.Client) {
 	blogcollection := (*db).Collection("blogs")
-	br := repository.NewBlogRepository(&blogcollection, context.TODO())
+	br := repository.NewBlogRepository(blogcollection, context.TODO())
 	bs := service.NewBlogService(br, redis, time.Minute * 5)
 	ais := service.NewAIContentService(context.TODO(), model, br)
 

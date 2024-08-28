@@ -16,7 +16,7 @@ func NewCommmentRouter(db *mongo.Database,  group *gin.RouterGroup) {
 	commentcollection := (*db).Collection("comments")
 
 	ur := repository.NewUserRepository(usercollection)
-	br := repository.NewBlogRepository(&blogcollection,context.TODO())
+	br := repository.NewBlogRepository(blogcollection,context.TODO())
 	cr := repository.NewCommentRepository(&commentcollection, context.TODO())
 	cs := service.NewCommentService(cr,br,ur)
 	cc := controller.NewCommentController(cs)

@@ -13,7 +13,7 @@ import (
 
 func NewAiRouter(db *mongo.Database, group *gin.RouterGroup, model *genai.GenerativeModel)  {
 	collection := (*db).Collection("blogs")
-	br := repository.NewBlogRepository(&collection, context.TODO())
+	br := repository.NewBlogRepository(collection, context.TODO())
 	ais := service.NewAIContentService(context.TODO(), model, br)
 	
 	aic := controller.NewAIContentController(ais)

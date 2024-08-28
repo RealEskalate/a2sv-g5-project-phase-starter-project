@@ -19,9 +19,9 @@ type blogRepository struct {
 	ctx 	  context.Context
 }
 
-func NewBlogRepository(collection *mongo.Collection, ctx context.Context) interfaces.BlogRepository {
+func NewBlogRepository(collection mongo.Collection, ctx context.Context) interfaces.BlogRepository {
 	return &blogRepository{
-		collection: collection,
+		collection: &collection,
 		ctx: ctx,
 	}
 }

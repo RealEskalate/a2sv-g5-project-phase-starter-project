@@ -68,8 +68,8 @@ func (o *OtpRepository) SaveOtp(otp *entities.OTP) error {
 
 }
 
-func NewOtpRepository(collection *mongo.Collection) interfaces.OTPRepository {
+func NewOtpRepository(collection mongo.Collection) interfaces.OTPRepository {
 	return &OtpRepository{
-		collection: collection,
+		collection: &collection,
 	}
 }

@@ -10,6 +10,7 @@ import { Currencies } from "@/components/constants/currency";
 import { timezones } from "@/components/constants/timezones";
 import { CountryData } from "@/components/constants/countries";
 import { useUserRegistrationMutation } from "@/redux/api/authentication-controller";
+import { useRouter } from "next/navigation";
 
 interface prefData {
   timezone: string;
@@ -30,16 +31,17 @@ interface FormData {
   PresentAddress: string;
   City: string;
   Country: string;
-  profilePicture: File;
+  profilePicture: string;
 }
 
 const PageLayout = () => {
+  const route=useRouter();
   const [registerUser] = useUserRegistrationMutation();
   const [activeButton, setActiveButton] = useState("edit");
   const [profileImage, setProfileImage] = useState<File | null>(null);
 
   const form = useForm<FormData>();
-  const { register, handleSubmit, formState, setValue,getValues } = form;
+  const { register, handleSubmit, formState, setValue, getValues } = form;
 
   const {
     control,
@@ -68,7 +70,7 @@ const PageLayout = () => {
     console.log("All Form Values:", allValues);
 
     try {
-      const { data, error } = await registerUser({
+      const { data, success } = await registerUser({
         name: allValues.Name,
         email: allValues.Email,
         dateOfBirth: allValues.DOT,
@@ -80,15 +82,23 @@ const PageLayout = () => {
         city: allValues.City,
         country: allValues.Country,
         profilePicture: allValues.profilePicture,
-        currency: formData.currency,
-        sentOrReceiveDigitalCurrency: formData.transaction,
-        receiveMerchantOrder: formData.merchant,
-        accountRecommendations: formData.recommendation,
-        timeZone: formData.timezone,
-        twoFactorAuthentication: formData.recommendation,
+        preference: {
+          currency: formData.currency,
+          sentOrReceiveDigitalCurrency: formData.transaction,
+          receiveMerchantOrder: formData.merchant,
+          accountRecommendations: formData.recommendation,
+          timeZone: formData.timezone,
+          twoFactorAuthentication: formData.recommendation,
+        },
       }).unwrap();
+      if (success) {
+        console.log("response from server upon registration", data);
+        route.push("/auth/login");
+      }
 
-      console.log("response from server upon registration", data);
+      else {
+        console.log("error from server upon registration");
+      }
     } catch (error) {
       console.log("error from server upon registration");
     }
@@ -102,10 +112,9 @@ const PageLayout = () => {
 
     if (file) {
       setProfileImage(file);
-      setValue("profilePicture", file);
+      setValue("profilePicture", file.name);
     }
   };
-
 
   return (
     <div className="px-5 py-5 flex justify-center">

@@ -5,25 +5,19 @@ import { JWT } from "next-auth/jwt";
 
 export const options = {
   secret: process.env.NEXTAUTH_SECRET,
-  // url: process.env.NEXTAUTH_URL,
-
-  //   session: { strategy: "jwt" },
-  // pages: {
-  //   signIn: "/signup",
-  // },
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: {},
+        userName: {},
         password: {},
       },
       async authorize(credentials, req) {
-        const userName = credentials?.username;
+        const userName = credentials?.userName;
         const password = credentials?.password;
         try {
-          const resesponse = await fetch(
-            "https://bank-dashboard-latest.onrender.com//auth/login",
+          const fetchResponse = await fetch(
+            "https://bank-dashboard-aait-latest-sy48.onrender.com/auth/login",
             {
               method: "POST",
               headers: {
@@ -32,11 +26,11 @@ export const options = {
               body: JSON.stringify({ userName, password }),
             }
           );
-          const response = await resesponse.json();
-          console.log("data returned from the server on fetching", response);
-          if (response) {
-            return response;
-          }
+          const responseData = await fetchResponse.json();
+          console.log("data returned from the server on fetching", responseData);
+          if (responseData.success) {
+            return responseData;
+          } 
         } catch (err) {
           console.log("error", err);
         }

@@ -2,25 +2,32 @@
 import { Switch } from "@/components/ui/switch";
 import React from "react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import ErrorMessage from "@/components/Message/ErrorMessage";
 interface FormData {
   password: string;
   confirmPassword: string;
+  twoFactorAuth: boolean;
 }
 const SecuritySettings = () => {
   const form = useForm<FormData>();
   const { register, handleSubmit, formState } = form;
   const { errors } = formState;
   const [passwordMismatch, setPasswordMismatch] = useState(false);
+  const [twoFactorAuth, setTwoFactorAuth] = useState(false);
 
   const onsubmit = (data: FormData) => {
     const { password, confirmPassword } = data;
-
+    console.log(data,twoFactorAuth)
     if (confirmPassword === password) {
       setPasswordMismatch(true);
     }
   };
+  const handleSwitChange = (checked:boolean) => {
+    setTwoFactorAuth(checked);
+    
+
+  }
   return (
     <div className="text-sm">
       <div className="flex flex-col gap-5">
@@ -28,7 +35,10 @@ const SecuritySettings = () => {
           Two-factor Authentication
         </div>
         <div className="flex items-center gap-3">
-          <Switch />
+          <Switch  
+            checked={twoFactorAuth}
+            onCheckedChange={handleSwitChange}
+            />
           <div className="text-[#232323]">
             Enable or disable two factor authentication
           </div>

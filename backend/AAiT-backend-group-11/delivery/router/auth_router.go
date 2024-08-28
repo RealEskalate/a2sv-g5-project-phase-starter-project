@@ -27,7 +27,7 @@ func NewAuthRouter(env *bootstrap.Env, db mongo.Database, group *gin.RouterGroup
 	user_service := service.NewUserService(user_repo)
 
 	otpcollection := (db).Collection("otp")
-	otpRepo := repository.NewOtpRepository(&otpcollection)
+	otpRepo := repository.NewOtpRepository(otpcollection)
 	otpService := service.NewOtpService(otpRepo)
 
 	passwordtokencollection := (db).Collection("password_reset_tokens")

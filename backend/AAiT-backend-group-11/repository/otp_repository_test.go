@@ -4,6 +4,7 @@ import (
 	"backend-starter-project/domain/entities"
 	"backend-starter-project/mongo/mocks"
 	"backend-starter-project/repository"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -72,3 +73,54 @@ func TestGetOtpByEmail(t *testing.T)  {
 	mockCollection.AssertExpectations(t)
 }
 
+func TestInvalidateOtp(t *testing.T) {
+	mockCollection := new(mocks.Collection)
+	mockContext := context.Background()
+
+	repo := repository.NewOtpRepository(mockCollection)
+
+	otp := &entities.OTP{
+		ID:     primitive.NewObjectID(),
+		Email:  "test@example.com",
+		Code:   "123456",
+		IsValid: true,
+	}
+
+	mockCollection.On("UpdateOne",mockContext, bson.M{"_id": otp.ID}, bson.M{"$set": bson.M{"is_valid": false}}, mock.Anything).Return(nil, nil).Once()
+
+	err := repo.InvalidateOtp(otp)
+
+	assert.NoError(t, err)
+
+	mockCollection.AssertExpectations(t)
+}
+
+func TestSaveOtp(t *testing.T) {
+	mockCollection := new(mocks.Collection)
+	mockContext := context.Background()
+
+	repo := repository.NewOtpRepository(mockCollection)
+
+	otp := &entities.OTP{
+		ID:     primitive.NewObjectID(),
+		Email:  "test@gmail.com",
+		Code:   "12345",
+		IsValid: true,
+	}
+
+	mockCollection.On("UpdateOne", mockContext, bson.M{"_id": otp.ID}, bson.M{"$set": otp}, mock.Anything).Return(nil, nil).Once()
+
+	err := repo.SaveOtp(otp)
+
+	assert.NoError(t, err)
+
+	mockCollection.AssertExpectations(t)
+
+}
+
+func TestNewOtpRepository(t *testing.T) {
+	mockCollection := new(mocks.Collection)
+	repo := repository.NewOtpRepository(mockCollection)
+
+	assert.NotNil(t, repo)
+}

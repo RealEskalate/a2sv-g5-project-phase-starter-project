@@ -57,8 +57,7 @@ func (controller *AuthController) RegisterUser(c *gin.Context) {
 
 
 	c.JSON(http.StatusCreated, gin.H{"data": userResponse})
-
-}
+}	
 
 func (controller *AuthController) Login(c *gin.Context) {
 	var user dto.LoginDto

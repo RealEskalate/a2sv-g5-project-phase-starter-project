@@ -17,47 +17,42 @@ import (
 
 func TestGetUserProfile(t *testing.T) {
     mockCollection := new(mocks.Collection)
-    mockContext := context.TODO()
-    mockDatabase := new(mocks.Database)
-
-    repo := repository.NewProfileRepository(mockContext, mockDatabase, mockCollection)
+    repo := repository.NewProfileRepository(context.TODO(), nil, mockCollection)
 
     // Create a mock profile document
-    expectedProfile := &entities.Profile{
-		UserID: primitive.NewObjectID(),
-		Bio: "This is a test bio",	
-		ContactInfo: entities.ContactInfo{
-			Email: "john.doe@example.com",
-			PhoneNumber: "1234567890",
-			Address: "123 Main St",
-		},
-		ProfilePicture: "https://example.com/profile.jpg",
-	}
+    expectedProfile := entities.Profile{
+        UserID: primitive.NewObjectID(),
+        Bio:    "This is a test bio",
+        ContactInfo: entities.ContactInfo{
+            Email:       "john.doe@example.com",
+            PhoneNumber: "1234567890",
+            Address:     "123 Main St",
+        },
+        ProfilePicture: "https://example.com/profile.jpg",
+    }
 
-	userIDHex := expectedProfile.UserID.Hex()
+    userIDHex := expectedProfile.UserID.Hex()
 
-    // Create a single result with the mock profile
+    // Create a mock single result
     mockSingleResult := new(mocks.SingleResult)
-	mockSingleResult.On("Decode", mock.AnythingOfType("*entities.Profile")).Run(func(args mock.Arguments) {
-		arg := args.Get(0).(*entities.Profile)
-		*arg = *expectedProfile
-	}).Return(nil)
+    mockSingleResult.On("Decode", mock.AnythingOfType("*entities.Profile")).Return(expectedProfile, nil)
 
-   mockCollection.On("FindOne", mock.Anything, bson.D{{Key: "userId", Value: expectedProfile.UserID}}, mock.Anything).Return(mockSingleResult)
+    // Mock the FindOne method to return the mockSingleResult
+    mockCollection.On("FindOne", mock.Anything, bson.D{{Key: "userId", Value: expectedProfile.UserID}}, mock.Anything).Return(mockSingleResult)
 
     // Call the GetUserProfile method
-	actualProfile, err := repo.GetUserProfile(userIDHex)
+    actualProfile, err := repo.GetUserProfile(userIDHex)
 
-	// Assert that no error occurred
-	assert.NoError(t, err)
+    assert.NoError(t, err)
+    assert.NotNil(t, actualProfile)
+    assert.Equal(t, expectedProfile.Bio, actualProfile.Bio)
+    assert.Equal(t, expectedProfile.ContactInfo.Email, actualProfile.ContactInfo.Email)
+    assert.Equal(t, expectedProfile.ContactInfo.PhoneNumber, actualProfile.ContactInfo.PhoneNumber)
+    assert.Equal(t, expectedProfile.ContactInfo.Address, actualProfile.ContactInfo.Address)
+    assert.Equal(t, expectedProfile.ProfilePicture, actualProfile.ProfilePicture)
 
-	// Assert that the returned profile matches the expected one
-	assert.Equal(t, expectedProfile, actualProfile)
-
-	// Ensure the mock methods were called as expected
-	mockSingleResult.AssertExpectations(t)
-
-	mockCollection.AssertExpectations(t)
+    mockCollection.AssertExpectations(t)
+    mockSingleResult.AssertExpectations(t)
 }
 
 func TestCreateUserProfile(t *testing.T) {

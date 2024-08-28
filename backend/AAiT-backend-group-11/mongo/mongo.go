@@ -67,6 +67,10 @@ type mongoDatabase struct {
 type mongoCollection struct {
 	coll *mongo.Collection
 }
+type UpdateResult struct {
+	MatchedCount  int64       // The number of documents matched by the filter.
+	ModifiedCount int64       // The number of documents modified by the operation.
+}
 
 // FindOneAndDelete implements Collection.
 func (mc *mongoCollection) FindOneAndDelete(ctx context.Context, filter interface{}, opts ...*options.FindOneAndDeleteOptions) *mongo.SingleResult {

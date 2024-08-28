@@ -15,10 +15,10 @@ type LoginRequest struct {
 }
 
 type ResetPasswordRequest struct {
-	NewPasswor      string `json:"password"`
-	ConfirmPassword string `json:"confirm_password"`
+	NewPasswor      string `json:"password" binding:"required"`
+	ConfirmPassword string `json:"confirm_password" binding:"required"`
 	Token           string
-	ResetToken      int `json:"reset_token"`
+	ResetCode       int `json:"reset_code" binding:"required"`
 }
 
 type LogoutRequest struct {
@@ -128,7 +128,7 @@ func (userController *userController) ResetPassword(cxt *gin.Context) {
 	resetToken := cxt.Param("token")
 	resetInfo.Token = resetToken
 
-	errReset := userController.UserUseCase.ResetPassword(cxt, resetInfo.NewPasswor, resetInfo.ConfirmPassword, resetInfo.Token, resetInfo.ResetToken)
+	errReset := userController.UserUseCase.ResetPassword(cxt, resetInfo.NewPasswor, resetInfo.ConfirmPassword, resetInfo.Token, resetInfo.ResetCode)
 	if errReset != nil {
 		cxt.JSON(errReset.StatusCode(), gin.H{"Error": errReset.Error()})
 		return

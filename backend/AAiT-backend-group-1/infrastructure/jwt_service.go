@@ -1,15 +1,15 @@
 package infrastructure
 
 import (
-	"context"
 	"fmt"
 	"net/http"
+	"reflect"
+	"regexp"
 	"time"
 
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
 	"github.com/dgrijalva/jwt-go"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type JWTTokenService struct {
@@ -17,19 +17,28 @@ type JWTTokenService struct {
 	RefreshSecret string
 	VerifySecret  string
 	ResetSecret   string
-	Collection    *mongo.Collection
 }
 
-func NewJWTTokenService(accessSecret, refreshSecret, verifySecret, resetSecret string, collection *mongo.Collection) domain.JwtService {
-	return &JWTTokenService{AccessSecret: accessSecret, RefreshSecret: refreshSecret, ResetSecret: resetSecret, Collection: collection, VerifySecret: verifySecret}
+func NewJWTTokenService(accessSecret, refreshSecret, verifySecret, resetSecret string) domain.JwtService {
+	return &JWTTokenService{AccessSecret: accessSecret, RefreshSecret: refreshSecret, ResetSecret: resetSecret, VerifySecret: verifySecret}
 }
 
-func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User) (string, domain.Error) {
+func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User, duration time.Duration) (string, domain.Error) {
+	requiredFields := []string{"Username", "ID", "Password", "Role"}
+
+	values := reflect.ValueOf(user)
+	for _, val := range requiredFields {
+		field := values.FieldByName(val)
+		if !field.IsValid() || field.IsZero() {
+			return "", domain.CustomError{Code: 400, Message: fmt.Sprintf("missing required field: %s", values)}
+		}
+	}
+
 	claim := jwt.MapClaims{
 		"user_id":  user.ID,
 		"username": user.Username,
 		"role":     user.Role,
-		"exp":      time.Now().Add(time.Minute * 15).Unix(),
+		"exp":      time.Now().Add(duration).Unix(),
 		"iat":      time.Now().Unix(),
 	}
 
@@ -41,10 +50,13 @@ func (service *JWTTokenService) GenerateAccessTokenWithPayload(user domain.User)
 	return jwtToken, nil
 }
 
-func (service *JWTTokenService) GenerateRefreshTokenWithPayload(user domain.User) (string, domain.Error) {
+func (service *JWTTokenService) GenerateRefreshTokenWithPayload(user domain.User, duration time.Duration) (string, domain.Error) {
+	if user.ID == primitive.NilObjectID {
+		return "", domain.CustomError{Code: 400, Message: "user doesn't have ID"}
+	}
 	claim := jwt.MapClaims{
 		"user_id": user.ID,
-		"exp":     time.Now().Add(time.Minute * 15).Unix(),
+		"exp":     time.Now().Add(duration).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
@@ -56,13 +68,23 @@ func (service *JWTTokenService) GenerateRefreshTokenWithPayload(user domain.User
 	return jwtToken, nil
 }
 
-func (service *JWTTokenService) GenerateVerificationToken(user domain.User) (string, domain.Error) {
+func (service *JWTTokenService) GenerateVerificationToken(user domain.User, duration time.Duration) (string, domain.Error) {
+	requiredFields := []string{"Username", "Email", "Password", "Role"}
+
+	values := reflect.ValueOf(user)
+	for _, val := range requiredFields {
+		field := values.FieldByName(val)
+		if !field.IsValid() || field.IsZero() {
+			return "", domain.CustomError{Code: 400, Message: fmt.Sprintf("missing required field: %s", values)}
+		}
+	}
+
 	claim := jwt.MapClaims{
 		"username": user.Username,
 		"email":    user.Email,
 		"password": user.Password,
 		"role":     user.Role,
-		"exp":      time.Now().Add(time.Minute * 15).Unix(),
+		"exp":      time.Now().Add(duration).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
@@ -73,10 +95,14 @@ func (service *JWTTokenService) GenerateVerificationToken(user domain.User) (str
 	return jwtToken, nil
 }
 
-func (service *JWTTokenService) GenerateResetToken(email string) (string, domain.Error) {
+func (service *JWTTokenService) GenerateResetToken(email string, duration time.Duration) (string, domain.Error) {
+	if !regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`).MatchString(email) {
+		return "", domain.CustomError{Code: 400, Message: "invalid email"}
+	}
+
 	claim := jwt.MapClaims{
 		"email": email,
-		"exp":   time.Now().Add(time.Minute * 15).Unix(),
+		"exp":   time.Now().Add(duration).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
@@ -130,7 +156,7 @@ func (service *JWTTokenService) ValidateAccessToken(token string) (*jwt.Token, d
 		return []byte(service.AccessSecret), nil
 	})
 	if errParse != nil {
-		return nil, domain.CustomError{Code: 500, Message: "error parsing token"}
+		return nil, domain.CustomError{Code: 500, Message: errParse.Error()}
 	}
 	if !parsedToken.Valid {
 		return nil, domain.CustomError{Code: 400, Message: "invalid token"}
@@ -164,7 +190,7 @@ func (service *JWTTokenService) ValidateVerificationToken(token string) (*jwt.To
 		return []byte(service.VerifySecret), nil
 	})
 	if errParse != nil {
-		return nil, domain.CustomError{Code: http.StatusBadRequest, Message: "error parsing token"}
+		return nil, domain.CustomError{Code: http.StatusBadRequest, Message: errParse.Error()}
 	}
 
 	if !parsedToken.Valid {
@@ -198,8 +224,9 @@ func (service *JWTTokenService) ValidateRefreshToken(token string) (*jwt.Token, 
 		}
 		return []byte(service.RefreshSecret), nil
 	})
+
 	if errParse != nil {
-		return nil, domain.CustomError{Code: 500, Message: "error parsing token"}
+		return nil, domain.CustomError{Code: 500, Message: errParse.Error()}
 	}
 	if !parsedToken.Valid {
 		return nil, domain.CustomError{Code: 400, Message: "invalid token"}
@@ -223,13 +250,4 @@ func (service *JWTTokenService) ValidateRefreshToken(token string) (*jwt.Token, 
 	}
 
 	return parsedToken, nil
-}
-
-func (service *JWTTokenService) RevokedToken(token string) domain.Error {
-	_, err := service.Collection.DeleteOne(context.TODO(), bson.M{"token": token})
-	if err != nil {
-		return domain.CustomError{Code: 500, Message: "error revoking token"}
-	}
-
-	return nil
 }

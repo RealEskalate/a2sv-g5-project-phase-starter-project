@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/delivery/controllers"
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/delivery/router"
@@ -11,6 +12,7 @@ import (
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/infrastructure/mail"
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/repository"
 	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/usecases"
+	"github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/utils"
 	"github.com/joho/godotenv"
 )
 
@@ -37,7 +39,11 @@ func main() {
 
 	passwordService := infrastructure.NewPasswordService()
 
-	emailService := mail.NewEmailService()
+	currDir, errDir := os.Getwd()
+	if errDir != nil {
+		log.Println(errDir.Error())
+	}
+	emailService := mail.NewEmailService(filepath.Join(currDir, "../infrastructure/mail/templates"))
 
 	sessionCollection := databaseService.GetCollection("sessions")
 	infrastructure.EstablisUniqueUsernameIndex(sessionCollection, "username")
@@ -47,7 +53,8 @@ func main() {
 	infrastructure.EstablisUniqueUsernameIndex(userCollection, "username")
 	infrastructure.EstablisUniqueUsernameIndex(userCollection, "email")
 	userRepo := repository.NewUserRespository(userCollection)
-	userUC := usecases.NewUserUseCase(userRepo, sessionRepo, passwordService, jwtService, emailService, cacheService)
+	userUtils := utils.NewUserUtils()
+	userUC := usecases.NewUserUseCase(userRepo, sessionRepo, passwordService, jwtService, emailService, cacheService, userUtils)
 	userController := controllers.NewUserController(userUC)
 
 	blogRepo := repository.NewBlogRepository(databaseService.GetCollection("blogs"), context.TODO())

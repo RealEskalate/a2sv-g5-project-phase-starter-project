@@ -75,7 +75,8 @@ func (userUC *userUseCase) RegisterStart(cxt context.Context, user *domain.User)
 
 	user.Password = hashedPassword
 
-	verificationToken, errVerification := userUC.jwtService.GenerateVerificationToken(*user)
+	min, _ := strconv.Atoi(os.Getenv("VERIFY_TOKEN_EXPIRY"))
+	verificationToken, errVerification := userUC.jwtService.GenerateVerificationToken(*user, time.Duration(min)*time.Minute)
 	if errVerification != nil {
 		return domain.CustomError{Message: errVerification.Error(), Code: http.StatusInternalServerError}
 	}
@@ -188,12 +189,14 @@ func (userUC *userUseCase) Login(cxt context.Context, username, password string)
 		return map[string]string{}, &domain.CustomError{Message: "session not found", Code: http.StatusNotFound}
 	}
 
-	accessToken, errAccess := userUC.jwtService.GenerateAccessTokenWithPayload(*existingUser)
+	min, _ := strconv.Atoi(os.Getenv("ACCESS_TOKEN_EXPIRY"))
+	accessToken, errAccess := userUC.jwtService.GenerateAccessTokenWithPayload(*existingUser, time.Duration(min)*time.Minute)
 	if errAccess != nil {
 		return map[string]string{}, &domain.CustomError{Message: errAccess.Error(), Code: http.StatusInternalServerError}
 	}
 
-	refreshToken, errRefresh := userUC.jwtService.GenerateRefreshTokenWithPayload(*existingUser)
+	min, _ = strconv.Atoi(os.Getenv("REFRESH_TOKEN_EXPIRY"))
+	refreshToken, errRefresh := userUC.jwtService.GenerateRefreshTokenWithPayload(*existingUser, time.Duration(min)*time.Minute)
 	if errRefresh != nil {
 		return map[string]string{}, &domain.CustomError{Message: errRefresh.Error(), Code: http.StatusInternalServerError}
 	}
@@ -248,7 +251,8 @@ func (userUC *userUseCase) RefreshToken(cxt context.Context, refreshToken string
 		return map[string]string{}, domain.CustomError{Message: "invalid token", Code: http.StatusUnauthorized}
 	}
 
-	newAccessToken, errAccess := userUC.jwtService.GenerateAccessTokenWithPayload(*existingUser)
+	min, _ := strconv.Atoi(os.Getenv("ACCESS_TOKEN_EXPIRY"))
+	newAccessToken, errAccess := userUC.jwtService.GenerateAccessTokenWithPayload(*existingUser, time.Duration(min)*time.Minute)
 	if errAccess != nil {
 		return map[string]string{}, domain.CustomError{Message: errAccess.Error(), Code: http.StatusInternalServerError}
 	}
@@ -269,12 +273,13 @@ func (userUC *userUseCase) ForgotPassword(cxt context.Context, email string) dom
 		return domain.CustomError{Message: err.Error(), Code: http.StatusInternalServerError}
 	}
 
-	resetCode, errCode := utils.GenerateTokenWithLength(6)
+	resetCode, errCode := userUC.utils.GenerateTokenWithLength(6)
 	if errCode != nil {
 		return &domain.CustomError{Message: errCode.Error(), Code: http.StatusInternalServerError}
 	}
 
-	passwordResetToken, errToken := userUC.jwtService.GenerateResetToken(email)
+	minute, _ := strconv.Atoi(os.Getenv("RESET_TOKEN_EXPIRY"))
+	passwordResetToken, errToken := userUC.jwtService.GenerateResetToken(email, time.Duration(minute)*time.Minute)
 	if errToken != nil {
 		return &domain.CustomError{Message: errToken.Error(), Code: http.StatusInternalServerError}
 	}
@@ -286,6 +291,7 @@ func (userUC *userUseCase) ForgotPassword(cxt context.Context, email string) dom
 
 	if existingCheck {
 		existingSession.PasswordResetToken = passwordResetToken
+		existingSession.ResetPasswordCode = resetCode
 		existingSession.RefreshToken = ""
 		errUpdate := userUC.sessionRepo.UpdateToken(context, existingSession.ID.Hex(), existingSession)
 		if errUpdate != nil {
@@ -296,6 +302,7 @@ func (userUC *userUseCase) ForgotPassword(cxt context.Context, email string) dom
 			ID:                 existingUser.ID,
 			Username:           existingSession.Username,
 			PasswordResetToken: passwordResetToken,
+			ResetPasswordCode:  resetCode,
 		})
 		if errCreatingToken != nil {
 			return errCreatingToken
@@ -342,8 +349,12 @@ func (userUC *userUseCase) ResetPassword(cxt context.Context, newPassword, confi
 		return &domain.CustomError{Message: "session not found", Code: http.StatusNotFound}
 	}
 
-	if session.PasswordResetToken != token || session.ResetPasswordToken != code {
+	if session.PasswordResetToken != token {
 		return &domain.CustomError{Message: "invalid token", Code: http.StatusUnauthorized}
+	}
+
+	if session.ResetPasswordCode != code {
+		return &domain.CustomError{Message: "invalid code", Code: http.StatusUnauthorized}
 	}
 
 	if newPassword != confirmPassword {

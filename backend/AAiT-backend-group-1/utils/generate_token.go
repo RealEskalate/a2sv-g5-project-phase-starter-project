@@ -19,7 +19,13 @@ type Utils interface {
 	IsValidFileFormat(header *multipart.FileHeader, formats ...string) bool
 }
 
-func GenerateTokenWithLength(length int) (int, error) {
+type UserUtils struct{}
+
+func NewUserUtils() *UserUtils {
+	return &UserUtils{}
+}
+
+func (userUT *UserUtils) GenerateTokenWithLength(length int) (int, error) {
 	if length <= 0 {
 		return 0, errors.New("length must be a positive integer")
 	}

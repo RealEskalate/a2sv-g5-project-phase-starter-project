@@ -22,6 +22,7 @@ type userUseCase struct {
 	jwtService      domain.JwtService
 	mailService     domain.EmailService
 	redisService    domain.CacheService
+	utils           utils.Utils
 }
 
 type ResetPasswordRequest struct {
@@ -30,7 +31,7 @@ type ResetPasswordRequest struct {
 	Token           string
 }
 
-func NewUserUseCase(userRespository domain.UserRepository, sessionRepository domain.SessionRepository, pwdService domain.PasswordService, jwtService domain.JwtService, mailServ domain.EmailService, redisServer domain.CacheService) domain.UserUseCase {
+func NewUserUseCase(userRespository domain.UserRepository, sessionRepository domain.SessionRepository, pwdService domain.PasswordService, jwtService domain.JwtService, mailServ domain.EmailService, redisServer domain.CacheService, utils utils.Utils) domain.UserUseCase {
 	return &userUseCase{
 		userRepo:        userRespository,
 		sessionRepo:     sessionRepository,
@@ -38,13 +39,14 @@ func NewUserUseCase(userRespository domain.UserRepository, sessionRepository dom
 		jwtService:      jwtService,
 		mailService:     mailServ,
 		redisService:    redisServer,
+		utils:           utils,
 	}
 }
 
 func (userUC *userUseCase) RegisterStart(cxt context.Context, user *domain.User) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
-		return &domain.CustomError{Message: "first" + errTimeout.Error(), Code: http.StatusInternalServerError}
+		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
 	}
 
 	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
@@ -52,7 +54,7 @@ func (userUC *userUseCase) RegisterStart(cxt context.Context, user *domain.User)
 
 	errValidity := user.Validate()
 	if errValidity != nil {
-		return &domain.CustomError{Message: "second" + errValidity.Error(), Code: http.StatusBadRequest}
+		return domain.CustomError{Message: errValidity.Error(), Code: http.StatusBadRequest}
 	}
 
 	existingEmail, errEmail := userUC.userRepo.FindByEmail(context, user.Email)
@@ -60,6 +62,7 @@ func (userUC *userUseCase) RegisterStart(cxt context.Context, user *domain.User)
 	if (errEmail != nil && errEmail.StatusCode() != http.StatusNotFound) || (errUsername != nil && errUsername.StatusCode() != http.StatusNotFound) {
 		return domain.CustomError{Message: "error while checking for existing user", Code: http.StatusInternalServerError}
 	}
+
 	if (existingEmail != nil && existingEmail.Email != "") || (existingUsername != nil && existingUsername.Username != "") {
 		return domain.CustomError{Message: "Email or Username already exists", Code: http.StatusBadRequest}
 	}
@@ -72,9 +75,10 @@ func (userUC *userUseCase) RegisterStart(cxt context.Context, user *domain.User)
 
 	user.Password = hashedPassword
 
-	verificationToken, errVerification := userUC.jwtService.GenerateVerificationToken(*user)
+	min, _ := strconv.Atoi(os.Getenv("VERIFY_TOKEN_EXPIRY"))
+	verificationToken, errVerification := userUC.jwtService.GenerateVerificationToken(*user, time.Duration(min)*time.Minute)
 	if errVerification != nil {
-		return &domain.CustomError{Message: errVerification.Error() + "third", Code: http.StatusInternalServerError}
+		return domain.CustomError{Message: errVerification.Error(), Code: http.StatusInternalServerError}
 	}
 
 	existingRegisteringUser, checkExistingSession, errRegisteringUser := userUC.sessionRepo.FindTokenByUserUsername(context, user.Username)
@@ -101,7 +105,7 @@ func (userUC *userUseCase) RegisterStart(cxt context.Context, user *domain.User)
 	err := userUC.mailService.SendVerificationEmail(user.Email, user.Username, fmt.Sprintf(os.Getenv("VERIFY_PATH"), verificationToken))
 
 	if err != nil {
-		return &domain.CustomError{Message: err.Error() + "forth", Code: http.StatusInternalServerError}
+		return &domain.CustomError{Message: err.Error(), Code: http.StatusInternalServerError}
 	}
 	return nil
 }
@@ -109,19 +113,19 @@ func (userUC *userUseCase) RegisterStart(cxt context.Context, user *domain.User)
 func (userUC *userUseCase) RegisterEnd(cxt context.Context, token string) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
-		return &domain.CustomError{Message: errTimeout.Error() + "five", Code: http.StatusInternalServerError}
+		return domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
 	}
 	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
 	defer cancel()
 
 	parsedToken, errParse := userUC.jwtService.ValidateVerificationToken(token)
 	if errParse != nil {
-		return &domain.CustomError{Message: errParse.Error() + "six", Code: http.StatusBadRequest}
+		return domain.CustomError{Message: errParse.Error(), Code: errParse.StatusCode()}
 	}
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 	if !ok {
-		return &domain.CustomError{Message: "error parsing claims", Code: http.StatusInternalServerError}
+		return domain.CustomError{Message: "error parsing claims", Code: http.StatusInternalServerError}
 	}
 
 	storedSession, sessionExist, err := userUC.sessionRepo.FindTokenByUserUsername(context, claims["username"].(string))
@@ -185,12 +189,14 @@ func (userUC *userUseCase) Login(cxt context.Context, username, password string)
 		return map[string]string{}, &domain.CustomError{Message: "session not found", Code: http.StatusNotFound}
 	}
 
-	accessToken, errAccess := userUC.jwtService.GenerateAccessTokenWithPayload(*existingUser)
+	min, _ := strconv.Atoi(os.Getenv("ACCESS_TOKEN_EXPIRY"))
+	accessToken, errAccess := userUC.jwtService.GenerateAccessTokenWithPayload(*existingUser, time.Duration(min)*time.Minute)
 	if errAccess != nil {
 		return map[string]string{}, &domain.CustomError{Message: errAccess.Error(), Code: http.StatusInternalServerError}
 	}
 
-	refreshToken, errRefresh := userUC.jwtService.GenerateRefreshTokenWithPayload(*existingUser)
+	min, _ = strconv.Atoi(os.Getenv("REFRESH_TOKEN_EXPIRY"))
+	refreshToken, errRefresh := userUC.jwtService.GenerateRefreshTokenWithPayload(*existingUser, time.Duration(min)*time.Minute)
 	if errRefresh != nil {
 		return map[string]string{}, &domain.CustomError{Message: errRefresh.Error(), Code: http.StatusInternalServerError}
 	}
@@ -245,7 +251,8 @@ func (userUC *userUseCase) RefreshToken(cxt context.Context, refreshToken string
 		return map[string]string{}, domain.CustomError{Message: "invalid token", Code: http.StatusUnauthorized}
 	}
 
-	newAccessToken, errAccess := userUC.jwtService.GenerateAccessTokenWithPayload(*existingUser)
+	min, _ := strconv.Atoi(os.Getenv("ACCESS_TOKEN_EXPIRY"))
+	newAccessToken, errAccess := userUC.jwtService.GenerateAccessTokenWithPayload(*existingUser, time.Duration(min)*time.Minute)
 	if errAccess != nil {
 		return map[string]string{}, domain.CustomError{Message: errAccess.Error(), Code: http.StatusInternalServerError}
 	}
@@ -266,12 +273,13 @@ func (userUC *userUseCase) ForgotPassword(cxt context.Context, email string) dom
 		return domain.CustomError{Message: err.Error(), Code: http.StatusInternalServerError}
 	}
 
-	resetCode, errCode := utils.GenerateTokenWithLength(6)
+	resetCode, errCode := userUC.utils.GenerateTokenWithLength(6)
 	if errCode != nil {
 		return &domain.CustomError{Message: errCode.Error(), Code: http.StatusInternalServerError}
 	}
 
-	passwordResetToken, errToken := userUC.jwtService.GenerateResetToken(email)
+	minute, _ := strconv.Atoi(os.Getenv("RESET_TOKEN_EXPIRY"))
+	passwordResetToken, errToken := userUC.jwtService.GenerateResetToken(email, time.Duration(minute)*time.Minute)
 	if errToken != nil {
 		return &domain.CustomError{Message: errToken.Error(), Code: http.StatusInternalServerError}
 	}
@@ -283,6 +291,7 @@ func (userUC *userUseCase) ForgotPassword(cxt context.Context, email string) dom
 
 	if existingCheck {
 		existingSession.PasswordResetToken = passwordResetToken
+		existingSession.ResetPasswordCode = resetCode
 		existingSession.RefreshToken = ""
 		errUpdate := userUC.sessionRepo.UpdateToken(context, existingSession.ID.Hex(), existingSession)
 		if errUpdate != nil {
@@ -293,13 +302,14 @@ func (userUC *userUseCase) ForgotPassword(cxt context.Context, email string) dom
 			ID:                 existingUser.ID,
 			Username:           existingSession.Username,
 			PasswordResetToken: passwordResetToken,
+			ResetPasswordCode:  resetCode,
 		})
 		if errCreatingToken != nil {
 			return errCreatingToken
 		}
 	}
 
-	errorEmail := userUC.mailService.SendPasswordResetEmail(existingUser.Email, existingSession.Username, fmt.Sprintf(os.Getenv("RESET_PATH"), passwordResetToken, resetCode), fmt.Sprintf("%v", resetCode))
+	errorEmail := userUC.mailService.SendPasswordResetEmail(existingUser.Email, existingSession.Username, fmt.Sprintf(os.Getenv("RESET_PASSWORD_PATH"), passwordResetToken), strconv.Itoa(resetCode))
 
 	if errorEmail != nil {
 		return &domain.CustomError{Message: errorEmail.Error(), Code: http.StatusInternalServerError}
@@ -318,7 +328,7 @@ func (userUC *userUseCase) ResetPassword(cxt context.Context, newPassword, confi
 
 	parsedToken, errParse := userUC.jwtService.ValidateResetToken(token)
 	if errParse != nil {
-		return &domain.CustomError{Message: "error parsing token " + errParse.Error(), Code: http.StatusInternalServerError}
+		return &domain.CustomError{Message: "error parsing token " + errParse.Error(), Code: errParse.StatusCode()}
 	}
 
 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
@@ -339,8 +349,12 @@ func (userUC *userUseCase) ResetPassword(cxt context.Context, newPassword, confi
 		return &domain.CustomError{Message: "session not found", Code: http.StatusNotFound}
 	}
 
-	if session.PasswordResetToken != token || session.ResetPasswordToken != code {
+	if session.PasswordResetToken != token {
 		return &domain.CustomError{Message: "invalid token", Code: http.StatusUnauthorized}
+	}
+
+	if session.ResetPasswordCode != code {
+		return &domain.CustomError{Message: "invalid code", Code: http.StatusUnauthorized}
 	}
 
 	if newPassword != confirmPassword {
@@ -403,7 +417,7 @@ func (userUC *userUseCase) Logout(cxt context.Context, token map[string]string) 
 	}
 	existingSession, existenceCheck, err := userUC.sessionRepo.FindTokenByUserUsername(context, username.(string))
 	if err != nil {
-		return &domain.CustomError{Message: "error while retriving existingSession " + err.Error(), Code: http.StatusUnauthorized}
+		return &domain.CustomError{Message: err.Error(), Code: err.StatusCode()}
 	}
 
 	if !existenceCheck {
@@ -415,7 +429,7 @@ func (userUC *userUseCase) Logout(cxt context.Context, token map[string]string) 
 	existingSession.PasswordResetToken = ""
 	errDelete := userUC.sessionRepo.UpdateToken(context, existingSession.ID.Hex(), existingSession)
 	if errDelete != nil {
-		return &domain.CustomError{Message: "error while updating existing session" + errDelete.Error(), Code: http.StatusUnauthorized}
+		return &domain.CustomError{Message: errDelete.Error(), Code: errDelete.StatusCode()}
 	}
 	return nil
 }
@@ -447,7 +461,7 @@ func (userUC *userUseCase) DemoteUser(cxt context.Context, userID string) domain
 func (userUC *userUseCase) UpdateProfile(cxt context.Context, userID string, user map[string]interface{}) domain.Error {
 	timeout, errTimeout := strconv.ParseInt(os.Getenv("CONTEXT_TIMEOUT"), 10, 0)
 	if errTimeout != nil {
-		return &domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
+		return domain.CustomError{Message: errTimeout.Error(), Code: http.StatusInternalServerError}
 	}
 	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
 	defer cancel()
@@ -455,20 +469,20 @@ func (userUC *userUseCase) UpdateProfile(cxt context.Context, userID string, use
 	allowedFeilds := map[string]interface{}{}
 	existenceCount, errCheckExistence := userUC.userRepo.CheckExistence(context, userID)
 	if errCheckExistence != nil {
-		return &domain.CustomError{Message: errCheckExistence.Error(), Code: http.StatusInternalServerError}
+		return domain.CustomError{Message: errCheckExistence.Error(), Code: http.StatusInternalServerError}
 	}
 
 	if existenceCount == 0 {
-		return &domain.CustomError{Message: "user by the given user id doesn't exist", Code: http.StatusBadRequest}
+		return domain.CustomError{Message: "user by the given user id doesn't exist", Code: http.StatusBadRequest}
 	}
 
 	if user["username"] != nil {
 		countUsername, errCountUsername := userUC.userRepo.CountByUsername(context, user["username"].(string))
 		if errCountUsername != nil {
-			return &domain.CustomError{Message: "error counting by username" + errCountUsername.Error(), Code: http.StatusInternalServerError}
+			return domain.CustomError{Message: "error counting by username" + errCountUsername.Error(), Code: http.StatusInternalServerError}
 		}
 		if countUsername > 0 {
-			return &domain.CustomError{Message: "Username already taken", Code: http.StatusBadRequest}
+			return domain.CustomError{Message: "Username already taken", Code: http.StatusBadRequest}
 		} else {
 			allowedFeilds["username"] = user["username"]
 		}
@@ -477,11 +491,11 @@ func (userUC *userUseCase) UpdateProfile(cxt context.Context, userID string, use
 	if user["email"] != nil {
 		countEmail, errCountEmail := userUC.userRepo.CountByEmail(context, user["email"].(string))
 		if errCountEmail != nil {
-			return &domain.CustomError{Message: "error counting by email" + errCountEmail.Error(), Code: http.StatusInternalServerError}
+			return domain.CustomError{Message: "error counting by email" + errCountEmail.Error(), Code: http.StatusInternalServerError}
 		}
 
 		if countEmail > 0 {
-			return &domain.CustomError{Message: "Email already taken", Code: http.StatusBadRequest}
+			return domain.CustomError{Message: "Email already taken", Code: http.StatusBadRequest}
 		} else {
 			allowedFeilds["email"] = user["email"]
 		}
@@ -504,7 +518,7 @@ func (userUC *userUseCase) ImageUpload(cxt context.Context, file *multipart.File
 	context, cancel := context.WithTimeout(cxt, time.Duration(timeout)*time.Second)
 	defer cancel()
 
-	if valid := utils.IsValidFileFormat(header, "image/png", "image/jpeg"); !valid {
+	if valid := userUC.utils.IsValidFileFormat(header, "image/png", "image/jpeg"); !valid {
 		return domain.CustomError{Message: "invalid file format", Code: http.StatusBadRequest}
 	}
 
@@ -514,13 +528,13 @@ func (userUC *userUseCase) ImageUpload(cxt context.Context, file *multipart.File
 	}
 
 	if existingUser.ProfilePicture.FilePath != "" {
-		errDelete := utils.DeleteImage(existingUser.ProfilePicture.Public_id, context)
+		errDelete := userUC.utils.DeleteImage(existingUser.ProfilePicture.Public_id, context)
 		if errDelete != nil {
 			return &domain.CustomError{Message: errDelete.Error(), Code: http.StatusInternalServerError}
 		}
 	}
 
-	upload_reslt, errSave := utils.SaveImage(*file, header.Filename, context)
+	upload_reslt, errSave := userUC.utils.SaveImage(*file, header.Filename, context)
 	if errSave != nil {
 		return &domain.CustomError{Message: errSave.Error(), Code: http.StatusInternalServerError}
 	}

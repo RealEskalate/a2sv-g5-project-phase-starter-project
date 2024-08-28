@@ -11,26 +11,23 @@ import (
 )
 
 type emailService struct {
-	auth smtp.Auth
+	auth         smtp.Auth
+	templatePath string
 }
 
-func NewEmailService() domain.EmailService {
+func NewEmailService(templatePath string) domain.EmailService {
 	auth := smtp.PlainAuth(
 		"",
 		os.Getenv("SMTP_EMAIL"),
 		os.Getenv("SMTP_PASSWORD"),
 		"smtp.gmail.com",
 	)
-	return &emailService{auth: auth}
+	return &emailService{auth: auth, templatePath: templatePath}
 }
 
 func (service *emailService) SendMail(to, subject, templateName string, body interface{}) error {
 	from := os.Getenv("SMTP_EMAIL")
-	currdir, errdir := os.Getwd()
-	if errdir != nil {
-		return errdir
-	}
-	tmplt, errLoadingTmplt := template.ParseFiles(currdir + "/infrastructure/mail/templates/" + templateName)
+	tmplt, errLoadingTmplt := template.ParseFiles(service.templatePath + templateName)
 	if errLoadingTmplt != nil {
 		return fmt.Errorf("error loading the template: %v", errLoadingTmplt)
 	}

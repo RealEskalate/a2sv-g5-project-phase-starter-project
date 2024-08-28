@@ -3,9 +3,9 @@
 package mocks
 
 import (
-	domain "github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
-	gin "github.com/gin-gonic/gin"
+	context "context"
 
+	domain "github.com/RealEskalate/a2sv-g5-project-phase-starter-project/aait-backend-group-1/domain"
 	mock "github.com/stretchr/testify/mock"
 
 	multipart "mime/multipart"
@@ -17,7 +17,7 @@ type UserUseCase struct {
 }
 
 // DemoteUser provides a mock function with given fields: cxt, userID
-func (_m *UserUseCase) DemoteUser(cxt *gin.Context, userID string) domain.Error {
+func (_m *UserUseCase) DemoteUser(cxt context.Context, userID string) domain.Error {
 	ret := _m.Called(cxt, userID)
 
 	if len(ret) == 0 {
@@ -25,7 +25,7 @@ func (_m *UserUseCase) DemoteUser(cxt *gin.Context, userID string) domain.Error 
 	}
 
 	var r0 domain.Error
-	if rf, ok := ret.Get(0).(func(*gin.Context, string) domain.Error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) domain.Error); ok {
 		r0 = rf(cxt, userID)
 	} else {
 		if ret.Get(0) != nil {
@@ -36,17 +36,17 @@ func (_m *UserUseCase) DemoteUser(cxt *gin.Context, userID string) domain.Error 
 	return r0
 }
 
-// ForgotPassword provides a mock function with given fields: context, email
-func (_m *UserUseCase) ForgotPassword(context *gin.Context, email string) domain.Error {
-	ret := _m.Called(context, email)
+// ForgotPassword provides a mock function with given fields: _a0, email
+func (_m *UserUseCase) ForgotPassword(_a0 context.Context, email string) domain.Error {
+	ret := _m.Called(_a0, email)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ForgotPassword")
 	}
 
 	var r0 domain.Error
-	if rf, ok := ret.Get(0).(func(*gin.Context, string) domain.Error); ok {
-		r0 = rf(context, email)
+	if rf, ok := ret.Get(0).(func(context.Context, string) domain.Error); ok {
+		r0 = rf(_a0, email)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(domain.Error)
@@ -57,7 +57,7 @@ func (_m *UserUseCase) ForgotPassword(context *gin.Context, email string) domain
 }
 
 // ImageUpload provides a mock function with given fields: cxt, file, header, id
-func (_m *UserUseCase) ImageUpload(cxt *gin.Context, file *multipart.File, header *multipart.FileHeader, id string) domain.Error {
+func (_m *UserUseCase) ImageUpload(cxt context.Context, file *multipart.File, header *multipart.FileHeader, id string) domain.Error {
 	ret := _m.Called(cxt, file, header, id)
 
 	if len(ret) == 0 {
@@ -65,7 +65,7 @@ func (_m *UserUseCase) ImageUpload(cxt *gin.Context, file *multipart.File, heade
 	}
 
 	var r0 domain.Error
-	if rf, ok := ret.Get(0).(func(*gin.Context, *multipart.File, *multipart.FileHeader, string) domain.Error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *multipart.File, *multipart.FileHeader, string) domain.Error); ok {
 		r0 = rf(cxt, file, header, id)
 	} else {
 		if ret.Get(0) != nil {
@@ -76,9 +76,9 @@ func (_m *UserUseCase) ImageUpload(cxt *gin.Context, file *multipart.File, heade
 	return r0
 }
 
-// Login provides a mock function with given fields: context, username, password
-func (_m *UserUseCase) Login(context *gin.Context, username string, password string) (map[string]string, domain.Error) {
-	ret := _m.Called(context, username, password)
+// Login provides a mock function with given fields: _a0, username, password
+func (_m *UserUseCase) Login(_a0 context.Context, username string, password string) (map[string]string, domain.Error) {
+	ret := _m.Called(_a0, username, password)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Login")
@@ -86,19 +86,19 @@ func (_m *UserUseCase) Login(context *gin.Context, username string, password str
 
 	var r0 map[string]string
 	var r1 domain.Error
-	if rf, ok := ret.Get(0).(func(*gin.Context, string, string) (map[string]string, domain.Error)); ok {
-		return rf(context, username, password)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (map[string]string, domain.Error)); ok {
+		return rf(_a0, username, password)
 	}
-	if rf, ok := ret.Get(0).(func(*gin.Context, string, string) map[string]string); ok {
-		r0 = rf(context, username, password)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) map[string]string); ok {
+		r0 = rf(_a0, username, password)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(map[string]string)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*gin.Context, string, string) domain.Error); ok {
-		r1 = rf(context, username, password)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) domain.Error); ok {
+		r1 = rf(_a0, username, password)
 	} else {
 		if ret.Get(1) != nil {
 			r1 = ret.Get(1).(domain.Error)
@@ -109,7 +109,7 @@ func (_m *UserUseCase) Login(context *gin.Context, username string, password str
 }
 
 // Logout provides a mock function with given fields: cxt, token
-func (_m *UserUseCase) Logout(cxt *gin.Context, token map[string]string) domain.Error {
+func (_m *UserUseCase) Logout(cxt context.Context, token map[string]string) domain.Error {
 	ret := _m.Called(cxt, token)
 
 	if len(ret) == 0 {
@@ -117,7 +117,7 @@ func (_m *UserUseCase) Logout(cxt *gin.Context, token map[string]string) domain.
 	}
 
 	var r0 domain.Error
-	if rf, ok := ret.Get(0).(func(*gin.Context, map[string]string) domain.Error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, map[string]string) domain.Error); ok {
 		r0 = rf(cxt, token)
 	} else {
 		if ret.Get(0) != nil {
@@ -129,7 +129,7 @@ func (_m *UserUseCase) Logout(cxt *gin.Context, token map[string]string) domain.
 }
 
 // PromoteUser provides a mock function with given fields: cxt, userID
-func (_m *UserUseCase) PromoteUser(cxt *gin.Context, userID string) domain.Error {
+func (_m *UserUseCase) PromoteUser(cxt context.Context, userID string) domain.Error {
 	ret := _m.Called(cxt, userID)
 
 	if len(ret) == 0 {
@@ -137,7 +137,7 @@ func (_m *UserUseCase) PromoteUser(cxt *gin.Context, userID string) domain.Error
 	}
 
 	var r0 domain.Error
-	if rf, ok := ret.Get(0).(func(*gin.Context, string) domain.Error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) domain.Error); ok {
 		r0 = rf(cxt, userID)
 	} else {
 		if ret.Get(0) != nil {
@@ -149,7 +149,7 @@ func (_m *UserUseCase) PromoteUser(cxt *gin.Context, userID string) domain.Error
 }
 
 // RefreshToken provides a mock function with given fields: cxt, refreshToken
-func (_m *UserUseCase) RefreshToken(cxt *gin.Context, refreshToken string) (map[string]string, domain.Error) {
+func (_m *UserUseCase) RefreshToken(cxt context.Context, refreshToken string) (map[string]string, domain.Error) {
 	ret := _m.Called(cxt, refreshToken)
 
 	if len(ret) == 0 {
@@ -158,10 +158,10 @@ func (_m *UserUseCase) RefreshToken(cxt *gin.Context, refreshToken string) (map[
 
 	var r0 map[string]string
 	var r1 domain.Error
-	if rf, ok := ret.Get(0).(func(*gin.Context, string) (map[string]string, domain.Error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) (map[string]string, domain.Error)); ok {
 		return rf(cxt, refreshToken)
 	}
-	if rf, ok := ret.Get(0).(func(*gin.Context, string) map[string]string); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) map[string]string); ok {
 		r0 = rf(cxt, refreshToken)
 	} else {
 		if ret.Get(0) != nil {
@@ -169,7 +169,7 @@ func (_m *UserUseCase) RefreshToken(cxt *gin.Context, refreshToken string) (map[
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*gin.Context, string) domain.Error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, string) domain.Error); ok {
 		r1 = rf(cxt, refreshToken)
 	} else {
 		if ret.Get(1) != nil {
@@ -181,7 +181,7 @@ func (_m *UserUseCase) RefreshToken(cxt *gin.Context, refreshToken string) (map[
 }
 
 // RegisterEnd provides a mock function with given fields: cxt, token
-func (_m *UserUseCase) RegisterEnd(cxt *gin.Context, token string) domain.Error {
+func (_m *UserUseCase) RegisterEnd(cxt context.Context, token string) domain.Error {
 	ret := _m.Called(cxt, token)
 
 	if len(ret) == 0 {
@@ -189,7 +189,7 @@ func (_m *UserUseCase) RegisterEnd(cxt *gin.Context, token string) domain.Error 
 	}
 
 	var r0 domain.Error
-	if rf, ok := ret.Get(0).(func(*gin.Context, string) domain.Error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string) domain.Error); ok {
 		r0 = rf(cxt, token)
 	} else {
 		if ret.Get(0) != nil {
@@ -201,7 +201,7 @@ func (_m *UserUseCase) RegisterEnd(cxt *gin.Context, token string) domain.Error 
 }
 
 // RegisterStart provides a mock function with given fields: cxt, user
-func (_m *UserUseCase) RegisterStart(cxt *gin.Context, user *domain.User) domain.Error {
+func (_m *UserUseCase) RegisterStart(cxt context.Context, user *domain.User) domain.Error {
 	ret := _m.Called(cxt, user)
 
 	if len(ret) == 0 {
@@ -209,7 +209,7 @@ func (_m *UserUseCase) RegisterStart(cxt *gin.Context, user *domain.User) domain
 	}
 
 	var r0 domain.Error
-	if rf, ok := ret.Get(0).(func(*gin.Context, *domain.User) domain.Error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.User) domain.Error); ok {
 		r0 = rf(cxt, user)
 	} else {
 		if ret.Get(0) != nil {
@@ -221,7 +221,7 @@ func (_m *UserUseCase) RegisterStart(cxt *gin.Context, user *domain.User) domain
 }
 
 // ResetPassword provides a mock function with given fields: cxt, newPassword, confirmPassword, token, resetCode
-func (_m *UserUseCase) ResetPassword(cxt *gin.Context, newPassword string, confirmPassword string, token string, resetCode int) domain.Error {
+func (_m *UserUseCase) ResetPassword(cxt context.Context, newPassword string, confirmPassword string, token string, resetCode int) domain.Error {
 	ret := _m.Called(cxt, newPassword, confirmPassword, token, resetCode)
 
 	if len(ret) == 0 {
@@ -229,7 +229,7 @@ func (_m *UserUseCase) ResetPassword(cxt *gin.Context, newPassword string, confi
 	}
 
 	var r0 domain.Error
-	if rf, ok := ret.Get(0).(func(*gin.Context, string, string, string, int) domain.Error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, string, int) domain.Error); ok {
 		r0 = rf(cxt, newPassword, confirmPassword, token, resetCode)
 	} else {
 		if ret.Get(0) != nil {
@@ -241,7 +241,7 @@ func (_m *UserUseCase) ResetPassword(cxt *gin.Context, newPassword string, confi
 }
 
 // UpdateProfile provides a mock function with given fields: cxt, userID, user
-func (_m *UserUseCase) UpdateProfile(cxt *gin.Context, userID string, user map[string]interface{}) domain.Error {
+func (_m *UserUseCase) UpdateProfile(cxt context.Context, userID string, user map[string]interface{}) domain.Error {
 	ret := _m.Called(cxt, userID, user)
 
 	if len(ret) == 0 {
@@ -249,7 +249,7 @@ func (_m *UserUseCase) UpdateProfile(cxt *gin.Context, userID string, user map[s
 	}
 
 	var r0 domain.Error
-	if rf, ok := ret.Get(0).(func(*gin.Context, string, map[string]interface{}) domain.Error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string, map[string]interface{}) domain.Error); ok {
 		r0 = rf(cxt, userID, user)
 	} else {
 		if ret.Get(0) != nil {

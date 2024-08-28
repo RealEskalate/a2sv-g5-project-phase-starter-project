@@ -79,10 +79,22 @@ func (m *middlewareService) Authorize(role ...string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		tokenString := ctx.GetHeader("Authorization")
 		tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
-		token, _ := m.jwtService.ValidateAccessToken(tokenString)
-		claims, _ := token.Claims.(jwt.MapClaims)
-		userRole := claims["role"].(string)
 
+		token, err := m.jwtService.ValidateAccessToken(tokenString)
+		if err != nil || !token.Valid {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			ctx.Abort()
+			return
+		}
+
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok || claims["role"] == nil {
+			ctx.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized for this action"})
+			ctx.Abort()
+			return
+		}
+
+		userRole := claims["role"].(string)
 		validRole := false
 		for _, r := range role {
 			if r == userRole {

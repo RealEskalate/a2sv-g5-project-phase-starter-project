@@ -10,7 +10,7 @@ import (
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 )
 
-func IsValidFileFormat(header *multipart.FileHeader, formats ...string) bool {
+func (userUT *UserUtils) IsValidFileFormat(header *multipart.FileHeader, formats ...string) bool {
 	fileFormat := header.Header.Get("Content-Type")
 	for _, file := range formats {
 		if file == fileFormat {
@@ -20,8 +20,8 @@ func IsValidFileFormat(header *multipart.FileHeader, formats ...string) bool {
 	return false
 }
 
-func SaveImage(file multipart.File, name string, cxt context.Context) (*uploader.UploadResult, error) {
-	cld, err := setupCloudinary()
+func (userUT *UserUtils) SaveImage(file multipart.File, name string, cxt context.Context) (*uploader.UploadResult, error) {
+	cld, err := userUT.SetupCloudinary()
 	if err != nil {
 		return &uploader.UploadResult{}, err
 	}
@@ -36,8 +36,8 @@ func SaveImage(file multipart.File, name string, cxt context.Context) (*uploader
 	return uploadResult, nil
 }
 
-func DeleteImage(publicID string, cxt context.Context) error {
-	cld, err := setupCloudinary()
+func (userUT *UserUtils) DeleteImage(publicID string, cxt context.Context) error {
+	cld, err := userUT.SetupCloudinary()
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func DeleteImage(publicID string, cxt context.Context) error {
 	return nil
 }
 
-func setupCloudinary() (*cloudinary.Cloudinary, error) {
+func (userUT *UserUtils) SetupCloudinary() (*cloudinary.Cloudinary, error) {
 	cld, errCld := cloudinary.NewFromURL(fmt.Sprintf("%v%v:%v@%v", os.Getenv("CLOUDINARY_URL"), os.Getenv("CLOUDINARY_API_KEY"), os.Getenv("CLOUDINARY_API_SECRET"), os.Getenv("CLOUDINARY_NAME")))
 	if errCld != nil {
 		return nil, errCld

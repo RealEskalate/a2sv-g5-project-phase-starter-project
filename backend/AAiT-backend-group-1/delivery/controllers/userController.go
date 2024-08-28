@@ -15,10 +15,10 @@ type LoginRequest struct {
 }
 
 type ResetPasswordRequest struct {
-	NewPasswor      string `json:"password"`
-	ConfirmPassword string `json:"confirm_password"`
+	NewPasswor      string `json:"password" binding:"required"`
+	ConfirmPassword string `json:"confirm_password" binding:"required"`
 	Token           string
-	ResetToken      int `json:"reset_token"`
+	ResetCode       int `json:"reset_code" binding:"required"`
 }
 
 type LogoutRequest struct {
@@ -40,12 +40,12 @@ func (userController *userController) Register(cxt *gin.Context) {
 	var registeringUser domain.User
 	errUnmarshal := cxt.ShouldBind(&registeringUser)
 	if errUnmarshal != nil {
-		cxt.JSON(http.StatusBadRequest, gin.H{"Edrror": errUnmarshal.Error()})
+		cxt.JSON(http.StatusBadRequest, gin.H{"Error": errUnmarshal.Error()})
 		return
 	}
 	errCreate := userController.UserUseCase.RegisterStart(cxt, &registeringUser)
 	if errCreate != nil {
-		cxt.JSON(errCreate.StatusCode(), gin.H{"Errojgr": errCreate.Error()})
+		cxt.JSON(errCreate.StatusCode(), gin.H{"Error": errCreate.Error()})
 		return
 	}
 	cxt.JSON(http.StatusAccepted, gin.H{"Message": "User verification email sent"})
@@ -128,14 +128,13 @@ func (userController *userController) ResetPassword(cxt *gin.Context) {
 	resetToken := cxt.Param("token")
 	resetInfo.Token = resetToken
 
-	errReset := userController.UserUseCase.ResetPassword(cxt, resetInfo.NewPasswor, resetInfo.ConfirmPassword, resetInfo.Token, resetInfo.ResetToken)
+	errReset := userController.UserUseCase.ResetPassword(cxt, resetInfo.NewPasswor, resetInfo.ConfirmPassword, resetInfo.Token, resetInfo.ResetCode)
 	if errReset != nil {
 		cxt.JSON(errReset.StatusCode(), gin.H{"Error": errReset.Error()})
 		return
 	}
 
 	cxt.JSON(http.StatusOK, gin.H{"Message": "Password reset successfully"})
-
 }
 
 func (userController *userController) Logout(cxt *gin.Context) {
@@ -157,9 +156,7 @@ func (userController *userController) Logout(cxt *gin.Context) {
 		cxt.JSON(errLogout.StatusCode(), gin.H{"Error": errLogout.Error()})
 		return
 	}
-
 	cxt.JSON(http.StatusOK, gin.H{"Message": "User logged out successfully"})
-
 }
 
 func (userController *userController) PromoteUser(cxt *gin.Context) {

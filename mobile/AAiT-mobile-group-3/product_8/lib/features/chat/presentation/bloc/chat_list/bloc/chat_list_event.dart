@@ -5,6 +5,7 @@ sealed class ChatListEvent extends Equatable {
 
   @override
   List<Object?> get props => [];
+  
 }
 
 class LoadAllChatEvent extends ChatListEvent {

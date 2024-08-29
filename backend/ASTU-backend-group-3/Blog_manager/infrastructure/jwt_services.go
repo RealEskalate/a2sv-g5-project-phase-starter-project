@@ -100,7 +100,6 @@ func ParseToken(tokenString string, jwtKey []byte) (*Claims, error) {
 	return claims, nil
 }
 
-
 func ParseResetToken(tokenString string, jwtKey []byte) (*ResetClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &ResetClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil

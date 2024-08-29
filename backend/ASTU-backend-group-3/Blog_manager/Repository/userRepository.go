@@ -3,6 +3,7 @@ package Repository
 import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"context"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -22,6 +23,7 @@ type UserRepository interface {
 	ExpireToken(token string) error
 	ShowUsers() ([]Domain.User, error)
 	GetIDBYUsername(username string) (string, error)
+	RemoveExpiredTokens(ctx context.Context) error
 }
 
 type userRepository struct {
@@ -159,4 +161,28 @@ func (r *userRepository) FindByID(id string) (Domain.User, error) {
 		return Domain.User{}, err
 	}
 	return user, nil
+}
+
+func (r *userRepository) RemoveExpiredTokens(ctx context.Context) error {
+	// Filter to find expired tokens
+	filter := bson.M{
+		"expires_at": bson.M{
+			"$lt": time.Now().Unix(), // Tokens with an expiration date less than the current time
+		},
+	}
+
+	// Perform the delete operation
+	result, err := r.tokenCollection.DeleteMany(ctx, filter)
+	if err != nil {
+		return err
+	}
+
+	// Log the number of deleted documents for debugging
+	if result.DeletedCount > 0 {
+		log.Printf("Deleted %d expired tokens", result.DeletedCount)
+	} else {
+		log.Println("No expired tokens found")
+	}
+
+	return nil
 }

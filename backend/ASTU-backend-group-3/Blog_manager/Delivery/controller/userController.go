@@ -4,21 +4,48 @@ import (
 	"ASTU-backend-group-3/Blog_manager/Domain"
 	"ASTU-backend-group-3/Blog_manager/Usecases"
 	"ASTU-backend-group-3/Blog_manager/infrastructure"
+	"context"
+	"log"
 	"net/http"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+
+	"github.com/robfig/cron/v3"
 )
 
 // UserController handles user-related endpoints
 type UserController struct {
 	UserUsecase Usecases.UserUsecase
+	cronJob     *cron.Cron
 }
 
 // NewUserController creates a new instance of UserController
 func NewUserController(userUsecase Usecases.UserUsecase) *UserController {
-	return &UserController{UserUsecase: userUsecase}
+	controller := &UserController{
+		UserUsecase: userUsecase,
+		cronJob:     cron.New(),
+	}
+	return controller
+}
+
+// StartTokenCleanupJob starts the cron job for cleaning up expired tokens
+func (c *UserController) StartTokenCleanupJob() {
+	_, err := c.cronJob.AddFunc("@every 1m", func() {
+		err := c.UserUsecase.CleanUpExpiredTokens(context.TODO())
+		if err != nil {
+			log.Printf("Error cleaning up expired tokens: %v", err)
+		} else {
+			log.Println("Expired tokens cleaned up successfully")
+		}
+	})
+	if err != nil {
+		log.Fatalf("Error scheduling cleanup job: %v", err)
+	}
+
+	c.cronJob.Start()
+	log.Println("Token cleanup cron job started")
 }
 
 // Register handles user registration
@@ -91,7 +118,7 @@ func (uc *UserController) Login(c *gin.Context) {
 		return
 	}
 
-	accessToken, refresh_token , err := uc.UserUsecase.Login(c, &input)
+	accessToken, refresh_token, err := uc.UserUsecase.Login(c, &input)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -128,7 +155,6 @@ func (uc *UserController) RefreshToken(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	
 
 	// Set token claims in context
 	claims, ok := token.Claims.(*infrastructure.Claims)
@@ -144,12 +170,12 @@ func (uc *UserController) RefreshToken(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	refreshToken , err = infrastructure.GenerateRefreshToken(claims.Username)
+	refreshToken, err = infrastructure.GenerateRefreshToken(claims.Username)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	uc.UserUsecase.InsertToken(claims.Username ,  accessToken , refreshToken)
+	uc.UserUsecase.InsertToken(claims.Username, accessToken, refreshToken)
 
 	c.JSON(http.StatusOK, gin.H{"access_token": accessToken})
 }
@@ -163,18 +189,17 @@ func (uc *UserController) ForgotPassword(c *gin.Context) {
 		return
 	}
 
-	_, err := uc.UserUsecase.ForgotPassword(c , input.Username)
+	_, err := uc.UserUsecase.ForgotPassword(c, input.Username)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-
 }
 func (uc *UserController) ResetPassword(c *gin.Context) {
 	reset_token := c.Param("token")
 
-	new_token, err := uc.UserUsecase.Reset(c ,reset_token)
+	new_token, err := uc.UserUsecase.Reset(c, reset_token)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -193,7 +218,6 @@ func (uc *UserController) ChangePassword(c *gin.Context) {
 	}
 
 	username := c.GetString("username")
-
 
 	err := uc.UserUsecase.UpdatePassword(username, input.NewPassword)
 	if err != nil {
@@ -227,14 +251,14 @@ func (uc *UserController) Logout(c *gin.Context) {
 func (uc *UserController) PromoteToAdmin(c *gin.Context) {
 	ID := c.Param("id")
 
-	user , err := uc.UserUsecase.PromoteTOAdmin(ID)
+	user, err := uc.UserUsecase.PromoteTOAdmin(ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	if user.Role != "admin" {
-	c.JSON(http.StatusOK, gin.H{"message": "User promoted to admin successfully"})
-	}else{
+		c.JSON(http.StatusOK, gin.H{"message": "User promoted to admin successfully"})
+	} else {
 		c.JSON(http.StatusOK, gin.H{"message": "User demoted to user successfully"})
 	}
 }
@@ -259,4 +283,15 @@ func (uc *UserController) FindUsers(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"users": users})
 
+}
+
+func (uc *UserController) CleanUpTokens() {
+	ctx := context.Background()
+
+	err := uc.UserUsecase.CleanUpExpiredTokens(ctx)
+	if err != nil {
+		log.Println("Error cleaning up expired tokens:", err)
+	} else {
+		log.Println("Expired tokens cleaned up successfully")
+	}
 }

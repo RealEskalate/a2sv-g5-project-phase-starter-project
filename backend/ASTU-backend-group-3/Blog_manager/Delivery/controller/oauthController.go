@@ -10,8 +10,10 @@ import (
 )
 
 func (u *UserController) LoginHandler(c *gin.Context) {
-	// Generate a URL for the Google OAuth 2.0 consent screen
-	url := infrastructure.OAuthConfig.AuthCodeURL("state", oauth2.AccessTypeOffline)
+	// Generate the OAuth2 URL for Google login with the "prompt" parameter to force account selection
+	url := infrastructure.OAuthConfig.AuthCodeURL("state", oauth2.AccessTypeOffline, oauth2.SetAuthURLParam("prompt", "select_account"))
+
+	// Redirect the user to Google's OAuth2 login page
 	c.Redirect(http.StatusTemporaryRedirect, url)
 }
 

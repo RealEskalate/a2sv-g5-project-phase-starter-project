@@ -57,6 +57,5 @@ func SetupRouter(userController *controller.UserController, blogController *cont
 	adminRoute.DELETE("/delete/:username", userController.DeleteUser)
 	adminRoute.PUT("/promote/:id", userController.PromoteToAdmin)
 
-
 	return router
 }

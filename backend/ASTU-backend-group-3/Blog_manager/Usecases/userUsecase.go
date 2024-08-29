@@ -32,6 +32,7 @@ type UserUsecase interface {
 	FindUser() ([]Domain.User, error)
 	GiveId(username string) (string, error)
 	InsertToken(username string, accessToken string, refreshToken string) error
+	CleanUpExpiredTokens(ctx context.Context) error
 }
 
 type userUsecase struct {
@@ -541,4 +542,8 @@ func (u *userUsecase) FindUser() ([]Domain.User, error) {
 		return nil, err
 	}
 	return users, nil
+}
+
+func (u *userUsecase) CleanUpExpiredTokens(ctx context.Context) error {
+	return u.userRepo.RemoveExpiredTokens(ctx)
 }

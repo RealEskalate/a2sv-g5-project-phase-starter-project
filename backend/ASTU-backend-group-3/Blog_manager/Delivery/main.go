@@ -50,6 +50,9 @@ func main() {
 	blogController := controller.NewBlogController(blogUsecase, userUsecase)
 	userController := controller.NewUserController(userUsecase)
 
+	// Start the token cleanup cron job
+	userController.StartTokenCleanupJob()
+
 	router := router.SetupRouter(userController, blogController, tokenCollection)
 	log.Fatal(router.Run(":8080"))
 

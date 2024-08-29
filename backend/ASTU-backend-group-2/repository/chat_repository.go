@@ -70,7 +70,7 @@ func (cr *chatRepository) CreateMessage(c context.Context, chatID primitive.Obje
 
 	collection := cr.database.Collection(cr.collectionName)
 	query := bson.M{
-		"$push": bson.M{"history": body},
+		"$push": bson.M{"messages": body},
 	}
 
 	_, err := collection.UpdateByID(c, chatID, query)

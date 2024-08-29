@@ -8,7 +8,6 @@ import (
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
-	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/internal/emailutil"
 	mongopagination "github.com/gobeam/mongo-go-pagination"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -44,7 +43,7 @@ func (uu *userUsecase) GetUserById(c context.Context, userId string) (*entities.
 	defer cancel()
 	return uu.userRepository.GetUserById(ctx, userId)
 }
-func (uu *userUsecase) GetUsers(c context.Context, userFilter entities.UserFilter) (*[]entities.UserOut, mongopagination.PaginationData, error) {
+func (uu *userUsecase) GetUsers(c context.Context, userFilter entities.UserFilter) (*[]entities.User, mongopagination.PaginationData, error) {
 	ctx, cancel := context.WithTimeout(c, uu.contextTimeout)
 	defer cancel()
 	filter := UserFilterOption(userFilter)
@@ -55,15 +54,15 @@ func (uu *userUsecase) GetUsers(c context.Context, userFilter entities.UserFilte
 	}
 
 	// map users to userout
-	res := make([]entities.UserOut, 0)
+	res := make([]entities.User, 0)
 
 	for _, user := range *users {
-		res = append(res, *user.ToUserOut())
+		res = append(res, user)
 	}
 
 	return &res, meta, nil
 }
-func (uu *userUsecase) GetAllUsers(c context.Context) ([]entities.UserOut, error) {
+func (uu *userUsecase) GetAllUsers(c context.Context) ([]entities.User, error) {
 	return uu.userRepository.GetAllUsers(c)
 }
 func (uu *userUsecase) UpdateUser(c context.Context, userID string, updatedUser *entities.UserUpdate) (*entities.User, error) {
@@ -202,26 +201,26 @@ func UserFilterOption(filter entities.UserFilter) bson.M {
 }
 
 func (uu *userUsecase) SendReminderEmail(c context.Context) error {
-	ctx, cancel := context.WithTimeout(c, time.Second*10)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(c, time.Second*10)
+	// defer cancel()
 
-	emailTreshold := primitive.NewDateTimeFromTime(time.Now().AddDate(0, 0, -3))
-	deleteTreshold := primitive.NewDateTimeFromTime(time.Now().AddDate(0, 0, -10))
+	// emailTreshold := primitive.NewDateTimeFromTime(time.Now().AddDate(0, 0, -3))
+	// deleteTreshold := primitive.NewDateTimeFromTime(time.Now().AddDate(0, 0, -10))
 
-	users, err := uu.userRepository.GetInactiveUsersForReactivation(ctx, emailTreshold, deleteTreshold)
+	// users, err := uu.userRepository.GetInactiveUsersForReactivation(ctx, emailTreshold, deleteTreshold)
 
-	if err != nil {
-		return err
-	}
+	// if err != nil {
+	// 	return err
+	// }
 
-	for _, user := range *users {
-		// Send activation email
-		err := emailutil.SendVerificationEmail(user.Email, user.VerToken, uu.Env)
-		if err != nil {
-			log.Println("Error sending reminder email to user:", user.Email)
-			continue
-		}
-	}
+	// for _, user := range *users {
+	// 	// Send activation email
+	// 	err := emailutil.SendVerificationEmail(user.Email, user.VerToken, uu.Env)
+	// 	if err != nil {
+	// 		log.Println("Error sending reminder email to user:", user.Email)
+	// 		continue
+	// 	}
+	// }
 
 	return nil
 }

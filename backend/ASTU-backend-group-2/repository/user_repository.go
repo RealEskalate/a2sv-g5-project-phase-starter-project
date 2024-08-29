@@ -14,6 +14,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var userProjection = bson.M{
+	"password": 0,
+}
+
 type userRepository struct {
 	database       mongo.Database
 	collectionName string
@@ -30,7 +34,6 @@ func (ur *userRepository) CreateUser(c context.Context, user *entities.User) (*e
 
 	collection := ur.database.Collection(ur.collectionName)
 
-
 	res, err := collection.InsertOne(c, user)
 
 	if err != nil {
@@ -40,6 +43,8 @@ func (ur *userRepository) CreateUser(c context.Context, user *entities.User) (*e
 	insertedID, _ := res.InsertedID.(primitive.ObjectID)
 	var insertedUser entities.User
 	err = collection.FindOne(c, bson.M{"_id": insertedID}).Decode(&insertedUser)
+
+	insertedUser.Password = ""
 
 	if err != nil {
 		return nil, custom_error.ErrErrorCreatingUser
@@ -55,16 +60,19 @@ func (ur *userRepository) IsOwner(c context.Context) (bool, error) {
 	}
 	return count == 0, nil
 }
-func (ur *userRepository) GetAllUsers(c context.Context) ([]entities.UserOut, error) {
-	collection := ur.database.Collection(ur.collection)
-	var users []entities.UserOut
-	cursor, err := collection.Find(c, bson.M{})
+func (ur *userRepository) GetAllUsers(c context.Context) ([]entities.User, error) {
+	collection := ur.database.Collection(ur.collectionName)
+	var users []entities.User
+
+	opts := options.Find().SetProjection(userProjection)
+
+	cursor, err := collection.Find(c, bson.M{}, opts)
 	if err != nil {
-		return []entities.UserOut{}, err
+		return []entities.User{}, err
 	}
 	err = cursor.All(c, &users)
 	if err != nil {
-		return []entities.UserOut{}, err
+		return []entities.User{}, err
 	}
 
 	return users, nil
@@ -107,7 +115,9 @@ func (ur *userRepository) GetUserById(c context.Context, userId string) (*entiti
 		return nil, custom_error.ErrInvalidID
 	}
 
-	err = collection.FindOne(c, bson.M{"_id": id}).Decode(&user)
+	opts := options.FindOne().SetProjection(userProjection)
+
+	err = collection.FindOne(c, bson.M{"_id": id}, opts).Decode(&user)
 
 	if err != nil {
 		return nil, custom_error.ErrUserNotFound
@@ -120,6 +130,7 @@ func (ur *userRepository) GetUserById(c context.Context, userId string) (*entiti
 func (ur *userRepository) GetUserByEmail(c context.Context, email string) (*entities.User, error) {
 	collection := ur.database.Collection(ur.collectionName)
 	var user entities.User
+
 	err := collection.FindOne(c, bson.M{"email": email}).Decode(&user)
 	if err != nil {
 		return nil, custom_error.ErrUserNotFound
@@ -130,12 +141,7 @@ func (ur *userRepository) GetUserByEmail(c context.Context, email string) (*enti
 func (ur *userRepository) GetUsers(c context.Context, filter bson.M, userFilter entities.UserFilter) (*[]entities.User, mongopagination.PaginationData, error) {
 	collection := ur.database.Collection(ur.collectionName)
 
-	projectQuery := bson.M{"$project": bson.M{
-		"password":     0,
-		"tokens":       0,
-		"verfiy_token": 0,
-		"is_owner":     0,
-	}}
+	projectQuery := bson.M{"$project": userProjection}
 
 	var aggUserList []entities.User = make([]entities.User, 0)
 
@@ -181,9 +187,58 @@ func (ur *userRepository) UpdateUser(c context.Context, userID string, updatedUs
 	if err != nil {
 		return nil, custom_error.ErrInvalidID
 	}
+
 	filter := bson.M{"_id": id}
-	update := bson.M{"$set": updatedUser}
-	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+
+	if updatedUser.FirstName == "" && updatedUser.LastName == "" && updatedUser.Bio == "" {
+		return nil, custom_error.ErrNoUpdateFields
+	}
+
+	var update bson.M
+
+	if updatedUser.FirstName != "" {
+		update = bson.M{"$set": bson.M{"first_name": updatedUser.FirstName}}
+	}
+
+	if updatedUser.LastName != "" {
+		update = bson.M{"$set": bson.M{"last_name": updatedUser.LastName}}
+	}
+
+	if updatedUser.Bio != "" {
+		update = bson.M{"$set": bson.M{"bio": updatedUser.Bio}}
+	}
+
+	if updatedUser.FirstName != "" && updatedUser.LastName != "" {
+		update = bson.M{"$set": bson.M{
+			"first_name": updatedUser.FirstName,
+			"last_name":  updatedUser.LastName,
+		}}
+	}
+
+	if updatedUser.FirstName != "" && updatedUser.Bio != "" {
+		update = bson.M{"$set": bson.M{
+			"first_name": updatedUser.FirstName,
+			"bio":        updatedUser.Bio,
+		}}
+
+	}
+
+	if updatedUser.LastName != "" && updatedUser.Bio != "" {
+		update = bson.M{"$set": bson.M{
+			"last_name": updatedUser.LastName,
+			"bio":       updatedUser.Bio,
+		}}
+	}
+
+	if updatedUser.FirstName != "" && updatedUser.LastName != "" && updatedUser.Bio != "" {
+		update = bson.M{"$set": bson.M{
+			"first_name": updatedUser.FirstName,
+			"last_name":  updatedUser.LastName,
+			"bio":        updatedUser.Bio,
+		}}
+	}
+
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After).SetProjection(userProjection)
 
 	var ResultUser entities.User
 	err = collection.FindOneAndUpdate(c, filter, update, opts).Decode(&ResultUser)
@@ -204,7 +259,7 @@ func (ur *userRepository) ActivateUser(c context.Context, userID string) (*entit
 	filter := bson.M{"_id": id}
 	update := bson.M{"$set": bson.M{"is_active": true}}
 
-	opts := options.FindOneAndUpdate().SetReturnDocument(options.After)
+	opts := options.FindOneAndUpdate().SetReturnDocument(options.After).SetProjection(userProjection)
 
 	var ResultUser entities.User
 	err = collection.FindOneAndUpdate(c, filter, update, opts).Decode(&ResultUser)
@@ -356,10 +411,11 @@ func (ur *userRepository) DeleteInActiveUser(c context.Context, deleteTreshold p
 	}
 
 	return nil
+}
 
 // GetRefreshToken implements entities.UserRepository.
 func (ur *userRepository) RefreshTokenExist(c context.Context, userID, refreshToken string) (bool, error) {
-	collection := ur.database.Collection(ur.collection)
+	collection := ur.database.Collection(ur.collectionName)
 	id, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
 		return false, err

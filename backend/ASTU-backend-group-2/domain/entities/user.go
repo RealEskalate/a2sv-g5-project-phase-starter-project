@@ -14,60 +14,25 @@ const (
 )
 
 type User struct {
-	ID         primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	FirstName  string             `json:"first_name,omitempty" bson:"first_name" binding:"required,min=3,max=30"`
-	LastName   string             `json:"last_name,omitempty" bson:"last_name" binding:"max=30"`
-	Email      string             `json:"email,omitempty" bson:"email" binding:"required,email"`
-	Active     bool               `json:"is_active,omitempty" bson:"is_active"`
+	ID         primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	FirstName  string             `json:"first_name" bson:"first_name" binding:"required,min=3,max=30"`
+	LastName   string             `json:"last_name" bson:"last_name" binding:"max=30"`
+	Email      string             `json:"email" bson:"email" binding:"required,email"`
+	Active     bool               `json:"is_active" bson:"is_active"`
 	Bio        string             `json:"bio,omitempty" bson:"bio"`
 	ProfileImg string             `json:"profile_img,omitempty" bson:"profile_img"`
 	Password   string             `json:"password,omitempty" bson:"password" binding:"required,min=4,max=30,StrongPassword"`
-	IsOwner    bool               `json:"is_owner,omitempty" bson:"is_owner"`
-	Role       string             `json:"role,omitempty" bson:"role"`
-	Tokens     []string           `json:"tokens,omitempty" bson:"tokens,omitempty"`
-	VerToken   string             `json:"verify_token,omitempty" bson:"verfiy_token"`
-	CreatedAt  primitive.DateTime `json:"created_at,omitempty" bson:"created_at"`
-	UpdatedAt  primitive.DateTime `json:"updated_at,omitempty" bson:"updated_at"`
-	LastLogin  primitive.DateTime `json:"last_login,omitempty" bson:"last_login"`
-}
-
-// this structure defined for data sent as a response
-type UserOut struct {
-	ID         primitive.ObjectID `json:"id" bson:"_id"`
-	FirstName  string             `json:"first_name" bson:"first_name"`
-	LastName   string             `json:"last_name" bson:"last_name"`
-	Email      string             `json:"email" bson:"email"`
-	Bio        string             `json:"bio" bson:"bio"`
-	ProfileImg string             `json:"profile_img" bson:"profile_img"`
 	IsOwner    bool               `json:"is_owner" bson:"is_owner"`
-	Active     bool               `json:"is_active" bson:"is_active"`
 	Role       string             `json:"role" bson:"role"`
 	CreatedAt  primitive.DateTime `json:"created_at" bson:"created_at"`
 	UpdatedAt  primitive.DateTime `json:"updated_at" bson:"updated_at"`
 	LastLogin  primitive.DateTime `json:"last_login" bson:"last_login"`
 }
 
-func (u *User) ToUserOut() *UserOut {
-	return &UserOut{
-		ID:         u.ID,
-		FirstName:  u.FirstName,
-		LastName:   u.LastName,
-		Email:      u.Email,
-		Bio:        u.Bio,
-		ProfileImg: u.ProfileImg,
-		IsOwner:    u.IsOwner,
-		Role:       u.Role,
-		Active:     u.Active,
-		CreatedAt:  u.CreatedAt,
-		UpdatedAt:  u.UpdatedAt,
-		LastLogin:  u.LastLogin,
-	}
-}
-
 type UserUpdate struct {
-	FirstName string             `json:"first_name" bson:"first_name"`
-	LastName  string             `json:"last_name" bson:"last_name"`
-	Bio       string             `json:"bio" bson:"bio"`
+	FirstName string             `json:"first_name" bson:"first_name" binding:"max=30"`
+	LastName  string             `json:"last_name" bson:"last_name" binding:"max=30"`
+	Bio       string             `json:"bio" bson:"bio" binding:"max=100"`
 	UpdatedAt primitive.DateTime `json:"updated_at,omitempty" bson:"updated_at"`
 }
 
@@ -108,8 +73,8 @@ type UserUsecase interface {
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
 
-	GetUsers(c context.Context, filter UserFilter) (*[]UserOut, mongopagination.PaginationData, error)
-	GetAllUsers(c context.Context) ([]UserOut, error)
+	GetUsers(c context.Context, filter UserFilter) (*[]User, mongopagination.PaginationData, error)
+	GetAllUsers(c context.Context) ([]User, error)
 	UpdateUser(c context.Context, userID string, updatedUser *UserUpdate) (*User, error)
 	ActivateUser(c context.Context, userID string) error
 	DeleteUser(c context.Context, userID string) error
@@ -125,7 +90,7 @@ type UserRepository interface {
 	CreateUser(c context.Context, user *User) (*User, error)
 	IsOwner(c context.Context) (bool, error)
 	UpdateRefreshToken(c context.Context, userID string, refreshToken string) error
-	GetAllUsers(c context.Context) ([]UserOut, error)
+	GetAllUsers(c context.Context) ([]User, error)
 	GetUserByEmail(c context.Context, email string) (*User, error)
 	GetUserById(c context.Context, userId string) (*User, error)
 	GetUsers(c context.Context, filter bson.M, userFilter UserFilter) (*[]User, mongopagination.PaginationData, error)

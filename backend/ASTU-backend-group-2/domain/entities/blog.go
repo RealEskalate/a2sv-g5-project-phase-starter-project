@@ -22,13 +22,13 @@ type Blog struct {
 	Title         string             `json:"title,omitempty" bson:"title" binding:"required"`
 	Tags          []string           `json:"tags" bson:"tags"`
 	Content       string             `json:"content,omitempty" bson:"content" binding:"required"`
-	ViewCount     int                `json:"view_count,omitempty" bson:"view_count"`
-	LikeCount     int                `json:"like_count,omitempty" bson:"like_count"`
-	DislikeCount  int                `json:"dislike_count,omitempty" bson:"dislike_count"`
-	CommentsCount int                `json:"comments_count,omitempty" bson:"comments_count"`
-	Popularity    float64            `json:"popularity,omitempty" bson:"popularity"`
-	CreatedAt     time.Time          `json:"created_at,omitempty" bson:"created_at"`
-	UpdatedAt     time.Time          `json:"updated_at,omitempty" bson:"updated_at"`
+	ViewCount     int                `json:"view_count" bson:"view_count"`
+	LikeCount     int                `json:"like_count" bson:"like_count"`
+	DislikeCount  int                `json:"dislike_count" bson:"dislike_count"`
+	CommentsCount int                `json:"comments_count" bson:"comments_count"`
+	Popularity    float64            `json:"popularity" bson:"popularity"`
+	CreatedAt     time.Time          `json:"created_at" bson:"created_at"`
+	UpdatedAt     time.Time          `json:"updated_at" bson:"updated_at"`
 }
 
 func (blog *Blog) UpdatePopularity() {

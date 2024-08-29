@@ -386,7 +386,7 @@ func (bc *BlogController) Like() gin.HandlerFunc {
 			c.Error(err)
 			return
 		}
-		c.JSON(http.StatusOK, nil)
+		c.JSON(http.StatusOK, gin.H{"message": "Like Toggled successfully"})
 	}
 }
 func (bc *BlogController) Dislike() gin.HandlerFunc {
@@ -400,6 +400,6 @@ func (bc *BlogController) Dislike() gin.HandlerFunc {
 			c.Error(err)
 			return
 		}
-		c.JSON(http.StatusOK, nil)
+		c.JSON(http.StatusOK, gin.H{"message": "Dislike Toggled successfully"})
 	}
 }

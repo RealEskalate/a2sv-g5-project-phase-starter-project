@@ -22,9 +22,9 @@ func NewTokenRepository(db *mongo.Database) interfaces.RefreshTokenRepository {
 
 func (tr *tokenRepository) CreateRefreshToken(token *entities.RefreshToken) (*entities.RefreshToken, error) {
 	userID := token.UserID
-	
+
 	filter := bson.D{{"userId", userID}}
-	
+
 	existed := tr.Collection.FindOne(context.TODO(), filter)
 	if existed.Err() != nil {
 		_, err := tr.Collection.InsertOne(context.TODO(), token)
@@ -40,11 +40,10 @@ func (tr *tokenRepository) FindRefreshTokenByUserId(user_id string) (*entities.R
 
 	userID, err := primitive.ObjectIDFromHex(user_id)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
 	filter := bson.D{{"userId", userID}}
-
 
 	result := tr.Collection.FindOne(context.TODO(), filter)
 	if result.Err() != nil {

@@ -11,19 +11,22 @@ import (
 
 // Env is a struct to hold environment variables.
 type Env struct {
-	AppEnv                      string `mapstructure:"APP_ENV"`
-	ContextTimeout              int    `mapstructure:"CONTEXT_TIMEOUT"`
-	DBHost                      string `mapstructure:"DB_HOST"`
-	DBPort                      string `mapstructure:"DB_PORT"`
-	DBName                      string `mapstructure:"DB_NAME"`
-	DBUri                       string `mapstructure:"MONGODB_URI"`
-	AccessTokenExpiryHour       int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
-	RefreshTokenExpiryHour      int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
-	AccessTokenSecret           string `mapstructure:"ACCESS_TOKEN_SECRET"`
-	RefreshTokenSecret          string `mapstructure:"REFRESH_TOKEN_SECRET"`
-	PasswordResetSecret		 	string `mapstructure:"PASSWORD_RESET_SECRET"`
-	GeminiApiKey 				string `mapstructure:"GEMINI_API_KEY"`
+	AppEnv                 string `mapstructure:"APP_ENV"`
+	ContextTimeout         int    `mapstructure:"CONTEXT_TIMEOUT"`
+	DBHost                 string `mapstructure:"DB_HOST"`
+	DBPort                 string `mapstructure:"DB_PORT"`
+	DBName                 string `mapstructure:"DB_NAME"`
+	DBUri                  string `mapstructure:"MONGODB_URI"`
+	AccessTokenExpiryHour  int    `mapstructure:"ACCESS_TOKEN_EXPIRY_HOUR"`
+	RefreshTokenExpiryHour int    `mapstructure:"REFRESH_TOKEN_EXPIRY_HOUR"`
+	AccessTokenSecret      string `mapstructure:"ACCESS_TOKEN_SECRET"`
+	RefreshTokenSecret     string `mapstructure:"REFRESH_TOKEN_SECRET"`
+	PasswordResetSecret    string `mapstructure:"PASSWORD_RESET_SECRET"`
+	GeminiApiKey           string `mapstructure:"GEMINI_API_KEY"`
 	RedisAddress				string `mapstructure:"REDIS_ADDRESS"`
+	CloudName              string `mapstructure:"CLOUD_NAME"`
+	ApiKey                 string `mapstructure:"CLOUD_API_KEY"`
+	ApiSecret              string `mapstructure:"CLOUD_API_SECRET"`
 }
 
 // NewEnv initializes and returns a new instance of the Env struct.

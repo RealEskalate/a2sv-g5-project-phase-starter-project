@@ -176,7 +176,7 @@ func (service *authService) Logout(userId string) error {
 
 }
 
-func (service *authService) RefreshAccessToken(token *entities.RefreshToken) (string, error) {
+func (service *authService) RefreshAccessToken(token string) (string, error) {
 	refreshed, err := service.tokenService.RefreshAccessToken(token)
 	if err != nil {
 		return "", err

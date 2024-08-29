@@ -3,6 +3,7 @@ package middleware
 import (
 	"backend-starter-project/domain/interfaces"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -27,8 +28,10 @@ func (middleware *authMiddleware) AuthMiddleware(role string) gin.HandlerFunc {
 		header := c.GetHeader("Authorization")
 		refresh, err := c.Cookie("refresh_token")
 		if err != nil {
+			fmt.Println("error from auth middleware: second err", err)
 			err := middleware.TokenService.VerifyRefreshToken(refresh)
 			if err != nil {
+				fmt.Println("error from auth middleware: first err", err)
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 				c.Abort()
 				return
@@ -58,12 +61,12 @@ func (middleware *authMiddleware) AuthMiddleware(role string) gin.HandlerFunc {
 				c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 				c.Abort()
 			}
-
+			fmt.Println("Error from auth middleware: ", err)
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 			c.Abort()
 			return
 		}
-		claims := middleware.TokenService.GetClaimsFromToken(authParts[1])
+		claims := middleware.TokenService.GetClaimsFromAccessToken(authParts[1])
 		if role != "" {
 			if claims["role"] != role {
 				c.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions"})

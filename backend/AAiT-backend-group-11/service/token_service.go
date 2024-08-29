@@ -82,6 +82,7 @@ func (service *tokenService) GenerateAccessToken(user *entities.User) (string, e
 }
 
 func (service *tokenService) GenerateRefreshToken(user *entities.User) (*entities.RefreshToken, error) {
+	err:=service.tokenRepository.DeleteRefreshTokenByUserId(user.ID.Hex())
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"userName": user.Username,
@@ -133,6 +134,7 @@ func (service *tokenService) VerifyAccessToken(token string) error {
 }
 
 func (service *tokenService) VerifyRefreshToken(token string) error {
+	fmt.Println("from token service",token)
 	refreshToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -140,6 +142,7 @@ func (service *tokenService) VerifyRefreshToken(token string) error {
 		return []byte(service.refreshTokenSecret), nil
 	})
 	if err != nil {
+		fmt.Println("from token service 1st",err)
 		return err
 	}
 	
@@ -147,13 +150,17 @@ func (service *tokenService) VerifyRefreshToken(token string) error {
 		userId:=claims["userId"].(string)
 		storedToken,err:=service.tokenRepository.FindRefreshTokenByUserId(userId)
 		if err!=nil{
+			fmt.Println("from token service",err)
+
 			return err
 		}
 		if storedToken.Token!=token{
+			fmt.Println("from token service","token is not e")
 			return errors.New("token is not valid")
 		}
 		// if token is expired
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
+			service.tokenRepository.DeleteRefreshTokenByUserId(userId)
 			return errors.New("token is expired login again")
 		}
 	
@@ -162,13 +169,12 @@ func (service *tokenService) VerifyRefreshToken(token string) error {
 	return nil
 }
 
-func (service *tokenService) GetClaimsFromToken(token string) map[string]string {
+func (service *tokenService) GetClaimsFromAccessToken(token string) map[string]string {
 	
 	Token, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(service.accessTokenSecret), nil
 		return []byte(service.accessTokenSecret), nil
 	})
 
@@ -188,15 +194,41 @@ func (service *tokenService) GetClaimsFromToken(token string) map[string]string 
 	return map[string]string{}
 }
 
+func (service *tokenService) GetClaimsFromRefreshToken(token string) map[string]string {
+	
+	Token, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(service.refreshTokenSecret), nil
+	})
+
+	if err != nil {
+		return map[string]string{}
+	}
+	if claims, ok := Token.Claims.(jwt.MapClaims); ok && Token.Valid {
+		resp := make(map[string]string)
+		for key, value := range claims {
+			resp[key] = fmt.Sprintf("%v", value)
+		}
+		return resp
+	}
+
+	return map[string]string{}
+}
 
 
-func (service *tokenService) RefreshAccessToken(refresh *entities.RefreshToken) (string, error) {
-	err:=service.VerifyRefreshToken(refresh.Token)
+func (service *tokenService) RefreshAccessToken(refreshToken string) (string, error) {
+	err:=service.VerifyRefreshToken(refreshToken)
+
 	if err!=nil{
-		service.tokenRepository.DeleteRefreshTokenByUserId(refresh.UserID)
 		return "",err
 	}
-	userId:=refresh.UserID
+	claims:=service.GetClaimsFromRefreshToken(refreshToken)
+	if len(claims)==0{
+		return "",errors.New("no claims found,invalid token")
+	}
+	userId:=claims["userId"]
 	user, err := service.userRepo.FindUserById(userId)
 	if err != nil {
 		return "", err

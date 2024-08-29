@@ -16,8 +16,9 @@ type TokenService interface {
 	VerifyRefreshToken(token string) error
 	InvalidateAccessToken(token string) (string, error)
 	InvalidateRefreshToken(token string) (string, error)
-	GetClaimsFromToken(token string) map[string]string
-	RefreshAccessToken(token *entities.RefreshToken) (string,error)
+	GetClaimsFromAccessToken(token string) map[string]string
+	GetClaimsFromRefreshToken(token string) map[string]string
+	RefreshAccessToken(accToken string) (string,error)
 	CreateRefreshToken(refreshToken *entities.RefreshToken) (*entities.RefreshToken, error)
 	DeleteRefreshTokenByUserId(userId string) error
 	FindRefreshTokenByUserId(userId string) (*entities.RefreshToken, error)

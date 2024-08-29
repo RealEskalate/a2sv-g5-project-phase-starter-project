@@ -14,6 +14,14 @@ type ProfileController struct {
 func NewProfileController(service interfaces.ProfileService) ProfileController {
 	return ProfileController{ProfileService: service}
 }
+func (controller *ProfileController) GetAllProfiles(ctx *gin.Context) {
+	profiles, err := controller.ProfileService.GetAllProfiles()
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, profiles)
+}
 
 func (controller *ProfileController) CreateUserProfile(ctx *gin.Context) {
 	var profile dto.CreateProfileDto
@@ -28,18 +36,17 @@ func (controller *ProfileController) CreateUserProfile(ctx *gin.Context) {
 		return
 	}
 	profile.UserID = userID
-	
+
 	profile_, err := controller.ProfileService.CreateUserProfile(&profile)
-	if err!=nil{
+	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.JSON(200, gin.H{"message": "Profile created successfully", "profile": profile_})
 
 }
-
 func (controller *ProfileController) GetUserProfile(ctx *gin.Context) {
-	userId:=ctx.Param("userId")
+	userId := ctx.Param("userId")
 	profile, err := controller.ProfileService.GetUserProfile(userId)
 	if err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
@@ -56,10 +63,10 @@ func (controller *ProfileController) UpdateUserProfile(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	updUserId:=ctx.Param("userId")
+	updUserId := ctx.Param("userId")
 
 	UserID := ctx.GetString("userId")
-	if UserID!=updUserId {
+	if UserID != updUserId {
 		ctx.JSON(400, gin.H{"error": "You are only authorized to update your own profile"})
 		return
 	}
@@ -73,10 +80,11 @@ func (controller *ProfileController) UpdateUserProfile(ctx *gin.Context) {
 }
 
 func (controller *ProfileController) DeleteUserProfile(ctx *gin.Context) {
-	delId:=ctx.Param("userId")
+	delId := ctx.Param("userId")
 	userId := ctx.GetString("userId")
-	if userId!=delId {
-		ctx.JSON(400, gin.H{"error": "You are only authorized to delete your own profile"})
+	if userId != delId {
+
+		ctx.JSON(400, gin.H{"error": "You are only authorized to delete your own profile", "userId": userId, "delId": delId})
 		return
 	}
 	err := controller.ProfileService.DeleteUserProfile(userId)
@@ -85,4 +93,46 @@ func (controller *ProfileController) DeleteUserProfile(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, gin.H{"message": "Profile deleted successfully"})
+}
+
+func (controller *ProfileController) UpdateOrCreateProfilePicture(ctx *gin.Context) {
+	userId := ctx.GetString("userId")
+	image, err := ctx.FormFile("image")
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	url, err := controller.ProfileService.UpdateProfilePicture(userId, image)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, gin.H{"message": "Profile picture updated successfully", "url": url})
+
+}
+
+func (controller *ProfileController) GetProfilePicture(ctx *gin.Context) {
+	userId := ctx.Param("userId")
+	url, err := controller.ProfileService.GetProfilePicture(userId)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, gin.H{"url": url})
+}
+
+func (controller *ProfileController) DeleteProfilePicture(ctx *gin.Context) {
+	userId := ctx.GetString("userId")
+	user_id := ctx.Param("userId")
+	if userId != user_id {
+		ctx.JSON(400, gin.H{"error": "You cann't delete others profile picture", "userId": userId, "user_id": user_id})
+		return
+	}
+	err := controller.ProfileService.DeleteProfilePicture(userId)
+	if err != nil {
+		ctx.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(200, gin.H{"message": "Profile picture deleted successfully"})
 }

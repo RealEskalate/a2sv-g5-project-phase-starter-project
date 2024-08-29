@@ -18,9 +18,21 @@ type profileRepository struct {
 }
 
 func NewProfileRepository(ctx context.Context, db *mongo.Database) interfaces.ProfileRepository {
-	return profileRepository{db: db, collection: db.Collection("profile"), context: ctx}
+	return &profileRepository{db: db, collection: db.Collection("profile"), context: ctx}
 }
-func (repo profileRepository) GetUserProfile(user_id string) (*entities.Profile, error) {
+
+func (repo *profileRepository) GetAllProfiles() ([]*entities.Profile, error) {
+	var profiles []*entities.Profile
+	cursor, err := repo.collection.Find(repo.context, bson.D{})
+	if err != nil {
+		return nil, err
+	}
+	cursor.All(repo.context, &profiles)
+	return profiles, nil
+
+}
+
+func (repo *profileRepository) GetUserProfile(user_id string) (*entities.Profile, error) {
 	userID, err := primitive.ObjectIDFromHex(user_id)
 	if err != nil {
 		return nil, err
@@ -42,7 +54,7 @@ func (repo profileRepository) GetUserProfile(user_id string) (*entities.Profile,
 
 }
 
-func (repo profileRepository) CreateUserProfile(profile *entities.Profile) (*entities.Profile, error) {
+func (repo *profileRepository) CreateUserProfile(profile *entities.Profile) (*entities.Profile, error) {
 	if profile.UserID == primitive.NilObjectID {
 		return nil, errors.New("user id is required")
 	}
@@ -56,7 +68,7 @@ func (repo profileRepository) CreateUserProfile(profile *entities.Profile) (*ent
 	return profile, nil
 }
 
-func (repo profileRepository) UpdateUserProfile(profile *entities.Profile) (*entities.Profile, error) {
+func (repo *profileRepository) UpdateUserProfile(profile *entities.Profile) (*entities.Profile, error) {
 	user_id := profile.UserID
 	if user_id == primitive.NilObjectID {
 		return nil, errors.New("user id is required")
@@ -79,7 +91,7 @@ func (repo profileRepository) UpdateUserProfile(profile *entities.Profile) (*ent
 	return profile, nil
 }
 
-func (repo profileRepository) DeleteUserProfile(user_id string) error {
+func (repo *profileRepository) DeleteUserProfile(user_id string) error {
 	userID, err := primitive.ObjectIDFromHex(user_id)
 	filter := bson.D{{"userId", userID}}
 	_, err = repo.collection.DeleteOne(repo.context, filter)
@@ -87,5 +99,54 @@ func (repo profileRepository) DeleteUserProfile(user_id string) error {
 		return err
 	}
 
+	return nil
+}
+
+func (repo *profileRepository) UpdateProfilePicture(user_id, path string) error {
+	userId, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil {
+		return err
+	}
+	filter := bson.D{{"userId", userId}}
+	data := bson.D{{"$set", bson.D{{"profilePicture", path}}}}
+	var profile entities.Profile
+	res := repo.collection.FindOne(repo.context, filter)
+	err = res.Decode(&profile)
+	if err != nil {
+		return err
+	}
+	_, err = repo.collection.UpdateOne(repo.context, filter, data)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (repo *profileRepository) GetProfilePicture(user_id string) (string, error) {
+	userId, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil {
+		return "", err
+	}
+	var profile entities.Profile
+	prof := repo.collection.FindOne(repo.context, bson.D{{"userId", userId}})
+	err = prof.Decode(&profile)
+	if err != nil {
+		return "", err
+	}
+	return profile.ProfilePicture, nil
+}
+
+func (repo *profileRepository) DeleteProfilePicture(user_id string) error {
+	userId, err := primitive.ObjectIDFromHex(user_id)
+	if err != nil {
+		return err
+	}
+	filter := bson.D{{"userId", userId}}
+	data := bson.D{{"$set", bson.D{{"profilePicture", ""}}}}
+	_, err = repo.collection.UpdateOne(repo.context, filter, data)
+	if err != nil {
+		return err
+	}
 	return nil
 }

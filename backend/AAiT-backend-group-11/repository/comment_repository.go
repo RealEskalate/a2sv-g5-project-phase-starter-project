@@ -17,9 +17,9 @@ type commentRepository struct {
 	ctx context.Context
 }
 
-func NewCommentRepository(collection *mongo.Collection, ctx context.Context ) interfaces.CommentRepository {
+func NewCommentRepository(collection mongo.Collection, ctx context.Context ) interfaces.CommentRepository {
 	return &commentRepository{
-		collection: collection,
+		collection: &collection,
 		ctx: ctx,
 	}
 }

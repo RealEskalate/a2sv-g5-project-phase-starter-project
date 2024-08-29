@@ -204,7 +204,7 @@ func (_m *Collection) FindOne(_a0 context.Context, _a1 interface{}, _a2 ...*opti
 }
 
 // FindOneAndDelete provides a mock function with given fields: ctx, filter, opts
-func (_m *Collection) FindOneAndDelete(ctx context.Context, filter interface{}, opts ...*options.FindOneAndDeleteOptions) *mongo_drivermongo.SingleResult {
+func (_m *Collection) FindOneAndDelete(ctx context.Context, filter interface{}, opts ...*options.FindOneAndDeleteOptions) mongo.SingleResult {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -218,12 +218,12 @@ func (_m *Collection) FindOneAndDelete(ctx context.Context, filter interface{}, 
 		panic("no return value specified for FindOneAndDelete")
 	}
 
-	var r0 *mongo_drivermongo.SingleResult
-	if rf, ok := ret.Get(0).(func(context.Context, interface{}, ...*options.FindOneAndDeleteOptions) *mongo_drivermongo.SingleResult); ok {
+	var r0 mongo.SingleResult
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}, ...*options.FindOneAndDeleteOptions) mongo.SingleResult); ok {
 		r0 = rf(ctx, filter, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*mongo_drivermongo.SingleResult)
+			r0 = ret.Get(0).(mongo.SingleResult)
 		}
 	}
 
@@ -231,7 +231,7 @@ func (_m *Collection) FindOneAndDelete(ctx context.Context, filter interface{}, 
 }
 
 // FindOneAndUpdate provides a mock function with given fields: ctx, filter, update, opts
-func (_m *Collection) FindOneAndUpdate(ctx context.Context, filter interface{}, update interface{}, opts ...*options.FindOneAndUpdateOptions) *mongo_drivermongo.SingleResult {
+func (_m *Collection) FindOneAndUpdate(ctx context.Context, filter interface{}, update interface{}, opts ...*options.FindOneAndUpdateOptions) mongo.SingleResult {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -245,12 +245,12 @@ func (_m *Collection) FindOneAndUpdate(ctx context.Context, filter interface{}, 
 		panic("no return value specified for FindOneAndUpdate")
 	}
 
-	var r0 *mongo_drivermongo.SingleResult
-	if rf, ok := ret.Get(0).(func(context.Context, interface{}, interface{}, ...*options.FindOneAndUpdateOptions) *mongo_drivermongo.SingleResult); ok {
+	var r0 mongo.SingleResult
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}, interface{}, ...*options.FindOneAndUpdateOptions) mongo.SingleResult); ok {
 		r0 = rf(ctx, filter, update, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*mongo_drivermongo.SingleResult)
+			r0 = ret.Get(0).(mongo.SingleResult)
 		}
 	}
 

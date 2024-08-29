@@ -15,77 +15,133 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func TestGetUserProfile(t *testing.T) {
+func TestCreateUserProfile(t *testing.T) {
     mockCollection := new(mocks.Collection)
     repo := repository.NewProfileRepository(context.TODO(), nil, mockCollection)
 
-    // Create a mock profile document
-    expectedProfile := entities.Profile{
-        UserID: primitive.NewObjectID(),
-        Bio:    "This is a test bio",
-        ContactInfo: entities.ContactInfo{
-            Email:       "john.doe@example.com",
-            PhoneNumber: "1234567890",
-            Address:     "123 Main St",
-        },
-        ProfilePicture: "https://example.com/profile.jpg",
-    }
+    t.Run("User ID is missing", func(t *testing.T) {
+        profile := &entities.Profile{
+            UserID: primitive.NilObjectID,
+        }
 
-    userIDHex := expectedProfile.UserID.Hex()
+        createdProfile, err := repo.CreateUserProfile(profile)
+        assert.Nil(t, createdProfile)
+        assert.EqualError(t, err, "user id is required")
+    })
 
-    // Create a mock single result
-    mockSingleResult := new(mocks.SingleResult)
-    mockSingleResult.On("Decode", mock.AnythingOfType("*entities.Profile")).Return(expectedProfile, nil)
+    t.Run("Profile already exists", func(t *testing.T) {
+        profile := &entities.Profile{
+            UserID: primitive.NewObjectID(),
+        }
 
-    // Mock the FindOne method to return the mockSingleResult
-    mockCollection.On("FindOne", mock.Anything, bson.D{{Key: "userId", Value: expectedProfile.UserID}}, mock.Anything).Return(mockSingleResult)
+        mockSingleResult := new(mocks.SingleResult)
+        mockSingleResult.On("Err").Return(nil)
 
-    // Call the GetUserProfile method
-    actualProfile, err := repo.GetUserProfile(userIDHex)
+        mockCollection.On("FindOne", mock.Anything, bson.D{{"userId", profile.UserID}}, mock.Anything).Return(mockSingleResult)
 
-    assert.NoError(t, err)
-    assert.NotNil(t, actualProfile)
-    assert.Equal(t, expectedProfile.Bio, actualProfile.Bio)
-    assert.Equal(t, expectedProfile.ContactInfo.Email, actualProfile.ContactInfo.Email)
-    assert.Equal(t, expectedProfile.ContactInfo.PhoneNumber, actualProfile.ContactInfo.PhoneNumber)
-    assert.Equal(t, expectedProfile.ContactInfo.Address, actualProfile.ContactInfo.Address)
-    assert.Equal(t, expectedProfile.ProfilePicture, actualProfile.ProfilePicture)
+        createdProfile, err := repo.CreateUserProfile(profile)
+        assert.Nil(t, createdProfile)
+        assert.EqualError(t, err, "profile already exists")
 
-    mockCollection.AssertExpectations(t)
-    mockSingleResult.AssertExpectations(t)
+        mockCollection.AssertExpectations(t)
+        mockSingleResult.AssertExpectations(t)
+    })
+
+    t.Run("Profile is successfully created", func(t *testing.T) {
+        profile := &entities.Profile{
+            UserID: primitive.NewObjectID(),
+            Bio:    "This is a test bio",
+            ContactInfo: entities.ContactInfo{
+                Email:       "john.doe@example.com",
+                PhoneNumber: "1234567890",
+                Address:     "123 Main St",
+            },
+            ProfilePicture: "https://example.com/profile.jpg",
+        }
+
+        mockSingleResult := new(mocks.SingleResult)
+        mockSingleResult.On("Err").Return(mongo.ErrNoDocuments)
+
+        mockCollection.On("FindOne", mock.Anything, bson.D{{"userId", profile.UserID}}, mock.Anything).Return(mockSingleResult)
+        mockCollection.On("InsertOne", mock.Anything, profile, mock.Anything).Return(&mongo.InsertOneResult{}, nil)
+
+        createdProfile, err := repo.CreateUserProfile(profile)
+        assert.NoError(t, err)
+        assert.NotNil(t, createdProfile)
+        assert.Equal(t, profile, createdProfile)
+
+        mockCollection.AssertExpectations(t)
+        mockSingleResult.AssertExpectations(t)
+    })
 }
 
-func TestCreateUserProfile(t *testing.T) {
+func TestUpdateUserProfile(t *testing.T) {
 	mockCollection := new(mocks.Collection)
-	mockContext := context.TODO()
-	mockDatabase := new(mocks.Database)
+	repo := repository.NewProfileRepository(context.TODO(), nil, mockCollection)
 
-	repo := repository.NewProfileRepository(mockContext, mockDatabase, mockCollection)
+	t.Run("User ID is missing", func(t *testing.T) {
+		profile := &entities.Profile{
+			UserID: primitive.NilObjectID,
+		}
 
-	userID := primitive.NewObjectID()
+		updatedProfile, err := repo.UpdateUserProfile(profile)
+		assert.Nil(t, updatedProfile)
+		assert.EqualError(t, err, "user id is required")
+	})
 
-	// Create a mock profile document
-	mockProfile := &entities.Profile{
-		UserID: userID,
-		Bio: "This is a test bio",	
-		ContactInfo: entities.ContactInfo{
-			Email: "johndoe@gmail.com",
-			PhoneNumber: "1234567890",
-			Address: "123 Main St",
-		},
-		ProfilePicture: "https://example.com/profile.jpg",
-	}
+	t.Run("Profile is successfully updated", func(t *testing.T) {
+		profile := &entities.Profile{
+			UserID: primitive.NewObjectID(),
+			Bio:    "This is a test bio",
+			ContactInfo: entities.ContactInfo{
+				Email:       "testupdate@gmail.com",
+				PhoneNumber: "1234567890",
+				Address:     "123 Main St",
+			},
+			ProfilePicture: "https://example.com/profile.jpg",
+		}
 
-	// Mock the FindOne method to return an error
-	mockCollection.On("FindOne", mockContext, bson.D{{Key: "userId", Value: userID}}).Return(nil)
+		mockCollection.On("UpdateOne", mock.Anything, bson.D{{"userId", profile.UserID}}, mock.Anything, mock.Anything).Return(&mongo.UpdateResult{}, nil)
 
-	// Mock the InsertOne method to return the mockProfile
-	mockCollection.On("InsertOne", mockContext, mockProfile).Return(&mongo.SingleResult{}, nil)
+		updatedProfile, err := repo.UpdateUserProfile(profile)
+		assert.NoError(t, err)
+		assert.NotNil(t, updatedProfile)
+		assert.Equal(t, profile, updatedProfile)
 
-	result, err := repo.CreateUserProfile(mockProfile)
+		mockCollection.AssertExpectations(t)
+	})
+}
 
-	assert.NoError(t, err)
-	assert.NotNil(t, result)
+func TestDeleteUserProfile(t *testing.T) {
+    mockCollection := new(mocks.Collection)
+    repo := repository.NewProfileRepository(context.TODO(), nil, mockCollection)
 
-	mockCollection.AssertExpectations(t)
+    t.Run("Successful deletion", func(t *testing.T) {
+        userID := primitive.NewObjectID().Hex()
+        objectID, _ := primitive.ObjectIDFromHex(userID)
+        filter := bson.D{{"userId", objectID}}
+
+		mockDeleteCount := int64(1)
+        mockCollection.On("DeleteOne", mock.Anything, filter, mock.Anything).Return(mockDeleteCount, nil)
+
+        err := repo.DeleteUserProfile(userID)
+        assert.NoError(t, err)
+
+        mockCollection.AssertExpectations(t)
+    })
+
+    t.Run("Error during deletion", func(t *testing.T) {
+        userID := primitive.NewObjectID().Hex()
+        objectID, _ := primitive.ObjectIDFromHex(userID)
+        filter := bson.D{{"userId", objectID}}
+
+		mockDeleteCount := int64(0)
+        mockCollection.On("DeleteOne", mock.Anything, filter, mock.Anything).Return(mockDeleteCount, mongo.ErrNoDocuments)
+
+        err := repo.DeleteUserProfile(userID)
+        assert.Error(t, err)
+        assert.Equal(t, mongo.ErrNoDocuments, err)
+
+        mockCollection.AssertExpectations(t)
+    })
 }

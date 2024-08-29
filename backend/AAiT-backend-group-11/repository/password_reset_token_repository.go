@@ -44,6 +44,6 @@ func (p PasswordTokenRepository) FindPasswordReset(tok string) (*entities.Passwo
 	return &token, nil
 }
 
-func NewPasswordTokenRepository(db *mongo.Database, collection *mongo.Collection) interfaces.PasswordTokenRepository {
-	return PasswordTokenRepository{Database: db, collection: collection}
+func NewPasswordTokenRepository(db mongo.Database, collection mongo.Collection) interfaces.PasswordTokenRepository {
+	return PasswordTokenRepository{Database: &db, collection: &collection}
 }

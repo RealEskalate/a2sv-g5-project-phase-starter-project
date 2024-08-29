@@ -8,6 +8,7 @@ import (
 
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/bootstrap"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/entities"
+	custom_error "github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/domain/errors"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/internal/emailutil"
 	"github.com/a2sv-g5-project-phase-starter-project/backend/ASTU-backend-group-2/internal/otputil"
 	"github.com/gin-gonic/gin"
@@ -95,6 +96,17 @@ func (rc *ResetPasswordController) ResetPassword(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid OTP"})
 		return
 	}
+
+	encryptedPassword, err := bcrypt.GenerateFromPassword(
+		[]byte(req.NewPassword),
+		bcrypt.DefaultCost,
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, custom_error.ErrMessage(err))
+		return
+	}
+
+	req.NewPassword = string(encryptedPassword)
 
 	err = rc.ResetPasswordUsecase.ResetPassword(c, user.ID.Hex(), &req)
 	if err != nil {

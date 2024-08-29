@@ -30,6 +30,11 @@ func NewProfileRouter(env *bootstrap.Env, timeout time.Duration, db *mongo.Datab
 	group.PUT("/profile-pic/", middleware.FileUploadMiddleware(), pc.UploadProfilePicture(cloudinary))
 	group.POST("/profiles/", pc.ChangePassword())
 
+	group.GET("/profiles/me", pc.GetCurrentProfile())
+	group.PUT("/profiles/me", pc.UpdateCurrentProfile())
+	group.PATCH("/profiles/me", pc.UpdateCurrentProfile())
+	group.DELETE("/profiles/me", pc.DeleteCurrentProfile())
+
 	// promote/demote user to admin
 	group.POST("/profiles/:id/promote", middleware.AdminMiddleware(), pc.PromoteUser())
 	group.POST("/profiles/:id/demote", middleware.AdminMiddleware(), pc.DemoteUser())

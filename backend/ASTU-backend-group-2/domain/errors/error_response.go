@@ -77,6 +77,7 @@ var (
 	ErrErrorUpdatingPassword = errors.New("Error updating password")
 
 	ErrFilteringUsers = errors.New("Error filtering users")
+	ErrNoUpdateFields = errors.New("No update fields provided")
 
 	ErrErrorUpdatingUser = errors.New("Error updating user")
 )

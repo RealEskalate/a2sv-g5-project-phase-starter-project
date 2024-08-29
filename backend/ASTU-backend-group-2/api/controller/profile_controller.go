@@ -22,6 +22,9 @@ import (
 // interface for blog controllers
 type profileController interface {
 	GetProfile() gin.HandlerFunc
+	GetCurrentProfile() gin.HandlerFunc
+	UpdateCurrentProfile() gin.HandlerFunc
+	DeleteCurrentProfile() gin.HandlerFunc
 	UpdateProfile() gin.HandlerFunc
 	DeleteProfile() gin.HandlerFunc
 	PromoteUser() gin.HandlerFunc
@@ -50,7 +53,49 @@ func (pc *ProfileController) GetProfile() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"user": user.ToUserOut()})
+		c.JSON(http.StatusOK, gin.H{"user": user})
+	}
+}
+
+func (pc *ProfileController) GetCurrentProfile() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.MustGet("x-user-id").(string)
+
+		user, err := pc.UserUsecase.GetUserById(c, userID)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"user": user})
+	}
+}
+
+func (pc *ProfileController) UpdateCurrentProfile() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.MustGet("x-user-id").(string)
+
+		var user entities.UserUpdate
+		if err := c.ShouldBindJSON(&user); err != nil {
+			if err == io.EOF {
+				c.JSON(http.StatusBadRequest, custom_error.ErrMessage(custom_error.EreInvalidRequestBody))
+				return
+			}
+			if user.FirstName == "" && user.LastName == "" && user.Bio == "" {
+				c.JSON(http.StatusBadRequest, custom_error.ErrMessage(custom_error.EreInvalidRequestBody))
+				return
+			}
+			middleware.CustomErrorResponse(c, err)
+			return
+		}
+
+		newUser, err := pc.UserUsecase.UpdateUser(c, userID, &user)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"user": newUser})
 	}
 }
 
@@ -161,6 +206,10 @@ func (pc *ProfileController) UpdateProfile() gin.HandlerFunc {
 				c.JSON(http.StatusBadRequest, custom_error.ErrMessage(custom_error.EreInvalidRequestBody))
 				return
 			}
+			if user.FirstName == "" && user.LastName == "" && user.Bio == "" {
+				c.JSON(http.StatusBadRequest, custom_error.ErrMessage(custom_error.EreInvalidRequestBody))
+				return
+			}
 			middleware.CustomErrorResponse(c, err)
 			return
 		}
@@ -174,7 +223,7 @@ func (pc *ProfileController) UpdateProfile() gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"user": updatedUser.ToUserOut()})
+		c.JSON(http.StatusOK, gin.H{"user": updatedUser})
 	}
 }
 
@@ -188,6 +237,21 @@ func (pc *ProfileController) DeleteProfile() gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, custom_error.ErrorMessage{Message: "unauthorized"})
 			return
 		}
+
+		err := pc.UserUsecase.DeleteUser(c, userID)
+
+		if err != nil {
+			c.Error(err)
+			return
+		}
+
+		c.JSON(http.StatusNoContent, nil)
+	}
+}
+
+func (pc *ProfileController) DeleteCurrentProfile() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userID := c.MustGet("x-user-id").(string)
 
 		err := pc.UserUsecase.DeleteUser(c, userID)
 

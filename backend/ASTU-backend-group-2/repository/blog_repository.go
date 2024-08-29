@@ -183,7 +183,9 @@ func (br *blogRepository) GetBlogByID(c context.Context, blogID string, view boo
 
 	var blog entities.Blog
 
-	err = collection.FindOne(c, bson.M{"_id": ID}).Decode(&blog)
+	opts := options.FindOne().SetProjection(project)
+
+	err = collection.FindOne(c, bson.M{"_id": ID}, opts).Decode(&blog)
 
 	if err != nil {
 		return entities.Blog{}, custom_error.ErrBlogNotFound

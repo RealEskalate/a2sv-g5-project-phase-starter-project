@@ -136,10 +136,6 @@ func (cu *ChatUsecase) CreateMessage(c context.Context, userId primitive.ObjectI
 		return entities.Message{}, err
 	}
 
-	if err := cu.ChatRepository.CreateMessage(ctx, chatId, response); err != nil {
-		return entities.Message{}, err
-	}
-
 	return response, nil
 }
 

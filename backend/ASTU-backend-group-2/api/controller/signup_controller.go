@@ -123,7 +123,6 @@ func (sc *SignupController) Signup(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, custom_error.ErrMessage(err))
 		return
 	}
-	user.VerToken = VerificationToken
 
 	_, err = sc.SignupUsecase.Create(c, &user)
 

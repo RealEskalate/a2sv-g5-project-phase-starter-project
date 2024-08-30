@@ -20,8 +20,11 @@ func NewBlogRouter(env *config.Env, timeout time.Duration, db *mongo.Client, gro
 
 	br := repository.NewBlogRepository(database, domain.CollectionBlog)
 	ur := repository.NewUserRepository(database, domain.CollectionUser)
+	lr := repository.NewLikeRepository(database, domain.CollectionLike)
+	cr := repository.NewCommentRepository(database, domain.CollectionComment)
+	rtr := repository.NewBlogRatingRepository(database, domain.CollectionRating)
 
-	bu := usecase.NewBlogUseCase(br, ur, timeout, cacheServic)
+	bu := usecase.NewBlogUseCase(br, ur, lr, cr, rtr, timeout, cacheServic)
 	bc := controller.NewBlogController(bu)
 
 	group.POST("/", bc.CreateBlog)

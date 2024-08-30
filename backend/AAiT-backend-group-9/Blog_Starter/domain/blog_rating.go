@@ -12,19 +12,19 @@ const (
 )
 
 type BlogRating struct {
-	RatingID primitive.ObjectID `json:"rating_id" bson:"_id"`
-	UserID   string `json:"user_id" bson:"user_id"`
-	BlogID   string `json:"blog_id" bson:"blog_id"`
-	Rating   int   `json:"rating" bson:"rating"`
-	CreatedAt   time.Time `json:"createtimestamp" bson:"createtimestamp"`
-	UpdatedAt    time.Time `json:"updatetimestamp" bson:"updatetimestamp"`
+	RatingID  primitive.ObjectID `json:"rating_id" bson:"_id"`
+	UserID    string             `json:"user_id" bson:"user_id"`
+	BlogID    string             `json:"blog_id" bson:"blog_id"`
+	Rating    int                `json:"rating" bson:"rating"`
+	CreatedAt time.Time          `json:"createtimestamp" bson:"createtimestamp"`
+	UpdatedAt time.Time          `json:"updatetimestamp" bson:"updatetimestamp"`
 }
 
 type BlogRatingRequest struct {
 	RatingID string `json:"rating_id"`
 	UserID   string `json:"user_id"`
 	BlogID   string `json:"blog_id"`
-	Rating   int   `json:"rating"`
+	Rating   int    `json:"rating"`
 }
 
 type BlogRatingRepository interface {
@@ -33,6 +33,7 @@ type BlogRatingRepository interface {
 	GetRatingByID(c context.Context, ratingID string) (*BlogRating, error)
 	UpdateRating(c context.Context, rating int, ratingID string) (*BlogRating, int, error)
 	DeleteRating(c context.Context, ratingID string) (*BlogRating, error)
+	DeleteRatingByBlogID(c context.Context, blogID string) error
 }
 
 type BlogRatingUseCase interface {

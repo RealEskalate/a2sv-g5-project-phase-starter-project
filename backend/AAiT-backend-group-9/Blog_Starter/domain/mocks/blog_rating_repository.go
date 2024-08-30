@@ -14,6 +14,11 @@ type BlogRatingRepository struct {
 	mock.Mock
 }
 
+// DeleteRatingByBlogID implements domain.BlogRatingRepository.
+func (_m *BlogRatingRepository) DeleteRatingByBlogID(c context.Context, blogID string) error {
+	panic("unimplemented")
+}
+
 // DeleteRating provides a mock function with given fields: c, ratingID
 func (_m *BlogRatingRepository) DeleteRating(c context.Context, ratingID string) (*domain.BlogRating, error) {
 	ret := _m.Called(c, ratingID)

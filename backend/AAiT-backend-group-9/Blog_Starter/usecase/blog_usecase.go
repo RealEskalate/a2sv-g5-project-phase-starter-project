@@ -12,18 +12,24 @@ import (
 )
 
 type BlogUseCase struct {
-	blogRepo  domain.BlogRepository
-	userRepo  domain.UserRepository
-	timeout   time.Duration
-	cacheServ utils.Cache
+	blogRepo    domain.BlogRepository
+	userRepo    domain.UserRepository
+	likeRepo    domain.LikeRepository
+	commentRepo domain.CommentRepository
+	ratingRepo  domain.BlogRatingRepository
+	timeout     time.Duration
+	cacheServ   utils.Cache
 }
 
-func NewBlogUseCase(blogRepo domain.BlogRepository, userRepo domain.UserRepository, timeout time.Duration, cacheServ utils.Cache) domain.BlogUseCase {
+func NewBlogUseCase(blogRepo domain.BlogRepository, userRepo domain.UserRepository, likeRepo domain.LikeRepository, commentRepo domain.CommentRepository, ratingRepo domain.BlogRatingRepository, timeout time.Duration, cacheServ utils.Cache) domain.BlogUseCase {
 	return &BlogUseCase{
-		blogRepo:  blogRepo,
-		userRepo:  userRepo,
-		timeout:   timeout,
-		cacheServ: cacheServ,
+		blogRepo:    blogRepo,
+		userRepo:    userRepo,
+		timeout:     timeout,
+		cacheServ:   cacheServ,
+		likeRepo:    likeRepo,
+		ratingRepo:  ratingRepo,
+		commentRepo: commentRepo,
 	}
 }
 
@@ -163,7 +169,25 @@ func (uc *BlogUseCase) DeleteBlog(c context.Context, blogID string, userId strin
 	}
 	uc.cacheServ.Delete(blogID)
 
-	return uc.blogRepo.DeleteBlog(ctx, blogID)
+	err = uc.blogRepo.DeleteBlog(ctx, blogID)
+	if err != nil {
+		return err
+	}
+
+	err = uc.likeRepo.DeleteLikeByBlogID(ctx, blogID)
+	if err != nil {
+		return err
+	}
+	err = uc.commentRepo.DeleteCommentByBlogID(ctx, blogID)
+	if err != nil {
+		return err
+	}
+	err = uc.ratingRepo.DeleteRatingByBlogID(ctx, blogID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // SearchBlogs implements domain.BlogUseCase.

@@ -22,8 +22,16 @@ func NewBlogController(blogUseCase domain.BlogUseCase) *BlogController {
 
 // CreateBlog godoc
 func (bc *BlogController) CreateBlog(c *gin.Context) {
-	var blog domain.BlogCreate
-	err := c.ShouldBindJSON(&blog)
+    var blog domain.BlogCreate
+    err := c.ShouldBindJSON(&blog)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, domain.Response{
+            Success: false,
+            Message: err.Error(),
+        })
+        return
+    }
+  	err = blog.Validate()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, domain.Response{
 			Success: false,
@@ -31,14 +39,16 @@ func (bc *BlogController) CreateBlog(c *gin.Context) {
 		})
 		return
 	}
-	err = blog.Validate()
-	if err != nil {
-		c.JSON(http.StatusBadRequest, domain.Response{
-			Success: false,
-			Message: err.Error(),
-		})
-		return
-	}
+    user, err := utils.CheckUser(c)
+    if err != nil {
+        c.JSON(http.StatusUnauthorized, domain.Response{
+            Success: false,
+            Message: err.Error(),
+        })
+        return
+    }
+    blog.UserID = user.UserID
+
 
 	blogModel, err := bc.blogUseCase.CreateBlog(c, &blog)
 	if err != nil {

@@ -37,7 +37,7 @@ type Blog struct {
 }
 
 type BlogCreate struct {
-	UserID  string   `json:"user_id" bson:"user_id" binding:"required"`
+	UserID  string   `json:"user_id" bson:"user_id"`
 	Title   string   `json:"title" bson:"title" binding:"required"`
 	Content string   `json:"content" bson:"content" binding:"required"`
 	Tags    []string `json:"tags" bson:"tags" binding:"required"`

@@ -1,9 +1,8 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
-
 import '../../../../../core/constants/constants.dart';
 import '../../../../../core/error/exception.dart';
+import '../../../../../core/network/http.dart';
 import '../../model/log_in_model.dart';
 import '../../model/sign_up_model.dart';
 import '../../model/user_model.dart';
@@ -11,7 +10,7 @@ import '../local/local_data_source.dart';
 import 'auth_remote_data_source.dart';
 
 class AuthRemoteDatasourceImpl implements AuthRemoteDataSource {
-  final http.Client client;
+  final CustomHttp client;
 
   final AuthLocalDataSource authLocalDataSource;
   AuthRemoteDatasourceImpl(
@@ -38,7 +37,9 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDataSource {
     final response = await client.post(Uri.parse(Urls3.login()),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(logInModel));
-
+    
+    client.setAuthToken = jsonDecode(response.body)['data']['access_token'];
+    
     if (response.statusCode == 201) {
       await authLocalDataSource
           .cacheToken(jsonDecode(response.body)['data']['access_token']);

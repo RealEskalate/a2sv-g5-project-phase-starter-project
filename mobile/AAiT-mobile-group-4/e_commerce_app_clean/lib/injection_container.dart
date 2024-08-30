@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/network/http.dart';
 import 'core/network/network_info.dart';
 import 'features/authentication/data/data_sources/local/local_data_source.dart';
 import 'features/authentication/data/data_sources/local/local_data_source_impl.dart';
@@ -76,6 +77,7 @@ Future<void> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton(() => http.Client());
+  sl.registerLazySingleton(() => CustomHttp(client: sl()));
   sl.registerLazySingleton(() => InternetConnectionChecker());
 
   //feature: Authentication

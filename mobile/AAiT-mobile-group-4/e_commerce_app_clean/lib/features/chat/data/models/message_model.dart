@@ -38,6 +38,15 @@ class MessageModel extends Message {
     );
   }
 
+  factory MessageModel.fromEntity(Message message) {
+    return MessageModel(
+      content: message.content,
+      sender: message.sender,
+      type: message.type,
+      chatId: message.chatId
+    );
+  }
+
 
   Map<String, dynamic> toJson() {
     return {
@@ -46,4 +55,5 @@ class MessageModel extends Message {
       'type': toTypeString(type),
     };
   } 
+
 }

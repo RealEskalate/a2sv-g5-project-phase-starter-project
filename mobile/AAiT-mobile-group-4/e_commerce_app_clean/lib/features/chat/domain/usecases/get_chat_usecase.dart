@@ -2,16 +2,14 @@ import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../../core/error/failure.dart';
-import '../../../../core/usecase/usecase.dart';
 import '../entities/message.dart';
 import '../repositories/chat_repository.dart';
 
-class GetChatUsecase extends UseCase<List<Message>, GetChatParams> {
+class GetChatUsecase {
   ChatRepository repository;
   GetChatUsecase(this.repository);
 
-  @override
-  Future<Either<Failure, List<Message>>> call(GetChatParams p) async {
+  Future<Stream<Either<Failure, Message>>> call(GetChatParams p) async {
     return repository.getChat(p.chatId);
   }
 }

@@ -20,7 +20,7 @@ class RemoteDataSourceImpl implements ProductRemoteDataSource {
   Future<ProductModel> addProduct(ProductModel product) async {
     String token = await authLocalDataSource.getToken();
 
-    var request = http.MultipartRequest('POST', Uri.parse(Urls2.addProduct));
+    var request = http.MultipartRequest('POST', Uri.parse(Urls3.addProduct));
     request.headers['Authorization'] = 'Bearer $token';
     request.fields['name'] = product.name;
     request.fields['description'] = product.description;
@@ -44,7 +44,7 @@ class RemoteDataSourceImpl implements ProductRemoteDataSource {
     String token = await authLocalDataSource.getToken();
 
     final response =
-        await client.delete(Uri.parse(Urls2.deleteProductId(id)), headers: {
+        await client.delete(Uri.parse(Urls3.deleteProductId(id)), headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     });
@@ -60,7 +60,7 @@ class RemoteDataSourceImpl implements ProductRemoteDataSource {
     String token = await authLocalDataSource.getToken();
 
     final response =
-        await client.get(Uri.parse(Urls2.getProductId(id)), headers: {
+        await client.get(Uri.parse(Urls3.getProductId(id)), headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     });
@@ -74,15 +74,14 @@ class RemoteDataSourceImpl implements ProductRemoteDataSource {
   @override
   Future<List<ProductModel>> getProducts() async {
     String token = await authLocalDataSource.getToken();
-    final response = await client.get(Uri.parse(Urls2.getProducts), headers: {
+    final response = await client.get(Uri.parse(Urls3.getProducts), headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     });
-
-    List<dynamic> jsonDecoded = jsonDecode(response.body)['data'];
-    final products =
-        jsonDecoded.map((products) => ProductModel.fromJson(products)).toList();
     if (response.statusCode == 200) {
+      List<dynamic> jsonDecoded = jsonDecode(response.body)['data'];
+      final products =
+          jsonDecoded.map((products) => ProductModel.fromJson(products)).toList();
       return products;
     } else {
       throw ServerException();
@@ -94,7 +93,7 @@ class RemoteDataSourceImpl implements ProductRemoteDataSource {
     String token = await authLocalDataSource.getToken();
 
     final response =
-        await client.put(Uri.parse(Urls2.updateProductId(product.id)),
+        await client.put(Uri.parse(Urls3.updateProductId(product.id)),
             body: jsonEncode({
               'name': product.name,
               'description': product.description,

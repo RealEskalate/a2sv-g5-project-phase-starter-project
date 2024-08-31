@@ -1,3 +1,4 @@
+import '../../../authentication/data/model/user_model.dart';
 import '../../domain/entities/product_entity.dart';
 
 class ProductModel extends ProductEntity {
@@ -7,6 +8,7 @@ class ProductModel extends ProductEntity {
     required super.description,
     required super.price,
     required super.imageUrl,
+    super.seller,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
@@ -15,8 +17,7 @@ class ProductModel extends ProductEntity {
         description: json['description'],
         price: json['price'].toDouble(),
         imageUrl: json['imageUrl'],
-        // category: json['category'],
-        // rating: json['rating'],
+        seller: UserModel.fromJson(json['seller']),
       );
   Map<String, dynamic> toJson() {
     return {
@@ -35,7 +36,7 @@ class ProductModel extends ProductEntity {
         price: price,
         imageUrl: imageUrl,
       );
-  static List<ProductEntity> toProductListEntity(List<ProductModel> model) {
-    return model.map((product) => product.toProductEntity()).toList();
-  }
+  // static List<ProductEntity> toProductListEntity(List<ProductModel> model) {
+  //   return model.map((product) => product.toProductEntity()).toList();
+  // }
 }

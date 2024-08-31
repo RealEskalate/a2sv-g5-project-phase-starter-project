@@ -10,8 +10,8 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
-  int Startindex = 0;
-  List<Widget> _children = [
+  int startindex = 0;
+  final List<Widget> _children = [
     const ChatPage(),
     const Center(child: Text('Contacts')),
     const Center(child: Text('Calls')),
@@ -20,7 +20,7 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _children[Startindex],
+      body: _children[startindex],
       bottomNavigationBar: NavigationBarTheme(
         data: NavigationBarThemeData(
           indicatorColor: Colors.grey[300],
@@ -39,10 +39,10 @@ class _RootPageState extends State<RootPage> {
         child: NavigationBar(
           animationDuration: const Duration(seconds: 1),
           backgroundColor: Colors.white,
-          selectedIndex: Startindex,
+          selectedIndex: startindex,
           onDestinationSelected: (index) {
             setState(() {
-              Startindex = index;
+              startindex = index;
             });
           },
           destinations: const [

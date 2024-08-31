@@ -1,9 +1,8 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
-
 import '../../../../../core/constants/constants.dart';
 import '../../../../../core/error/exception.dart';
+import '../../../../../core/network/http.dart';
 import '../../model/log_in_model.dart';
 import '../../model/sign_up_model.dart';
 import '../../model/user_model.dart';
@@ -11,7 +10,7 @@ import '../local/local_data_source.dart';
 import 'auth_remote_data_source.dart';
 
 class AuthRemoteDatasourceImpl implements AuthRemoteDataSource {
-  final http.Client client;
+  final CustomHttp client;
 
   final AuthLocalDataSource authLocalDataSource;
   AuthRemoteDatasourceImpl(
@@ -21,7 +20,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDataSource {
   Future<UserModel> getCurrentUser() async {
     final token = await authLocalDataSource.getToken();
     final response =
-        await client.get(Uri.parse(Urls2.getCurrentUser()), headers: {
+        await client.get(Uri.parse(Urls3.getCurrentUser()), headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     });
@@ -35,10 +34,12 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> logIn(LogInModel logInModel) async {
-    final response = await client.post(Uri.parse(Urls2.login()),
+    final response = await client.post(Uri.parse(Urls3.login()),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(logInModel));
-
+    
+    client.setAuthToken = jsonDecode(response.body)['data']['access_token'];
+    
     if (response.statusCode == 201) {
       await authLocalDataSource
           .cacheToken(jsonDecode(response.body)['data']['access_token']);
@@ -59,7 +60,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> signUp(SignUpModel signUpModel) async {
     final response = await client.post(
-      Uri.parse(Urls2.signUp()),
+      Uri.parse(Urls3.signUp()),
       body: jsonEncode(signUpModel),
       headers: {'Content-Type': 'application/json'},
     );

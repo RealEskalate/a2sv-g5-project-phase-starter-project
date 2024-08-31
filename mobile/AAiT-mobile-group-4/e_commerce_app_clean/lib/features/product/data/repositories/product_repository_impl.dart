@@ -8,7 +8,7 @@ import '../../domain/repository/product_repository.dart';
 import '../data_sources/local/local_data_source.dart';
 import '../data_sources/remote/remote_data_source.dart';
 import '../models/product_mapper.dart';
-import '../models/product_model.dart';
+// import '../models/product_model.dart';
 
 class ProductRepositoryImpl implements ProductRepository {
   final ProductRemoteDataSource remoteDataSource;
@@ -80,7 +80,7 @@ class ProductRepositoryImpl implements ProductRepository {
         } on CacheException {
           return const Left(CacheFailure('error while caching'));
         }
-        return Right(ProductModel.toProductListEntity(result));
+        return Right(result);
       } on ServerException {
         return const Left(ServerFailure('An error has occurred'));
       } on SocketException {
@@ -89,7 +89,7 @@ class ProductRepositoryImpl implements ProductRepository {
     } else {
       try {
         final result = await localDataSource.getProducts();
-        return Right(ProductModel.toProductListEntity(result));
+        return Right(result);
       } catch (e) {
         return const Left(CacheFailure('Unable to load cache'));
       }

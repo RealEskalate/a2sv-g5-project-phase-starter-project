@@ -27,7 +27,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     if (token != null) {
       return token;
     } else {
-      throw CacheException();
+      return '';
     }
   }
 

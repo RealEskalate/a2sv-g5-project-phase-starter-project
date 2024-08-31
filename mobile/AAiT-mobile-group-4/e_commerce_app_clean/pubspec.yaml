@@ -53,6 +53,8 @@ dependencies:
   dotted_border: ^2.1.0
   font_awesome_flutter: ^10.7.0
   auto_size_text: ^3.0.0
+  socket_io_client: ^2.0.3+1
+  bloc_concurrency: ^0.2.5
 
   
 dev_dependencies:

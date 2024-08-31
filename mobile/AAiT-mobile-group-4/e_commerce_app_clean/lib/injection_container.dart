@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/network/http.dart';
 import 'core/network/network_info.dart';
 import 'features/authentication/data/data_sources/local/local_data_source.dart';
 import 'features/authentication/data/data_sources/local/local_data_source_impl.dart';
@@ -15,6 +16,15 @@ import 'features/authentication/domain/usecases/log_in_usecase.dart';
 import 'features/authentication/domain/usecases/log_out_usecase.dart';
 import 'features/authentication/domain/usecases/sign_up_usecase.dart';
 import 'features/authentication/presentation/bloc/auth_bloc.dart';
+import 'features/chat/data/data_sources/chat_data_source.dart';
+import 'features/chat/data/repositories/chat_repository_impl.dart';
+import 'features/chat/domain/repositories/chat_repository.dart';
+import 'features/chat/domain/usecases/create_chat_usecase.dart';
+import 'features/chat/domain/usecases/delete_chat_usecase.dart';
+import 'features/chat/domain/usecases/get_chat_usecase.dart';
+import 'features/chat/domain/usecases/get_chats_usecase.dart';
+import 'features/chat/domain/usecases/send_message_usecase.dart';
+import 'features/chat/presentation/blocs/bloc/chat_bloc.dart';
 import 'features/product/data/data_sources/local/local_data_source.dart';
 import 'features/product/data/data_sources/local/local_data_source_impl.dart';
 import 'features/product/data/data_sources/remote/remote_data_source.dart';
@@ -76,6 +86,7 @@ Future<void> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton(() => http.Client());
+  sl.registerLazySingleton(() => CustomHttp(client: sl()));
   sl.registerLazySingleton(() => InternetConnectionChecker());
 
   //feature: Authentication
@@ -106,4 +117,27 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthLocalDataSource>(() => AuthLocalDataSourceImpl(
         sharedPreferences: sl(),
       ));
+  
+  // Feature: chat
+
+  // presentation
+  sl.registerFactory(() => ChatBloc(
+    getChatUsecase: sl(), 
+    getChatsUsecase: sl(), 
+    createChatUsecase: sl(), 
+    sendMessageUsecase: sl(),
+  ),);
+
+  // usecase
+  sl.registerLazySingleton(() => GetChatUsecase(sl()));
+  sl.registerLazySingleton(() => GetChatsUsecase(sl()));
+  sl.registerLazySingleton(() => CreateChatUsecase(sl()));
+  sl.registerLazySingleton(() => DeleteChatUsecase(sl()));
+  sl.registerLazySingleton(() => SendMessageUsecase(sl()));
+
+  // repositores
+  sl.registerLazySingleton<ChatRepository>(() => ChatRepositoryImpl(dataSource: sl()));
+
+  // data source
+  sl.registerLazySingleton<ChatDataSource>(() => ChatDataSourceImpl(client: sl()));
 }

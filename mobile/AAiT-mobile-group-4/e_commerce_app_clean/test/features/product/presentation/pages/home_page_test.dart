@@ -53,7 +53,7 @@ void main() {
     )
   ];
   UserEntity tUserEntity =
-      const UserEntity(email: 'ley@gmail.com', name: 'ley');
+      const UserEntity(email: 'ley@gmail.com', name: 'ley', id: '1');
   Widget createWidgetUnderTest() {
     return MaterialApp(
       home: MultiBlocProvider(

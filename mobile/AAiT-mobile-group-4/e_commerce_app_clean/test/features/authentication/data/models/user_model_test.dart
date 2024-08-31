@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../../helper/dummy_data/json_reader.dart';
 
 void main() {
-  const tUserModel = UserModel(email: 'ley@gmail.com',name: 'ley');
+  const tUserModel = UserModel(email: 'ley@gmail.com',name: 'ley', id: '1');
   const String userModelPath = 'helper/dummy_data/auth_model/dummy_user_model.json';
   test(
     'should extend from the User entity',

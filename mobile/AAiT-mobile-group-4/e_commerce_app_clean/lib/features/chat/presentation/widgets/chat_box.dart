@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../domain/entities/message.dart';
+import '../blocs/bloc/chat_bloc.dart';
 
 class MessageBox extends StatelessWidget {
   const MessageBox({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController messageController = TextEditingController();
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       height: 90,
@@ -26,6 +31,7 @@ class MessageBox extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TextField(
+                  controller: messageController,
                   decoration: InputDecoration(
                     hintText: 'Type a message',
                     hintStyle: const TextStyle(
@@ -36,7 +42,13 @@ class MessageBox extends StatelessWidget {
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.content_copy),
                       color: const Color.fromARGB(255, 121, 124, 123),
-                      onPressed: () {},
+                      onPressed: () {
+                        if(messageController.text.isEmpty) {
+                          return;
+                        }
+                        var message = Message(content: messageController.text, type: MessageType.text);
+                        BlocProvider.of<ChatBloc>(context).add(SendMessageEvent(message: message));
+                      },
                     ),
                   ),
                 ),

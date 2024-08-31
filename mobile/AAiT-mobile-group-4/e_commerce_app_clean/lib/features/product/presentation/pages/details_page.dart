@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../authentication/presentation/bloc/auth_bloc.dart';
 import '../../domain/entities/product_entity.dart';
 import '../bloc/product_bloc.dart';
+import '../widgets/components/seller.dart';
 import '../widgets/components/size_cards.dart';
 import '../widgets/components/styles/custom_button.dart';
 import '../widgets/components/styles/text_style.dart';
@@ -135,58 +137,73 @@ class DetailsPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-              SingleChildScrollView(
-                child: Container(
-                  padding: const EdgeInsets.only(left: 10),
-                  height: 240,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        selectedProduct.description,
-                        style: const TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                height: 240,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Text(
+                          selectedProduct.description,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                      
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          CustomButton(
-                            pressed: () {
-                              context.read<ProductBloc>().add(
-                                  DeleteProductEvent(id: selectedProduct.id));
-                              //Navigator.of(context).pop('delete');
-                            },
-                            name: 'DELETE',
-                            width: 152,
-                            height: 50,
-                            fgcolor: Theme.of(context).secondaryHeaderColor,
-                            textBgColor: Theme.of(context).secondaryHeaderColor,
-                            bgcolor: Colors.white,
-                          ),
-                          const SizedBox(
-                            width: 16,
-                          ),
-                          CustomButton(
-                            pressed: () {
-                              Navigator.pushNamed(context, '/update_page',
-                                  arguments: selectedProduct);
-                            },
-                            name: 'UPDATE',
-                            width: 152,
-                            height: 50,
-                            textBgColor: Colors.white,
-                            fgcolor: Colors.white,
-                            bgcolor: Theme.of(context).primaryColor,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 8,),
+                    BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                        if (state is! AuthUserLoaded) {
+                          return const SizedBox.shrink();
+                        }
+                        if (state.userEntity.id == selectedProduct.seller?.id) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              CustomButton(
+                                pressed: () {
+                                  context.read<ProductBloc>().add(
+                                      DeleteProductEvent(
+                                          id: selectedProduct.id));
+                                  //Navigator.of(context).pop('delete');
+                                },
+                                name: 'DELETE',
+                                width: 152,
+                                height: 50,
+                                fgcolor: Theme.of(context).secondaryHeaderColor,
+                                textBgColor:
+                                    Theme.of(context).secondaryHeaderColor,
+                                bgcolor: Colors.white,
+                              ),
+                              const SizedBox(
+                                width: 16,
+                              ),
+                              CustomButton(
+                                pressed: () {
+                                  Navigator.pushNamed(context, '/update_page',
+                                      arguments: selectedProduct);
+                                },
+                                name: 'UPDATE',
+                                width: 152,
+                                height: 50,
+                                textBgColor: Colors.white,
+                                fgcolor: Colors.white,
+                                bgcolor: Theme.of(context).primaryColor,
+                              ),
+                            ],
+                          );
+                        } else {
+                          return Seller(seller: selectedProduct.seller!);
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],

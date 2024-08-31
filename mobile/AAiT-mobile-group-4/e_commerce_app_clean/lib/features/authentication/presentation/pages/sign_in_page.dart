@@ -19,13 +19,16 @@ class SignInPage extends StatelessWidget {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthSignedInState) {
+            BlocProvider.of<AuthBloc>(context).add(GetCurrentUserEvent());
+            Navigator.pushReplacementNamed(context, '/home_page');
             ScaffoldMessenger.of(context).showSnackBar( customSnackBar('Logged In successfully',Theme.of(context).primaryColor));
-            Navigator.pushNamed(context, '/home_page');
           } else if (state is AuthErrorState) {
             ScaffoldMessenger.of(context)
                 .showSnackBar(customSnackBar(state.message,Theme.of(context).primaryColor));
           } else if (state is AuthLogOutState) {
             ScaffoldMessenger.of(context).showSnackBar(customSnackBar('Logged Out Successfully',Theme.of(context).primaryColor));
+          } else if (state is AuthUserLoaded) {
+            Navigator.pushReplacementNamed(context, '/home_page');
           }
         },
         builder: (context, state) {
@@ -35,7 +38,9 @@ class SignInPage extends StatelessWidget {
             );
           } else {
             return SingleChildScrollView(
-              child: Column(children: [
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
                 const SizedBox(height: 116),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -55,16 +60,18 @@ class SignInPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 46),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const CustomTextStyle(
-                        color: Colors.black,
-                        name: 'Sign into your account',
-                        weight: FontWeight.w600,
-                        size: 27,
-                        family: 'Poppins',
+                      const Center(
+                        child: CustomTextStyle(
+                          color: Colors.black,
+                          name: 'Sign into your account',
+                          weight: FontWeight.w600,
+                          size: 27,
+                          family: 'Poppins',
+                        ),
                       ),
                       const SizedBox(height: 36),
                       const CustomTextStyle(
@@ -98,7 +105,7 @@ class SignInPage extends StatelessWidget {
                           obsecure: true,
                           lines: 1,
                           controller: passwordController,
-                          hint: '................',
+                          hint: '**********',
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -122,6 +129,7 @@ class SignInPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 100),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const SizedBox(width: 24),
                           const CustomTextStyle(
@@ -134,7 +142,7 @@ class SignInPage extends StatelessWidget {
                           const SizedBox(width: 4),
                           GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(context, '/sign_up_page');
+                              Navigator.pushReplacementNamed(context, '/sign_up_page');
                             },
                             child: CustomTextStyle(
                               color: Theme.of(context).primaryColor,

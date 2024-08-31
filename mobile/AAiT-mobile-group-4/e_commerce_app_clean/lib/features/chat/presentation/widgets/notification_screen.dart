@@ -1,8 +1,12 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/personal_message_notification_data.dart';
+import '../../../authentication/domain/entities/user_data.dart';
+import '../../../authentication/presentation/bloc/auth_bloc.dart';
+import '../../domain/entities/chat.dart';
+import '../blocs/bloc/chat_bloc.dart';
 import 'personal_message_notification_widget.dart';
 import 'stories_widget.dart';
 
@@ -38,22 +42,35 @@ class ChatPage extends StatelessWidget {
                 ),
                 // content goes here
                 // ------------------------------------------
-
-                child: ListView.builder(
-                    itemCount: personalNotifications.length,
-                    itemBuilder: (context, index) {
-                      return PersonalMessageNotification(
-                        imagePath: 'assets/story_${(index%3)+1}.png',
-                        bgColor: Color((Random().nextDouble() * 0xFFFFFF).toInt() << 0).withOpacity(1.0),
-                        fullName: personalNotifications[index].fullName,
-                        message: personalNotifications[index].message,
-                        timeSent: personalNotifications[index].timeSent,
-                        isRead: personalNotifications[index].isRead,
-                        isOnline: personalNotifications[index].isOnline,
-                        unreadMessages: personalNotifications[index].unreadMessages,
-                      );
-                    }),
-
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    UserEntity user = (state as AuthUserLoaded).userEntity;
+                    return BlocBuilder<ChatBloc, ChatState>(
+                      builder: (context, state) {
+                        if (state is ChatsLoadedState) {
+                          List<Chat> chats = state.chats; 
+                          return ListView.builder(
+                            itemCount: chats.length,
+                            itemBuilder: (context, index) {
+                              UserEntity sender = chats[index].user1.id == user.id ? chats[index].user2 :chats[index].user1;
+                              return PersonalMessageNotification(
+                                chatId: chats[index].id,
+                                user: sender,
+                                imagePath: 'assets/story_${(index % 3) + 1}.png',
+                                bgColor: Color((Random().nextDouble() * 0xFFFFFF).toInt() << 0).withOpacity(1.0),
+                                fullName: sender.name,
+                                message: sender.email,
+                              );
+                            });
+                        } else if ( state is ChatsLoadingState ) {
+                          return const CircularProgressIndicator();
+                        } else {
+                          return Center(child: Text('Unkown State${state.runtimeType}'));
+                        }
+                      },
+                    );
+                  },
+                ),
                 // ------------------------------------------
               ),
             ),

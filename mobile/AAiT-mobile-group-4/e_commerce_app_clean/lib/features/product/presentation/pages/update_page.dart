@@ -45,6 +45,10 @@ class _UpdatePageState extends State<UpdatePage> {
 
   @override
   Widget build(BuildContext context) {
+    _nameController.text = widget.selectedProduct.name;
+    _categoryController.text = widget.selectedProduct.name;
+    _priceController.text = widget.selectedProduct.price.toString();
+    _descriptionController.text = widget.selectedProduct.description;
     return Scaffold(
       body: BlocListener<ProductBloc, ProductState>(
         listener: (context, state) {
@@ -152,6 +156,7 @@ class _UpdatePageState extends State<UpdatePage> {
                     CustomTextField(
                       hint: widget.selectedProduct.price.toString(),
                       controller: _priceController,
+                      keyboardType: TextInputType.number,
                     ),
                     const Positioned(
                       left: 290,
@@ -167,10 +172,18 @@ class _UpdatePageState extends State<UpdatePage> {
                   size: 14,
                 ),
                 const SizedBox(height: 8),
-                CustomTextField(
-                  lines: 5,
-                  controller: _descriptionController,
-                  hint: widget.selectedProduct.description,
+                Container(
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(195, 238, 238, 238),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  height: 140,
+                  child: CustomTextField(
+                    controller: _descriptionController,
+                    hint: widget.selectedProduct.description,
+                    textInputAction: TextInputAction.newline,
+                    keyboardType: TextInputType.multiline,
+                  ),
                 ),
                 const SizedBox(height: 32),
                 CustomButton(
@@ -178,7 +191,7 @@ class _UpdatePageState extends State<UpdatePage> {
                     ProductEntity updateProduct = ProductEntity(
                       description: _descriptionController.text,
                       id: widget.selectedProduct.id,
-                      imageUrl: selectedImage!.path,
+                      imageUrl: '',
                       name: _nameController.text,
                       price: double.parse(_priceController.text),
                     );
@@ -190,18 +203,25 @@ class _UpdatePageState extends State<UpdatePage> {
                   name: 'UPDATE',
                   width: double.infinity,
                   height: 50,
+                  textBgColor: const Color.fromRGBO(255, 255, 255, 1),
                   fgcolor: const Color.fromRGBO(255, 255, 255, 1),
                   bgcolor: const Color.fromRGBO(63, 81, 243, 1),
                 ),
                 const SizedBox(height: 16),
-                const CustomButton(
-                  pressed: null,
-                  name: 'DELETE',
-                  width: double.infinity,
-                  height: 50,
-                  fgcolor: Color.fromARGB(230, 255, 19, 19),
-                  bgcolor: Color.fromRGBO(255, 255, 255, 1),
-                ),
+                CustomButton(
+                      pressed: (){
+                        _nameController.text = '';
+                        _categoryController.text = '';
+                        _priceController.text = '';
+                        _descriptionController.text = '';
+                      },
+                      name: 'CLEAR',
+                      width: double.infinity,
+                      height: 50,
+                      textBgColor: Theme.of(context).secondaryHeaderColor,
+                      fgcolor: Theme.of(context).secondaryHeaderColor,
+                      bgcolor: Colors.white ,
+                    ),
               ],
             ),
           ),

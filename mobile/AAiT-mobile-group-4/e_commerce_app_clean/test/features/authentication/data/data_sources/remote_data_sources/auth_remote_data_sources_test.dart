@@ -32,11 +32,11 @@ void main() {
   const tSignUpModel =
       SignUpModel(email: 'ley@gmail.com', password: '1234', username: 'ley');
   const tLogInModel = LogInModel(email: 'ley@gmail.com', password: '1234');
-  const tUserModel = UserModel(email: 'ley@gmail.com', name: 'ley');
+  const tUserModel = UserModel(email: 'ley@gmail.com', name: 'ley', id: '1');
   group('sign up', () {
     test('should return a void if the response is 201', () async {
       //arrange
-      when(mockHttpClient.post(Uri.parse(Urls2.signUp()),
+      when(mockHttpClient.post(Uri.parse(Urls3.signUp()),
               body: jsonEncode(tSignUpModel),
               headers: {'Content-Type': 'application/json'}))
           .thenAnswer(
@@ -44,7 +44,7 @@ void main() {
       //act
       await authRemoteDataSourceImpl.signUp(tSignUpModel);
       //assert
-      verify(mockHttpClient.post(Uri.parse(Urls2.signUp()),
+      verify(mockHttpClient.post(Uri.parse(Urls3.signUp()),
           body: jsonEncode(tSignUpModel),
           headers: {'Content-Type': 'application/json'}));
     });
@@ -55,7 +55,7 @@ void main() {
       //arrange
       when(mockAuthLocalDataSource.cacheToken('mytoken'))
           .thenAnswer((_) async => true);
-      when(mockHttpClient.post(Uri.parse(Urls2.login()),
+      when(mockHttpClient.post(Uri.parse(Urls3.login()),
               body: jsonEncode(tLogInModel),
               headers: {'Content-Type': 'application/json'}))
           .thenAnswer(
@@ -63,7 +63,7 @@ void main() {
       //act
       await authRemoteDataSourceImpl.logIn(tLogInModel);
       //assert
-      verify(mockHttpClient.post(Uri.parse(Urls2.login()),
+      verify(mockHttpClient.post(Uri.parse(Urls3.login()),
           body: jsonEncode(tLogInModel),
           headers: {'Content-Type': 'application/json'}));
     });
@@ -72,7 +72,7 @@ void main() {
       //arrange
       when(mockAuthLocalDataSource.cacheToken('mytoken'))
           .thenAnswer((_) => Future.value(true));
-      when(mockHttpClient.post(Uri.parse(Urls2.login()),
+      when(mockHttpClient.post(Uri.parse(Urls3.login()),
               body: jsonEncode(tLogInModel),
               headers: {'Content-Type': 'application/json'}))
           .thenAnswer((_) async => http.Response('Not Found', 404));
@@ -88,7 +88,7 @@ void main() {
       //arrange
       when(mockAuthLocalDataSource.getToken())
           .thenAnswer((_) async => 'mytoken');
-      when(mockHttpClient.get(Uri.parse(Urls2.getCurrentUser()), headers: {
+      when(mockHttpClient.get(Uri.parse(Urls3.getCurrentUser()), headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer mytoken'
       })).thenAnswer((_) async =>
@@ -103,7 +103,7 @@ void main() {
       //arrange
       when(mockAuthLocalDataSource.getToken())
           .thenAnswer((_) async => 'mytoken');
-      when(mockHttpClient.get(Uri.parse(Urls2.getCurrentUser()), headers: {
+      when(mockHttpClient.get(Uri.parse(Urls3.getCurrentUser()), headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer mytoken'
       })).thenAnswer((_) async => http.Response('Not Found', 404));

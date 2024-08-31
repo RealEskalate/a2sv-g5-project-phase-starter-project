@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../domain/entities/product_entity.dart';
 import '../bloc/product_bloc.dart';
 import '../widgets/components/styles/custom_button.dart';
+import '../widgets/components/styles/snack_bar_style.dart';
 import '../widgets/components/styles/text_field_styles.dart';
 import '../widgets/components/styles/text_style.dart';
 
@@ -42,6 +43,8 @@ class _AddProudctPageState extends State<AddProudctPage> {
       body: BlocConsumer<ProductBloc, ProductState>(
         listener: (context, state) {
           if (state is ProductCreatedState) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(customSnackBar('Product Added Successfully', Theme.of(context).primaryColor));
             context.read<ProductBloc>().add(LoadAllProductEvent());
             Navigator.pushNamed(context, '/home_page');
           } else if (state is ProductErrorState) {
@@ -143,6 +146,7 @@ class _AddProudctPageState extends State<AddProudctPage> {
                       children: [
                         CustomTextField(
                           controller: _priceController,
+                          keyboardType: TextInputType.number,
                         ),
                         const Positioned(
                           left: 290,
@@ -158,12 +162,32 @@ class _AddProudctPageState extends State<AddProudctPage> {
                       size: 14,
                     ),
                     const SizedBox(height: 8),
-                    CustomTextField(
-                        lines: 5, controller: _descriptionController),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(195, 238, 238, 238),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      height: 140,
+                      child: CustomTextField(
+                          controller: _descriptionController,
+                          textInputAction: TextInputAction.newline,
+                          keyboardType: TextInputType.multiline,
+                          ),
+                    ),
                     const SizedBox(height: 32),
                     CustomButton(
                       pressed: () {
                         // Ensure that all required fields are filled
+                        if (_nameController.text.isEmpty ||
+                            _categoryController.text.isEmpty ||
+                            _priceController.text.isEmpty ||
+                            _descriptionController.text.isEmpty ||
+                            _selectedImage == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            customSnackBar('All fields are required', Colors.redAccent),
+                          );
+                          return;
+                        }
                         ProductEntity newProduct = ProductEntity(
                           id: '',
                           name: _nameController.text,
@@ -184,8 +208,16 @@ class _AddProudctPageState extends State<AddProudctPage> {
                     ),
                     const SizedBox(height: 16),
                     CustomButton(
-                      pressed: null,
-                      name: 'DELETE',
+                      pressed: (){
+                        _nameController.text = '';
+                        _categoryController.text = '';
+                        _priceController.text = '';
+                        _descriptionController.text = '';
+                        setState(() {
+                          _selectedImage = null;
+                        });
+                      },
+                      name: 'CLEAR',
                       width: double.infinity,
                       height: 50,
                       textBgColor: Theme.of(context).secondaryHeaderColor,

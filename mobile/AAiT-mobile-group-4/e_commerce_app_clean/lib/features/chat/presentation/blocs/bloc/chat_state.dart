@@ -24,6 +24,11 @@ class ChatMessageLoadedState extends ChatState {
   const ChatMessageLoadedState({required this.messages});
 }
 
+class ChatCreatedState extends ChatState {
+  final Chat chat;
+  const ChatCreatedState({required this.chat});
+}
+
 class ChatErrorState extends ChatState {
   final String message;
   const ChatErrorState({required this.message});

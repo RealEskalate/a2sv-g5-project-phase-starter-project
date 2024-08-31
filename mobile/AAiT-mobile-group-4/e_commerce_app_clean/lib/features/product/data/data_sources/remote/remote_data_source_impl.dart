@@ -78,11 +78,10 @@ class RemoteDataSourceImpl implements ProductRemoteDataSource {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
     });
-
-    List<dynamic> jsonDecoded = jsonDecode(response.body)['data'];
-    final products =
-        jsonDecoded.map((products) => ProductModel.fromJson(products)).toList();
     if (response.statusCode == 200) {
+      List<dynamic> jsonDecoded = jsonDecode(response.body)['data'];
+      final products =
+          jsonDecoded.map((products) => ProductModel.fromJson(products)).toList();
       return products;
     } else {
       throw ServerException();

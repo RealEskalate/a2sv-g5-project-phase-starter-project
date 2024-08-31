@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../authentication/domain/entities/user_data.dart';
+import '../blocs/bloc/chat_bloc.dart';
 import 'profile_pic_widget.dart';
 class PersonalMessageNotification extends StatelessWidget {
   final String? fullName;
@@ -10,6 +13,8 @@ class PersonalMessageNotification extends StatelessWidget {
   final int? unreadMessages;
   final String imagePath;
   final Color bgColor;
+  final UserEntity user;
+  final String chatId;
 
   const PersonalMessageNotification({
     this.imagePath = 'assets/story_3.png',
@@ -21,6 +26,8 @@ class PersonalMessageNotification extends StatelessWidget {
     this.isRead,
     this.isOnline,
     this.unreadMessages,
+    required this.user,
+    required this.chatId,
   });
 
   @override
@@ -28,7 +35,8 @@ class PersonalMessageNotification extends StatelessWidget {
     return GestureDetector(
       //---------------------------------------------
       onTap: (){
-        // Navigate to the details message page
+        Navigator.of(context).pushNamed('/messages', arguments: user);
+        BlocProvider.of<ChatBloc>(context).add(GetChatMessagesEvent(chatId: chatId));
       },
       //---------------------------------------------
       child: Container(

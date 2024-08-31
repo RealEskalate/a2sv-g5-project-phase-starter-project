@@ -62,6 +62,9 @@ class ChatDataSourceImpl implements ChatDataSource {
     client.socket.on('message:recieved', (data) {
       stream.addResponse(MessageModel.fromJson(data));
     });
+    client.socket.on('message:delivered', (data) {
+      stream.addResponse(MessageModel.fromJson(data));
+    });
     return stream.getResponse;
   }
 

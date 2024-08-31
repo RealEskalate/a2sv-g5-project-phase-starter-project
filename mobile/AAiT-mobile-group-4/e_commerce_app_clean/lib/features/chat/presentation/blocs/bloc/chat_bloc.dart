@@ -36,7 +36,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       var result = await createChatUsecase(CreateChatParams(event.userId));
       result.fold(
         (left) => emit(ChatErrorState(message: left.message)), 
-        (chat) => add(GetChatMessagesEvent(chatId: chat.id)));
+        (chat) => emit(ChatCreatedState(chat: chat)));
     });
     
     on<SendMessageEvent>((event, emit) async {

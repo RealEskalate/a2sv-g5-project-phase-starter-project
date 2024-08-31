@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'features/authentication/domain/entities/user_data.dart';
 import 'features/authentication/presentation/bloc/auth_bloc.dart';
 import 'features/authentication/presentation/pages/cover_page.dart';
 import 'features/authentication/presentation/pages/sign_in_page.dart';
 import 'features/authentication/presentation/pages/sign_up_page.dart';
+import 'features/chat/presentation/blocs/bloc/chat_bloc.dart';
+import 'features/chat/presentation/pages/chat_page.dart';
 import 'features/chat/presentation/pages/root_page.dart';
-import 'features/chat/presentation/widgets/notification_screen.dart';
+import 'features/chat/presentation/widgets/notification_screen.dart' as ns;
 import 'features/product/domain/entities/product_entity.dart';
 import 'features/product/presentation/bloc/product_bloc.dart';
 import 'features/product/presentation/pages/details_page.dart';
@@ -24,12 +27,14 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-          create: (context) => sl<AuthBloc>(),
+          create: (_) => sl<AuthBloc>(),
         ),
         BlocProvider<ProductBloc>(
-          create: (context) => sl<ProductBloc>(),
+          create: (_) => sl<ProductBloc>(),
         ),
-
+        BlocProvider<ChatBloc>(
+          create: (_) => sl<ChatBloc>(),
+        ),
       ],
       child: MaterialApp(
         theme: ThemeData(
@@ -61,7 +66,9 @@ void main() async {
           } else if (settings.name == '/update_page') {
             return createRoute(UpdatePage(selectedProduct: settings.arguments as ProductEntity));
           } else if (settings.name == '/chat_page') {
-            return createRoute(const ChatPage());
+            return createRoute(const ns.ChatPage());
+          } else if (settings.name == '/messages') {
+            return createRoute(ChatPage(user: settings.arguments as UserEntity));
           }
           return null;
         },

@@ -4,7 +4,7 @@ import process from "process";
 export const bankApi = createApi({
   reducerPath: "bankDash",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://astu-bank-dashboard.onrender.com",
+    baseUrl: "https://bank-dashboard-xx3n.onrender.com",
     
   }),
   endpoints: (builder) => ({

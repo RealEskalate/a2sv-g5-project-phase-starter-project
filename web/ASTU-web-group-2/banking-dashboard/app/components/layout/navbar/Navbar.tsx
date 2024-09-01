@@ -9,73 +9,31 @@ import Notification from "./Notification";
 import { useGetAllTransactionQuery } from "@/lib/service/TransactionService";
 import { Item } from "../../transactions/lastTransaction/lastTransactionItems";
 
-
-
-
 interface NavbarProps {
   setter: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ setter }) => {
-  // Access the user data from Redux store
   const user = useSelector((state: RootState) => state.user.user);
-
-  // State for sidebar visibility
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  // State for dropdown visibility
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  // state for notification visibility
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-
-  // Reference for the dropdown
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-        setIsNotificationOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    // Cleanup the event listener
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownRef]);
-
-  // Toggle dropdown visibility
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
 
-  // toggle notification dropwon visibility
   const toggleNotification = () => {
     setIsNotificationOpen((prev) => !prev);
   };
 
-  // Get the current pathname from next/navigation
   const pathname = usePathname();
 
-  // Function to capitalize the first letter of the page title
   const capitalizeFirstLetter = (text: string) => {
     if (!text || text === "/") return "Dashboard";
     text = text.replace("-", " ");
     return text.charAt(1).toUpperCase() + text.slice(2).toLowerCase();
   };
-  // const notifications = [
-  //   { type: "New", description: "Transaction" },
-  //   { type: "New", description: "Transaction" },
-  //   { type: "New", description: "Transaction" },
-  //   { type: "New", description: "Transaction" },
-  // ];
 
   let access: string = "";
   const { data: session, status } = useSession();
@@ -84,13 +42,37 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
     access = session?.user?.accessToken;
   }
 
-  const { data, isError, isLoading } = useGetAllTransactionQuery(access)
+  const { data, isError, isLoading } = useGetAllTransactionQuery(access);
 
   let transactions: { content: Item[]; totalPages: number } = data?.data || "";
 
   const notifications = transactions?.content;
 
   const title = capitalizeFirstLetter(pathname);
+
+  // Effect to handle click outside dropdown to close it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    // Cleanup event listener on component unmount or when dropdown is closed
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
   return (
     <nav className="fixed top-0 md:left-[240px] max-md:left-0 right-0 bg-white shadow-md z-10 max-md:h-[140px]">
       <div className="flex w-full items-center justify-between px-4 py-2">
@@ -145,8 +127,7 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
               />
             </Link>
             <div
-              className=" sm:flex hidden bg-[#F5F7FA] rounded-full  justify-center items-center"
-              ref={dropdownRef}
+              className="sm:flex hidden bg-[#F5F7FA] rounded-full justify-center items-center"
             >
               <div className="relative">
                 <Image
@@ -191,7 +172,7 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
                   <div className="flex flex-col gap-1">
                     <Link
                       href="/settings"
-                      className="md:hidden  flex bg-[#F5F7FA] rounded-full gap-2 items-center"
+                      className="md:hidden flex bg-[#F5F7FA] rounded-full gap-2 items-center"
                     >
                       <Image
                         src="/assets/navbar/settings.svg"
@@ -204,8 +185,7 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
                     </Link>
 
                     <div
-                      className=" md:hidden  flex bg-[#F5F7FA] rounded-full gap-2 items-center cursor-pointer"
-                      ref={dropdownRef}
+                      className="md:hidden flex bg-[#F5F7FA] rounded-full gap-2 items-center cursor-pointer"
                     >
                       <div className="relative">
                         <Image
@@ -216,7 +196,6 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
                           className="flex-shrink-0"
                           onClick={toggleNotification}
                         />
-
                         {notifications?.length > 0 && (
                           <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-white bg-red-600 rounded-full text-xs">
                             {notifications?.length}
@@ -226,8 +205,21 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
                           <Notification notifications={notifications} />
                         )}
                       </div>
-                        <span onClick={toggleNotification} className="ml-2 text-sm">Notifications</span>
+                      <span onClick={toggleNotification} className="ml-2 text-sm">Notifications</span>
                     </div>
+                    <button
+                      onClick={() => signOut({ callbackUrl: "/" })}
+                      className="flex zbg-[#F5F7FA] rounded-full gap-4 items-center pl-2"
+                    >
+                      <Image
+                        src="/assets/transaction/deposit.svg"
+                        width={16}
+                        height={16}
+                        alt="Logout"
+                        className="flex-shrink-0 rotate-90 md:w-[30px] md:h-[30px]"
+                      />
+                      <span className="ml-2 text-sm">Logout</span>
+                    </button>
                   </div>
                 </div>
               )}
@@ -236,7 +228,7 @@ const Navbar: React.FC<NavbarProps> = ({ setter }) => {
         </div>
       </div>
 
-      <div className="search-div  flex w-11/12 sm:hidden bg-[#F5F7FA] justify-between items-center rounded-full pl-5 pr-5 mt-2 mx-auto h-10">
+      <div className="search-div flex w-11/12 sm:hidden bg-[#F5F7FA] justify-between items-center rounded-full pl-5 pr-5 mt-2 mx-auto h-10">
         <Image
           src="/assets/navbar/magnifying-glass.svg"
           width={20}

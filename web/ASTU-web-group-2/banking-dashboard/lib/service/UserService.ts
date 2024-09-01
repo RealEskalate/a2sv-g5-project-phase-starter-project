@@ -24,7 +24,8 @@ type UpdatedPreference = {
 export const userApi = createApi({
   reducerPath: "userDashboard",
   baseQuery: fetchBaseQuery({
-    baseUrl: "https://astu-bank-dashboard.onrender.com",
+    baseUrl: "https://bank-dashboard-xx3n.onrender.com",
+
   }),
   endpoints: (builder) => ({
     getCurrentUser: builder.query({

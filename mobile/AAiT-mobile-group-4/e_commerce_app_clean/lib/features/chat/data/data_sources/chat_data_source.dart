@@ -28,7 +28,7 @@ class ChatDataSourceImpl implements ChatDataSource {
     final response = await client.post(Uri.parse('${Urls3.baseUrl}/chats'), body: json.encode({
       'userId':userId,
     }));
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       return ChatModel.fromJson(jsonDecode(response.body)['data']);
     } else {
       throw ServerException();

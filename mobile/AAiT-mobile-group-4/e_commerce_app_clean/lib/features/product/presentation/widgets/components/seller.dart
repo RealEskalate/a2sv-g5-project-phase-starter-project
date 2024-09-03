@@ -63,8 +63,6 @@ class Seller extends StatelessWidget {
                       )),
                     ),
                     onPressed: () {
-                      Navigator.of(context)
-                          .pushNamed('/messages', arguments: seller);
                       BlocProvider.of<ChatBloc>(context)
                           .add(CreateChatEvent(userId: seller.id));
                     },

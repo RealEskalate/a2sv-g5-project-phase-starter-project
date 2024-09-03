@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../authentication/presentation/bloc/auth_bloc.dart';
+import '../../../../chat/presentation/blocs/bloc/chat_bloc.dart';
 import 'styles/text_style.dart';
 
 class HeaderView extends StatelessWidget {
@@ -26,12 +27,18 @@ class HeaderView extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(11),
-                        color: Theme.of(context).primaryColor,
+                    InkWell(
+                      onTap: () {
+                        BlocProvider.of<ChatBloc>(context).add(FetchChatsEvent());
+                        Navigator.pushNamed(context, '/chat_page');
+                      },
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(11),
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),

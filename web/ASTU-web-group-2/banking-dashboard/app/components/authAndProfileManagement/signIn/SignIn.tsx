@@ -30,19 +30,25 @@ const SignIn = ({ onClose }: { onClose: () => void }) => {
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
-    const res = await signIn("credentials", {
-      userName: data.userName,
-      password: data.password,
-      redirect: false,
-    });
-    if (!res?.ok) {
-      notify.error("Invalid Credentials");
-    } else {
-      notify.success("Successfully logged in");
+    try {
+      const res = await signIn("credentials", {
+        userName: data.userName,
+        password: data.password,
+        redirect: false, // Don't redirect automatically
+      });
 
-      router.push("/dashboard");
+      if (!res?.ok) {
+        notify.error("Invalid Credentials");
+      } else {
+        notify.success("Successfully logged in");
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      notify.error("An unexpected error occurred during sign-in");
+      console.error("Error in onSubmit:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

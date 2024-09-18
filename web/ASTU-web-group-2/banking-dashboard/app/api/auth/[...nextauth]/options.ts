@@ -4,7 +4,7 @@ import signInUser from "./signInUser";
 import { NextAuthOptions } from "next-auth";
 
 export const options: NextAuthOptions = {
-  secret : process.env.AUTH_SECRET,
+  secret: process.env.AUTH_SECRET,
   providers: [
     CredentialsProvider({
       type: "credentials",
@@ -26,15 +26,19 @@ export const options: NextAuthOptions = {
         };
         try {
           const res = await signInUser({ userName, password });
-          return {
-            id: res?.id,
-            accessToken: res.access_token,
-            refreshToken: res.refresh_token,
-          };
+          if (res) {
+            return {
+              id: res?.id,
+              accessToken: res.access_token,
+              refreshToken: res.refresh_token,
+            };
+          } else {
+            throw new Error("Invalid Credentials");
+          }
         } catch (error) {
-          console.log(error);
+          console.error("Error in authorize:", error);
+          throw new Error("Invalid Credentials");
         }
-        return null;
       },
     }),
   ],

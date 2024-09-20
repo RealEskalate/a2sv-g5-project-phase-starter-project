@@ -32,7 +32,7 @@ const ExpenseStatisticsPieChart = ({sectors, bgColors} : ExpenseStatisticsPieCha
                             backgroundColor: bgColors,
                             borderColor: '#ffffff',
                             borderWidth: 2,
-                            offset: [50, 30, 0, 40]
+                            offset: [60, 30, 0, 70]
                         }]
                     },
                     options: {
@@ -82,8 +82,15 @@ const ExpenseStatisticsPieChart = ({sectors, bgColors} : ExpenseStatisticsPieCha
     }, []);
 
     return (
-        <div className='relative ml-4 pb-4 h-80 text-sm'>
-            <canvas ref={chartRef} />
+        
+        <div className='h-full'>
+            <h3 className="text-[22px] font-semibold text-[#343C6A] mb-4">Expense Statistics</h3>
+            <div className="bg-white rounded-3xl p-2">
+                <div className='relative ml-4 h-full text-sm'>
+                    <canvas ref={chartRef} width={370} height={340}/>
+                </div>
+            </div>
+                
         </div>
     );
 };

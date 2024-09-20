@@ -35,11 +35,11 @@ const Quick_transfer = () => {
   };
 
   return (
-    <div className="flex flex-col md:w-3/12">
+    <div className="flex flex-col h-full ">
       <div>
-        <h1 className="text-[#343C6A] font-semibold ml-2">Quick Transfer</h1>
+        <h1 className="text-[22px] font-semibold text-[#343C6A] ml-2 mb-3">Quick Transfer</h1>
       </div>
-      <div className="mt-2 md:mt-3 py-5 bg-white rounded-3xl space-y-10 pl-2">
+      <div className="mt-2 md:mt-3 py-5 bg-white rounded-3xl space-y-10 pl-2 h-full">
         <div className="flex ">
           <div className="flex space-x-7">
             {threeProfiles.map((item, index) => (

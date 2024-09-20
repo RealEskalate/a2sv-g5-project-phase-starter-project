@@ -100,10 +100,10 @@ const BalanceHistoryLineGraph = ({balanceHistory}:GRAPHDATA) => {
     }, []);
 
     return (
-        <div className='h-80'>
-            <h3 className="text-lg">Monthly Activity</h3>
-            <div className="bg-white rounded-3xl w-3/4 p-6">
-                <div className='relative h-80'>
+        <div className='h-full'>
+            <h3 className="text-[22px] font-semibold text-[#343C6A] mb-5">Monthly Activity</h3>
+            <div className="bg-white rounded-3xl p-6 h-72">
+                <div className='relative h-full'>
                     <canvas ref={chartRef} />
                 </div>
             </div>

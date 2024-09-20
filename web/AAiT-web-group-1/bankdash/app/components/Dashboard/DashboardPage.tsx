@@ -1,5 +1,5 @@
 import React from 'react'
-import Recent_transaction from './Recent_transaction'
+import RecentTransaction from './Recent_transaction'
 import WeeklyActivityBarChart from './WeeklyActivityBarChart'
 import ExpenseStatisticsPieChart from './ExpenseStatisticsPieChart'
 import Quick_transfer from './Quick_transfer'
@@ -25,12 +25,12 @@ const Page = () => {
                 <Card/>
             {/* <Mycards/> */}
             </div>
-            <div className=''>
-                <Recent_transaction/>
+            <div className='w-2/6'>
+                <RecentTransaction recents={[]} />
             </div>
         </div>
         <div className='flex justify-evenly mb-10'>
-            <div className='w-3/5 mr-7'>
+            <div className='w-3/5  mr-2'>
                 <WeeklyActivityBarChart weekdays={weekdays} deposits={deposits} withdraws={withdraws}/>
             </div>
             <div className=' my-auto '>
@@ -38,10 +38,10 @@ const Page = () => {
             </div>
         </div>
         <div className='flex w-full justify-around'>
-            <div className='md:w-2/6 mr-7'>
+            <div className='md:w-2/6 mr-7 h-80'>
                 <Quick_transfer/>
             </div>
-            <div className="w-3/6 mr-7 mb-5">
+            <div className="w-3/6 mr-7 mb-5 h-80 ">
                 <BalanceHistoryLineGraph balanceHistory={LineData}/>
             </div>
         </div>

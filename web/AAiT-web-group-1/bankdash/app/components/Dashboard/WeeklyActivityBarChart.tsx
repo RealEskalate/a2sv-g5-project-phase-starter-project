@@ -55,6 +55,9 @@ const WeeklyActivityBarChart = ({weekdays, deposits, withdraws} : WeeklyActivity
                                 beginAtZero: true,
                                 ticks: {
                                     color: '#718EBF' // Font color for y-axis labels
+                                },
+                                border :{
+                                    display: false
                                 }
                             },
                             x: {
@@ -80,6 +83,7 @@ const WeeklyActivityBarChart = ({weekdays, deposits, withdraws} : WeeklyActivity
                             legend: {
                                 display: true,
                                 position: 'top',
+                                align: 'end',
                                 labels: {
                                     usePointStyle: true,
                                     pointStyle: 'circle',
@@ -141,15 +145,14 @@ const WeeklyActivityBarChart = ({weekdays, deposits, withdraws} : WeeklyActivity
     }, []);
 
     return (
-            <div className='h-80'>
-                <h3 className=" text-lg">Weekly Activity</h3>
-                <div className="bg-white rounded-3xl w-3/4 ">
-                    
-                    <div className='relative ml-4  h-80 text-sm text-barTextGray' >
-                        <canvas ref={chartRef} />
-                    </div>
+        <div className='h-full'>
+            <h3 className="text-[22px] font-semibold text-[#343C6A] mb-4">Weekly Activity</h3>
+            <div className="bg-white rounded-3xl h-[350px] ">
+                <div className='relative ml-4 h-full text-sm text-[#718EBF] ' >
+                    <canvas ref={chartRef} />
                 </div>
             </div>
+        </div>
     );
 };
 

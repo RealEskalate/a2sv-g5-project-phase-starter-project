@@ -39,7 +39,7 @@ const Page = () => {
       const { data } = res;
       if (data.success) {
         alert("success");
-        // router.push(`/`)
+        router.push(`/`)
       }
       console.log(data.message);
     } catch (err) {

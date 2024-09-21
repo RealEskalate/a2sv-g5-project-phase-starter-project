@@ -1,6 +1,1 @@
 *.env
-*.sum
-*.log
-*.out
-*.mod
-tmp

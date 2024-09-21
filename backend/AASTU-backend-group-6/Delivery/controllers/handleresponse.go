@@ -10,8 +10,6 @@ import (
 // HandleResponse handles the API response based on the type of the response object.
 func HandleResponse(c *gin.Context, response interface{}) {
 
-	// print the type of response
-	// fmt.Printf("Type of response: %T\n", response)
 	switch res := response.(type) {
 	case *domain.SuccessResponse:
 		c.JSON(http.StatusOK, res)
@@ -32,7 +30,7 @@ func HandleResponse(c *gin.Context, response interface{}) {
 	// 	c.JSON(http.StatusOK , res)
 	// case *domain.SingleTaskResponse:
 	// 	c.JSON(http.StatusOK , res)
-	// default:
+	default:
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Message: "Internal Server Error", Status: 500})
 	}
 }

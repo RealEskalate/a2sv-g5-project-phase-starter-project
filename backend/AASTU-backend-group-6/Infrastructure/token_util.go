@@ -71,7 +71,6 @@ func ExtractIDFromToken(requestToken string, secret string) (string, error) {
 	return claims["id"].(string), nil
 }
 
-
 func ExtractFromToken(requestToken string, secret string) (domain.User, error) {
 	token, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -104,7 +103,6 @@ func ExtractFromToken(requestToken string, secret string) (domain.User, error) {
 		objectID, _ := primitive.ObjectIDFromHex(id)
 		user.ID = objectID
 	}
-
 
 	if resetPasswordExpires, ok := userMap["reset_password_expires"].(string); ok && resetPasswordExpires != "" {
 		user.ResetPasswordExpires, _ = time.Parse(time.RFC3339, resetPasswordExpires)
@@ -157,8 +155,8 @@ func ExtractFromToken(requestToken string, secret string) (domain.User, error) {
 	if username, ok := userMap["username"].(string); ok {
 		user.Username = username
 	}
-	
-fmt.Println(user)
+
+	fmt.Println(user)
 	return user, nil
 }
 
@@ -175,22 +173,21 @@ func convertToObjectIDArray(input []interface{}) []primitive.ObjectID {
 }
 func ExtractFromTokenAuthClaim(requestToken string, secret string) (domain.JwtCustomClaims, error) {
 	token, err := jwt.Parse(requestToken, func(token *jwt.Token) (interface{}, error) {
-	  if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-	  }
-	  return []byte(secret), nil
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(secret), nil
 	})
-  
+
 	if err != nil {
-	  return domain.JwtCustomClaims{}, err
+		return domain.JwtCustomClaims{}, err
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
-  
+
 	if !ok && !token.Valid {
-	  return domain.JwtCustomClaims{}, fmt.Errorf("invalid token")
+		return domain.JwtCustomClaims{}, fmt.Errorf("invalid token")
 	}
 	return domain.JwtCustomClaims{
-	  ID: claims["id"].(string),
+		ID: claims["id"].(string),
 	}, nil
-  }
-  
+}

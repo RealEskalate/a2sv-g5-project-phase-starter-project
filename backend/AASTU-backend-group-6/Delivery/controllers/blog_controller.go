@@ -123,7 +123,7 @@ func (b BlogController) ReplyCommentOnBlog(c *gin.Context) {
 		return
 	}
 
-	parentID := c.GetString("parent_id")
+	parentID := c.Query("parent_id")
 	err := b.BlogUsecase.ReplyCommentOnBlog(userID, parentID, comment)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{
@@ -274,7 +274,7 @@ func (b BlogController) FilterBlogsByTag(c *gin.Context) {
 		c.JSON(http.StatusAccepted, domain.SuccessResponse{
 			Status:  http.StatusAccepted,
 			Data:    data,
-			Message: "blogs",
+			Message: "blogs fetched successfully.",
 		})
 	}
 }
@@ -300,7 +300,7 @@ func (b BlogController) GetBlogByID(c *gin.Context) {
 		c.JSON(http.StatusOK, domain.SuccessResponse{
 			Status:  http.StatusOK,
 			Data:    blog,
-			Message: "blog",
+			Message: "blog fetched successfully.",
 		})
 	}
 }
@@ -320,10 +320,21 @@ func (b BlogController) GetBlogs(c *gin.Context) {
 
 	blogs, pagination, err := b.BlogUsecase.GetBlogs(pageNo, pageSize, popularity)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(500, domain.ErrorResponse{
+			Message: err.Error(),
+			Status: 500,
+
+		})
 		c.Abort()
 	} else {
-		c.JSON(http.StatusOK, gin.H{"blogs": blogs, "pagination": pagination})
+		c.JSON(http.StatusOK, domain.SuccessResponse{
+			Status: http.StatusOK,
+			Data: map[string]interface{}{
+				"blogs" : blogs, 
+				"pagination" : pagination,
+			},
+			Message: "blogs fetched successfully.",
+		})
 	}
 }
 
@@ -356,7 +367,7 @@ func (b BlogController) GetMyBlogByID(c *gin.Context) {
 		c.JSON(http.StatusOK, domain.SuccessResponse{
 			Status:  http.StatusOK,
 			Data:    blog,
-			Message: "blog",
+			Message: "blog fetched successfully",
 		})
 	}
 }
@@ -390,7 +401,14 @@ func (b BlogController) GetMyBlogs(c *gin.Context) {
 		})
 		c.Abort()
 	} else {
-		c.JSON(http.StatusOK, gin.H{"my_blogs": myBlogs, "pagination": pagination})
+		c.JSON(http.StatusOK, domain.SuccessResponse{
+			Status: http.StatusOK,
+			Data: map[string]interface{}{
+				"my blogs" : myBlogs, 
+				"pagination" : pagination,
+			},
+			Message: "blogs fetched successfully.",
+		})
 	}
 }
 

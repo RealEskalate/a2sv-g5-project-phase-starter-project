@@ -391,7 +391,8 @@ func (b BlogRepository) FilterBlogsByTag(tags []string, pageNo int64, pageSize i
 // GetBlogByID implements domain.BlogRepository.
 func (b BlogRepository) GetCommentByID(comment_id string) (domain.Comment, error) {
 	var comment domain.Comment
-	err := b.CommentCollection.FindOne(context.TODO(), bson.M{"_id": comment_id}).Decode(comment)
+	comment_obj_id, _ := primitive.ObjectIDFromHex(comment_id)
+	err := b.CommentCollection.FindOne(context.TODO(), bson.M{"_id": comment_obj_id}).Decode(&comment)
 	if err != nil {
 		return domain.Comment{}, err
 	} else {

@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -34,27 +35,27 @@ func LoadEnv() (*Config, error) {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
-		return nil, err
+		// return nil, err
 	}
 
-	dbURL := os.Getenv("DATABASE_URL")
-	portStr := os.Getenv("PORT")
-	dbname := os.Getenv("DB_NAME")
-	usercoll := os.Getenv("user_collection")
-	blogcoll := os.Getenv("blog_collection")
-	commentcoll := os.Getenv("comment_collection")
-	activeusercoll := os.Getenv("ACTIVE_USER_COLLECTION")
-	unverifiedusercoll := os.Getenv("UNVERIFIED_USER_COLLECTION")
-	contextTimeoutStr := os.Getenv("CONTEXT_TIMEOUT")
-	accessTokenExpiryHourStr := os.Getenv("ACCESS_TOKEN_EXPIRY_HOUR")
-	refreshTokenExpiryHourStr := os.Getenv("REFRESH_TOKEN_EXPIRY_HOUR")
-	accessTokenSecret := os.Getenv("ACCESS_TOKEN_SECRET")
-	refreshTokenSecret := os.Getenv("REFRESH_TOKEN_SECRET")
-	clientId := os.Getenv("CLIENT_ID")
-	clientSecret := os.Getenv("CLIENT_SECRET")
-	redirectURL := os.Getenv("REDIRECT_URI")
-	oauthSecret := os.Getenv("OAUTH_STATE_STRING")
-	geminiAPIKey := os.Getenv("GEMINI_API_KEY")
+	dbURL := Getenv("DATABASE_URL", "")
+	portStr := Getenv("PORT", "")
+	dbname := Getenv("DB_NAME", "")
+	usercoll := Getenv("user_collection", "")
+	blogcoll := Getenv("blog_collection", "")
+	commentcoll := Getenv("comment_collection", "")
+	activeusercoll := Getenv("ACTIVE_USER_COLLECTION", "")
+	unverifiedusercoll := Getenv("UNVERIFIED_USER_COLLECTION", "")
+	contextTimeoutStr := Getenv("CONTEXT_TIMEOUT", "")
+	accessTokenExpiryHourStr := Getenv("ACCESS_TOKEN_EXPIRY_HOUR", "")
+	refreshTokenExpiryHourStr := Getenv("REFRESH_TOKEN_EXPIRY_HOUR", "")
+	accessTokenSecret := Getenv("ACCESS_TOKEN_SECRET", "")
+	refreshTokenSecret := Getenv("REFRESH_TOKEN_SECRET", "")
+	clientId := Getenv("CLIENT_ID", "")
+	clientSecret := Getenv("CLIENT_SECRET", "")
+	redirectURL := Getenv("REDIRECT_URI", "")
+	oauthSecret := Getenv("OAUTH_STATE_STRING", "")
+	geminiAPIKey := Getenv("GEMINI_API_KEY", "")
 
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
@@ -102,4 +103,12 @@ func LoadEnv() (*Config, error) {
 	}
 
 	return config, nil
+}
+func Getenv(key,defaul string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		fmt.Println("No value found for ", key)
+		return defaul
+	}
+	return value
 }

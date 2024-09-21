@@ -38,7 +38,6 @@ func (r *refreshTokenUsecase) CheckActiveUser(c context.Context, id string, user
 
 	return r.activeUserRepository.FindActiveUser(id, user_agent, ctx)
 }
-
 // checkActiveUser implements domain.RefreshTokenUsecase.
 func (r *refreshTokenUsecase) CreateAccessToken(user *domain.User, secret string, expiry int) (string, error) {
 	exp := time.Now().Add(time.Hour * time.Duration(expiry))

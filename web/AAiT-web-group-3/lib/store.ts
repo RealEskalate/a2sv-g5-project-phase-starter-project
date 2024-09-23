@@ -9,11 +9,13 @@ import { settingAPI } from "./services/settings";
 import { transactionAPI } from "./services/transactions";
 
 import navigationReducer from "@/lib/features/navigation/navigationSlice";
+import authReducer from "@/lib/features/auth/authSlice";
 
 export const store = configureStore({
   // TODO : Add your reducers here.
   reducer: {
     navigationReducer,
+    authReducer,
     [dashboardAPI.reducerPath]: dashboardAPI.reducer,
     [loanAPI.reducerPath]: loanAPI.reducer,
     [serviceAPI.reducerPath]: serviceAPI.reducer,

@@ -1,3 +1,4 @@
+"use client"
 import CreditCard from "../components/credit-card";
 import { PiFoldersBold } from "react-icons/pi";
 import WeeklyActivityChart from "@/components/dashboard/weeklyActChart";
@@ -5,8 +6,16 @@ import ExpenseStatChart from "@/components/dashboard/expenseStatChart";
 import { FiSend } from "react-icons/fi";
 import BalanceHistoryChart from "@/components/dashboard/balanceHistoryChart";
 import QuickTransferCard from "@/components/dashboard/quickTransferCard";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
-const page = () => {
+const Page = () => {
+    const { data: session } = useSession({
+      required: true,
+      onUnauthenticated() {
+        redirect("/api/auth/signin?calbackUrl=/login");
+      },
+    });
   return (
     <div className="p-4 pr-0 w-full bg-primary-color-50">
       <div className="flex flex-col gap-y-3 w-full">
@@ -123,4 +132,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

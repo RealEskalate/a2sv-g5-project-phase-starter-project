@@ -1,11 +1,20 @@
-import React from 'react'
+"use client"
+import React from "react";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
-const page = () => {
+const Page = () => {
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/api/auth/signin?calbackUrl=/login");
+    },
+  });
   return (
     <>
-    <h1 className="text-2xl">Transaction Page</h1>
+      <h1 className="text-2xl">Transaction Page</h1>
     </>
-  )
-}
+  );
+};
 
-export default page
+export default Page;

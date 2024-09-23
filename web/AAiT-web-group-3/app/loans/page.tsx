@@ -1,6 +1,16 @@
+"use client";
 import React from "react";
+import { redirect } from "next/navigation";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
 
-const page = () => {
+const Page = () => {
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect("/api/auth/signin?calbackUrl=/login");
+    },
+  });
   const loans = [
     {
       id: 1,
@@ -78,7 +88,7 @@ const page = () => {
                 <div className="w-1/4  items-center justify-between bg-white p-4 rounded-lg shadow-md">
                   <div className="flex items-center">
                     <span className="bg-blue-100 text-blue-500 p-2 rounded-full">
-                      <img
+                      <Image
                         src="/user 3 2.svg"
                         alt="Personal Loans"
                         className="h-6 w-6"
@@ -92,8 +102,13 @@ const page = () => {
                 <div className="w-1/4 items-center justify-between bg-white p-4 rounded-lg shadow-md">
                   <div className="flex items-center">
                     <span className="bg-yellow-100 text-yellow-500 p-2 rounded-full">
-                      <img
+                      {/* <img
                         src="/briefcase 1.svg"
+                        alt="Corporate Loans"
+                        className="h-6 w-6"
+                      /> */}
+                      <Image
+                        src="/user 3 2.svg"
                         alt="Corporate Loans"
                         className="h-6 w-6"
                       />
@@ -106,8 +121,8 @@ const page = () => {
                 <div className="w-1/4  items-center justify-between bg-white p-4 rounded-lg shadow-md">
                   <div className="flex items-center">
                     <span className="bg-pink-100 text-pink-500 p-2 rounded-full">
-                      <img
-                        src="/graph 1.svg"
+                      <Image
+                        src="/user 3 2.svg"
                         alt="Business Loans"
                         className="h-6 w-6"
                       />
@@ -120,8 +135,13 @@ const page = () => {
                 <div className="w-1/4  items-center justify-between bg-white p-4 rounded-lg shadow-md">
                   <div className="flex items-center">
                     <span className="bg-green-100 text-green-500 p-2 rounded-full">
-                      <img
+                      {/* <img
                         src="/support 1.svg"
+                        alt="Custom Loans"
+                        className="h-6 w-6"
+                      /> */}
+                      <Image
+                        src="/user 3 2.svg"
                         alt="Custom Loans"
                         className="h-6 w-6"
                       />
@@ -195,4 +215,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -1,3 +1,4 @@
+"use client"
 import Card from "./(components)/card";
 import { FaShieldHeart } from "react-icons/fa6";
 import { GiShoppingBag } from "react-icons/gi";
@@ -5,8 +6,16 @@ import { AiFillSafetyCertificate } from "react-icons/ai";
 import { FaHandHoldingDollar } from "react-icons/fa6";
 import ServiceList from "./(components)/ServiceList";
 import { FaBriefcase } from "react-icons/fa";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
-const page = () => {
+const Page = () => {
+      const { data: session } = useSession({
+        required: true,
+        onUnauthenticated() {
+          redirect("/api/auth/signin?calbackUrl=/login");
+        },
+      });
   return (
     <>
       <div className="bg-gray-100 px-[25px] md:px-[50px]">
@@ -31,4 +40,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

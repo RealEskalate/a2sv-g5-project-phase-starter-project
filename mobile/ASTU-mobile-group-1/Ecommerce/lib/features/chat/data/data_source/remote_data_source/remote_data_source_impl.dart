@@ -8,29 +8,30 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import '../../../../../core/constants/constants.dart';
 import '../../../../../core/error/exception.dart';
+import '../../../../product/data/data_sources/local_data_source.dart';
 import '../../model/chat_model.dart';
 import '../../model/message_model.dart';
 import 'remote_data_source.dart';
 
 class RemoteDataSourceImpl extends RemoteDataSource {
   final http.Client client;
-  String accessToken;
+  final String accessToken;
+  final ProductLocalDataSource productLocalDataSource;
   late IO.Socket socket;
 
   final StreamController<MessageModel> _messageStreamController =
       StreamController<MessageModel>.broadcast();
 
-  RemoteDataSourceImpl({required this.client, required this.accessToken}) {
+  RemoteDataSourceImpl(
+      {required this.client,
+      required this.accessToken,
+      required this.productLocalDataSource}) {
     _initializeWebSocket();
   }
 
   @override
-  Future<void> updateAccessToken(String token) async {
-    accessToken = token;
-  }
-
-  @override
   Future<List<ChatModel>> getAllChats() async {
+    final accessToken = productLocalDataSource.getToken();
     try {
       final response = await client.get(
         Uri.parse(Urls.baseChat),
@@ -39,7 +40,7 @@ class RemoteDataSourceImpl extends RemoteDataSource {
           'Content-Type': 'application/json',
         },
       );
-        print(response.statusCode);
+      print(response.statusCode);
       if (response.statusCode == 200) {
         final result = json.decode(response.body)['data'];
         final List<ChatModel> answer = [];
@@ -61,6 +62,7 @@ class RemoteDataSourceImpl extends RemoteDataSource {
   @override
   Future<ChatModel> getChatById(String chatId) async {
     try {
+      final accessToken = productLocalDataSource.getToken();
       final response = await http.get(
         Uri.parse(Urls.getChatById(chatId)),
         headers: {
@@ -82,6 +84,7 @@ class RemoteDataSourceImpl extends RemoteDataSource {
   @override
   Future<ChatModel> initiateChat(String recieverId) async {
     try {
+      final accessToken = productLocalDataSource.getToken();
       final response = await client.post(Uri.parse(Urls.baseChat),
           headers: {
             'Authorization': 'Bearer $accessToken',
@@ -101,6 +104,7 @@ class RemoteDataSourceImpl extends RemoteDataSource {
 
   Future<List<MessageModel>> getChatMessages(String chatId) async {
     try {
+      final accessToken = productLocalDataSource.getToken();
       final response = await client.get(
         Uri.parse(Urls.getChatMessages(chatId)),
         headers: {
@@ -144,6 +148,7 @@ class RemoteDataSourceImpl extends RemoteDataSource {
   }
 
   void _initializeWebSocket() {
+    final accessToken = productLocalDataSource.getToken();
     socket = IO.io(
       'https://g5-flutter-learning-path-be.onrender.com',
       <String, dynamic>{

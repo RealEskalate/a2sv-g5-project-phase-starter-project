@@ -26,5 +26,4 @@ abstract class RemoteDataSource {
   Future<List<MessageModel>> getChatMessages(String chatId);
 
   Stream<MessageModel> getMessages();
-  Future<void> updateAccessToken(String token);
 }

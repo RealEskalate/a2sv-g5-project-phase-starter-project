@@ -54,7 +54,7 @@ class ProductRemoteDataSourceImpl extends ProductRemoteDataSource {
 
         await productLocalDataSource.cacheProducts(products);
         print(products);
-        return products;
+        return products.reversed.toList();
       } else {
         throw ServerException();
       }
